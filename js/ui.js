@@ -1,4 +1,5 @@
-/* ===================== РЕНДЕР И ОТКРЫТИЕ ПРИЛОЖЕНИЙ ===================== */
+var activeAppKey = null;
+
 function renderTop() {
   var z = $('#adminZone'); if (!z) return;
   z.innerHTML = adminMode
@@ -7,10 +8,10 @@ function renderTop() {
 }
 
 function setFac(k) {
+  if (activeAppKey) closeAppDemo();
   state.fac = k; state.q = '';
   var qi = $('#qInp'); if (qi) qi.value = '';
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 window.setFac = setFac;
 
@@ -56,9 +57,7 @@ function renderItems() {
     });
   }
   if (!list.length) {
-    $('#items').innerHTML = '<div class="empty">Пока нет предложений в этой категории' +
-      (adminMode ? ' — нажмите «＋ Добавить предложение»' : '') +
-      (q ? ' — или измените поисковый запрос' : '') + '</div>';
+    $('#items').innerHTML = '<div class="empty">Пока нет предложений в этой категории' + (adminMode ? ' — нажмите «＋ Добавить предложение»' : '') + '</div>';
     return;
   }
 
@@ -69,43 +68,23 @@ function renderItems() {
     var appCfg = it.appUrl && DEMO_APPS[it.appUrl] ? DEMO_APPS[it.appUrl] : null;
 
     h += '<div class="sug" data-id="' + esc(it.id) + '" style="animation-delay:' + Math.min(i * 40, 340) + 'ms">';
-    h += '<div class="sug-head"><span class="sug-num">' + num + '.</span><div class="sug-titlewrap">';
+    h += '<div class="sug-head">';
+    h += '<div class="sug-head-left"><span class="sug-num">' + num + '.</span><span class="sug-title">' + esc(ttl) + '</span></div>';
 
-    /* Если к идее привязано приложение — рендерим кликабельную кнопку-заголовок */
     if (appCfg && appCfg.url) {
-      h += '<button type="button" class="sug-app-btn" data-open-app="' + esc(it.appUrl) + '" data-app-title="' + esc(ttl) + '">' +
-           '<span>' + (appCfg.icon || '🚀') + ' ' + esc(ttl) + '</span>' +
-           '<span class="app-badge">' + esc(appCfg.badge || 'Открыть приложение') + ' ↗</span>' +
-           '</button>';
-    } else {
-      h += '<span class="sug-title">' + esc(ttl) + '</span>';
+      h += '<button type="button" class="sug-open-btn" data-open-app="' + esc(it.appUrl) + '" data-app-title="' + esc(ttl) + '">' +
+           esc(appCfg.btnText || '📱 Открыть приложение') + '</button>';
     }
-
-    h += '</div></div>';
+    h += '</div>';
 
     var body = itemBody(it);
     if (body) h += '<div class="sug-body">' + bodyToHtml(body) + '</div>';
 
-    if (it.images && it.images.length) {
-      h += '<div class="sug-images">';
-      for (var k = 0; k < it.images.length; k++) {
-        h += '<img src="' + esc(it.images[k]) + '" data-img="' + esc(it.images[k]) + '" alt="" loading="lazy" data-rtry="1">';
-      }
-      h += '</div>';
-    }
-    if (it.videos && it.videos.length) {
-      h += '<div class="sug-videos">';
-      for (var v = 0; v < it.videos.length; v++) {
-        h += '<video controls playsinline preload="metadata" src="' + esc(it.videos[v]) + '" data-rtry="1"></video>';
-      }
-      h += '</div>';
-    }
     if (adminMode) {
       h += '<div class="sug-tools">' +
-           '<button class="stool drag-handle" title="Перетащите, чтобы изменить порядок">⠿</button>' +
+           '<button class="stool drag-handle" title="Перетащите">⠿</button>' +
            '<button class="stool" title="Редактировать" data-edit="' + esc(it.id) + '">✏️</button>' +
-           '<button class="stool stool-del" title="Удалить" data-del="' + esc(it.id) + '">✕</button>' +
-           '</div>';
+           '<button class="stool stool-del" title="Удалить" data-del="' + esc(it.id) + '">✕</button></div>';
     }
     h += '</div>';
   }
@@ -119,48 +98,47 @@ function render() {
   var total = (state.fac === 'all') ? ITEMS.length : itemsByFac(state.fac).length;
   $('#hTitle').textContent = state.fac === 'all' ? 'Все предложения' : facName(state.fac);
   $('#hCnt').textContent = total;
-  $('#hSub').textContent = adminMode
-    ? 'Изменения сохраняются на GitHub — нажмите на кнопку заголовка идеи, чтобы запустить интерактивный прототип'
-    : 'Нажмите на подсвеченное название-кнопку в карточке, чтобы открыть интерактивное приложение идеи';
+  $('#hSub').textContent = 'Нажмите на кнопку напротив названия предложения, чтобы открыть интерактивное приложение (левое меню останется доступным)';
   $('#addBtn').style.display = adminMode ? '' : 'none';
   renderItems();
 }
 
-/* Открытие и закрытие интерактивных демо-приложений */
 function openAppDemo(appKey, customTitle) {
   var cfg = DEMO_APPS[appKey];
   if (!cfg || !cfg.url) return;
-  var ov = $('#appOverlay'), fr = $('#appFrame');
-  if (!ov || !fr) return;
-  $('#appOvIcon').textContent = cfg.icon || '🚀';
+  activeAppKey = appKey;
+  var ideasView = $('#ideasView'), appView = $('#appInlineView'), fr = $('#appFrame'), content = $('#content');
+  if (!ideasView || !appView || !fr) return;
+  $('#appOvIcon').textContent = cfg.icon || '📱';
   $('#appOvName').textContent = customTitle || cfg.name;
   fr.src = cfg.url;
-  ov.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  ideasView.style.display = 'none';
+  appView.style.display = 'flex';
+  if (content) content.classList.add('app-mode');
 }
 
 function closeAppDemo() {
-  var ov = $('#appOverlay'), fr = $('#appFrame');
-  if (!ov || !fr) return;
-  ov.style.display = 'none';
+  activeAppKey = null;
+  var ideasView = $('#ideasView'), appView = $('#appInlineView'), fr = $('#appFrame'), content = $('#content');
+  if (!ideasView || !appView || !fr) return;
+  appView.style.display = 'none';
+  ideasView.style.display = 'block';
   fr.src = 'about:blank';
-  document.body.style.overflow = '';
+  if (content) content.classList.remove('app-mode');
 }
 window.openAppDemo = openAppDemo;
 window.closeAppDemo = closeAppDemo;
 
-/* Лайтбокс для изображений */
 function openLb(url) {
   var lb = $('#lb'), img = $('#lbImg');
   if (!lb || !img) return;
-  img.src = url;
-  lb.classList.add('show');
-  requestAnimationFrame(function() { requestAnimationFrame(function() { lb.classList.add('zoom'); }); });
+  img.src = url; lb.classList.add('show');
+  requestAnimationFrame(function() { lb.classList.add('zoom'); });
 }
 function closeLb() {
   var lb = $('#lb'); if (!lb) return;
   lb.classList.remove('zoom');
-  setTimeout(function() { lb.classList.remove('show'); var im = $('#lbImg'); if (im) im.src = ''; }, 240);
+  setTimeout(function() { lb.classList.remove('show'); }, 240);
 }
 window.openLb = openLb;
 window.closeLb = closeLb;
