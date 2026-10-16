@@ -1,7 +1,6 @@
-/* ===================== СОСТОЯНИЕ И ДАННЫЕ ===================== */
 var ITEMS = [], localRev = 0, pendingRev = null, needSeed = false, booted = false;
 var knownRev = 0;
-var state = { fac: 'all', q: '' };
+var state = { fac: 'general', q: '' };
 var dirtyIds = {}, deletedIds = {};
 
 function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
@@ -22,7 +21,12 @@ function normItems(a) {
     if (!a[i].images) a[i].images = [];
     if (!a[i].videos) a[i].videos = [];
     if (typeof a[i].title !== 'string') a[i].title = '';
-    if (typeof a[i].appUrl !== 'string') a[i].appUrl = '';
+    if (typeof a[i].appUrl !== 'string' || !a[i].appUrl) {
+      var ttl = (a[i].title || '').toLowerCase();
+      if (a[i].id === 's1' || ttl.indexOf('приложен') >= 0) a[i].appUrl = 'mvd_phone';
+      else if (ttl.indexOf('транспорт') >= 0 || ttl.indexOf('автопарк') >= 0) a[i].appUrl = 'garage';
+      else a[i].appUrl = '';
+    }
   }
   return a;
 }
@@ -48,7 +52,7 @@ function loadLocal() {
     var d = JSON.parse(LS.get(LOCAL_K) || 'null');
     if (d && d.items) {
       var a = toArr(d.items);
-      if (a) return normItems(a);
+      if (a && a.length) return normItems(a);
     }
   } catch (e) {}
   return seed();
@@ -89,23 +93,4 @@ function itemsByFac(k) {
 function countItems(k) {
   if (k === 'all') return ITEMS.length;
   return itemsByFac(k).length;
-}
-
-function mergeInto(remoteItems) {
-  var merged = remoteItems.slice();
-  for (var i = merged.length - 1; i >= 0; i--) {
-    if (merged[i] && deletedIds[merged[i].id]) merged.splice(i, 1);
-  }
-  for (var d in dirtyIds) {
-    if (!Object.prototype.hasOwnProperty.call(dirtyIds, d)) continue;
-    var it = byId(d);
-    if (!it) continue;
-    var found = -1;
-    for (var j = 0; j < merged.length; j++) {
-      if (merged[j] && merged[j].id === d) { found = j; break; }
-    }
-    if (found >= 0) merged[found] = it;
-    else merged.push(it);
-  }
-  return merged;
 }
