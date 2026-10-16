@@ -24,24 +24,39 @@
     <aside id="sidebar">
       <nav id="nav"></nav>
     </aside>
+
     <main id="content">
-      <div class="ph">
-        <div>
-          <h1><span id="hTitle">Все предложения</span><span class="cnt" id="hCnt">0</span></h1>
-          <div class="ph-sub" id="hSub"></div>
+      <!-- Список предложений -->
+      <div id="ideasView">
+        <div class="ph">
+          <div>
+            <h1><span id="hTitle">Общие</span><span class="cnt" id="hCnt">0</span></h1>
+            <div class="ph-sub" id="hSub"></div>
+          </div>
+          <div class="ph-actions">
+            <input class="inp" id="qInp" placeholder="🔍 Поиск по предложениям…" style="width:100%;max-width:340px;margin:0 0 10px">
+            <button class="btn big" id="addBtn" onclick="openAdd()" style="display:none">＋ Добавить предложение</button>
+          </div>
         </div>
-        <div class="ph-actions">
-          <input class="inp" id="qInp" placeholder="🔍 Поиск по предложениям…" style="width:100%;max-width:340px;margin:0 0 10px">
-          <button class="btn big" id="addBtn" onclick="openAdd()" style="display:none">＋ Добавить предложение</button>
-        </div>
+        <div id="items"></div>
       </div>
-      <div id="items"></div>
+
+      <!-- Встроенное окно приложения (открывается справа от левого меню, закрывается на ✕) -->
+      <div id="appInlineView" class="app-inline" style="display:none">
+        <div class="app-inline-bar">
+          <div class="app-inline-title">
+            <span id="appOvIcon">📱</span>
+            <b id="appOvName">Функциональное фракционное приложение</b>
+          </div>
+          <button class="app-close-x" onclick="closeAppDemo()" title="Закрыть приложение и вернуться к списку">✕</button>
+        </div>
+        <iframe id="appFrame" src="about:blank"></iframe>
+      </div>
     </main>
   </div>
 
   <nav id="mnav"></nav>
 
-  <!-- Скрытый инпут для медиа, лайтбокс и контейнеры модалок -->
   <input type="file" id="fileInp" accept="image/*,video/*" multiple style="display:none">
   <div id="lb"><img id="lbImg" alt=""></div>
   <div id="mroot"></div>
@@ -52,19 +67,6 @@
     <button class="btn slim" onclick="retryPush()">Повторить</button>
   </div>
 
-  <!-- Полноэкранный оверлей для запуска интерактивных приложений из идей -->
-  <div id="appOverlay" class="app-ov" style="display:none">
-    <div class="app-ov-bar">
-      <div class="app-ov-title">
-        <span id="appOvIcon">🚀</span>
-        <b id="appOvName">Интерактивный прототип</b>
-      </div>
-      <button class="btn warn slim" onclick="closeAppDemo()">✕ Закрыть приложение</button>
-    </div>
-    <iframe id="appFrame" src="about:blank"></iframe>
-  </div>
-
-  <!-- Подключение модулей (каждый отвечает за свою функцию) -->
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/state.js"></script>
