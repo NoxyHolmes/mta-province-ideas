@@ -32,84 +32,15 @@ body{
 ::-webkit-scrollbar-thumb{background:#253042;border-radius:8px}
 button,input,select{font-family:inherit}
 
-#topSwitchBar{
-  min-height:60px;
-  background:rgba(11,15,23,.9);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--line);
-  padding:10px 22px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:12px;
-  position:sticky;
-  top:0;
-  z-index:100;
-  box-shadow:0 8px 30px rgba(0,0,0,.45);
-}
-.mode-tabs{display:flex;gap:6px;background:#090d14;padding:4px;border-radius:12px;border:1px solid var(--line)}
-.mode-tab{padding:8px 16px;border-radius:9px;border:none;background:transparent;color:var(--mut);font-weight:800;font-size:12.5px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px}
-.mode-tab.on{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.35)}
-
-.push-sim{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.push-sim-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-right:4px}
-.sim-btn{padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--txt);font-size:11.5px;font-weight:700;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:6px}
-.sim-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
-.sim-btn.gibdd{border-color:rgba(77,163,255,.4);color:#93c5fd;background:rgba(77,163,255,.1)}
-.sim-btn.mvd{border-color:rgba(247,201,72,.4);color:#fde047;background:rgba(247,201,72,.1)}
-
-#phoneAlertRoot{
-  position:fixed;
-  top:76px;
-  right:24px;
-  z-index:900;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  width:380px;
-  max-width:calc(100vw - 32px);
-  pointer-events:none;
-}
-.ph-notif{
-  pointer-events:auto;
-  background:linear-gradient(155deg,rgba(22,29,44,.97),rgba(13,18,28,.98));
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:22px;
-  padding:16px 18px;
-  box-shadow:0 24px 60px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.12);
-  animation:notifIn .35s cubic-bezier(.2,1,.3,1);
-  position:relative;
-  overflow:hidden;
-}
-@keyframes notifIn{from{opacity:0;transform:translateY(-20px) scale(.95)}}
-.ph-notif.gibdd{border-left:4px solid #38bdf8}
-.ph-notif.mvd{border-left:4px solid #f59e0b}
-.pn-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-.pn-sender{display:flex;align-items:center;gap:8px;font-weight:900;font-size:12px;letter-spacing:.6px;text-transform:uppercase}
-.pn-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
-.ph-notif.gibdd .pn-ic{background:rgba(56,189,248,.18);border:1px solid rgba(56,189,248,.4)}
-.ph-notif.gibdd .pn-sender{color:#7dd3fc}
-.ph-notif.mvd .pn-ic{background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.4)}
-.ph-notif.mvd .pn-sender{color:#fcd34d}
-.pn-time{font-size:11px;color:var(--mut);font-weight:600}
-.pn-close{background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:14px;padding:2px 6px}
-.pn-title{font-weight:800;font-size:13.5px;color:#fff;margin-bottom:5px}
-.pn-body{font-size:12.5px;line-height:1.5;color:#d1d9e8}
-.pn-foot{margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;font-size:11.5px}
-.pn-sum{font-weight:900;color:var(--red);font-size:13px}
-.pn-act{color:var(--acc);font-weight:800;cursor:pointer;background:none;border:none;font-size:12px}
-.pn-act:hover{text-decoration:underline}
-
-#terminalWrap{max-width:1380px;margin:0 auto;padding:26px 24px 60px;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}
+/* ================= БАНКОВСКАЯ СИСТЕМА (МЕНЮ В БАНКЕ) ================= */
+#terminalWrap{max-width:1380px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:285px 1fr;gap:24px;align-items:start}
 .b-side{
   background:linear-gradient(165deg,rgba(20,27,42,.88),rgba(13,18,28,.94));
   border:1px solid var(--line);
   border-radius:22px;
   padding:20px 16px;
   position:sticky;
-  top:84px;
+  top:24px;
   box-shadow:0 20px 50px rgba(0,0,0,.45);
 }
 .b-brand{display:flex;align-items:center;gap:12px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
@@ -122,20 +53,32 @@ button,input,select{font-family:inherit}
   border:1px solid rgba(148,163,184,.25);
   border-radius:18px;
   padding:16px;
-  margin-bottom:16px;
+  margin-bottom:14px;
   position:relative;
   overflow:hidden;
   box-shadow:0 12px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15);
 }
-.b-card-widget::after{content:'';position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(77,163,255,.25),transparent 70%)}
-.bc-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#94a3b8;font-weight:800}
-.bc-owner{font-size:15px;font-weight:800;color:#fff;margin-top:3px}
-.bc-acc{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);padding:5px 11px;border-radius:9px;margin-top:10px;font-family:monospace;font-size:13.5px;font-weight:800;color:#6ee7b7;cursor:pointer}
+.b-card-widget::after{content:'';position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(77,163,255,.25),transparent 70%);pointer-events:none}
+.bc-top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.bc-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800}
+.bc-owner{font-size:15.5px;font-weight:800;color:#fff;margin-top:2px}
+.bc-acc{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:9px;font-family:monospace;font-size:13px;font-weight:800;color:#6ee7b7;cursor:pointer;white-space:nowrap}
 .bc-acc:hover{border-color:#6ee7b7}
-.bc-bal-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#94a3b8;margin-top:14px;font-weight:700}
-.bc-bal{font-size:23px;font-weight:900;color:#fff;margin-top:2px;letter-spacing:-.5px}
-.bc-cash{font-size:11.5px;color:#94a3b8;margin-top:6px}
-.bc-cash b{color:#fcd34d}
+
+/* Удобная сетка сумм в карточке банка */
+.bc-sums-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,.09);
+}
+.bc-sum-item{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px 12px}
+.bc-sum-item .s-l{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;font-weight:800}
+.bc-sum-item .s-v{font-size:16.5px;font-weight:900;color:#fff;margin-top:3px;white-space:nowrap}
+.bc-sum-item .s-v.green{color:#34d399}
+.bc-sum-item .s-v.gold{color:#fcd34d}
 
 .b-nav{display:flex;flex-direction:column;gap:4px}
 .b-ni{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;color:var(--mut);font-weight:700;font-size:13.5px;cursor:pointer;transition:.18s;border:1px solid transparent}
@@ -148,116 +91,158 @@ button,input,select{font-family:inherit}
   background:linear-gradient(160deg,rgba(22,29,44,.84),rgba(15,20,31,.9));
   border:1px solid var(--line);
   border-radius:20px;
-  padding:22px 24px;
-  margin-bottom:18px;
+  padding:20px 22px;
+  margin-bottom:16px;
   box-shadow:0 14px 38px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05);
 }
-.b-h1{font-size:23px;font-weight:900;margin-bottom:4px}
-.b-sub{font-size:13px;color:var(--mut);margin-bottom:18px}
-.b-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.b-grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
-.stat-box{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
-.stat-box .v{font-size:24px;font-weight:900;margin-bottom:4px}
-.stat-box .l{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);font-weight:800}
+.b-h1{font-size:21px;font-weight:900;margin-bottom:4px}
+.b-sub{font-size:12.5px;color:var(--mut);margin-bottom:16px;line-height:1.45}
+.b-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.b-grid-sums{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat-box{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+.stat-box .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800}
+.stat-box .v{font-size:18px;font-weight:900;margin-top:4px}
 
 .fine-bar{
   display:flex;
   align-items:center;
   justify-content:space-between;
   flex-wrap:wrap;
-  gap:12px;
+  gap:10px;
   background:rgba(15,23,42,.75);
   border:1px solid rgba(255,255,255,.1);
   border-radius:14px;
-  padding:13px 16px;
-  margin-bottom:14px;
+  padding:12px 14px;
+  margin-bottom:12px;
 }
 .fine-item{
   display:flex;
   align-items:flex-start;
-  gap:14px;
+  gap:12px;
   background:rgba(255,255,255,.025);
   border:1px solid var(--line);
-  border-radius:15px;
-  padding:15px 18px;
+  border-radius:14px;
+  padding:14px 16px;
   margin-bottom:10px;
   transition:.18s;
   cursor:pointer;
 }
 .fine-item:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04)}
-.fine-item.checked{border-color:rgba(77,163,255,.55);background:rgba(77,163,255,.07)}
-.fine-item input[type=checkbox]{width:19px;height:19px;margin-top:2px;accent-color:#3b82f6;cursor:pointer;flex:0 0 19px}
+.fine-item.checked{border-color:rgba(77,163,255,.55);background:rgba(77,163,255,.08)}
+.fine-item.focus-pulse{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.35)}
+.fine-item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:#3b82f6;cursor:pointer;flex:0 0 18px}
 .fine-info{flex:1;min-width:0}
 .fine-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
-.f-badge{padding:3px 9px;border-radius:7px;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
+.f-badge{padding:3px 8px;border-radius:7px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
 .f-badge.cam{background:rgba(56,189,248,.14);color:#7dd3fc;border:1px solid rgba(56,189,248,.35)}
 .f-badge.emp{background:rgba(245,158,11,.14);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
-.fine-title{font-weight:800;font-size:14.5px;color:#fff}
-.fine-meta{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.5}
+.fine-title{font-weight:800;font-size:13.5px;color:#fff}
+.fine-meta{font-size:12px;color:var(--mut);margin-top:4px;line-height:1.45}
 .fine-meta b{color:#d1d9e8}
-.fine-sum{font-size:16px;font-weight:900;color:var(--red);white-space:nowrap;text-align:right}
+.fine-sum{font-size:15px;font-weight:900;color:var(--red);white-space:nowrap;text-align:right}
 
-.prop-card{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.prop-card{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:11px}
 .prop-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.prop-head b{font-size:15.5px;display:block}
-.prop-head span{font-size:12px;color:var(--mut)}
-.prop-days{padding:4px 10px;border-radius:9px;font-size:11.5px;font-weight:800;background:rgba(47,217,122,.14);color:#6ee7b7;border:1px solid rgba(47,217,122,.35);white-space:nowrap}
+.prop-head b{font-size:15px;display:block}
+.prop-head span{font-size:11.5px;color:var(--mut)}
+.prop-days{padding:4px 9px;border-radius:9px;font-size:11px;font-weight:800;background:rgba(47,217,122,.14);color:#6ee7b7;border:1px solid rgba(47,217,122,.35);white-space:nowrap}
 .prop-bar{height:8px;background:#1e293b;border-radius:6px;overflow:hidden}
 .prop-bar>div{height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:6px}
 
-.inp,.sel{background:#0b0f17;border:1px solid rgba(255,255,255,.12);color:var(--txt);padding:10px 14px;border-radius:11px;font-size:13.5px;outline:none;width:100%}
+.inp,.sel{background:#0b0f17;border:1px solid rgba(255,255,255,.12);color:var(--txt);padding:10px 13px;border-radius:11px;font-size:13.5px;outline:none;width:100%}
 .inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.15)}
-.flab{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:800;margin-bottom:6px}
-.btn{background:linear-gradient(135deg,#10b981,#059669);border:1px solid rgba(110,231,183,.35);color:#fff;padding:10px 18px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(16,185,129,.28)}
+.flab{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:800;margin-bottom:6px}
+.btn{background:linear-gradient(135deg,#10b981,#059669);border:1px solid rgba(110,231,183,.35);color:#fff;padding:9px 16px;border-radius:11px;font-weight:800;font-size:12.5px;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(16,185,129,.28)}
 .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .btn.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);border-color:rgba(147,197,253,.35);box-shadow:0 6px 18px rgba(37,99,235,.28)}
 .btn.ghost{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--txt);box-shadow:none}
 .btn.ghost:hover{background:rgba(255,255,255,.09)}
-.btn.slim{padding:7px 12px;font-size:12px}
+.btn.slim{padding:7px 12px;font-size:11.5px}
 
-.tx-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
+.tx-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
 .tx-row:last-child{border-bottom:none}
-.tx-left{display:flex;align-items:center;gap:12px;min-width:0}
-.tx-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 38px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
-.tx-title{font-weight:800;font-size:13.5px;color:#fff}
-.tx-sub{font-size:12px;color:var(--mut);margin-top:2px}
-.tx-amt{font-weight:900;font-size:14.5px;white-space:nowrap;text-align:right}
+.tx-left{display:flex;align-items:center;gap:11px;min-width:0}
+.tx-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 36px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.tx-title{font-weight:800;font-size:13px;color:#fff}
+.tx-sub{font-size:11.5px;color:var(--mut);margin-top:2px}
+.tx-amt{font-weight:900;font-size:14px;white-space:nowrap;text-align:right}
 .tx-amt.plus{color:var(--green)}
 .tx-amt.minus{color:#f87171}
 
-#phoneWrap{display:none;justify-content:center;align-items:center;padding:24px 14px 50px}
+/* ================= МОБИЛЬНОЕ ПРИЛОЖЕНИЕ В СМАРТФОНЕ ================= */
+#phoneWrap{display:none;justify-content:center;align-items:center;padding:18px 14px;min-height:100vh}
 .smartphone{
-  width:420px;
+  width:410px;
   max-width:100%;
   background:linear-gradient(160deg,#1e2636,#0b0f17);
   border:2px solid #334155;
-  border-radius:48px;
+  border-radius:46px;
   padding:12px;
   box-shadow:0 35px 95px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.15);
 }
 .sp-screen{
   background:radial-gradient(500px 280px at 50% -10%,rgba(16,185,129,.18),transparent 70%),#090d14;
-  border-radius:38px;
-  height:780px;
-  max-height:calc(100vh - 110px);
+  border-radius:36px;
+  height:760px;
+  max-height:calc(100vh - 60px);
   display:flex;
   flex-direction:column;
   overflow:hidden;
   position:relative;
 }
-.sp-statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 8px;font-size:12px;font-weight:800;color:#cbd5e1}
-.sp-body{flex:1;overflow-y:auto;padding:12px 18px 20px}
-.sp-bottomnav{
-  height:62px;
-  background:rgba(13,18,28,.95);
-  border-top:1px solid var(--line);
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  padding:4px 6px;
+.sp-statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 6px;font-size:12px;font-weight:800;color:#cbd5e1}
+/* Верхняя панель навигации внутри приложения банка (вместо нижней, чтобы снизу была полоска выхода) */
+.sp-top-pills{
+  display:flex;
+  gap:6px;
+  padding:6px 16px 10px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  border-bottom:1px solid var(--line);
 }
-.sp-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mut);font-size:10px;font-weight:700;cursor:pointer;border-radius:10px}
-.sp-tab i{font-style:normal;font-size:17px}
-.sp-tab.on{color:#34d399}
+.sp-top-pills::-webkit-scrollbar{display:none}
+.sp-pill{
+  flex:0 0 auto;
+  padding:7px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  color:var(--mut);
+  font-size:11.5px;
+  font-weight:800;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  transition:.15s;
+}
+.sp-pill.on{
+  background:rgba(16,185,129,.2);
+  border-color:rgba(16,185,129,.5);
+  color:#fff;
+}
+.sp-body{flex:1;overflow-y:auto;padding:14px 16px 16px}
+
+/* Нижняя полоска телефона — клик по ней возвращает в главное меню телефона */
+.sp-home-wrap{
+  padding:6px 0 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  cursor:pointer;
+  background:rgba(9,13,20,.95);
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.sp-home-bar{
+  width:134px;
+  height:5px;
+  border-radius:4px;
+  background:#3b475c;
+  transition:background .18s,transform .18s;
+}
+.sp-home-wrap:hover .sp-home-bar{background:#6ee7b7;transform:scaleX(1.08)}
+.sp-home-lbl{font-size:9.5px;color:#64748b;font-weight:700}
 
 #troot{position:fixed;left:24px;bottom:24px;z-index:950;display:flex;flex-direction:column;gap:8px}
 .toast{background:#161f30;border:1px solid rgba(16,185,129,.45);border-left:4px solid var(--green);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.5)}
@@ -269,22 +254,6 @@ button,input,select{font-family:inherit}
 </style>
 </head>
 <body>
-
-<div id="topSwitchBar">
-  <div class="mode-tabs">
-    <button class="mode-tab on" id="tabTerminal" onclick="setViewMode('terminal')">🏦 Банковская система</button>
-    <button class="mode-tab" id="tabPhone" onclick="setViewMode('phone')">📲 Банковское приложение</button>
-  </div>
-
-  <div class="push-sim">
-    <span class="push-sim-lbl">🔔 Тест уведомлений на телефон:</span>
-    <button class="sim-btn gibdd" onclick="triggerPush('gibdd_cam')">🚓 ГИБДД: Камера (+10 км/ч)</button>
-    <button class="sim-btn gibdd" onclick="triggerPush('gibdd_emp')">🚓 ГИБДД: Инспектор ДПС</button>
-    <button class="sim-btn mvd" onclick="triggerPush('mvd_emp')">🛡️ МВД: Сотрудник УМВД</button>
-  </div>
-</div>
-
-<div id="phoneAlertRoot"></div>
 
 <!-- РЕЖИМ 1: БАНКОВСКАЯ СИСТЕМА -->
 <div id="terminalWrap">
@@ -298,15 +267,25 @@ button,input,select{font-family:inherit}
     </div>
 
     <div class="b-card-widget">
-      <div class="bc-lbl">Владелец счёта</div>
-      <div class="bc-owner" id="uiOwnerName">Евгений Холмс</div>
-      <div class="bc-acc" onclick="copyAcc()" title="Нажмите, чтобы скопировать банковский счёт">
-        <span>💳 Счёт № <b id="uiAccNum">748291</b></span>
-        <span style="font-size:11px;opacity:.7">📋</span>
+      <div class="bc-top-row">
+        <div>
+          <div class="bc-lbl">Владелец счёта</div>
+          <div class="bc-owner" id="uiOwnerName">Евгений Холмс</div>
+        </div>
+        <div class="bc-acc" onclick="copyAcc()" title="Нажмите, чтобы скопировать счёт">
+          <span>💳 №<b id="uiAccNum">748291</b></span>
+        </div>
       </div>
-      <div class="bc-bal-lbl">Доступный баланс</div>
-      <div class="bc-bal" id="uiBalance">0 ₽</div>
-      <div class="bc-cash">Наличными на руках: <b id="uiCash">0 ₽</b></div>
+      <div class="bc-sums-grid">
+        <div class="bc-sum-item">
+          <div class="s-l">На счёте</div>
+          <div class="s-v green" id="uiBalance">0 ₽</div>
+        </div>
+        <div class="bc-sum-item">
+          <div class="s-l">Наличные</div>
+          <div class="s-v gold" id="uiCash">0 ₽</div>
+        </div>
+      </div>
     </div>
 
     <nav class="b-nav" id="deskNav"></nav>
@@ -315,7 +294,7 @@ button,input,select{font-family:inherit}
   <main class="b-main" id="deskMain"></main>
 </div>
 
-<!-- РЕЖИМ 2: БАНКОВСКОЕ ПРИЛОЖЕНИЕ -->
+<!-- РЕЖИМ 2: БАНКОВСКОЕ ПРИЛОЖЕНИЕ В ТЕЛЕФОНЕ -->
 <div id="phoneWrap">
   <div class="smartphone">
     <div class="sp-screen">
@@ -323,8 +302,13 @@ button,input,select{font-family:inherit}
         <span id="spClock">21:45</span>
         <span style="font-size:10.5px;color:#94a3b8">Province LTE · 🔋 94%</span>
       </div>
+      <!-- Навигация перенесена наверх, чтобы внизу была полоска выхода в меню телефона -->
+      <nav class="sp-top-pills" id="mobileNav"></nav>
       <div class="sp-body" id="mobileMain"></div>
-      <nav class="sp-bottomnav" id="mobileNav"></nav>
+      <div class="sp-home-wrap" onclick="exitToPhoneMenu()" title="Выйти в главное меню телефона">
+        <div class="sp-home-bar"></div>
+        <span class="sp-home-lbl">Главное меню телефона</span>
+      </div>
     </div>
   </div>
 </div>
@@ -332,8 +316,10 @@ button,input,select{font-family:inherit}
 <div id="troot"></div>
 
 <script>
-var VIEW_MODE = (location.search.indexOf('mode=phone') >= 0) ? 'phone' : 'terminal';
-var CUR_TAB = 'overview';
+var params = new URLSearchParams(location.search);
+var VIEW_MODE = (params.get('mode') === 'phone') ? 'phone' : 'terminal';
+var CUR_TAB = params.get('tab') || 'overview';
+var TARGET_FINE_ID = params.get('fineId') || '';
 
 var PLAYER = {
   name: 'Евгений Холмс',
@@ -357,35 +343,35 @@ var FINES = [
     id: 'f1',
     checked: true,
     kind: 'cam',
-    sender: 'ГИБДД МВД',
+    sender: 'ГИБДД МВД России',
     date: '17.10.2026',
     time: '14:22',
     reason: 'Проезд на красный сигнал светофора (камера)',
     article: 'ст. 12.12 ч.1 КоАП',
     car: 'В777АК 52 · Toyota Camry',
     officer: null,
-    faction: 'ГИБДД МВД',
+    faction: '[ГИБДД] Камера контроля движения',
     amount: 1500
   },
   {
     id: 'f2',
     checked: true,
     kind: 'cam',
-    sender: 'ГИБДД МВД',
+    sender: 'ГИБДД МВД России',
     date: '16.10.2026',
     time: '19:05',
     reason: 'Превышение установленной скорости движения на 18 км/ч (камера)',
     article: 'ст. 12.9 ч.2 КоАП',
     car: 'В777АК 52 · Toyota Camry',
     officer: null,
-    faction: 'ГИБДД МВД',
+    faction: '[ГИБДД] Камера контроля движения',
     amount: 500
   },
   {
     id: 'f3',
     checked: false,
     kind: 'emp',
-    sender: 'ГИБДД МВД',
+    sender: 'ГИБДД МВД России',
     date: '15.10.2026',
     time: '21:14',
     reason: 'Управление ТС с нечитаемыми государственными номерами',
@@ -399,7 +385,7 @@ var FINES = [
     id: 'f4',
     checked: false,
     kind: 'emp',
-    sender: 'МВД',
+    sender: 'МВД России',
     date: '12.10.2026',
     time: '18:40',
     reason: 'Нарушение общественного порядка и тишины',
@@ -410,6 +396,13 @@ var FINES = [
     amount: 3000
   }
 ];
+
+/* Если перешли из СМС по конкретному штрафу — отмечаем именно его */
+if (TARGET_FINE_ID) {
+  FINES.forEach(function(f) {
+    f.checked = (f.id === TARGET_FINE_ID);
+  });
+}
 
 var HISTORY = [
   { date: '17.10.2026', time: '12:00', type: 'plus', title: 'Зачисление заработной платы и премии', reason: 'Выплата премии с баланса МВД', amount: 165000 },
@@ -448,120 +441,18 @@ function copyAcc() {
   try { navigator.clipboard.writeText(PLAYER.account); } catch (e) {}
   toast('✓ Номер банковского счёта №' + PLAYER.account + ' скопирован');
 }
-
-function triggerPush(preset) {
-  var data;
-  if (preset === 'gibdd_cam') {
-    var over = [12, 16, 24, 35][Math.floor(Math.random() * 4)];
-    var sum = over > 20 ? 1000 : 500;
-    data = {
-      channel: 'gibdd',
-      sender: 'ГИБДД МВД',
-      icon: '🚓',
-      title: 'Фиксация нарушения ПДД (Камера)',
-      body: 'Выписан штраф городской камерой за превышение скорости на <b>' + over + ' км/ч</b> (ст. 12.9 КоАП РФ) в размере <b>' + fmt(sum) + ' ₽</b>. ТС: В777АК 52.',
-      amount: sum,
-      fineObj: {
-        id: 'f' + Date.now(),
-        checked: true,
-        kind: 'cam',
-        sender: 'ГИБДД МВД',
-        date: nowDate(),
-        time: nowTime(),
-        reason: 'Превышение скорости на ' + over + ' км/ч (городская камера)',
-        article: 'ст. 12.9 КоАП',
-        car: 'В777АК 52 · Toyota Camry',
-        officer: null,
-        faction: 'ГИБДД МВД',
-        amount: sum
-      }
-    };
-  } else if (preset === 'gibdd_emp') {
-    data = {
-      channel: 'gibdd',
-      sender: 'ГИБДД МВД',
-      icon: '🚓',
-      title: 'Постановление инспектора ДПС',
-      body: 'Выписан штраф за <b>нарушение правил расположения ТС на проезжей части (ст. 12.15 ч.1 КоАП)</b> в размере <b>1 500 ₽</b>.<br>Выписал сотрудник: <b>Бирюков Артемий</b> (ОГИБДД г. Приволжск).',
-      amount: 1500,
-      fineObj: {
-        id: 'f' + Date.now(),
-        checked: true,
-        kind: 'emp',
-        sender: 'ГИБДД МВД',
-        date: nowDate(),
-        time: nowTime(),
-        reason: 'Нарушение правил расположения ТС на проезжей части',
-        article: 'ст. 12.15 ч.1 КоАП',
-        car: 'В777АК 52 · Toyota Camry',
-        officer: 'Бирюков Артемий (Инспектор ДПС, Ст. лейтенант)',
-        faction: 'ОГИБДД г. Приволжск',
-        amount: 1500
-      }
-    };
-  } else {
-    data = {
-      channel: 'mvd',
-      sender: 'МВД',
-      icon: '🛡️',
-      title: 'Постановление сотрудника МВД',
-      body: 'Выписан административный штраф за <b>неповиновение законному распоряжению сотрудника полиции (ст. 19.3 КоАП)</b> в размере <b>4 000 ₽</b>.<br>Выписал сотрудник: <b>Гусев Владислав</b> (УМВД г. Приволжск).',
-      amount: 4000,
-      fineObj: {
-        id: 'f' + Date.now(),
-        checked: true,
-        kind: 'emp',
-        sender: 'МВД',
-        date: nowDate(),
-        time: nowTime(),
-        reason: 'Неповиновение законному распоряжению сотрудника полиции',
-        article: 'ст. 19.3 КоАП',
-        car: null,
-        officer: 'Гусев Владислав (Оперуполномоченный ОУР, Ст. лейтенант)',
-        faction: 'УМВД г. Приволжск',
-        amount: 4000
-      }
-    };
-  }
-
-  FINES.unshift(data.fineObj);
-  renderAll();
-
-  var root = document.getElementById('phoneAlertRoot');
-  var box = document.createElement('div');
-  box.className = 'ph-notif ' + data.channel;
-  box.innerHTML =
-    '<div class="pn-top">' +
-      '<div class="pn-sender"><span class="pn-ic">' + data.icon + '</span><span>' + data.sender + ' · СМС-уведомление</span></div>' +
-      '<div><span class="pn-time">' + nowTime() + '</span> <button class="pn-close" onclick="this.closest(\'.ph-notif\').remove()">✕</button></div>' +
-    '</div>' +
-    '<div class="pn-title">' + data.title + '</div>' +
-    '<div class="pn-body">' + data.body + '</div>' +
-    '<div class="pn-foot">' +
-      '<span class="pn-sum">К оплате: ' + fmt(data.amount) + ' ₽</span>' +
-      '<button class="pn-act" onclick="goTab(\'fines\');this.closest(\'.ph-notif\').remove()">Перейти к оплате →</button>' +
-    '</div>';
-  root.prepend(box);
-  setTimeout(function() { if (box && box.parentNode) box.remove(); }, 9500);
+function exitToPhoneMenu() {
+  location.href = 'mvd-phone.html';
 }
 
 var NAV_ITEMS = [
-  ['overview', '📊', 'Обзор счёта'],
+  ['overview', '📊', 'Главная'],
   ['fines',    '🚓', 'Оплата штрафов'],
-  ['housing',  '🏠', 'Оплата ЖКХ и жилья'],
-  ['transfer', '💸', 'Переводы и пополнение'],
-  ['deposits', '📈', 'Банковские вклады'],
-  ['history',  '📜', 'История операций']
+  ['housing',  '🏠', 'ЖКХ и жильё'],
+  ['transfer', '💸', 'Переводы'],
+  ['deposits', '📈', 'Вклады'],
+  ['history',  '📜', 'История']
 ];
-
-function setViewMode(m) {
-  VIEW_MODE = m;
-  document.getElementById('tabTerminal').classList.toggle('on', m === 'terminal');
-  document.getElementById('tabPhone').classList.toggle('on', m === 'phone');
-  document.getElementById('terminalWrap').style.display = (m === 'terminal') ? 'grid' : 'none';
-  document.getElementById('phoneWrap').style.display = (m === 'phone') ? 'flex' : 'none';
-  renderAll();
-}
 
 function goTab(t) {
   CUR_TAB = t;
@@ -581,23 +472,24 @@ function renderOverviewSection() {
   var totalFines = FINES.reduce(function(s, x) { return s + x.amount; }, 0);
   var totalDeps = DEPOSITS.reduce(function(s, x) { return s + x.amount; }, 0);
   return '<div class="b-panel">' +
-    '<div class="b-h1">Добро пожаловать, ' + PLAYER.name + '</div>' +
-    '<div class="b-sub">Единый банковский счёт <b>№ ' + PLAYER.account + '</b> · Управление финансами, ЖКХ и штрафами</div>' +
-    '<div class="b-grid3">' +
-      '<div class="stat-box"><div class="v" style="color:var(--green)">' + fmt(PLAYER.balance) + ' ₽</div><div class="l">На банковском счёте №' + PLAYER.account + '</div></div>' +
-      '<div class="stat-box"><div class="v" style="color:var(--gold)">' + fmt(totalDeps) + ' ₽</div><div class="l">На открытых вкладах</div></div>' +
-      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'fines\')"><div class="v" style="color:' + (FINES.length ? 'var(--red)' : 'var(--green)') + '">' + FINES.length + ' шт. (' + fmt(totalFines) + ' ₽)</div><div class="l">Неоплаченные штрафы →</div></div>' +
+    '<div class="b-h1">Сводка по счёту № ' + PLAYER.account + '</div>' +
+    '<div class="b-sub">Владелец: <b>' + PLAYER.name + '</b></div>' +
+    '<div class="b-grid-sums">' +
+      '<div class="stat-box"><div class="l">Баланс счёта</div><div class="v" style="color:var(--green)">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
+      '<div class="stat-box"><div class="l">Наличные на руках</div><div class="v" style="color:var(--gold)">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
+      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'deposits\')"><div class="l">На вкладах →</div><div class="v" style="color:#93c5fd">' + fmt(totalDeps) + ' ₽</div></div>' +
+      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'fines\')"><div class="l">Штрафы (' + FINES.length + ' шт.) →</div><div class="v" style="color:' + (FINES.length ? 'var(--red)' : 'var(--green)') + '">' + fmt(totalFines) + ' ₽</div></div>' +
     '</div>' +
-    '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
-      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевод по номеру счёта</button>' +
-      '<button class="btn blue" onclick="goTab(\'housing\')">🏠 Оплатить ЖКХ / Жильё</button>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевод по счёту</button>' +
+      '<button class="btn blue" onclick="goTab(\'housing\')">🏠 Оплата ЖКХ</button>' +
       '<button class="btn ghost" onclick="goTab(\'fines\')">🚓 Оплата штрафов (' + FINES.length + ')</button>' +
     '</div>' +
   '</div>' +
   '<div class="b-panel">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-      '<b style="font-size:16px">Последние операции по счёту №' + PLAYER.account + '</b>' +
-      '<button class="btn ghost slim" onclick="goTab(\'history\')">Все операции →</button>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+      '<b style="font-size:15px">Последние операции</b>' +
+      '<button class="btn ghost slim" onclick="goTab(\'history\')">Все →</button>' +
     '</div>' +
     HISTORY.slice(0, 5).map(txRowHtml).join('') +
   '</div>';
@@ -615,13 +507,14 @@ function renderFinesSection() {
   var allChecked = (selCount === FINES.length);
 
   var listHtml = FINES.map(function(f, idx) {
+    var isTarget = (TARGET_FINE_ID && f.id === TARGET_FINE_ID);
     var badge = f.kind === 'cam'
-      ? '<span class="f-badge cam">📷 Городская камера · ' + f.sender + '</span>'
-      : '<span class="f-badge emp">👮 Выписал сотрудник · ' + f.sender + '</span>';
+      ? '<span class="f-badge cam">📷 [ГИБДД] Камера контроля движения</span>'
+      : '<span class="f-badge emp">👮 ' + f.sender + '</span>';
     var details = f.kind === 'cam'
       ? 'Дата: <b>' + f.date + ' в ' + f.time + '</b> · Статус: <b>Автофиксация городской камерой</b> · ТС: <b>' + f.car + '</b> · Статья: <b>' + f.article + '</b>'
       : 'Дата: <b>' + f.date + ' в ' + f.time + '</b> · Статья: <b>' + f.article + '</b><br>Выписал: <b>' + f.officer + '</b> · Подразделение: <b>' + f.faction + '</b>' + (f.car ? ' · ТС: <b>' + f.car + '</b>' : '');
-    return '<label class="fine-item' + (f.checked ? ' checked' : '') + '">' +
+    return '<label class="fine-item' + (f.checked ? ' checked' : '') + (isTarget ? ' focus-pulse' : '') + '">' +
       '<input type="checkbox" ' + (f.checked ? 'checked' : '') + ' onchange="toggleFine(' + idx + ',this.checked)">' +
       '<div class="fine-info">' +
         '<div class="fine-top">' + badge + '</div>' +
@@ -636,12 +529,12 @@ function renderFinesSection() {
     '<div class="b-h1">🚓 Оплата штрафов</div>' +
     '<div class="b-sub">Отметьте галочками штрафы, которые хотите оплатить сейчас, либо оплатите все сразу</div>' +
     '<div class="fine-bar">' +
-      '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:800;font-size:13px">' +
-        '<input type="checkbox" style="width:18px;height:18px;accent-color:#3b82f6" ' + (allChecked ? 'checked' : '') + ' onchange="toggleAllFines(this.checked)">' +
-        '<span>Выбрать все (' + FINES.length + ' шт. на ' + fmt(allSum) + ' ₽)</span>' +
+      '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:800;font-size:12.5px">' +
+        '<input type="checkbox" style="width:17px;height:17px;accent-color:#3b82f6" ' + (allChecked ? 'checked' : '') + ' onchange="toggleAllFines(this.checked)">' +
+        '<span>Выбрать все (' + FINES.length + ' шт. · ' + fmt(allSum) + ' ₽)</span>' +
       '</label>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button class="btn blue slim" onclick="paySelectedFines()" ' + (!selCount ? 'disabled style="opacity:.45"' : '') + '>✓ Оплатить выбранные (' + selCount + ' шт. · ' + fmt(selSum) + ' ₽)</button>' +
+        '<button class="btn blue slim" onclick="paySelectedFines()" ' + (!selCount ? 'disabled style="opacity:.45"' : '') + '>✓ Оплатить выбранные (' + fmt(selSum) + ' ₽)</button>' +
         '<button class="btn slim" onclick="payAllFines()">Оплатить все (' + fmt(allSum) + ' ₽)</button>' +
       '</div>' +
     '</div>' +
@@ -667,11 +560,12 @@ window.paySelectedFines = function() {
     HISTORY.unshift({
       date: nowDate(), time: nowTime(), type: 'minus',
       title: 'Оплата штрафа (' + f.sender + ')',
-      reason: f.reason + ' (' + f.article + ')' + (f.officer ? ' · выписал ' + f.officer : ' · камера'),
+      reason: f.reason + ' (' + f.article + ')',
       amount: f.amount
     });
   });
   FINES = FINES.filter(function(f) { return !f.checked; });
+  TARGET_FINE_ID = '';
   renderAll();
   toast('✓ Оплачено штрафов: ' + sel.length + ' шт. на сумму ' + fmt(sum) + ' ₽');
 };
@@ -690,21 +584,21 @@ function renderHousingSection() {
         '<span class="prop-days">Оплачено: ' + daysLeft + ' из ' + p.maxDays + ' дн.</span>' +
       '</div>' +
       '<div class="prop-bar"><div style="width:' + pct + '%"></div></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut)">' +
-        '<span>Тариф ЖКХ: <b style="color:var(--txt)">' + fmt(p.ratePerDay) + ' ₽ / сутки</b></span>' +
-        '<span>Текущий депозит: <b style="color:var(--green)">' + fmt(p.deposit) + ' ₽</b></span>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut)">' +
+        '<span>Тариф ЖКХ: <b style="color:var(--txt)">' + fmt(p.ratePerDay) + ' ₽/сут.</b></span>' +
+        '<span>Депозит: <b style="color:var(--green)">' + fmt(p.deposit) + ' ₽</b></span>' +
       '</div>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">' +
-        '<button class="btn slim" onclick="topUpHousing(' + idx + ', 7)">+7 дней (' + fmt(p.ratePerDay * 7) + ' ₽)</button>' +
-        '<button class="btn blue slim" onclick="topUpHousing(' + idx + ', 14)">+14 дней (' + fmt(p.ratePerDay * 14) + ' ₽)</button>' +
-        '<button class="btn ghost slim" onclick="topUpHousingMax(' + idx + ')">До максимума (30 дн.)</button>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">' +
+        '<button class="btn slim" onclick="topUpHousing(' + idx + ', 7)">+7 дн. (' + fmt(p.ratePerDay * 7) + ' ₽)</button>' +
+        '<button class="btn blue slim" onclick="topUpHousing(' + idx + ', 14)">+14 дн. (' + fmt(p.ratePerDay * 14) + ' ₽)</button>' +
+        '<button class="btn ghost slim" onclick="topUpHousingMax(' + idx + ')">Макс. (30 дн.)</button>' +
       '</div>' +
     '</div>';
   }).join('');
 
   return '<div class="b-panel">' +
     '<div class="b-h1">🏠 Оплата ЖКХ и депозита за жильё</div>' +
-    '<div class="b-sub">Пополняйте жилищный депозит со счёта №' + PLAYER.account + ', чтобы недвижимость не слетела в гос</div>' +
+    '<div class="b-sub">Пополняйте жилищный депозит со счёта №' + PLAYER.account + '</div>' +
     '<div class="b-grid2">' + cards + '</div>' +
   '</div>';
 }
@@ -714,8 +608,8 @@ window.topUpHousing = function(idx, days) {
   var maxDep = p.ratePerDay * p.maxDays;
   var cost = p.ratePerDay * days;
   if (p.deposit + cost > maxDep) cost = Math.max(0, maxDep - p.deposit);
-  if (cost <= 0) { toast('Жильё уже оплачено на максимальные 30 дней'); return; }
-  if (PLAYER.balance < cost) { toast('Недостаточно средств на банковском счёте'); return; }
+  if (cost <= 0) { toast('Жильё уже оплачено на 30 дней'); return; }
+  if (PLAYER.balance < cost) { toast('Недостаточно средств на счёте'); return; }
   PLAYER.balance -= cost;
   p.deposit += cost;
   HISTORY.unshift({
@@ -744,9 +638,9 @@ function renderTransferSection() {
     '<div class="b-h1">🏧 Операции с наличными</div>' +
     '<div class="b-sub">На руках: <b>' + fmt(PLAYER.cash) + ' ₽</b> · На счёте №' + PLAYER.account + ': <b>' + fmt(PLAYER.balance) + ' ₽</b></div>' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
-      '<input class="inp" id="cashAmt" type="number" value="100000" style="max-width:220px">' +
-      '<button class="btn" onclick="doCashOp(\'in\')">➕ Пополнить счёт наличными</button>' +
-      '<button class="btn blue" onclick="doCashOp(\'out\')">➖ Снять наличные со счёта</button>' +
+      '<input class="inp" id="cashAmt" type="number" value="100000" style="max-width:200px">' +
+      '<button class="btn" onclick="doCashOp(\'in\')">➕ Пополнить счёт</button>' +
+      '<button class="btn blue" onclick="doCashOp(\'out\')">➖ Снять наличные</button>' +
     '</div>' +
   '</div>';
 }
@@ -755,11 +649,10 @@ window.doTransfer = function() {
   var acc = (document.getElementById('trAcc').value || '').trim();
   var amt = parseInt(document.getElementById('trAmt').value, 10) || 0;
   var rsn = (document.getElementById('trReason').value || '').trim();
-  if (!/^\d{6}$/.test(acc)) { toast('Введите корректный 6-значный номер счёта (например: 123456)'); return; }
+  if (!/^\d{6}$/.test(acc)) { toast('Введите 6-значный номер счёта (например: 123456)'); return; }
   if (acc === PLAYER.account) { toast('Нельзя перевести на собственный счёт'); return; }
   if (amt <= 0 || amt > PLAYER.balance) { toast('Некорректная сумма или недостаточно средств'); return; }
   if (!rsn) { toast('Укажите причину перевода'); return; }
-  var recName = KNOWN_ACCOUNTS[acc] || ('Счёт №' + acc);
   PLAYER.balance -= amt;
   HISTORY.unshift({
     date: nowDate(), time: nowTime(), type: 'minus',
@@ -792,28 +685,27 @@ function renderDepositsSection() {
   var list = DEPOSITS.map(function(d, idx) {
     return '<div class="prop-card">' +
       '<div class="prop-head"><div><b>📈 ' + d.name + '</b><span>Открыт: ' + d.since + ' · Ставка: ' + d.rate + '</span></div><span class="prop-days">Активен</span></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:13.5px">' +
-        '<span>Сумма вклада: <b style="color:#fff">' + fmt(d.amount) + ' ₽</b></span>' +
-        '<span>Начислено процентов: <b style="color:var(--green)">+' + fmt(d.profit) + ' ₽</b></span>' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px">' +
+        '<span>Сумма: <b style="color:#fff">' + fmt(d.amount) + ' ₽</b></span>' +
+        '<span>Проценты: <b style="color:var(--green)">+' + fmt(d.profit) + ' ₽</b></span>' +
       '</div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button class="btn slim" onclick="topUpDeposit(' + idx + ')">➕ Пополнить на 100 000 ₽</button>' +
-        '<button class="btn ghost slim" onclick="closeDeposit(' + idx + ')">Забрать вклад с % на счёт</button>' +
+        '<button class="btn slim" onclick="topUpDeposit(' + idx + ')">➕ Пополнить (+100 000 ₽)</button>' +
+        '<button class="btn ghost slim" onclick="closeDeposit(' + idx + ')">Закрыть вклад</button>' +
       '</div>' +
     '</div>';
   }).join('');
 
   return '<div class="b-panel">' +
-    '<div class="b-h1">📈 Банковские вклады и сбережения</div>' +
-    '<div class="b-sub">Приумножайте средства на счёте №' + PLAYER.account + '</div>' +
-    (list ? '<div class="b-grid2" style="margin-bottom:16px">' + list + '</div>' : '<div style="margin-bottom:16px;color:var(--mut)">Активных вкладов нет</div>') +
-    '<button class="btn blue" onclick="openNewDeposit()">＋ Открыть новый вклад «Премиум 10%» (500 000 ₽)</button>' +
+    '<div class="b-h1">📈 Банковские вклады</div>' +
+    '<div class="b-sub">Управление сбережениями по счёту №' + PLAYER.account + '</div>' +
+    (list ? '<div class="b-grid2" style="margin-bottom:14px">' + list + '</div>' : '<div style="margin-bottom:14px;color:var(--mut)">Активных вкладов нет</div>') +
+    '<button class="btn blue" onclick="openNewDeposit()">＋ Открыть вклад «Премиум 10%» (500 000 ₽)</button>' +
   '</div>';
 }
 
 window.topUpDeposit = function(idx) {
-  var d = DEPOSITS[idx]; if (!d) return;
-  if (PLAYER.balance < 100000) { toast('Недостаточно средств на счёте'); return; }
+  var d = DEPOSITS[idx]; if (!d || PLAYER.balance < 100000) return;
   PLAYER.balance -= 100000; d.amount += 100000;
   HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Пополнение вклада «' + d.name + '»', reason: 'Перевод со счёта №' + PLAYER.account, amount: 100000 });
   renderAll(); toast('✓ Вклад пополнен на 100 000 ₽');
@@ -822,16 +714,16 @@ window.closeDeposit = function(idx) {
   var d = DEPOSITS[idx]; if (!d) return;
   var total = d.amount + d.profit;
   PLAYER.balance += total;
-  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Закрытие вклада «' + d.name + '»', reason: 'Возврат тела вклада и начисленных процентов', amount: total });
+  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Закрытие вклада «' + d.name + '»', reason: 'Возврат вклада и процентов', amount: total });
   DEPOSITS.splice(idx, 1);
-  renderAll(); toast('✓ На счёт зачислено ' + fmt(total) + ' ₽');
+  renderAll(); toast('✓ Зачислено ' + fmt(total) + ' ₽');
 };
 window.openNewDeposit = function() {
-  if (PLAYER.balance < 500000) { toast('На счёте необходимо минимум 500 000 ₽'); return; }
+  if (PLAYER.balance < 500000) { toast('Необходимо минимум 500 000 ₽'); return; }
   PLAYER.balance -= 500000;
   DEPOSITS.push({ id: 'd' + Date.now(), name: 'Вклад «Премиум»', rate: '10% годовых', amount: 500000, profit: 0, since: nowDate(), canTopUp: true });
-  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Открытие вклада «Премиум»', reason: 'Размещение средств под 10% годовых', amount: 500000 });
-  renderAll(); toast('✓ Открыт новый вклад на 500 000 ₽');
+  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Открытие вклада «Премиум»', reason: 'Размещение под 10% годовых', amount: 500000 });
+  renderAll(); toast('✓ Открыт вклад на 500 000 ₽');
 };
 
 function txRowHtml(tx) {
@@ -850,13 +742,16 @@ function txRowHtml(tx) {
 
 function renderHistorySection() {
   return '<div class="b-panel">' +
-    '<div class="b-h1">📜 История переводов, пополнений и оплат</div>' +
-    '<div class="b-sub">Полная выписка по банковскому счёту <b>№ ' + PLAYER.account + ' (' + PLAYER.name + ')</b></div>' +
+    '<div class="b-h1">📜 История переводов и пополнений</div>' +
+    '<div class="b-sub">Выписка по счёту <b>№ ' + PLAYER.account + ' (' + PLAYER.name + ')</b></div>' +
     HISTORY.map(txRowHtml).join('') +
   '</div>';
 }
 
 function renderAll() {
+  document.getElementById('terminalWrap').style.display = (VIEW_MODE === 'terminal') ? 'grid' : 'none';
+  document.getElementById('phoneWrap').style.display = (VIEW_MODE === 'phone') ? 'flex' : 'none';
+
   document.getElementById('uiOwnerName').textContent = PLAYER.name;
   document.getElementById('uiAccNum').textContent = PLAYER.account;
   document.getElementById('uiBalance').textContent = fmt(PLAYER.balance) + ' ₽';
@@ -870,27 +765,27 @@ function renderAll() {
   var contentHtml = buildSectionHtml();
   document.getElementById('deskMain').innerHTML = contentHtml;
 
-  var mobHeader = '<div class="b-card-widget" style="margin-bottom:14px">' +
-    '<div class="bc-lbl">Провинция Банк Онлайн · ' + PLAYER.name + '</div>' +
-    '<div class="bc-acc" onclick="copyAcc()">💳 Счёт № ' + PLAYER.account + ' 📋</div>' +
-    '<div class="bc-bal" style="font-size:21px;margin-top:8px">' + fmt(PLAYER.balance) + ' ₽</div>' +
-    '<div class="bc-cash">Наличные: <b>' + fmt(PLAYER.cash) + ' ₽</b></div>' +
+  /* Удобная шапка счёта и сумм в мобильном банке */
+  var mobHeader = '<div class="b-card-widget">' +
+    '<div class="bc-top-row">' +
+      '<div><div class="bc-lbl">Провинция Банк Онлайн</div><div class="bc-owner">' + PLAYER.name + '</div></div>' +
+      '<div class="bc-acc" onclick="copyAcc()">💳 №' + PLAYER.account + ' 📋</div>' +
+    '</div>' +
+    '<div class="bc-sums-grid">' +
+      '<div class="bc-sum-item"><div class="s-l">На счёте</div><div class="s-v green">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
+      '<div class="bc-sum-item"><div class="s-l">Наличные</div><div class="s-v gold">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
+    '</div>' +
   '</div>';
+
   document.getElementById('mobileMain').innerHTML = mobHeader + contentHtml;
 
-  var mobTabs = [
-    ['overview', '🏦', 'Главная'],
-    ['fines',    '🚓', 'Штрафы' + (FINES.length ? ' (' + FINES.length + ')' : '')],
-    ['housing',  '🏠', 'ЖКХ'],
-    ['transfer', '💸', 'Перевод'],
-    ['history',  '📜', 'История']
-  ];
-  document.getElementById('mobileNav').innerHTML = mobTabs.map(function(t) {
-    return '<div class="sp-tab' + (CUR_TAB === t[0] ? ' on' : '') + '" onclick="goTab(\'' + t[0] + '\')"><i>' + t[1] + '</i><span>' + t[2] + '</span></div>';
+  document.getElementById('mobileNav').innerHTML = NAV_ITEMS.map(function(t) {
+    var bdg = (t[0] === 'fines' && FINES.length) ? ' (' + FINES.length + ')' : '';
+    return '<div class="sp-pill' + (CUR_TAB === t[0] ? ' on' : '') + '" onclick="goTab(\'' + t[0] + '\')"><span>' + t[1] + '</span><span>' + t[2] + bdg + '</span></div>';
   }).join('');
 }
 
-setViewMode(VIEW_MODE);
+renderAll();
 </script>
 </body>
 </html>
