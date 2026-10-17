@@ -114,7 +114,8 @@ function openAppDemo(appKey, customTitle) {
   ideasView.style.display = 'none';
   appView.style.display = 'flex';
   if (content) content.classList.add('app-mode');
-  var targetUrl = PAGE_DIR + cfg.url + '?v=' + Date.now();
+  var sep = cfg.url.indexOf('?') >= 0 ? '&' : '?';
+  var targetUrl = PAGE_DIR + cfg.url + sep + 'v=' + Date.now();
   setTimeout(function() {
     fr.src = targetUrl;
   }, 20);
