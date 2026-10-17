@@ -4,7 +4,7 @@ var state = { fac: 'general', q: '' };
 var dirtyIds = {}, deletedIds = {};
 
 function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
-function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete dirtyIds[id]; }
+function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete deletedIds[id]; }
 
 function toArr(x) {
   if (!x) return null;
@@ -16,6 +16,7 @@ function toArr(x) {
 
 function normItems(a) {
   if (!a) return a;
+  var defSeed = seed()[0];
   for (var i = 0; i < a.length; i++) {
     if (!a[i]) continue;
     if (!a[i].images) a[i].images = [];
@@ -28,6 +29,9 @@ function normItems(a) {
       } else {
         a[i].appUrl = '';
       }
+    }
+    if (a[i].id === 's1' && defSeed && String(a[i].text || '').indexOf('YI73TT4') < 0) {
+      a[i].text = defSeed.text;
     }
   }
   return a;
