@@ -4,7 +4,7 @@ var state = { fac: 'general', q: '' };
 var dirtyIds = {}, deletedIds = {};
 
 function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
-function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete deletedIds[id]; }
+function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete dirtyIds[id]; }
 
 function toArr(x) {
   if (!x) return null;
@@ -16,7 +16,7 @@ function toArr(x) {
 
 function normItems(a) {
   if (!a) return a;
-  var defSeed = seed()[0];
+  var defSeeds = seed();
   for (var i = 0; i < a.length; i++) {
     if (!a[i]) continue;
     if (!a[i].images) a[i].images = [];
@@ -24,15 +24,17 @@ function normItems(a) {
     if (typeof a[i].title !== 'string') a[i].title = '';
     if (typeof a[i].appUrl !== 'string' || !a[i].appUrl) {
       var ttl = (a[i].title || '').toLowerCase();
-      if (i === 0 || a[i].id === 's1' || ttl.indexOf('приложен') >= 0) {
-        a[i].appUrl = 'mvd_phone';
-      } else {
-        a[i].appUrl = '';
-      }
+      if (a[i].id === 's1' || ttl.indexOf('приложен') >= 0) a[i].appUrl = 'mvd_phone';
+      else if (a[i].id === 's2' || ttl.indexOf('автопарк') >= 0 || ttl.indexOf('транспорт') >= 0) a[i].appUrl = 'garage';
+      else a[i].appUrl = '';
     }
-    if (a[i].id === 's1' && defSeed && String(a[i].text || '').indexOf('YI73TT4') < 0) {
-      a[i].text = defSeed.text;
+    if (a[i].id === 's1' && defSeeds[0] && String(a[i].text || '').indexOf('YI73TT4') < 0) {
+      a[i].text = defSeeds[0].text;
     }
+  }
+  var hasGarage = a.some(function(x) { return x && (x.id === 's2' || x.appUrl === 'garage'); });
+  if (!hasGarage && defSeeds[1]) {
+    a.push(defSeeds[1]);
   }
   return a;
 }
