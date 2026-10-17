@@ -23,9 +23,11 @@ function normItems(a) {
     if (typeof a[i].title !== 'string') a[i].title = '';
     if (typeof a[i].appUrl !== 'string' || !a[i].appUrl) {
       var ttl = (a[i].title || '').toLowerCase();
-      if (a[i].id === 's1' || ttl.indexOf('приложен') >= 0) a[i].appUrl = 'mvd_phone';
-      else if (ttl.indexOf('транспорт') >= 0 || ttl.indexOf('автопарк') >= 0) a[i].appUrl = 'garage';
-      else a[i].appUrl = '';
+      if (i === 0 || a[i].id === 's1' || ttl.indexOf('приложен') >= 0) {
+        a[i].appUrl = 'mvd_phone';
+      } else {
+        a[i].appUrl = '';
+      }
     }
   }
   return a;
