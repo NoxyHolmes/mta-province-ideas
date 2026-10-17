@@ -111,10 +111,13 @@ function openAppDemo(appKey, customTitle) {
   if (!ideasView || !appView || !fr) return;
   $('#appOvIcon').textContent = cfg.icon || '📱';
   $('#appOvName').textContent = customTitle || cfg.name;
-  fr.src = cfg.url;
   ideasView.style.display = 'none';
   appView.style.display = 'flex';
   if (content) content.classList.add('app-mode');
+  var targetUrl = PAGE_DIR + cfg.url + '?v=' + Date.now();
+  setTimeout(function() {
+    fr.src = targetUrl;
+  }, 20);
 }
 
 function closeAppDemo() {
