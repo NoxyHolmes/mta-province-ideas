@@ -46,7 +46,7 @@ h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .sug:hover{border-color:#3a4757;transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.32)}
 .sug::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:#a78bfa}
 
-/* Заголовок слева и кликабельная кнопка напротив названия */
+/* Заголовок слева и кликабельная кнопка запуска телефона справа */
 .sug-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
 body.adm .sug-head{padding-right:105px}
 .sug-head-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
@@ -74,7 +74,7 @@ body.adm .sug-tools{opacity:1}
 body.drag-now,body.drag-now *{user-select:none;-webkit-user-select:none;cursor:grabbing}
 .empty{padding:26px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:12px;margin-top:10px}
 
-/* Встроенное окно приложения (справа от меню, закрывается на ✕) */
+/* Встроенное окно телефона и фракции (справа от меню) */
 .app-inline{display:flex;flex-direction:column;flex:1;height:calc(100vh - 88px);background:#121720;border:1px solid #2b3442;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:fadeIn .2s}
 .app-inline-bar{height:50px;flex:0 0 50px;background:linear-gradient(90deg,#161d29,#131820);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:12px}
 .app-inline-title{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--txt);min-width:0}
