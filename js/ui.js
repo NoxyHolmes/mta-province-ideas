@@ -73,7 +73,7 @@ function renderItems() {
 
     if (appCfg && appCfg.url) {
       h += '<button type="button" class="sug-open-btn" data-open-app="' + esc(it.appUrl) + '" data-app-title="' + esc(ttl) + '">' +
-           esc(appCfg.btnText || '📱 Открыть приложение') + '</button>';
+           esc(appCfg.btnText || '📱 Открыть телефон') + '</button>';
     }
     h += '</div>';
 
@@ -98,7 +98,7 @@ function render() {
   var total = (state.fac === 'all') ? ITEMS.length : itemsByFac(state.fac).length;
   $('#hTitle').textContent = state.fac === 'all' ? 'Все предложения' : facName(state.fac);
   $('#hCnt').textContent = total;
-  $('#hSub').textContent = 'Нажмите на кнопку напротив названия предложения, чтобы открыть интерактивное приложение (левое меню останется доступным)';
+  $('#hSub').textContent = 'Нажмите на кнопку напротив названия предложения, чтобы открыть телефон и перейти в функционал фракции';
   $('#addBtn').style.display = adminMode ? '' : 'none';
   renderItems();
 }
