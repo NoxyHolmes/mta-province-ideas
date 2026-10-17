@@ -1,1 +1,840 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>МВД · Радиальное меню и система обыска</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+:root{
+  --bg:#0e1014;
+  --slot:#262930;
+  --slot-hover:#323640;
+  --slot-line:rgba(255,255,255,.07);
+  --txt:#f1f5f9;
+  --mut:#8e96a4;
+  --red:#ef4444;
+  --orange:#f59e0b;
+  --green:#10b981;
+  --acc:#3b82f6;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#090b0f;color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:13px}
 
+/* Игровой фон (имитация экрана MTA Province) */
+#gameScene{
+  position:relative;
+  width:100%;
+  height:100vh;
+  background:
+    radial-gradient(900px 500px at 70% 20%,rgba(65,95,135,.32),transparent 70%),
+    radial-gradient(800px 600px at 20% 80%,rgba(40,65,45,.38),transparent 70%),
+    linear-gradient(180deg,#1a2433 0%,#232f28 58%,#181c1b 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Размытые силуэты дороги и авто на фоне */
+.road-bg{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(180px 90px at 42% 56%,rgba(210,220,235,.22),transparent 70%),
+    linear-gradient(115deg,transparent 55%,rgba(120,130,145,.16) 62%,rgba(90,100,115,.22) 72%,transparent 80%);
+  filter:blur(14px);
+  pointer-events:none;
+}
+
+/* Игровой чат с РП-отыгровками и логом изъятия (слева сверху) */
+#rpChat{
+  position:fixed;
+  top:16px;
+  left:18px;
+  width:560px;
+  max-width:calc(100vw - 36px);
+  z-index:500;
+  pointer-events:none;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.chat-box{
+  background:rgba(8,11,16,.72);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.09);
+  border-left:3px solid var(--acc);
+  border-radius:12px;
+  padding:10px 14px;
+  box-shadow:0 12px 32px rgba(0,0,0,.55);
+  pointer-events:auto;
+  max-height:215px;
+  overflow-y:auto;
+}
+.chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:6px}
+.chat-line{font-size:12.5px;line-height:1.5;margin-bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.9);animation:fadeL .22s}
+@keyframes fadeL{from{opacity:0;transform:translateX(-8px)}}
+.chat-line.me{color:#e879f9;font-weight:600}
+.chat-line.do{color:#c084fc;font-style:italic}
+.chat-line.sys{color:#fbbf24;font-weight:800;background:rgba(245,158,11,.12);border-left:2px solid #f59e0b;padding:3px 8px;border-radius:5px}
+.chat-line.info{color:#93c5fd}
+.chat-line.err{color:#f87171}
+
+/* Верхняя панель управления демо */
+#demoTopCtl{
+  position:fixed;
+  top:16px;
+  right:18px;
+  z-index:520;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.d-btn{
+  background:rgba(18,24,36,.88);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  transition:.18s;
+  box-shadow:0 6px 20px rgba(0,0,0,.45);
+}
+.d-btn:hover{border-color:var(--acc);background:rgba(59,130,246,.22)}
+.d-btn.active{background:linear-gradient(135deg,#2563eb,#4f46e5);border-color:#93c5fd}
+
+/* Радар (мини-карта слева внизу как на скрине 1) */
+.minimap{
+  position:fixed;
+  left:26px;
+  bottom:26px;
+  width:136px;
+  height:136px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.22);
+  background:radial-gradient(circle at 45% 45%,#2c3b33 0%,#1a241f 65%,#111715 100%);
+  box-shadow:0 12px 35px rgba(0,0,0,.65);
+  overflow:hidden;
+  z-index:20;
+}
+.minimap::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(65deg,transparent 42%,rgba(255,255,255,.18) 46%,rgba(255,255,255,.18) 52%,transparent 56%);
+}
+.mm-dot{position:absolute;left:50%;top:50%;width:10px;height:10px;background:#3b82f6;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px #3b82f6}
+
+/* ================= РАДИАЛЬНОЕ МЕНЮ (СКРИНШОТ 1) ================= */
+#radialWrap{
+  position:relative;
+  width:420px;
+  height:420px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  animation:popIn .24s cubic-bezier(.2,1,.3,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.86)}}
+.radial-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 22px 50px rgba(0,0,0,.75))}
+.r-sector{
+  fill:rgba(20,23,28,.88);
+  stroke:rgba(255,255,255,.08);
+  stroke-width:1.5;
+  cursor:pointer;
+  transition:fill .18s,transform .18s;
+}
+.r-sector:hover,.r-sector.highlight{
+  fill:rgba(45,52,66,.95);
+  stroke:rgba(96,165,250,.55);
+}
+.r-sector.fac-sec{
+  fill:rgba(30,41,68,.92);
+  stroke:rgba(96,165,250,.45);
+}
+.r-sector.fac-sec:hover{
+  fill:rgba(37,99,235,.85);
+  stroke:#93c5fd;
+}
+
+.radial-center{
+  position:absolute;
+  width:156px;
+  height:156px;
+  border-radius:50%;
+  background:radial-gradient(circle,#1c2026 0%,#121519 100%);
+  border:2px solid rgba(148,163,184,.28);
+  box-shadow:inset 0 2px 10px rgba(0,0,0,.85),0 0 25px rgba(0,0,0,.6);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:14px;
+  cursor:pointer;
+  transition:.18s;
+}
+.radial-center:hover{border-color:rgba(96,165,250,.6)}
+.rc-ic{font-size:26px;margin-bottom:4px}
+.rc-title{font-weight:800;font-size:13px;color:#fff;line-height:1.25}
+.rc-sub{font-size:10.5px;color:var(--mut);margin-top:4px}
+
+.r-labels{position:absolute;inset:0;pointer-events:none}
+.r-lbl{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  text-align:center;
+  width:95px;
+}
+.r-lbl .ic{font-size:22px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+.r-lbl .nm{font-size:11px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.9);line-height:1.15}
+.r-lbl .bdg{background:#ef4444;color:#fff;font-size:9px;font-weight:900;padding:1px 5px;border-radius:6px;margin-top:-2px}
+
+/* ================= ОКНО ИНВЕНТАРЯ ПРИ ОБЫСКЕ (СКРИНШОТ 2) ================= */
+#invOverlay{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  background:radial-gradient(1200px 700px at 50% 45%,rgba(22,25,32,.96),rgba(10,12,16,.99));
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:20px 28px;
+  animation:fadeIn .2s;
+}
+@keyframes fadeIn{from{opacity:0}}
+
+.inv-container{
+  width:100%;
+  max-width:1320px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+/* Шапка инвентаря */
+.inv-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding-bottom:6px;
+}
+.inv-h1{font-size:24px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:#fff}
+.inv-player-row{display:flex;align-items:center;gap:28px;margin-top:4px;font-size:14.5px;color:#9ca3af;font-weight:600}
+.inv-money{color:#9ca3af;font-weight:700}
+.inv-esc{display:flex;align-items:center;gap:10px;color:#d1d5db;font-size:12.5px;font-weight:700;cursor:pointer}
+.inv-esc kbd{background:#262930;border:1px solid rgba(255,255,255,.15);padding:5px 10px;border-radius:6px;font-family:inherit;font-weight:800;color:#fff}
+.inv-esc:hover kbd{background:#ef4444;border-color:#f87171}
+
+/* Трёхколоночная сетка инвентаря как на скриншоте 2 */
+.inv-grid-layout{
+  display:grid;
+  grid-template-columns:340px 440px 360px;
+  justify-content:space-between;
+  gap:28px;
+  align-items:start;
+}
+
+.inv-col-bar{
+  height:42px;
+  background:#22252b;
+  border-radius:8px;
+  padding:0 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-weight:800;
+  font-size:13.5px;
+  color:#e5e7eb;
+  margin-bottom:14px;
+}
+.inv-col-bar .bar-left{display:flex;align-items:center;gap:10px}
+.inv-col-bar .bar-tools{display:flex;gap:6px}
+.bar-tool{width:28px;height:28px;border-radius:6px;background:#2f333b;border:none;color:#cbd5e1;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.bar-tool:hover{background:#3f4450;color:#fff}
+
+/* Левая колонка: Персонаж */
+.char-area{
+  display:grid;
+  grid-template-columns:76px 1fr 76px;
+  gap:14px;
+  align-items:start;
+}
+.char-col{display:flex;flex-direction:column;gap:10px}
+.char-col-lbl{font-size:11px;color:var(--mut);font-weight:600;margin-bottom:2px}
+.char-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding-top:22px}
+
+.stat-ring{
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  font-weight:800;
+  font-size:11.5px;
+  position:relative;
+  background:#1b1e24;
+}
+.stat-ring.hp{border:4px solid #ef4444;box-shadow:inset 0 0 14px rgba(239,68,68,.25)}
+.stat-ring.food{border:4px solid #eab308;box-shadow:inset 0 0 14px rgba(234,179,8,.25)}
+.stat-ring.armor{border:4px solid #374151;color:#6b7280}
+.stat-ring i{font-style:normal;font-size:20px}
+
+.quick-wrap{margin-top:20px}
+.quick-head{font-size:12px;color:#9ca3af;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.quick-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+
+/* Универсальная ячейка (слот) */
+.islot{
+  aspect-ratio:1/1;
+  background:var(--slot);
+  border:1px solid var(--slot-line);
+  border-radius:7px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.islot:hover{background:var(--slot-hover);border-color:rgba(255,255,255,.2)}
+.islot.selected{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.3)}
+.islot.illegal{
+  background:linear-gradient(145deg,rgba(239,68,68,.16),rgba(38,41,48,.95));
+  border-color:rgba(239,68,68,.45);
+}
+.islot.illegal:hover{
+  background:linear-gradient(145deg,rgba(239,68,68,.28),rgba(50,54,64,.98));
+  border-color:#f87171;
+  box-shadow:0 0 16px rgba(239,68,68,.35);
+}
+.islot .s-ic{font-size:30px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));transition:transform .15s}
+.islot:hover .s-ic{transform:scale(1.08)}
+.islot .s-qty{position:absolute;right:6px;bottom:4px;font-size:10.5px;font-weight:800;color:#d1d5db}
+.islot .s-num{position:absolute;left:6px;top:4px;font-size:10px;color:#6b7280;font-weight:700}
+.islot .s-plus{font-size:22px;color:#4b5563;font-weight:300}
+.islot .s-ill-dot{position:absolute;left:6px;top:6px;width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444}
+
+/* Центральная колонка: Сетка Инвентаря 5x3 и Рюкзака 5x2 */
+.inv-slots-5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.bp-title{font-size:13.5px;font-weight:800;color:#e5e7eb;margin:16px 0 10px;display:flex;align-items:center;gap:8px}
+.weight-bar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px;color:#9ca3af;font-weight:700}
+.weight-bar b{color:#fff}
+
+/* Правая колонка: Окружение / Изъятое при обыске 4x5 */
+.env-slots-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+/* Всплывающее окно предмета (Tooltip как на скриншоте 2 с Барсеткой Lacoste) */
+#itemPopover{
+  position:fixed;
+  z-index:650;
+  width:235px;
+  background:#2b2f38;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:10px;
+  padding:14px;
+  box-shadow:0 22px 55px rgba(0,0,0,.85);
+  display:none;
+  animation:fadeIn .14s;
+}
+.ip-title{font-weight:800;font-size:13.5px;color:#fff;margin-bottom:10px}
+.ip-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#d1d5db;margin-bottom:6px;font-weight:600}
+.ip-desc{font-size:11px;color:#9ca3af;line-height:1.45;margin:8px 0 10px}
+.ip-tag{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10.5px;font-weight:800;background:#d97706;color:#fff}
+.ip-tag.illegal{background:#dc2626}
+.ip-seize-btn{
+  margin-top:10px;
+  width:100%;
+  padding:9px 12px;
+  border-radius:8px;
+  border:1px solid #f87171;
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  color:#fff;
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  transition:.15s;
+  box-shadow:0 6px 18px rgba(220,38,38,.4);
+}
+.ip-seize-btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.ip-legal-note{margin-top:8px;font-size:10.5px;color:#9ca3af;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1)}
+
+@media(max-width:1180px){
+  #invOverlay{overflow-y:auto;justify-content:flex-start}
+  .inv-grid-layout{grid-template-columns:1fr;max-width:460px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+
+<!-- Игровой чат с наглядными РП-отыгровками и логом изъятия -->
+<div id="rpChat">
+  <div class="chat-box" id="chatBox">
+    <div class="chat-hdr">
+      <span>💬 Игровой чат (РП-отыгровки и лог обыска)</span>
+      <span style="color:#6ee7b7">● Онлайн</span>
+    </div>
+    <div id="chatMessages">
+      <div class="chat-line info">[Подсказка] Нажмите на сектор «🛡️ Фракционное» в радиальном меню, а затем выберите «🔍 Обыск».</div>
+    </div>
+  </div>
+</div>
+
+<!-- Кнопки быстрого переключения вида справа сверху -->
+<div id="demoTopCtl">
+  <button class="d-btn active" id="btnViewRadial" onclick="switchScene('radial')">🎡 Радиальное меню</button>
+  <button class="d-btn" id="btnViewInv" onclick="openFriskInventory()">🎒 Инвентарь обыска</button>
+  <button class="d-btn" onclick="resetDemo()">🔄 Сбросить предметы</button>
+</div>
+
+<div id="gameScene">
+  <div class="road-bg"></div>
+
+  <!-- РАДИАЛЬНОЕ МЕНЮ (СКРИНШОТ 1) -->
+  <div id="radialWrap">
+    <svg class="radial-svg" viewBox="0 0 400 400" id="radialSvg"></svg>
+    <div class="r-labels" id="radialLabels"></div>
+    <div class="radial-center" id="radialCenter" onclick="onRadialCenterClick()">
+      <div class="rc-ic" id="rcIcon">🎡</div>
+      <div class="rc-title" id="rcTitle">Взаимодействие</div>
+      <div class="rc-sub" id="rcSub">Гражданин: Sergey_Vorovskoy</div>
+    </div>
+  </div>
+
+  <div class="minimap"><div class="mm-dot"></div></div>
+</div>
+
+<!-- ИНТЕРФЕЙС ИНВЕНТАРЯ ПРИ ОБЫСКЕ (СКРИНШОТ 2) -->
+<div id="invOverlay">
+  <div class="inv-container">
+    <div class="inv-top">
+      <div>
+        <div class="inv-h1">ИНВЕНТАРЬ (ДОСМОТР ГРАЖДАНИНА)</div>
+        <div class="inv-player-row">
+          <span>Sergey_Vorovskoy</span>
+          <span class="inv-money">25 110 ₽</span>
+          <span style="font-size:12px;color:#f87171;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);padding:3px 10px;border-radius:8px;font-weight:800">
+            👮 Обыск проводит: Капитан Евгений Холмс · Кликните на нелегальный предмет (выделен красным), чтобы изъять
+          </span>
+        </div>
+      </div>
+      <div class="inv-esc" onclick="switchScene('radial')">
+        <span>Выйти в радиальное меню</span>
+        <kbd>ESC</kbd>
+      </div>
+    </div>
+
+    <div class="inv-grid-layout">
+      <!-- КОЛОНКА 1: ПЕРСОНАЖ -->
+      <div>
+        <div class="inv-col-bar">
+          <div class="bar-left"><span>👤</span><span>Персонаж</span></div>
+        </div>
+        <div class="char-area">
+          <div class="char-col">
+            <div class="char-col-lbl">Аксессуары</div>
+            <div class="islot" title="Панама белая"><span class="s-ic">👒</span></div>
+            <div class="islot" title="Очки"><span class="s-ic" style="opacity:.2">🕶️</span></div>
+            <div class="islot" title="Аксессуар на шею"><span class="s-ic" style="opacity:.2">🧣</span></div>
+            <div class="islot" title="Зонт"><span class="s-ic" style="opacity:.2">☂️</span></div>
+          </div>
+
+          <div class="char-mid">
+            <div class="stat-ring hp"><i>❤️</i><span>100%</span></div>
+            <div class="stat-ring food"><i>🍗</i><span>100%</span></div>
+            <div class="stat-ring armor"><i>🦺</i><span>0%</span></div>
+          </div>
+
+          <div class="char-col">
+            <div class="char-col-lbl">Руки</div>
+            <div class="islot"><span class="s-ic" style="opacity:.2">🧤</span></div>
+            <div class="char-col-lbl" style="margin-top:36px">Основное</div>
+            <div class="islot" title="Деловой костюм"><span class="s-ic">👔</span></div>
+            <div class="islot" title="Кожаный рюкзак"><span class="s-ic">🎒</span></div>
+          </div>
+        </div>
+
+        <div class="quick-wrap">
+          <div class="quick-head"><span>⊞</span><span>Быстрый доступ</span></div>
+          <div class="quick-grid">
+            <div class="islot"><span class="s-num">1</span><span class="s-plus">+</span></div>
+            <div class="islot"><span class="s-num">2</span><span class="s-plus">+</span></div>
+            <div class="islot"><span class="s-num">3</span><span class="s-plus">+</span></div>
+            <div class="islot"><span class="s-num">4</span><span class="s-plus">+</span></div>
+            <div class="islot"><span class="s-num">5</span><span class="s-plus">+</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- КОЛОНКА 2: ИНВЕНТАРЬ И РЮКЗАК -->
+      <div>
+        <div class="inv-col-bar">
+          <div class="bar-left"><span>📦</span><span>Инвентарь</span></div>
+          <div class="bar-tools">
+            <button class="bar-tool" title="Сортировка">⇅</button>
+            <button class="bar-tool" title="Компактный вид">⊞</button>
+          </div>
+        </div>
+        <div class="inv-slots-5" id="mainInvGrid"></div>
+
+        <div class="bp-title"><span>🎒</span><span>Рюкзак</span></div>
+        <div class="inv-slots-5" id="backpackGrid"></div>
+
+        <div class="weight-bar">
+          <span>Общий вес</span>
+          <b id="totalWeightTxt">19.527 кг</b>
+        </div>
+      </div>
+
+      <!-- КОЛОНКА 3: ОКРУЖЕНИЕ / ИЗЪЯТОЕ ПРИ ОБЫСКЕ -->
+      <div>
+        <div class="inv-col-bar">
+          <div class="bar-left"><span>🔍</span><span>Изъятое при обыске (Улики)</span></div>
+        </div>
+        <div class="env-slots-4" id="seizedGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Всплывающая карточка предмета при клике (как на скрине с Барсеткой Lacoste) -->
+<div id="itemPopover"></div>
+
+<script>
+/* ===================== ДАННЫЕ РАДИАЛЬНОГО МЕНЮ ===================== */
+var OFFICER_NAME = 'Капитан Евгений Холмс';
+var SUSPECT_NAME = 'Sergey_Vorovskoy';
+var RADIAL_LEVEL = 'root'; // 'root' или 'faction'
+
+/* Основное радиальное меню (8 секторов, как на скриншоте 1) */
+var ROOT_SECTORS = [
+  { id: 'docs',    ic: '🪪', name: 'Документы',     badge: '' },
+  { id: 'faction', ic: '🛡️', name: 'Фракционное',   badge: 'МВД', isFac: true },
+  { id: 'car',     ic: '🚕', name: 'Транспорт',     badge: '' },
+  { id: 'trade',   ic: '🤝', name: 'Пожать руку',   badge: '' },
+  { id: 'money',   ic: '💵', name: 'Передать деньги',badge: '' },
+  { id: 'anim',    ic: '🕺', name: 'Анимации',      badge: '' },
+  { id: 'med',     ic: '🩹', name: 'Первая помощь', badge: '' },
+  { id: 'other',   ic: '⚙️', name: 'Прочее',        badge: '' }
+];
+
+/* Подменю при клике на «Фракционное» */
+var FACTION_SECTORS = [
+  { id: 'frisk',   ic: '🔍', name: 'Обыск',          badge: 'Инвентарь', isFac: true },
+  { id: 'cuffs',   ic: '⛓️', name: 'Наручники',      badge: '' },
+  { id: 'escort',  ic: '🚶', name: 'Вести за собой', badge: '' },
+  { id: 'putcar',  ic: '🚔', name: 'Посадить в авто',badge: '' },
+  { id: 'idcard',  ic: '🪪', name: 'Удостоверение',  badge: '' },
+  { id: 'fine',    ic: '💸', name: 'Выписать штраф', badge: '' },
+  { id: 'wanted',  ic: '🚨', name: 'Розыск / КПЗ',   badge: '' },
+  { id: 'back',    ic: '↩️', name: 'Назад',          badge: '' }
+];
+
+/* Построение SVG-секторов кругового меню */
+function polarToCartesian(cx, cy, r, angleDeg) {
+  var rad = (angleDeg - 90) * Math.PI / 180.0;
+  return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
+}
+
+function sectorPath(cx, cy, rIn, rOut, startAngle, endAngle) {
+  var p1 = polarToCartesian(cx, cy, rOut, endAngle);
+  var p2 = polarToCartesian(cx, cy, rOut, startAngle);
+  var p3 = polarToCartesian(cx, cy, rIn, startAngle);
+  var p4 = polarToCartesian(cx, cy, rIn, endAngle);
+  var largeArc = (endAngle - startAngle <= 180) ? '0' : '1';
+  return [
+    'M', p1.x, p1.y,
+    'A', rOut, rOut, 0, largeArc, 0, p2.x, p2.y,
+    'L', p3.x, p3.y,
+    'A', rIn, rIn, 0, largeArc, 1, p4.x, p4.y,
+    'Z'
+  ].join(' ');
+}
+
+function renderRadialMenu() {
+  var list = (RADIAL_LEVEL === 'root') ? ROOT_SECTORS : FACTION_SECTORS;
+  var svg = document.getElementById('radialSvg');
+  var lbls = document.getElementById('radialLabels');
+  var n = list.length;
+  var step = 360 / n;
+  var gap = 2.2;
+  var svgHtml = '', lblHtml = '';
+
+  for (var i = 0; i < n; i++) {
+    var it = list[i];
+    var a1 = i * step - step / 2 + gap / 2;
+    var a2 = (i + 1) * step - step / 2 - gap / 2;
+    var d = sectorPath(200, 200, 86, 186, a1, a2);
+    var cls = 'r-sector' + (it.isFac ? ' fac-sec' : '');
+    svgHtml += '<path class="' + cls + '" d="' + d + '" onclick="onSectorClick(\'' + it.id + '\')" onmouseenter="hoverSector(\'' + it.name + '\',\'' + it.ic + '\')"></path>';
+
+    var midAngle = i * step;
+    var pos = polarToCartesian(210, 210, 142, midAngle);
+    lblHtml += '<div class="r-lbl" style="left:' + pos.x + 'px;top:' + pos.y + 'px">' +
+      '<span class="ic">' + it.ic + '</span>' +
+      '<span class="nm">' + it.name + '</span>' +
+      (it.badge ? '<span class="bdg">' + it.badge + '</span>' : '') +
+    '</div>';
+  }
+  svg.innerHTML = svgHtml;
+  lbls.innerHTML = lblHtml;
+
+  document.getElementById('rcIcon').textContent = (RADIAL_LEVEL === 'root') ? '🎡' : '🛡️';
+  document.getElementById('rcTitle').textContent = (RADIAL_LEVEL === 'root') ? 'Меню взаимодействия' : 'МВД · Фракционное';
+  document.getElementById('rcSub').textContent = (RADIAL_LEVEL === 'root') ? 'Нажмите «Фракционное»' : 'Выберите «Обыск»';
+}
+
+window.hoverSector = function(name, ic) {
+  document.getElementById('rcIcon').textContent = ic;
+  document.getElementById('rcTitle').textContent = name;
+};
+
+window.onRadialCenterClick = function() {
+  if (RADIAL_LEVEL === 'faction') {
+    RADIAL_LEVEL = 'root';
+    renderRadialMenu();
+  }
+};
+
+window.onSectorClick = function(id) {
+  if (id === 'faction') {
+    RADIAL_LEVEL = 'faction';
+    renderRadialMenu();
+    addChat('info', '[Радиальное меню] Открыта категория «Фракционное (МВД)». Выберите действие «Обыск».');
+    return;
+  }
+  if (id === 'back') {
+    RADIAL_LEVEL = 'root';
+    renderRadialMenu();
+    return;
+  }
+  if (id === 'frisk') {
+    addChat('me', '* ' + OFFICER_NAME + ' надел тактические перчатки и начал поверхностный обыск гражданина ' + SUSPECT_NAME);
+    openFriskInventory();
+    return;
+  }
+  if (id === 'idcard') {
+    addChat('me', '* ' + OFFICER_NAME + ' достал служебное удостоверение МВД из нагрудного кармана и предъявил его в развёрнутом виде');
+    addChat('do', 'В удостоверении: «УМВД г. Приволжск · Капитан, оперуполномоченный Евгений Холмс».');
+    return;
+  }
+  if (id === 'cuffs') {
+    addChat('me', '* ' + OFFICER_NAME + ' снял наручники БРС-3 с пояса и защёлкнул их на запястьях ' + SUSPECT_NAME);
+    return;
+  }
+  addChat('info', '[Действие] Выбрана функция «' + id + '». Для проверки досмотра нажмите «Фракционное» → «Обыск».');
+};
+
+/* ===================== ДАННЫЕ ИНВЕНТАРЯ И СИСТЕМЫ ИЗЪЯТИЯ ===================== */
+var INITIAL_MAIN_ITEMS = [
+  { slot: 0,  ic: '👒', name: 'Панама летняя',           cat: 'Головной убор', qty: 1,  w: 0.15, desc: 'Лёгкая панама от солнца.', tag: 'Лето 2026', illegal: false },
+  { slot: 1,  ic: '🎽', name: 'Майка белая',             cat: 'Одежда',        qty: 1,  w: 0.20, desc: 'Повседневная хлопковая майка.', tag: 'Базовый гардероб', illegal: false },
+  { slot: 2,  ic: '👕', name: 'Комплект одежды',         cat: 'Одежда',        qty: 1,  w: 0.85, desc: 'Футболка и шорты для отдыха.', tag: 'Стиль', illegal: false },
+  { slot: 3,  ic: '🕵️', name: 'Шляпа охотника',          cat: 'Головной убор', qty: 1,  w: 0.25, desc: 'Камуфляжная панама.', tag: 'Охота', illegal: false },
+  { slot: 4,  ic: '🔫', name: 'Пистолет ТТ (Нелегал)',   cat: 'Нелегальное оружие', qty: 1, w: 0.85, desc: 'Боевой пистолет со стёртым серийным номером. Запрещён к гражданскому обороту.', tag: 'Запрещено УК', illegal: true },
+  { slot: 5,  ic: '🎄', name: 'Сувенирная ёлка',         cat: 'Сувенир',       qty: 1,  w: 0.40, desc: 'Праздничное настольное украшение.', tag: 'Зима', illegal: false },
+  { slot: 7,  ic: '⛱️', name: 'Зонт красный',            cat: 'Аксессуар',     qty: 1,  w: 0.45, desc: 'Складной зонт от дождя.', tag: 'Аксессуар', illegal: false },
+  { slot: 8,  ic: '🔺', name: 'Знак аварийной остановки',cat: 'Автотовары',    qty: 1,  w: 0.60, desc: 'Обязательный атрибут водителя.', tag: 'ПДД', illegal: false },
+  { slot: 9,  ic: '🍊', name: 'Мандарины',               cat: 'Еда',           qty: 2,  w: 0.30, desc: 'Восстанавливает сытость персонажа.', tag: 'Продукты', illegal: false },
+  { slot: 10, ic: '🧰', name: 'Аптечка первой помощи',   cat: 'Медицина',      qty: 4,  w: 1.20, desc: 'Набор для оказания первой медицинской помощи.', tag: 'Медицина', illegal: false },
+  { slot: 11, ic: '🔩', name: 'Патроны 9×19 мм',         cat: 'Нелегальные боеприпасы', qty: 45, w: 0.54, desc: 'Боевые патроны без разрешения на хранение.', tag: 'Запрещено УК', illegal: true },
+  { slot: 12, ic: '🛠️', name: 'Ящик с инструментами',    cat: 'Инструменты',   qty: 1,  w: 4.50, desc: 'Ремонтный комплект для транспорта.', tag: 'Механика', illegal: false },
+  { slot: 14, ic: '🌿', name: 'Свёрток с веществами',    cat: 'Наркотические средства', qty: 3, w: 0.30, desc: 'Подозрительный зип-пакет с запрещённым веществом.', tag: 'Запрещено УК', illegal: true }
+];
+
+var INITIAL_BP_ITEMS = [
+  { slot: 0, ic: '📻', name: 'Решётка радиатора',        cat: 'Автозапчасти',  qty: 1,  w: 2.10, desc: 'Деталь кузова автомобиля.', tag: 'Тюнинг', illegal: false },
+  { slot: 1, ic: '👜', name: 'Барсетка «Lacoste»',       cat: 'Рюкзак',        qty: 1,  w: 0.35, desc: 'Организовывай и стилизуй, мода циклична.', tag: 'Осень 2023', illegal: false },
+  { slot: 2, ic: '🎸', name: 'Акустическая гитара',      cat: 'Инструмент',    qty: 1,  w: 1.80, desc: 'Шестиструнная гитара.', tag: 'Творчество', illegal: false },
+  { slot: 3, ic: '🔫', name: 'Автомат АК-47У',           cat: 'Нелегальное оружие', qty: 1, w: 3.10, desc: 'Укороченный боевой автомат со спиленным номером.', tag: 'Особо опасный нелегал', illegal: true },
+  { slot: 4, ic: '🧢', name: 'Кепка чёрная',             cat: 'Головной убор', qty: 1,  w: 0.12, desc: 'Спортивная бейсболка.', tag: 'Стиль', illegal: false },
+  { slot: 5, ic: '🎣', name: 'Рыболовная удочка',        cat: 'Рыбалка',       qty: 1,  w: 0.90, desc: 'Спиннинг для ловли рыбы.', tag: 'Хобби', illegal: false },
+  { slot: 6, ic: '🗝️', name: 'Набор отмычек для авто',   cat: 'Нелегальный инструмент', qty: 2, w: 0.25, desc: 'Специальные приспособления для вскрытия замков ТС.', tag: 'Запрещено УК', illegal: true },
+  { slot: 8, ic: '📄', name: 'Пачка чертежей',           cat: 'Документы',     qty: 1,  w: 0.10, desc: 'Бумажные схемы.', tag: 'Разное', illegal: false },
+  { slot: 9, ic: '⛺', name: 'Туристическая палатка',    cat: 'Кемпинг',       qty: 1,  w: 1.50, desc: 'Двухместная походная палатка.', tag: 'Отдых', illegal: false }
+];
+
+var MAIN_ITEMS = [], BP_ITEMS = [], SEIZED_ITEMS = [];
+var activePopItem = null;
+
+function cloneArr(a) { return JSON.parse(JSON.stringify(a)); }
+
+function resetDemo() {
+  MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
+  BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
+  SEIZED_ITEMS = [];
+  closePopover();
+  renderInventoryGrids();
+  addChat('info', '[Система] Инвентарь игрока ' + SUSPECT_NAME + ' восстановлен для повторной демонстрации обыска.');
+}
+
+function findItem(source, slot) {
+  var arr = (source === 'main') ? MAIN_ITEMS : (source === 'bp' ? BP_ITEMS : SEIZED_ITEMS);
+  for (var i = 0; i < arr.length; i++) if (arr[i].slot === slot) return arr[i];
+  return null;
+}
+
+function renderInventoryGrids() {
+  /* Основной инвентарь: 15 слотов (5x3) */
+  var mHtml = '';
+  for (var i = 0; i < 15; i++) {
+    var it = findItem('main', i);
+    mHtml += slotHtml('main', i, it);
+  }
+  document.getElementById('mainInvGrid').innerHTML = mHtml;
+
+  /* Рюкзак: 10 слотов (5x2) */
+  var bHtml = '';
+  for (var j = 0; j < 10; j++) {
+    var it2 = findItem('bp', j);
+    bHtml += slotHtml('bp', j, it2);
+  }
+  document.getElementById('backpackGrid').innerHTML = bHtml;
+
+  /* Изъятое при обыске: 20 слотов (4x5) */
+  var sHtml = '';
+  for (var k = 0; k < 20; k++) {
+    var it3 = SEIZED_ITEMS[k] || null;
+    sHtml += slotHtml('seized', k, it3);
+  }
+  document.getElementById('seizedGrid').innerHTML = sHtml;
+
+  /* Пересчёт общего веса */
+  var totalW = 0;
+  MAIN_ITEMS.concat(BP_ITEMS).forEach(function(x) { totalW += (x.w || 0) * (x.qty || 1); });
+  document.getElementById('totalWeightTxt').textContent = totalW.toFixed(3) + ' кг';
+}
+
+function slotHtml(source, slotIdx, it) {
+  if (!it) return '<div class="islot"></div>';
+  var illCls = (it.illegal && source !== 'seized') ? ' illegal' : '';
+  var dot = (it.illegal && source !== 'seized') ? '<span class="s-ill-dot" title="Нелегальный предмет — подлежит изъятию"></span>' : '';
+  var qty = (it.qty && it.qty > 1) ? '<span class="s-qty">x' + it.qty + '</span>' : '';
+  return '<div class="islot' + illCls + '" onclick="onSlotClick(event,\'' + source + '\',' + slotIdx + ')">' +
+    dot +
+    '<span class="s-ic">' + it.ic + '</span>' +
+    qty +
+  '</div>';
+}
+
+window.onSlotClick = function(ev, source, slotIdx) {
+  ev.stopPropagation();
+  var it = (source === 'seized') ? SEIZED_ITEMS[slotIdx] : findItem(source, slotIdx);
+  if (!it) { closePopover(); return; }
+
+  var pop = document.getElementById('itemPopover');
+  activePopItem = { source: source, slot: slotIdx, item: it };
+
+  var actionHtml = '';
+  if (source === 'seized') {
+    actionHtml = '<div class="ip-legal-note" style="color:#6ee7b7">✓ Предмет уже изъят и приобщён к уликам</div>';
+  } else if (it.illegal) {
+    actionHtml = '<button class="ip-seize-btn" onclick="seizeActiveItem()">⚠️ Изъять предмет (' + it.qty + ' шт.)</button>';
+  } else {
+    /* По вашему условию: если кликнуть на обычный предмет — ничего не происходит (изъять нельзя) */
+    actionHtml = '<div class="ip-legal-note">Легальный личный предмет гражданина — изъятию при обыске не подлежит.</div>';
+  }
+
+  pop.innerHTML =
+    '<div class="ip-title">' + it.name + '</div>' +
+    '<div class="ip-row"><span>📦</span><span>' + it.cat + '</span></div>' +
+    '<div class="ip-row"><span>🔢</span><span>Количество: ' + it.qty + ' шт.</span></div>' +
+    '<div class="ip-row"><span>⚖️</span><span>' + (it.w * it.qty).toFixed(2) + ' кг</span></div>' +
+    '<div class="ip-desc">' + it.desc + '</div>' +
+    '<span class="ip-tag' + (it.illegal ? ' illegal' : '') + '">' + it.tag + '</span>' +
+    actionHtml;
+
+  pop.style.display = 'block';
+  var rect = ev.currentTarget.getBoundingClientRect();
+  var left = Math.min(window.innerWidth - 250, rect.left + 20);
+  var top = Math.min(window.innerHeight - 260, rect.top + 20);
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+};
+
+window.seizeActiveItem = function() {
+  if (!activePopItem || !activePopItem.item) return;
+  var src = activePopItem.source;
+  var sl = activePopItem.slot;
+  var it = activePopItem.item;
+  if (!it.illegal || src === 'seized') return;
+
+  if (src === 'main') {
+    MAIN_ITEMS = MAIN_ITEMS.filter(function(x) { return x.slot !== sl; });
+  } else if (src === 'bp') {
+    BP_ITEMS = BP_ITEMS.filter(function(x) { return x.slot !== sl; });
+  }
+  SEIZED_ITEMS.push(it);
+  closePopover();
+  renderInventoryGrids();
+
+  /* Наглядная РП-отыгровка + системное сообщение в чате об изъятии */
+  addChat('me', '* ' + OFFICER_NAME + ' обнаружил при обыске «' + it.name + '», аккуратно изъял и упаковал в герметичный зип-пакет для улик');
+  addChat('do', 'Изъятый предмет «' + it.name + '» (' + it.qty + ' шт.) опечатан и убран в служебный подсумок.');
+  addChat('sys', '[Обыск] ' + OFFICER_NAME + ' изъял предмет «' + it.name + '» в количестве ' + it.qty + ' шт. у игрока ' + SUSPECT_NAME);
+};
+
+function closePopover() {
+  var pop = document.getElementById('itemPopover');
+  if (pop) pop.style.display = 'none';
+  activePopItem = null;
+}
+
+document.addEventListener('click', function(ev) {
+  if (!ev.target.closest('#itemPopover') && !ev.target.closest('.islot')) {
+    closePopover();
+  }
+});
+
+function addChat(cls, txt) {
+  var box = document.getElementById('chatMessages');
+  var d = document.createElement('div');
+  d.className = 'chat-line ' + cls;
+  d.textContent = txt;
+  box.appendChild(d);
+  var wrap = document.getElementById('chatBox');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+window.openFriskInventory = function() {
+  document.getElementById('invOverlay').style.display = 'flex';
+  document.getElementById('btnViewRadial').classList.remove('active');
+  document.getElementById('btnViewInv').classList.add('active');
+  renderInventoryGrids();
+};
+
+window.switchScene = function(sc) {
+  closePopover();
+  if (sc === 'radial') {
+    document.getElementById('invOverlay').style.display = 'none';
+    document.getElementById('btnViewRadial').classList.add('active');
+    document.getElementById('btnViewInv').classList.remove('active');
+  } else {
+    openFriskInventory();
+  }
+};
+
+document.addEventListener('keydown', function(ev) {
+  if (ev.key === 'Escape') switchScene('radial');
+});
+
+/* Инициализация */
+MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
+BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
+renderRadialMenu();
+renderInventoryGrids();
+</script>
+</body>
+</html>
