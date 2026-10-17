@@ -2016,15 +2016,103 @@ function mFoot(e){
  return '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button>'+act+'</div>';
 }
 
-/* ============ ТЕЛЕФОН ============ */
+/* ============ ТЕЛЕФОН И СИСТЕМА УВЕДОМЛЕНИЙ (ГИБДД МВД / МВД) ============ */
 var PHSCR='home';
+var PHONE_NOTIFS=[
+ {ch:'gibdd',sender:'ГИБДД МВД',ic:'🚓',time:'14:22',title:'Городская камера фотовидеофиксации',txt:'Выписан штраф городской камерой за превышение скорости на 14 км/ч в размере 500 ₽ (ст. 12.9 КоАП).'},
+ {ch:'gibdd',sender:'ГИБДД МВД',ic:'🚓',time:'13:05',title:'Постановление инспектора ДПС',txt:'Выписан штраф за управление ТС с нечитаемыми номерами (ст. 12.2 КоАП) в размере 2 000 ₽. Выписал сотрудник: Мельников Григорий.'},
+ {ch:'mvd',sender:'МВД',ic:'🛡️',time:'11:40',title:'Постановление сотрудника МВД',txt:'Выписан штраф за нарушение общественного порядка (ст. 20.1 КоАП) в размере 3 000 ₽. Выписал сотрудник: Гусев Владислав.'}
+];
+
+function showPhoneBanner(ch,title,txt){
+ var sender=(ch==='gibdd')?'ГИБДД МВД':'МВД';
+ var ic=(ch==='gibdd')?'🚓':'🛡️';
+ var col=(ch==='gibdd')?'#38bdf8':'#f59e0b';
+ PHONE_NOTIFS.unshift({ch:ch,sender:sender,ic:ic,time:nowT(),title:title,txt:txt});
+ if(PHSCR==='sms')phRender();
+
+ var root=document.getElementById('phPushRoot');
+ if(!root){
+  root=document.createElement('div');
+  root.id='phPushRoot';
+  root.style.cssText='position:fixed;top:18px;right:18px;z-index:980;display:flex;flex-direction:column;gap:10px;width:360px;max-width:calc(100vw - 28px)';
+  document.body.appendChild(root);
+ }
+ var card=document.createElement('div');
+ card.style.cssText='background:linear-gradient(155deg,rgba(20,27,42,.97),rgba(12,16,25,.98));backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);border-left:4px solid '+col+';border-radius:18px;padding:14px 16px;box-shadow:0 20px 50px rgba(0,0,0,.7);animation:up .28s';
+ card.innerHTML=
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+   '<b style="font-size:11.5px;letter-spacing:.7px;text-transform:uppercase;color:'+col+'">'+ic+' '+sender+' · Уведомление телефона</b>'+
+   '<span style="font-size:11px;color:#8b95a7">'+nowT()+' <button onclick="this.closest(\'div\').parentNode.remove()" style="background:none;border:none;color:#8b95a7;cursor:pointer;margin-left:6px">✕</button></span>'+
+  '</div>'+
+  '<div style="font-weight:800;font-size:13.5px;color:#fff;margin-bottom:4px">'+esc(title)+'</div>'+
+  '<div style="font-size:12.5px;line-height:1.5;color:#d1d9e8">'+txt+'</div>';
+ root.prepend(card);
+ setTimeout(function(){if(card&&card.parentNode)card.remove()},8000);
+}
+
+window.simPush=function(kind){
+ if(kind==='gibdd_cam'){
+  var km=[10,15,22,34][Math.floor(Math.random()*4)];
+  var sum=km>20?1000:500;
+  showPhoneBanner('gibdd','Фиксация нарушения ПДД (Камера)','Выписан штраф городской камерой за превышение скорости на <b>'+km+' км/ч</b> в размере <b>'+fmtN(sum)+' ₽</b>.');
+ }else if(kind==='gibdd_emp'){
+  showPhoneBanner('gibdd','Штраф от сотрудника ГИБДД МВД','Выписан штраф за <b>проезд на запрещающий сигнал светофора (ст. 12.12 КоАП)</b> в размере <b>1 500 ₽</b>. Сотрудник: <b>Мельников Григорий</b>.');
+ }else{
+  showPhoneBanner('mvd','Штраф от сотрудника МВД','Выписан штраф за <b>мелкое хулиганство (ст. 20.1 КоАП)</b> в размере <b>2 500 ₽</b>. Сотрудник: <b>Гусев Владислав</b>.');
+ }
+};
+
 function phRender(){
  var scr=$('#phScr');if(!scr){return}
  if(PHSCR==='home'){
-  var apps=[['🛡️',"phGo('mvd')",true],['📞',"toast('Недоступно')"],['💬',"toast('Недоступно')"],['🏦',"toast('Недоступно')"],['🗺️',"toast('Недоступно')"],['📷',"toast('Недоступно')"],['🎵',"toast('Недоступно')"],['⚙️',"toast('Недоступно')"]];
-  scr.innerHTML='<div class="ph-clock" id="phClock2"></div><div class="ph-date" id="phDate"></div>'+'<div class="ph-grid">'+apps.map(function(a){return '<div class="ph-app" onclick="'+a[1]+'"><div class="ph-ic" style="'+(a[2]?'background:linear-gradient(135deg,#33578b,#17304f);border-color:#3d557f':'background:#1c2432;border-color:#2d3849')+'">'+a[0]+(a[2]?'<i class="ph-bdg">3</i>':'')+'</div><span>'+(a[2]?'МВД':'')+'</span></div>'}).join('')+'</div>';
+  var apps=[
+   ['🛡️',"phGo('mvd')",'МВД',3,'background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-color:#60a5fa'],
+   ['🏦',"location.href='bank.html?mode=phone'",'Банк',0,'background:linear-gradient(135deg,#10b981,#047857);border-color:#34d399'],
+   ['🔔',"phGo('sms')",'СМС МВД',PHONE_NOTIFS.length,'background:linear-gradient(135deg,#8b5cf6,#5b21b6);border-color:#a78bfa'],
+   ['🚔',"location.href='garage.html'",'Автопарк',0,'background:linear-gradient(135deg,#f59e0b,#b45309);border-color:#fbbf24'],
+   ['📞',"toast('Звонки в демо-режиме недоступны')",'Вызовы',0,'background:#1c2432;border-color:#2d3849'],
+   ['🗺️',"toast('Навигатор в демо-режиме недоступен')",'Карта',0,'background:#1c2432;border-color:#2d3849'],
+   ['📷',"toast('Камера в демо-режиме недоступна')",'Камера',0,'background:#1c2432;border-color:#2d3849'],
+   ['⚙️',"toast('Настройки телефона')",'Опции',0,'background:#1c2432;border-color:#2d3849']
+  ];
+  scr.innerHTML=
+   '<div class="ph-clock" id="phClock2"></div><div class="ph-date" id="phDate"></div>'+
+   '<div class="ph-grid">'+apps.map(function(a){
+    return '<div class="ph-app" onclick="'+a[1]+'"><div class="ph-ic" style="'+a[4]+'">'+a[0]+(a[3]?'<i class="ph-bdg">'+a[3]+'</i>':'')+'</div><span>'+a[2]+'</span></div>';
+   }).join('')+'</div>'+
+   '<div style="margin-top:26px;padding:12px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)">'+
+    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#8b95a7;font-weight:800;margin-bottom:8px">🔔 Тест уведомлений на экран телефона</div>'+
+    '<div style="display:flex;flex-direction:column;gap:6px">'+
+     '<button class="btn ghost" style="font-size:11.5px;padding:8px 10px;text-align:left;border-color:rgba(56,189,248,.35);color:#7dd3fc" onclick="simPush(\'gibdd_cam\')">🚓 ГИБДД МВД: Штраф с камеры (+10 км/ч)</button>'+
+     '<button class="btn ghost" style="font-size:11.5px;padding:8px 10px;text-align:left;border-color:rgba(56,189,248,.35);color:#7dd3fc" onclick="simPush(\'gibdd_emp\')">🚓 ГИБДД МВД: Штраф от инспектора ДПС</button>'+
+     '<button class="btn ghost" style="font-size:11.5px;padding:8px 10px;text-align:left;border-color:rgba(245,158,11,.35);color:#fcd34d" onclick="simPush(\'mvd_emp\')">🛡️ МВД: Штраф от сотрудника МВД</button>'+
+    '</div>'+
+   '</div>';
+ }else if(PHSCR==='sms'){
+  scr.innerHTML=
+   '<div class="ph-back" onclick="phGo(\'home\')">← На главный экран</div>'+
+   '<div class="ph-app-t">🔔 Уведомления (ГИБДД МВД / МВД)</div>'+
+   '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">'+
+    '<button class="btn ghost" style="padding:6px 10px;font-size:11px" onclick="simPush(\'gibdd_cam\')">+ Камера ГИБДД</button>'+
+    '<button class="btn ghost" style="padding:6px 10px;font-size:11px" onclick="simPush(\'gibdd_emp\')">+ Инспектор ГИБДД</button>'+
+    '<button class="btn ghost" style="padding:6px 10px;font-size:11px" onclick="simPush(\'mvd_emp\')">+ Сотрудник МВД</button>'+
+   '</div>'+
+   PHONE_NOTIFS.map(function(n){
+    var col=n.ch==='gibdd'?'#38bdf8':'#f59e0b';
+    return '<div style="background:#151c28;border:1px solid #27303d;border-left:3px solid '+col+';border-radius:13px;padding:11px 13px;margin-bottom:8px">'+
+     '<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:'+col+';margin-bottom:4px"><span>'+n.ic+' '+n.sender+'</span><span style="color:#8b95a7">'+n.time+'</span></div>'+
+     '<b style="font-size:12.5px;display:block;margin-bottom:3px;color:#fff">'+esc(n.title)+'</b>'+
+     '<div style="font-size:12px;color:#cbd5e1;line-height:1.45">'+n.txt+'</div>'+
+    '</div>';
+   }).join('');
  }else{
-  scr.innerHTML='<div class="ph-back" onclick="phGo(\'home\')">← Телефон</div>'+'<div class="ph-app-t">МВД · Служебные приложения</div>'+'<div class="ph-mi" onclick="openLS()"><div class="ph-mi-ic">👥</div><div><b>Личный состав</b><span class="sub">'+E.length+' сотрудников · логи, склад, финансы, кадры, ЧС/ОЧС</span></div></div>'+'<div class="ph-mi" onclick="openDB()"><div class="ph-mi-ic">🗄️</div><div><b>База данных</b><span class="sub">проверка '+DB_CITIZENS.length+' граждан · розыск · штрафы · лишение прав</span></div></div>';
+  scr.innerHTML=
+   '<div class="ph-back" onclick="phGo(\'home\')">← Телефон</div>'+
+   '<div class="ph-app-t">МВД · Служебные приложения</div>'+
+   '<div class="ph-mi" onclick="openLS()"><div class="ph-mi-ic">👥</div><div><b>Личный состав</b><span class="sub">'+E.length+' сотрудников · логи, склад, финансы, кадры, ЧС/ОЧС</span></div></div>'+
+   '<div class="ph-mi" onclick="openDB()"><div class="ph-mi-ic">🗄️</div><div><b>База данных</b><span class="sub">проверка '+DB_CITIZENS.length+' граждан · розыск · штрафы · лишение прав</span></div></div>'+
+   '<div class="ph-mi" onclick="location.href=\'bank.html?mode=phone\'"><div class="ph-mi-ic">🏦</div><div><b>Провинция Банк</b><span class="sub">счёт №748291 · оплата ЖКХ · оплата штрафов по пунктам</span></div></div>';
  }
  phTick();
 }
