@@ -1248,16 +1248,26 @@ window.setArm=function(i,v){SETT.arm[i].min=parseInt(v,10);pushLog({actor:ACTOR,
 window.setStat=function(v){SETT.statRank=v?true:false;pushLog({actor:ACTOR,cat:'settings',k:'setstat',val:v?'включены':'отключены'})};
 
 /* ==================================================================
-   БАЗА ДАННЫХ (155+ ГРАЖДАН, ОДНОФАМИЛЬЦЫ, ГОССЛУЖБА, ТРАНСПОРТ)
+   БАЗА ДАННЫХ (155+ ГРАЖДАН, ОДНОФАМИЛЬЦЫ, ФРАКЦИИ, ТРАНСПОРТ)
    ================================================================== */
 var DB_CUR='check',DB_FLT='all',DB_CHECK_Q='';
 var CITY3=['Приволжск','Мирный','Невский'];
 var DB_BASE=[
- ['27501','Ершов Никита','1994-06-08'],['31288','Титов Олег','1988-11-21'],['41207','Гаврилов Степан','1996-03-02'],
- ['38912','Сафин Руслан','1992-07-15'],['52310','Дементьев Пётр','1990-01-30'],['49812','Абрамов Лев','1998-09-12'],
- ['51233','Ясенев Марк','1991-02-14'],['60114','Куликов Артём','1985-05-19'],['61208','Сысоев Марк','1997-08-08'],
- ['58920','Богданов Кирилл','1993-04-27'],['47711','Наумов Аркадий','1979-10-03'],['63304','Лапин Степан','1995-12-11'],
- ['40908','Родин Всеволод','1987-06-25'],['44110','Ефремова Дарья','1999-03-18'],['52801','Лобов Виктор','1983-09-05']
+ ['27501','Ершов Никита','1994-06-08','ЦГБ г. Приволжск'],
+ ['31288','Титов Олег','1988-11-21',null],
+ ['41207','Гаврилов Степан','1996-03-02','РЖД г. Мирный'],
+ ['38912','Сафин Руслан','1992-07-15',null],
+ ['52310','Дементьев Пётр','1990-01-30','ОКБ г. Мирный'],
+ ['49812','Абрамов Лев','1998-09-12',null],
+ ['51233','Ясенев Марк','1991-02-14',null],
+ ['60114','Куликов Артём','1985-05-19','ЦГБ г. Приволжск'],
+ ['61208','Сысоев Марк','1997-08-08',null],
+ ['58920','Богданов Кирилл','1993-04-27','РЖД г. Мирный'],
+ ['47711','Наумов Аркадий','1979-10-03',null],
+ ['63304','Лапин Степан','1995-12-11','ОКБ г. Мирный'],
+ ['40908','Родин Всеволод','1987-06-25',null],
+ ['44110','Ефремова Дарья','1999-03-18','ЦГБ г. Приволжск'],
+ ['52801','Лобов Виктор','1983-09-05',null]
 ];
 var DB_WANTED=[
 {uid:'27501',lvl:6,reason:'Вооружённое ограбление ломбарда, сопротивление при задержании',since:'2026-09-28',by:'Лебедев М.',car:{no:'Р118ОС 52',make:'Lada Granta'}},
@@ -1277,16 +1287,6 @@ var DB_CITIZENS=[],DB_ARC=[];
  var rng=mulberry32(987654321);
  var usedU={},BW={'27501':1,'31288':1,'41207':1,'38912':1,'52310':1,'49812':1};
  var MAKES=['Lada Vesta','Lada Priora','Toyota Camry XV70','BMW M5 F90','Mercedes-Benz E63','Kia Rio','Hyundai Solaris','Skoda Octavia','Volkswagen Polo','УАЗ Патриот','Ford Focus','Audi A6','Mazda 6','Renault Logan'];
- var GOV_ORGS=[
-  null,null,null,null,
-  {org:'УМВД г. Приволжск',pos:'Сержант · Инспектор ППС',gov:true,shift:false},
-  {org:'ОГИБДД г. Мирный',pos:'Ст. лейтенант · Инспектор ДПС',gov:true,shift:false},
-  {org:'ЦГБ г. Приволжск',pos:'Врач скорой помощи',gov:true,shift:true},
-  {org:'ОКБ г. Мирный',pos:'Хирург',gov:true,shift:false},
-  {org:'Министерство обороны (ВЧ №101)',pos:'Капитан · Командир роты',gov:true,shift:false},
-  {org:'ОАО «РЖД» · Депо Приволжск',pos:'Машинист электропоезда',gov:true,shift:true},
-  {org:'Мэрия г. Невский',pos:'Сотрудник секретариата',gov:true,shift:false}
- ];
  function uid(){var u;do{u=String(20000+Math.floor(rng()*79000))}while(usedU[u]);usedU[u]=1;return u}
  function rdate(max){return dStr(addD(TODAY,-Math.floor(rng()*(max+1))))}
  function rborn(){return (1968+Math.floor(rng()*38))+'-'+pad(1+Math.floor(rng()*12))+'-'+pad(1+Math.floor(rng()*28))}
@@ -1313,38 +1313,42 @@ var DB_CITIZENS=[],DB_ARC=[];
  /* Базовые 15 фигурантов */
  for(var i=0;i<DB_BASE.length;i++){
   usedU[DB_BASE[i][0]]=1;
-  DB_CITIZENS.push({uid:DB_BASE[i][0],name:DB_BASE[i][1],born:DB_BASE[i][2],city:pick(rng,CITY3),doc:docNo(rng),job:null,vehicles:genVehicles(),arc:genArc(!!BW[DB_BASE[i][0]])});
+  var baseOrg=DB_BASE[i][3]?{org:DB_BASE[i][3]}:null;
+  DB_CITIZENS.push({uid:DB_BASE[i][0],name:DB_BASE[i][1],born:DB_BASE[i][2],city:pick(rng,CITY3),doc:docNo(rng),job:baseOrg,vehicles:genVehicles(),arc:genArc(!!BW[DB_BASE[i][0]])});
  }
- /* Специальные группы полных однофамильцев (по 4-5 человек с одинаковым именем и фамилией) */
- varDUP_GROUPS=[
-  ['Иван Иванов',5],
-  ['Александр Смирнов',4],
-  ['Дмитрий Кузнецов',4],
-  ['Сергей Попов',4],
-  ['Артём Соколов',3],
-  ['Максим Лебедев',3]
+ /* Однофамильцы с распределением фракций ЦГБ г. Приволжск, РЖД г. Мирный, ОКБ г. Мирный */
+ var DUP_GROUPS=[
+  ['Иван Иванов',['ЦГБ г. Приволжск',null,'РЖД г. Мирный','ОКБ г. Мирный',null]],
+  ['Александр Смирнов',[null,'ОКБ г. Мирный','ЦГБ г. Приволжск',null]],
+  ['Дмитрий Кузнецов',['РЖД г. Мирный',null,null,'ЦГБ г. Приволжск']],
+  ['Сергей Попов',[null,'ОКБ г. Мирный',null,null]],
+  ['Артём Соколов',[null,'РЖД г. Мирный',null]],
+  ['Максим Лебедев',['ЦГБ г. Приволжск',null,null]]
  ];
- varDUP_GROUPS.forEach(function(gr){
-  for(var d=0;d<gr[1];d++){
+ DUP_GROUPS.forEach(function(gr){
+  var orgList=gr[1];
+  for(var d=0;d<orgList.length;d++){
    var u=uid();
-   var jb=pick(rng,GOV_ORGS);
+   var jb=orgList[d]?{org:orgList[d]}:null;
    var vhs=genVehicles();
    if(d===0 && !vhs.length)vhs=[{make:'Toyota Camry XV70',plate:carNo(rng)},{make:'BMW M5 F90',plate:null}];
    DB_CITIZENS.push({uid:u,name:gr[0],born:rborn(),city:CITY3[d%3],doc:docNo(rng),job:jb,vehicles:vhs,arc:genArc(false)});
   }
  });
- /* Добавление сотрудников МВД в базу граждан (чтобы видно было их статус на смене / не на смене) */
+ /* Добавление сотрудников МВД в базу граждан (только фракция) */
  E.slice(0,22).forEach(function(emp){
   var u=String(70000+Math.floor(rng()*25000));
   usedU[u]=1;
   DB_CITIZENS.push({
    uid:u,name:emp.name,born:rborn(),city:CITY3[0],doc:docNo(rng),
-   job:{org:F[emp.fac].n,pos:RANKS[emp.rank-1].name+' · '+emp.pos,gov:true,shift:(emp.st==='shift')},
+   job:{org:F[emp.fac].n},
    vehicles:[{make:'Lada Vesta',plate:carNo(rng)},{make:'Mercedes-Benz E63',plate:null}],
    arc:[]
   });
  });
- /* Добиваем до ~155 случайных игроков */
+ /* Добиваем до 155 случайных игроков (включая ещё несколько сотрудников ЦГБ, РЖД и ОКБ) */
+ var EXTRA_ORGS=['ЦГБ г. Приволжск','РЖД г. Мирный','ОКБ г. Мирный','ЦГБ г. Приволжск','РЖД г. Мирный','ОКБ г. Мирный','ОКБ г. Мирный'];
+ var extraIdx=0;
  var FNAMES_M=['Александр','Дмитрий','Сергей','Андрей','Артём','Иван','Максим','Егор','Кирилл','Никита','Роман','Павел','Илья','Владимир','Тимур','Денис'];
  var LNAMES_M=['Морозов','Новиков','Волков','Алексеев','Семенов','Егоров','Павлов','Козлов','Степанов','Николаев','Орлов','Андреев','Макаров','Захаров','Зайцев'];
  var FNAMES_F=['Анна','Мария','Елена','Ольга','Юлия','Дарья','Екатерина','Полина','Алина','София'];
@@ -1353,7 +1357,11 @@ var DB_CITIZENS=[],DB_ARC=[];
   var isF=rng()<.32;
   var fullName=isF?(pick(rng,FNAMES_F)+' '+pick(rng,LNAMES_F)):(pick(rng,FNAMES_M)+' '+pick(rng,LNAMES_M));
   var u2=uid();
-  DB_CITIZENS.push({uid:u2,name:fullName,born:rborn(),city:pick(rng,CITY3),doc:docNo(rng),job:pick(rng,GOV_ORGS),vehicles:genVehicles(),arc:genArc(false)});
+  var jb2=null;
+  if(extraIdx<EXTRA_ORGS.length && rng()<.35){
+   jb2={org:EXTRA_ORGS[extraIdx++]};
+  }
+  DB_CITIZENS.push({uid:u2,name:fullName,born:rborn(),city:pick(rng,CITY3),doc:docNo(rng),job:jb2,vehicles:genVehicles(),arc:genArc(false)});
  }
  for(var c=0;c<DB_CITIZENS.length;c++){
   var ar2=DB_CITIZENS[c].arc;
@@ -1392,10 +1400,24 @@ function dbArcBadge(t){var m={fine:['ШТРАФ','#f7c948'],finecam:['ШТРАФ
 function dbArcDesc(a){if(a.t==='fine'){return 'Штраф '+fmtN(a.amt)+' ₽ — '+esc(a.txt)}if(a.t==='finecam'){return 'Штраф с камеры '+fmtN(a.amt)+' ₽ — '+esc(a.txt)+' · машина '+a.car}if(a.t==='deprive'){if(a.days)return 'Лишение прав на '+a.days+' дн. — '+esc(a.txt);return 'Лишение прав на '+a.m+' мес. — '+esc(a.txt)+' · до '+fmtD(dbAddM(pd(a.d),a.m))}if(a.t==='arrest'){return 'Арест — '+a.days+' сут. ('+esc(a.txt)+')'}if(a.t==='caught'){return 'Задержан по розыску'}return ''}
 function dbArcRow(a){return '<div class="att"><div class="att-x"><b>'+dbArcBadge(a.t)+' '+dbArcDesc(a)+'</b><span>'+a.by+'</span></div><div style="text-align:right"><div class="mut" style="font-size:11px">'+rd(a.d)+'</div>'+(a.amt?'<div style="color:#f7c948;font-weight:800;font-size:12.5px">'+fmtN(a.amt)+' ₽</div>':'')+'</div></div>'}
 function dbArcList(arc){if(!arc.length){return '<div class="empty">Нарушений нет</div>'}var h='';for(var i=0;i<arc.length;i++){h+=dbArcRow(arc[i])}return '<div class="panel" style="padding:4px 18px">'+h+'</div>'}
-function dbOpenWanted(i){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='',s;for(s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');var body='<div class="panel warn" style="margin:0 0 12px"><div class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск · уровень '+w.lvl+'/6</div><div style="margin-top:12px"><span class="vlbl">Причина</span><b>'+esc(w.reason)+'</b></div><div class="segs '+cls+'" style="margin-top:10px">'+segs+'</div></div>';if(c&&c.arc.length){body+='<div class="sec">Прежние нарушения</div>'+dbArcList(c.arc)}dbModal(c?c.name:('UID '+w.uid),(c?('UID '+c.uid+' · Документ: '+(c.doc||'—')+' · г. '+c.city):''),body)}
+
+/* При клике в Розыске открываем полную личную карточку гражданина (с фракцией или прочерком, машинами и т.д.) */
+function dbOpenWanted(i){
+ var w=DB_WANTED[i];
+ if(!w)return;
+ var ci=citIdxByUid(w.uid);
+ if(ci>-1){
+  dbOpenCitizen(ci);
+  return;
+ }
+ var newC={uid:w.uid,name:'Гражданин (UID '+w.uid+')',born:'1992-01-01',city:CITY3[0],doc:w.doc||'—',job:null,vehicles:w.car?[{make:w.car.make,plate:w.car.no}]:[],arc:[]};
+ DB_CITIZENS.push(newC);
+ dbOpenCitizen(DB_CITIZENS.length-1);
+}
+
 function dbOpenCar(i){var c=DB_CARW[i];var body='<div class="panel" style="margin:0"><div style="font-size:24px;font-weight:800">'+c.no+'</div><div class="mut">'+c.make+'</div><div style="margin-top:12px"><span class="vlbl">Причина</span><b>'+esc(c.reason)+'</b></div><div class="mut" style="margin-top:10px">'+rd(c.since)+' · '+c.by+'</div></div>';dbModal('Розыск транспорта','по гос. номеру',body,null,'🚗')}
 
-/* Открытие полного досье гражданина (с госслужбой, документами и автомобилями с номерами) */
+/* Полная личная карточка гражданина (открывается и из Проверки граждан, и из Розыска) */
 function dbOpenCitizen(i){
  var c=DB_CITIZENS[i],w=wantByUid(c.uid);
  var st=w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 В розыске '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>';
@@ -1405,19 +1427,19 @@ function dbOpenCitizen(i){
   if(a.t==='deprive'&&a.days){lic='<span class="stx" style="color:#f7c948;border-color:#8a6a2a">Лишён прав до '+fmtD(addD(pd(a.d),a.days))+'</span>'}
   else if(a.t==='deprive'&&dbAddM(pd(a.d),a.m)>TODAY){lic='<span class="stx" style="color:#f7c948;border-color:#8a6a2a">Лишён прав до '+fmtD(dbAddM(pd(a.d),a.m))+'</span>'}
  }
- var jobHtml='';
- if(c.job && c.job.org){
-  var shiftBadge=c.job.shift
-   ? '<span class="fb" style="color:#2fd97a;border-color:#2fd97a55;background:#2fd97a14"><i style="background:#2fd97a"></i>На смене</span>'
-   : '<span class="fb" style="color:#f7c948;border-color:#f7c94855;background:#f7c94814"><i style="background:#f7c948"></i>Не на смене</span>';
-  jobHtml='<div class="panel" style="border-color:#4da3ff55;background:rgba(77,163,255,.06);margin:12px 0">'+
-   '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'+
-   '<div><span class="vlbl" style="color:#6cc0ff">🛡️ Государственный служащий · Место работы</span><b style="font-size:14.5px">'+esc(c.job.org)+'</b><div class="mut" style="margin-top:3px;font-size:12.5px">Должность: <b style="color:var(--txt)">'+esc(c.job.pos)+'</b></div></div>'+
-   shiftBadge+'</div></div>';
- } else {
-  jobHtml='<div class="panel" style="margin:12px 0"><span class="vlbl">Место работы / организация</span><b>Не состоит в государственной организации (гражданский)</b></div>';
+ var wantBlock='';
+ if(w){
+  var segs='',s;for(s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}
+  var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');
+  wantBlock='<div class="panel warn" style="margin:12px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Активный розыск · уровень '+w.lvl+'/6</div><div class="segs '+cls+'">'+segs+'</div></div><div style="margin-top:10px"><span class="vlbl">Причина розыска</span><b>'+esc(w.reason)+'</b></div><div class="mut" style="margin-top:6px;font-size:11.5px">Выдал: '+esc(w.by)+' · с '+rd(w.since)+'</div></div>';
  }
+ /* Только фракция сотрудника (если нет — просто прочерк «—») */
+ var facName=(c.job && c.job.org)?c.job.org:'—';
  var regCars=(c.vehicles||[]).filter(function(v){return !!v.plate});
+ if(w && w.car && w.car.no){
+  var hasWCar=regCars.some(function(v){return v.plate===w.car.no});
+  if(!hasWCar)regCars.unshift({make:w.car.make||'ТС',plate:w.car.no});
+ }
  var carsHtml='';
  if(regCars.length){
   carsHtml='<div class="panel" style="padding:6px 16px">'+regCars.map(function(v){
@@ -1427,19 +1449,20 @@ function dbOpenCitizen(i){
   carsHtml='<div class="empty">Зарегистрированных ТС с гос. номерами не найдено</div>';
  }
  var noteCars='<div class="mut" style="font-size:11.5px;margin-top:6px">ℹ️ Примечание: если транспортное средство находится без государственных регистрационных номеров, оно не отображается в базе данных учёта.</div>';
- var docPanel='<div class="tiles" style="margin:10px 0">'+
+ var docPanel='<div class="tiles" style="margin:12px 0">'+
   '<div class="tile"><div class="n" style="font-size:18px">'+esc(c.uid)+'</div><div class="l">UID гражданина</div></div>'+
   '<div class="tile"><div class="n" style="font-size:18px;color:#a9c7ef">'+esc(c.doc||'4512 884120')+'</div><div class="l">Паспорт / документ</div></div>'+
   '<div class="tile"><div class="n" style="font-size:18px">'+rd(c.born)+'</div><div class="l">Дата рождения</div></div>'+
   '<div class="tile"><div class="n" style="font-size:18px">г. '+esc(c.city)+'</div><div class="l">Прописка</div></div>'+
+  '<div class="tile"><div class="n" style="font-size:16px;color:'+(facName==='—'?'var(--mut)':'#6cc0ff')+'">'+esc(facName)+'</div><div class="l">Фракция</div></div>'+
   '</div>';
- var body='<div style="display:flex;gap:8px;flex-wrap:wrap">'+st+lic+'</div>'+docPanel+jobHtml+
+ var body='<div style="display:flex;gap:8px;flex-wrap:wrap">'+st+lic+'</div>'+wantBlock+docPanel+
   '<div class="sec">Транспортные средства на учёте · '+regCars.length+'</div>'+carsHtml+noteCars+
   '<div class="sec">История правонарушений · '+c.arc.length+'</div>'+dbArcList(c.arc);
  dbModal(c.name,'UID '+c.uid+' · Документ № '+(c.doc||'—')+' · г. '+c.city,body);
 }
 
-/* ====== БАЗА: ПРОВЕРКА ГРАЖДАН (155+ игроков, поиск однофамильцев) ====== */
+/* ====== БАЗА: ПРОВЕРКА ГРАЖДАН (Фракция в списке НЕ показывается — только при клике на игрока) ====== */
 function dbPageCheck(){
  var q=(DB_CHECK_Q||'').trim().toLowerCase();
  var list=DB_CITIZENS.filter(function(c){
@@ -1453,7 +1476,7 @@ function dbPageCheck(){
   '<button class="btn ghost" onclick="dbCheckFilter(\'Александр Смирнов\')">Александр Смирнов (4)</button>'+
   (DB_CHECK_Q?'<button class="btn warn" onclick="dbCheckFilter(\'\')">Сбросить</button>':'')+
   '</div>'+
-  '<div class="mut" style="font-size:11.5px;margin-top:8px">💡 Кликните на конкретного игрока из списка, чтобы открыть его полное досье: паспорт, место работы (в т.ч. если госсотрудник сейчас не на смене) и зарегистрированные ТС (автомобили без номеров в базе не числятся).</div>'+
+  '<div class="mut" style="font-size:11.5px;margin-top:8px">💡 Кликните на конкретного гражданина из списка, чтобы открыть его личную карточку (там отображаются паспортные данные, фракция или прочерк «—», а также зарегистрированные ТС с номерами).</div>'+
   '</div>';
  h+='<div id="dbCheckList">'+dbCheckRowsHtml(list)+'</div>';
  return h;
@@ -1464,14 +1487,11 @@ function dbCheckRowsHtml(list){
   var idx=citIdxByUid(c.uid);
   var w=wantByUid(c.uid);
   var regCars=(c.vehicles||[]).filter(function(v){return !!v.plate}).length;
-  var jobBadge=c.job
-   ? '<span class="ptag" style="border-color:#4da3ff55;color:#6cc0ff">🛡️ '+esc(c.job.org)+' · '+(c.job.shift?'На смене':'Не на смене')+'</span>'
-   : '<span class="ptag">Гражданский</span>';
   return '<div class="prow" onclick="dbOpenCitizen('+idx+')">'+
-   '<div class="e-id"><div class="ava">'+ini(c.name)+'</div><div style="min-width:0"><div class="nm">'+esc(c.name)+'</div><div class="emp-uid">UID '+esc(c.uid)+' · Док: '+esc(c.doc||'—')+' · род. '+rd(c.born)+'</div></div></div>'+
-   '<div>'+jobBadge+'</div>'+
-   '<div><span class="ptag">🚗 ТС с номерами: '+regCars+'</span></div>'+
-   '<div>'+(w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Чист</span>')+'</div>'+
+   '<div class="e-id"><div class="ava">'+ini(c.name)+'</div><div style="min-width:0"><div class="nm">'+esc(c.name)+'</div><div class="emp-uid">UID '+esc(c.uid)+' · род. '+rd(c.born)+'</div></div></div>'+
+   '<div><span class="ptag">📄 Документ: '+esc(c.doc||'—')+' · г. '+esc(c.city)+'</span></div>'+
+   '<div><span class="ptag">🚗 ТС на учёте: '+regCars+'</span></div>'+
+   '<div>'+(w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>')+'</div>'+
    '<div class="e-go">›</div></div>';
  }).join('')+'</div>';
 }
@@ -1494,7 +1514,7 @@ function nT(s){s=String(s).toLowerCase().replace(/ё/g,'е');var L2C={a:'а',b:'
 function qMatch(q,name){var qt=nT(q),nt=nT(name);if(!qt.length)return false;for(var i=0;i<qt.length;i++){var ok=false;for(var j=0;j<nt.length;j++){if(nt[j].indexOf(qt[i])===0||qt[i].indexOf(nt[j])===0){ok=true;break}}if(!ok)return false}return true}
 
 function dbPageCrt(){
- var h='<div class="ph"><div><h1>Розыск <span class="cnt">'+(DB_WANTED.length+DB_CARW.length)+'</span></h1></div></div>';
+ var h='<div class="ph"><div><h1>Розыск <span class="cnt">'+(DB_WANTED.length+DB_CARW.length)+'</span></h1><div class="ph-sub">клик по гражданину открывает его полную карточку (документы, фракция, ТС на учёте)</div></div></div>';
  h+='<div class="panel"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="inp" id="dbq" style="flex:1;min-width:250px" placeholder="UID / номер документа / гос. номер" onkeydown="if(event.key===\'Enter\')dbSearch()"><button class="btn" onclick="dbSearch()">🔍</button></div></div>';
  h+='<div class="chips"><div class="chip'+(DB_FLT==='all'?' on':'')+'" onclick="DB_FLT=\'all\';renderDB()">🚨 Все</div><div class="chip'+(DB_FLT==='p'?' on':'')+'" onclick="DB_FLT=\'p\';renderDB()">👤 Граждане</div><div class="chip'+(DB_FLT==='c'?' on':'')+'" onclick="DB_FLT=\'c\';renderDB()">🚗 Транспорт</div></div>';
  if(DB_FLT!=='c'){h+='<div class="sec">Розыск граждан · '+DB_WANTED.length+'</div>';for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='';for(var s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');h+='<div class="panel" style="cursor:pointer;padding:13px 16px;margin:8px 0" onclick="dbOpenWanted('+i+')"><div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b>'+esc(c?c.name:'UID '+w.uid)+'</b> <span class="mut" style="font-size:11px">UID '+esc(w.uid)+(w.doc?' · Док: '+esc(w.doc):'')+'</span><div style="font-size:12.5px;margin-top:4px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px">с '+rd(w.since)+' · '+esc(w.by)+'</div></div><div style="text-align:right"><div class="mut" style="font-size:9px">ОПАСНОСТЬ '+w.lvl+'/6</div><div class="segs '+cls+'">'+segs+'</div></div></div></div>'}}
@@ -1502,7 +1522,7 @@ function dbPageCrt(){
  return h;
 }
 
-/* ====== БАЗА: РОЗЫСК ГРАЖДАНИНА (Без поля ФИО! Достаточно UID ИЛИ номера документа, остальное обязательно) ====== */
+/* ====== БАЗА: РОЗЫСК ГРАЖДАНИНА ====== */
 function dbPageWant(){
  var h='<div class="ph"><div><h1>🚨 Выдать розыск гражданину</h1><div class="ph-sub">достаточно заполнить UID ИЛИ номер документа (одно из двух), остальные поля обязательны</div></div></div>';
  h+='<div class="panel">'+
@@ -1516,7 +1536,7 @@ function dbPageWant(){
   '<div style="margin-top:14px"><button class="btn warn" onclick="dbIssueWant()">🚨 Выдать в розыск</button></div>'+
  '</div>';
  h+='<div class="sec">Активные розыски граждан · '+DB_WANTED.length+'</div>';
- for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='';for(var s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}h+='<div class="panel" style="padding:11px 16px;margin:6px 0"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><b>'+esc(c?c.name:'Гражданин UID '+w.uid)+'</b> <span class="mut" style="font-size:11px">UID '+esc(w.uid)+(w.doc?' · Док: '+esc(w.doc):'')+'</span><div style="font-size:12.5px;margin-top:3px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px;margin-top:3px">'+rd(w.since)+' · '+w.by+'</div></div><div class="segs '+(w.lvl>=5?'bad':w.lvl>=3?'mid':'')+'">'+segs+'</div></div></div>'}
+ for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='';for(var s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}h+='<div class="panel" style="cursor:pointer;padding:11px 16px;margin:6px 0" onclick="dbOpenWanted('+i+')"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><b>'+esc(c?c.name:'Гражданин UID '+w.uid)+'</b> <span class="mut" style="font-size:11px">UID '+esc(w.uid)+(w.doc?' · Док: '+esc(w.doc):'')+'</span><div style="font-size:12.5px;margin-top:3px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px;margin-top:3px">'+rd(w.since)+' · '+w.by+'</div></div><div class="segs '+(w.lvl>=5?'bad':w.lvl>=3?'mid':'')+'">'+segs+'</div></div></div>'}
  return h;
 }
 window.dbIssueWant=function(){
@@ -1571,7 +1591,7 @@ window.dbIssueCar=function(){
  goDB('carwant');
 };
 
-/* ====== БАЗА: ШТРАФ / ЛИШЕНИЕ (Без поля ФИО! По UID или номеру документа, остальное обязательно) ====== */
+/* ====== БАЗА: ШТРАФ / ЛИШЕНИЕ ====== */
 function dbPageFine(){
  var h='<div class="ph"><div><h1>💸 Штраф / Лишение прав</h1><div class="ph-sub">достаточно указать UID ИЛИ номер документа, все остальные поля обязательны</div></div></div>';
  h+='<div class="panel">'+
