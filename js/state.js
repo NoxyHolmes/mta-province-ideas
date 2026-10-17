@@ -4,7 +4,7 @@ var state = { fac: 'all', q: '' };
 var dirtyIds = {}, deletedIds = {};
 
 function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
-function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete dirtyIds[id]; }
+function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete deletedIds[id]; }
 
 function toArr(x) {
   if (!x) return null;
@@ -17,18 +17,19 @@ function toArr(x) {
 function normItems(a) {
   if (!a) return a;
   var defSeeds = seed();
+  var seedMap = {};
+  defSeeds.forEach(function(s) { seedMap[s.id] = s; });
+
   for (var i = 0; i < a.length; i++) {
     if (!a[i]) continue;
     if (!a[i].images) a[i].images = [];
     if (!a[i].videos) a[i].videos = [];
     if (typeof a[i].title !== 'string') a[i].title = '';
-    if (typeof a[i].appUrl !== 'string' || !a[i].appUrl) {
-      var ttl = (a[i].title || '').toLowerCase();
-      if (a[i].id === 's1' || ttl.indexOf('фракционное приложение') >= 0) a[i].appUrl = 'mvd_phone';
-      else if (a[i].id === 's2' || ttl.indexOf('автопарк') >= 0) a[i].appUrl = 'garage';
-      else if (a[i].id === 'w1' || ttl.indexOf('банковская система') >= 0) a[i].appUrl = 'bank_web';
-      else if (a[i].id === 'w2' || ttl.indexOf('банковское приложение') >= 0) a[i].appUrl = 'bank_app';
-      else a[i].appUrl = '';
+    if (seedMap[a[i].id]) {
+      a[i].title = seedMap[a[i].id].title;
+      a[i].text = seedMap[a[i].id].text;
+      a[i].appUrl = seedMap[a[i].id].appUrl;
+      a[i].fac = seedMap[a[i].id].fac;
     }
   }
   defSeeds.forEach(function(sd) {
