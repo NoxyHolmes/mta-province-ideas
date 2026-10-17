@@ -2016,60 +2016,90 @@ function mFoot(e){
  return '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button>'+act+'</div>';
 }
 
-/* ============ ТЕЛЕФОН И СИСТЕМА УВЕДОМЛЕНИЙ (ГИБДД МВД / МВД) ============ */
+/* ============ ТЕЛЕФОН И ПРИЛОЖЕНИЕ «СМС» С 4 ГРУППАМИ ============ */
 var PHSCR='home';
-var PHONE_NOTIFS=[
- {ch:'gibdd',sender:'ГИБДД МВД',ic:'🚓',time:'14:22',title:'Городская камера фотовидеофиксации',txt:'Выписан штраф городской камерой за превышение скорости на 14 км/ч в размере 500 ₽ (ст. 12.9 КоАП).'},
- {ch:'gibdd',sender:'ГИБДД МВД',ic:'🚓',time:'13:05',title:'Постановление инспектора ДПС',txt:'Выписан штраф за управление ТС с нечитаемыми номерами (ст. 12.2 КоАП) в размере 2 000 ₽. Выписал сотрудник: Мельников Григорий.'},
- {ch:'mvd',sender:'МВД',ic:'🛡️',time:'11:40',title:'Постановление сотрудника МВД',txt:'Выписан штраф за нарушение общественного порядка (ст. 20.1 КоАП) в размере 3 000 ₽. Выписал сотрудник: Гусев Владислав.'}
-];
+var SMS_GROUP=null;
 
-function showPhoneBanner(ch,title,txt){
- var sender=(ch==='gibdd')?'ГИБДД МВД':'МВД';
- var ic=(ch==='gibdd')?'🚓':'🛡️';
- var col=(ch==='gibdd')?'#38bdf8':'#f59e0b';
- PHONE_NOTIFS.unshift({ch:ch,sender:sender,ic:ic,time:nowT(),title:title,txt:txt});
- if(PHSCR==='sms')phRender();
-
- var root=document.getElementById('phPushRoot');
- if(!root){
-  root=document.createElement('div');
-  root.id='phPushRoot';
-  root.style.cssText='position:fixed;top:18px;right:18px;z-index:980;display:flex;flex-direction:column;gap:10px;width:360px;max-width:calc(100vw - 28px)';
-  document.body.appendChild(root);
- }
- var card=document.createElement('div');
- card.style.cssText='background:linear-gradient(155deg,rgba(20,27,42,.97),rgba(12,16,25,.98));backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);border-left:4px solid '+col+';border-radius:18px;padding:14px 16px;box-shadow:0 20px 50px rgba(0,0,0,.7);animation:up .28s';
- card.innerHTML=
-  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
-   '<b style="font-size:11.5px;letter-spacing:.7px;text-transform:uppercase;color:'+col+'">'+ic+' '+sender+' · Уведомление телефона</b>'+
-   '<span style="font-size:11px;color:#8b95a7">'+nowT()+' <button onclick="this.closest(\'div\').parentNode.remove()" style="background:none;border:none;color:#8b95a7;cursor:pointer;margin-left:6px">✕</button></span>'+
-  '</div>'+
-  '<div style="font-weight:800;font-size:13.5px;color:#fff;margin-bottom:4px">'+esc(title)+'</div>'+
-  '<div style="font-size:12.5px;line-height:1.5;color:#d1d9e8">'+txt+'</div>';
- root.prepend(card);
- setTimeout(function(){if(card&&card.parentNode)card.remove()},8000);
-}
-
-window.simPush=function(kind){
- if(kind==='gibdd_cam'){
-  var km=[10,15,22,34][Math.floor(Math.random()*4)];
-  var sum=km>20?1000:500;
-  showPhoneBanner('gibdd','Фиксация нарушения ПДД (Камера)','Выписан штраф городской камерой за превышение скорости на <b>'+km+' км/ч</b> в размере <b>'+fmtN(sum)+' ₽</b>.');
- }else if(kind==='gibdd_emp'){
-  showPhoneBanner('gibdd','Штраф от сотрудника ГИБДД МВД','Выписан штраф за <b>проезд на запрещающий сигнал светофора (ст. 12.12 КоАП)</b> в размере <b>1 500 ₽</b>. Сотрудник: <b>Мельников Григорий</b>.');
- }else{
-  showPhoneBanner('mvd','Штраф от сотрудника МВД','Выписан штраф за <b>мелкое хулиганство (ст. 20.1 КоАП)</b> в размере <b>2 500 ₽</b>. Сотрудник: <b>Гусев Владислав</b>.');
+var SMS_GROUPS={
+ bank:{
+  name:'Банк',
+  ic:'🏦',
+  col:'#10b981',
+  sub:'Операции по счёту №748291, поступления и списания',
+  msgs:[
+   {time:'12:00',title:'Зачисление средств на счёт №748291',txt:'Поступление: +165 000 ₽. Назначение: Выплата премии с баланса МВД. Доступный баланс: 4 850 000 ₽.',tab:'history'},
+   {time:'18:30',title:'Перевод по номеру счёта',txt:'Списание: −50 000 ₽ на счёт №419082. Причина: Личный перевод.',tab:'history'},
+   {time:'15:12',title:'Входящий перевод',txt:'Поступление: +250 000 ₽ со счёта №883104. Причина: Возврат долга.',tab:'history'},
+   {time:'11:05',title:'Оплата ЖКХ (Квартира г. Приволжск)',txt:'Списание: −25 000 ₽. Причина: Оплата коммунальных услуг.',tab:'housing'}
+  ]
+ },
+ gibdd:{
+  name:'ГИБДД МВД России',
+  ic:'🚓',
+  col:'#38bdf8',
+  sub:'Штрафы от сотрудников ДПС, эвакуация авто, лишение прав',
+  msgs:[
+   {time:'21:14',title:'Постановление инспектора ДПС',txt:'Выписан штраф 2 000 ₽ по ст. 12.2 ч.1 КоАП (нечитаемые гос. номера). Выписал: Капитан Мельников Григорий (ОГИБДД г. Приволжск). Нажмите для перехода к оплате.',fineId:'f3'},
+   {time:'16:40',title:'Эвакуация транспортного средства',txt:'Ваш автомобиль Toyota Camry (В777АК 52) задержан и помещён на спецстоянку ГИБДД г. Приволжск за нарушение правил парковки (ст. 12.19 КоАП). Оформил: Ст. лейтенант Бирюков Артемий.'},
+   {time:'14:10',title:'Предупреждение о неоплаченных штрафах',txt:'Внимание! У вас имеется 4 неоплаченных штрафа. При превышении лимита задолженности действие водительского удостоверения может быть приостановлено.',fineId:'f3'},
+   {time:'10:15',title:'Информация по водительскому удостоверению',txt:'Проверка по базе ГИБДД МВД России: водительское удостоверение действительно, ограничений на управление ТС нет.'}
+  ]
+ },
+ cam:{
+  name:'[ГИБДД] Камера контроля движения',
+  ic:'📷',
+  col:'#60a5fa',
+  sub:'Автоматическая фотовидеофиксация нарушений ПДД',
+  msgs:[
+   {time:'14:22',title:'Штраф с городской камеры · 1 500 ₽',txt:'Зафиксирован проезд на красный сигнал светофора (ст. 12.12 ч.1 КоАП), ТС: В777АК 52. Нажмите, чтобы перейти в Банк и оплатить данный штраф.',fineId:'f1'},
+   {time:'19:05',title:'Штраф с городской камеры · 500 ₽',txt:'Зафиксировано превышение установленной скорости на 18 км/ч (ст. 12.9 ч.2 КоАП), ТС: В777АК 52. Нажмите, чтобы перейти в Банк и оплатить данный штраф.',fineId:'f2'}
+  ]
+ },
+ mvd:{
+  name:'МВД России',
+  ic:'🛡️',
+  col:'#f59e0b',
+  sub:'Действия и постановления сотрудников УМВД',
+  msgs:[
+   {time:'18:40',title:'Постановление сотрудника МВД · 3 000 ₽',txt:'Выписан административный штраф 3 000 ₽ по ст. 20.1 ч.1 КоАП (нарушение общественного порядка). Выписал: Ст. прапорщик Савельев Тимофей (УМВД г. Приволжск). Нажмите для оплаты.',fineId:'f4'},
+   {time:'12:15',title:'Уведомление участкового уполномоченного',txt:'По вашему обращению в дежурную часть УМВД г. Приволжск проведена проверка, материалы приобщены к архиву.'}
+  ]
  }
 };
 
+function openSmsGroup(gk){
+ PHSCR='sms';
+ SMS_GROUP=gk||null;
+ phRender();
+}
+window.openSmsGroup=openSmsGroup;
+
+function onSmsMsgClick(fineId,tab){
+ if(fineId){
+  location.href='bank.html?mode=phone&tab=fines&fineId='+encodeURIComponent(fineId);
+  return;
+ }
+ if(tab){
+  location.href='bank.html?mode=phone&tab='+encodeURIComponent(tab);
+ }
+}
+window.onSmsMsgClick=onSmsMsgClick;
+
 function phRender(){
  var scr=$('#phScr');if(!scr){return}
+ var homeBar=document.querySelector('.ph-home');
+ if(homeBar){
+  homeBar.style.cursor='pointer';
+  homeBar.title='Выйти в главное меню телефона';
+  homeBar.onclick=function(){exitToPhone()};
+ }
+
  if(PHSCR==='home'){
+  var totalSms=SMS_GROUPS.bank.msgs.length+SMS_GROUPS.gibdd.msgs.length+SMS_GROUPS.cam.msgs.length+SMS_GROUPS.mvd.msgs.length;
   var apps=[
    ['🛡️',"phGo('mvd')",'МВД',3,'background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-color:#60a5fa'],
    ['🏦',"location.href='bank.html?mode=phone'",'Банк',0,'background:linear-gradient(135deg,#10b981,#047857);border-color:#34d399'],
-   ['🔔',"phGo('sms')",'СМС МВД',PHONE_NOTIFS.length,'background:linear-gradient(135deg,#8b5cf6,#5b21b6);border-color:#a78bfa'],
+   ['💬',"openSmsGroup(null)",'СМС',totalSms,'background:linear-gradient(135deg,#8b5cf6,#5b21b6);border-color:#a78bfa'],
    ['🚔',"location.href='garage.html'",'Автопарк',0,'background:linear-gradient(135deg,#f59e0b,#b45309);border-color:#fbbf24'],
    ['📞',"toast('Звонки в демо-режиме недоступны')",'Вызовы',0,'background:#1c2432;border-color:#2d3849'],
    ['🗺️',"toast('Навигатор в демо-режиме недоступен')",'Карта',0,'background:#1c2432;border-color:#2d3849'],
@@ -2081,48 +2111,78 @@ function phRender(){
    '<div class="ph-grid">'+apps.map(function(a){
     return '<div class="ph-app" onclick="'+a[1]+'"><div class="ph-ic" style="'+a[4]+'">'+a[0]+(a[3]?'<i class="ph-bdg">'+a[3]+'</i>':'')+'</div><span>'+a[2]+'</span></div>';
    }).join('')+'</div>'+
-   '<div style="margin-top:26px;padding:12px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)">'+
-    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#8b95a7;font-weight:800;margin-bottom:8px">🔔 Тест уведомлений на экран телефона</div>'+
-    '<div style="display:flex;flex-direction:column;gap:6px">'+
-     '<button class="btn ghost" style="font-size:11.5px;padding:8px 10px;text-align:left;border-color:rgba(56,189,248,.35);color:#7dd3fc" onclick="simPush(\'gibdd_cam\')">🚓 ГИБДД МВД: Штраф с камеры (+10 км/ч)</button>'+
-     '<button class="btn ghost" style="font-size:11.5px;padding:8px 10px;text-align:left;border-color:rgba(56,189,248,.35);color:#7dd3fc" onclick="simPush(\'gibdd_emp\')">🚓 ГИБДД МВД: Штраф от инспектора ДПС</button>'+
-     '<button class="btn ghost" style="font-size:11.5px;padding:8px 10px;text-align:left;border-color:rgba(245,158,11,.35);color:#fcd34d" onclick="simPush(\'mvd_emp\')">🛡️ МВД: Штраф от сотрудника МВД</button>'+
+   /* Блок «Уведомления» на главном экране — клик сразу перебрасывает в СМС */
+   '<div style="margin-top:26px;padding:13px 14px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09)">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;cursor:pointer" onclick="openSmsGroup(null)">'+
+     '<span style="font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#cbd5e1;font-weight:800">🔔 Уведомления</span>'+
+     '<span style="font-size:11px;color:#60a5fa;font-weight:700">Открыть СМС →</span>'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;gap:7px">'+
+     '<div onclick="openSmsGroup(\'cam\')" style="cursor:pointer;background:#141b26;border:1px solid rgba(96,165,250,.3);border-left:3px solid #60a5fa;border-radius:11px;padding:9px 11px">'+
+      '<div style="font-size:10.5px;font-weight:800;color:#93c5fd">📷 [ГИБДД] Камера контроля движения</div>'+
+      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Выписан штраф камерой · 1 500 ₽ (Нажмите)</div>'+
+     '</div>'+
+     '<div onclick="openSmsGroup(\'gibdd\')" style="cursor:pointer;background:#141b26;border:1px solid rgba(56,189,248,.3);border-left:3px solid #38bdf8;border-radius:11px;padding:9px 11px">'+
+      '<div style="font-size:10.5px;font-weight:800;color:#7dd3fc">🚓 ГИБДД МВД России</div>'+
+      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Штраф от инспектора ДПС · эвакуация ТС</div>'+
+     '</div>'+
+     '<div onclick="openSmsGroup(\'mvd\')" style="cursor:pointer;background:#141b26;border:1px solid rgba(245,158,11,.3);border-left:3px solid #f59e0b;border-radius:11px;padding:9px 11px">'+
+      '<div style="font-size:10.5px;font-weight:800;color:#fcd34d">🛡️ МВД России</div>'+
+      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Постановление сотрудника МВД · 3 000 ₽</div>'+
+     '</div>'+
     '</div>'+
    '</div>';
  }else if(PHSCR==='sms'){
-  scr.innerHTML=
-   '<div class="ph-back" onclick="phGo(\'home\')">← На главный экран</div>'+
-   '<div class="ph-app-t">🔔 Уведомления (ГИБДД МВД / МВД)</div>'+
-   '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">'+
-    '<button class="btn ghost" style="padding:6px 10px;font-size:11px" onclick="simPush(\'gibdd_cam\')">+ Камера ГИБДД</button>'+
-    '<button class="btn ghost" style="padding:6px 10px;font-size:11px" onclick="simPush(\'gibdd_emp\')">+ Инспектор ГИБДД</button>'+
-    '<button class="btn ghost" style="padding:6px 10px;font-size:11px" onclick="simPush(\'mvd_emp\')">+ Сотрудник МВД</button>'+
-   '</div>'+
-   PHONE_NOTIFS.map(function(n){
-    var col=n.ch==='gibdd'?'#38bdf8':'#f59e0b';
-    return '<div style="background:#151c28;border:1px solid #27303d;border-left:3px solid '+col+';border-radius:13px;padding:11px 13px;margin-bottom:8px">'+
-     '<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:'+col+';margin-bottom:4px"><span>'+n.ic+' '+n.sender+'</span><span style="color:#8b95a7">'+n.time+'</span></div>'+
-     '<b style="font-size:12.5px;display:block;margin-bottom:3px;color:#fff">'+esc(n.title)+'</b>'+
-     '<div style="font-size:12px;color:#cbd5e1;line-height:1.45">'+n.txt+'</div>'+
-    '</div>';
-   }).join('');
+  if(!SMS_GROUP){
+   /* Список групп в СМС */
+   var gKeys=['bank','gibdd','cam','mvd'];
+   scr.innerHTML=
+    '<div class="ph-back" onclick="phGo(\'home\')">← На главный экран</div>'+
+    '<div class="ph-app-t">💬 СМС · Уведомления</div>'+
+    gKeys.map(function(k){
+     var g=SMS_GROUPS[k];
+     return '<div class="ph-mi" onclick="openSmsGroup(\''+k+'\')" style="border-left:3px solid '+g.col+'">'+
+      '<div class="ph-mi-ic" style="background:'+g.col+'22;border:1px solid '+g.col+'55">'+g.ic+'</div>'+
+      '<div style="flex:1;min-width:0"><b>'+esc(g.name)+'</b><span class="sub">'+esc(g.sub)+'</span></div>'+
+      '<span class="ptag" style="color:'+g.col+';border-color:'+g.col+'55">'+g.msgs.length+'</span>'+
+     '</div>';
+    }).join('');
+  }else{
+   /* Сообщения внутри выбранной группы СМС */
+   var grp=SMS_GROUPS[SMS_GROUP];
+   scr.innerHTML=
+    '<div class="ph-back" onclick="openSmsGroup(null)">← Все группы СМС</div>'+
+    '<div class="ph-app-t">'+grp.ic+' '+esc(grp.name)+'</div>'+
+    grp.msgs.map(function(m){
+     var clickable=!!(m.fineId||m.tab);
+     var actHint=m.fineId
+      ? '<div style="margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);font-size:11px;font-weight:800;color:#34d399">🏦 Нажмите, чтобы перейти в Банк к оплате этого штрафа →</div>'
+      : (m.tab?'<div style="margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);font-size:11px;font-weight:800;color:#60a5fa">🏦 Открыть операцию в приложении Банка →</div>':'');
+     return '<div onclick="'+(clickable?'onSmsMsgClick(\''+(m.fineId||'')+'\',\''+(m.tab||'')+'\')':'')+'" style="cursor:'+(clickable?'pointer':'default')+';background:#151c28;border:1px solid #27303d;border-left:3px solid '+grp.col+';border-radius:13px;padding:12px 13px;margin-bottom:9px;transition:.15s">'+
+      '<div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:800;color:'+grp.col+';margin-bottom:4px"><span>'+grp.ic+' '+esc(grp.name)+'</span><span style="color:#8b95a7">'+m.time+'</span></div>'+
+      '<b style="font-size:12.5px;display:block;margin-bottom:4px;color:#fff">'+esc(m.title)+'</b>'+
+      '<div style="font-size:12px;color:#cbd5e1;line-height:1.48">'+esc(m.txt)+'</div>'+
+      actHint+
+     '</div>';
+    }).join('');
+  }
  }else{
+  /* Меню приложения МВД — БЕЗ Провинция Банка (Пункт 1) */
   scr.innerHTML=
    '<div class="ph-back" onclick="phGo(\'home\')">← Телефон</div>'+
    '<div class="ph-app-t">МВД · Служебные приложения</div>'+
    '<div class="ph-mi" onclick="openLS()"><div class="ph-mi-ic">👥</div><div><b>Личный состав</b><span class="sub">'+E.length+' сотрудников · логи, склад, финансы, кадры, ЧС/ОЧС</span></div></div>'+
-   '<div class="ph-mi" onclick="openDB()"><div class="ph-mi-ic">🗄️</div><div><b>База данных</b><span class="sub">проверка '+DB_CITIZENS.length+' граждан · розыск · штрафы · лишение прав</span></div></div>'+
-   '<div class="ph-mi" onclick="location.href=\'bank.html?mode=phone\'"><div class="ph-mi-ic">🏦</div><div><b>Провинция Банк</b><span class="sub">счёт №748291 · оплата ЖКХ · оплата штрафов по пунктам</span></div></div>';
+   '<div class="ph-mi" onclick="openDB()"><div class="ph-mi-ic">🗄️</div><div><b>База данных</b><span class="sub">проверка '+DB_CITIZENS.length+' граждан · розыск · штрафы · лишение прав</span></div></div>';
  }
  phTick();
 }
 function phTick(){var d=new Date(),s=pad(d.getHours())+':'+pad(d.getMinutes());var c1=$('#phClock');if(c1){c1.textContent=s}var c2=$('#phClock2');if(c2){c2.textContent=s}var WD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];var p=$('#phDate');if(p){p.textContent=WD[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()]}}
-function phGo(s){PHSCR=s;phRender()}
+function phGo(s){PHSCR=s;SMS_GROUP=null;phRender()}
 function hideApps(){var a=$('#app'),d=$('#dbapp');if(a){a.style.display='none'}if(d){d.style.display='none'}}
 function openPhone(){hideApps();var o=$('#phoneOv');if(o){o.style.display='flex'}phRender()}
 function openLS(){PHSCR='mvd';$('#phoneOv').style.display='none';$('#app').style.display='flex'}
 function backToPhone(){openPhone()}
-function exitToPhone(){PHSCR='home';openPhone()}
+function exitToPhone(){PHSCR='home';SMS_GROUP=null;openPhone()}
 window.phGo=phGo;window.openPhone=openPhone;window.openLS=openLS;window.openDB=openDB;
 window.backToPhone=backToPhone;window.exitToPhone=exitToPhone;
 
