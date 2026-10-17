@@ -1,6 +1,6 @@
 var ITEMS = [], localRev = 0, pendingRev = null, needSeed = false, booted = false;
 var knownRev = 0;
-var state = { fac: 'general', q: '' };
+var state = { fac: 'all', q: '' };
 var dirtyIds = {}, deletedIds = {};
 
 function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
@@ -24,18 +24,17 @@ function normItems(a) {
     if (typeof a[i].title !== 'string') a[i].title = '';
     if (typeof a[i].appUrl !== 'string' || !a[i].appUrl) {
       var ttl = (a[i].title || '').toLowerCase();
-      if (a[i].id === 's1' || ttl.indexOf('приложен') >= 0) a[i].appUrl = 'mvd_phone';
-      else if (a[i].id === 's2' || ttl.indexOf('автопарк') >= 0 || ttl.indexOf('транспорт') >= 0) a[i].appUrl = 'garage';
+      if (a[i].id === 's1' || ttl.indexOf('фракционное приложение') >= 0) a[i].appUrl = 'mvd_phone';
+      else if (a[i].id === 's2' || ttl.indexOf('автопарк') >= 0) a[i].appUrl = 'garage';
+      else if (a[i].id === 'w1' || ttl.indexOf('банковская система') >= 0) a[i].appUrl = 'bank_web';
+      else if (a[i].id === 'w2' || ttl.indexOf('банковское приложение') >= 0) a[i].appUrl = 'bank_app';
       else a[i].appUrl = '';
     }
-    if (a[i].id === 's1' && defSeeds[0] && String(a[i].text || '').indexOf('YI73TT4') < 0) {
-      a[i].text = defSeeds[0].text;
-    }
   }
-  var hasGarage = a.some(function(x) { return x && (x.id === 's2' || x.appUrl === 'garage'); });
-  if (!hasGarage && defSeeds[1]) {
-    a.push(defSeeds[1]);
-  }
+  defSeeds.forEach(function(sd) {
+    var exists = a.some(function(x) { return x && (x.id === sd.id || x.appUrl === sd.appUrl); });
+    if (!exists) a.push(sd);
+  });
   return a;
 }
 
