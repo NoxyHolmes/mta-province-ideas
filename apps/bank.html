@@ -32,7 +32,6 @@ body{
 ::-webkit-scrollbar-thumb{background:#253042;border-radius:8px}
 button,input,select{font-family:inherit}
 
-/* Верхняя панель управления режимами и симулятором уведомлений */
 #topSwitchBar{
   min-height:60px;
   background:rgba(11,15,23,.9);
@@ -60,7 +59,6 @@ button,input,select{font-family:inherit}
 .sim-btn.gibdd{border-color:rgba(77,163,255,.4);color:#93c5fd;background:rgba(77,163,255,.1)}
 .sim-btn.mvd{border-color:rgba(247,201,72,.4);color:#fde047;background:rgba(247,201,72,.1)}
 
-/* Всплывающее окно телефонного уведомления (Push / SMS) */
 #phoneAlertRoot{
   position:fixed;
   top:76px;
@@ -104,7 +102,6 @@ button,input,select{font-family:inherit}
 .pn-act{color:var(--acc);font-weight:800;cursor:pointer;background:none;border:none;font-size:12px}
 .pn-act:hover{text-decoration:underline}
 
-/* ================= ТЕРМИНАЛ БАНКА (WEB / DESKTOP) ================= */
 #terminalWrap{max-width:1380px;margin:0 auto;padding:26px 24px 60px;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}
 .b-side{
   background:linear-gradient(165deg,rgba(20,27,42,.88),rgba(13,18,28,.94));
@@ -163,7 +160,6 @@ button,input,select{font-family:inherit}
 .stat-box .v{font-size:24px;font-weight:900;margin-bottom:4px}
 .stat-box .l{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);font-weight:800}
 
-/* Таблицы и списки штрафов с галочками */
 .fine-bar{
   display:flex;
   align-items:center;
@@ -201,7 +197,6 @@ button,input,select{font-family:inherit}
 .fine-meta b{color:#d1d9e8}
 .fine-sum{font-size:16px;font-weight:900;color:var(--red);white-space:nowrap;text-align:right}
 
-/* Карточки жилья ЖКХ */
 .prop-card{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
 .prop-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .prop-head b{font-size:15.5px;display:block}
@@ -230,7 +225,6 @@ button,input,select{font-family:inherit}
 .tx-amt.plus{color:var(--green)}
 .tx-amt.minus{color:#f87171}
 
-/* ================= МОБИЛЬНОЕ ПРИЛОЖЕНИЕ В СМАРТФОНЕ ================= */
 #phoneWrap{display:none;justify-content:center;align-items:center;padding:24px 14px 50px}
 .smartphone{
   width:420px;
@@ -276,11 +270,10 @@ button,input,select{font-family:inherit}
 </head>
 <body>
 
-<!-- Верхняя панель переключения режима (Отделение банка / Смартфон) и теста уведомлений ГИБДД / МВД -->
 <div id="topSwitchBar">
   <div class="mode-tabs">
-    <button class="mode-tab on" id="tabTerminal" onclick="setViewMode('terminal')">🏦 Меню в отделении банка</button>
-    <button class="mode-tab" id="tabPhone" onclick="setViewMode('phone')">📲 Банковское приложение (Телефон)</button>
+    <button class="mode-tab on" id="tabTerminal" onclick="setViewMode('terminal')">🏦 Банковская система</button>
+    <button class="mode-tab" id="tabPhone" onclick="setViewMode('phone')">📲 Банковское приложение</button>
   </div>
 
   <div class="push-sim">
@@ -291,24 +284,23 @@ button,input,select{font-family:inherit}
   </div>
 </div>
 
-<!-- Контейнер для всплывающих уведомлений телефона от ГИБДД МВД и от МВД -->
 <div id="phoneAlertRoot"></div>
 
-<!-- РЕЖИМ 1: ТЕРМИНАЛ / МЕНЮ В БАНКЕ -->
+<!-- РЕЖИМ 1: БАНКОВСКАЯ СИСТЕМА -->
 <div id="terminalWrap">
   <aside class="b-side">
     <div class="b-brand">
       <div class="b-brand-ic">🏦</div>
       <div>
         <b>ПРОВИНЦИЯ БАНК</b>
-        <span>Финансовая система</span>
+        <span>Банковская система</span>
       </div>
     </div>
 
     <div class="b-card-widget">
       <div class="bc-lbl">Владелец счёта</div>
-      <div class="bc-owner" id="uiOwnerName">Холмс Евгений</div>
-      <div class="bc-acc" onclick="copyAcc()" title="Нажмите, чтобы скопировать 6-значный счёт">
+      <div class="bc-owner" id="uiOwnerName">Евгений Холмс</div>
+      <div class="bc-acc" onclick="copyAcc()" title="Нажмите, чтобы скопировать банковский счёт">
         <span>💳 Счёт № <b id="uiAccNum">748291</b></span>
         <span style="font-size:11px;opacity:.7">📋</span>
       </div>
@@ -323,7 +315,7 @@ button,input,select{font-family:inherit}
   <main class="b-main" id="deskMain"></main>
 </div>
 
-<!-- РЕЖИМ 2: МОБИЛЬНОЕ ПРИЛОЖЕНИЕ БАНКА В ТЕЛЕФОНЕ -->
+<!-- РЕЖИМ 2: БАНКОВСКОЕ ПРИЛОЖЕНИЕ -->
 <div id="phoneWrap">
   <div class="smartphone">
     <div class="sp-screen">
@@ -340,30 +332,26 @@ button,input,select{font-family:inherit}
 <div id="troot"></div>
 
 <script>
-/* ===================== ДАННЫЕ БАНКОВСКОЙ СИСТЕМЫ ===================== */
 var VIEW_MODE = (location.search.indexOf('mode=phone') >= 0) ? 'phone' : 'terminal';
 var CUR_TAB = 'overview';
 
 var PLAYER = {
-  name: 'Холмс Евгений',
+  name: 'Евгений Холмс',
   uid: 'K8W4C6',
-  account: '748291', /* 6-значный банковский счёт */
+  account: '748291',
   balance: 4850000,
   cash: 320000
 };
 
-/* Недвижимость игрока (ЖКХ и депозит за жильё) */
 var PROPERTIES = [
-  { id: 'p1', type: 'Квартира · Комфорт+', address: 'г. Приволжск, ул. Ленина, д. 14, кв. 42', ratePerDay: 2500, deposit: 35000, maxDays: 30 },
+  { id: 'p1', type: 'Квартира', address: 'г. Приволжск, ул. Ленина, д. 14, кв. 42', ratePerDay: 2500, deposit: 35000, maxDays: 30 },
   { id: 'p2', type: 'Частный дом с гаражом', address: 'г. Мирный, коттеджный посёлок, уч. 8', ratePerDay: 6000, deposit: 48000, maxDays: 30 }
 ];
 
-/* Вклады игрока */
 var DEPOSITS = [
   { id: 'd1', name: 'Вклад «Накопительный»', rate: '8.5% годовых', amount: 1500000, profit: 42500, since: '01.09.2026', canTopUp: true }
 ];
 
-/* Неоплаченные штрафы (как с камер, так и от сотрудников с указанием статьи, ника и фракции) */
 var FINES = [
   {
     id: 'f1',
@@ -376,7 +364,7 @@ var FINES = [
     article: 'ст. 12.12 ч.1 КоАП',
     car: 'В777АК 52 · Toyota Camry',
     officer: null,
-    faction: 'ЦАФАП ГИБДД МВД',
+    faction: 'ГИБДД МВД',
     amount: 1500
   },
   {
@@ -390,7 +378,7 @@ var FINES = [
     article: 'ст. 12.9 ч.2 КоАП',
     car: 'В777АК 52 · Toyota Camry',
     officer: null,
-    faction: 'ЦАФАП ГИБДД МВД',
+    faction: 'ГИБДД МВД',
     amount: 500
   },
   {
@@ -423,17 +411,16 @@ var FINES = [
   }
 ];
 
-/* История переводов, пополнений и оплат (дата, время, сумма, причина) */
 var HISTORY = [
-  { date: '17.10.2026', time: '12:00', type: 'plus', title: 'Зачисление заработной платы и премии', reason: 'Выплата казначейства МВД · счёт №748291', amount: 165000 },
-  { date: '16.10.2026', time: '18:30', type: 'minus', title: 'Перевод игроку Ковалёв Сергей (Счёт №419082)', reason: 'Возврат долга за ремонт служебного авто', amount: 50000 },
-  { date: '15.10.2026', time: '15:12', type: 'plus', title: 'Входящий перевод от Морозов Дмитрий (Счёт №883104)', reason: 'Совместная покупка гаража', amount: 250000 },
-  { date: '14.10.2026', time: '11:05', type: 'minus', title: 'Пополнение депозита ЖКХ (Квартира г. Приволжск)', reason: 'Оплата коммунальных услуг на 10 дней', amount: 25000 },
+  { date: '17.10.2026', time: '12:00', type: 'plus', title: 'Зачисление заработной платы и премии', reason: 'Выплата премии с баланса МВД', amount: 165000 },
+  { date: '16.10.2026', time: '18:30', type: 'minus', title: 'Перевод игроку Ковалёв Сергей (Счёт №419082)', reason: 'Личный перевод', amount: 50000 },
+  { date: '15.10.2026', time: '15:12', type: 'plus', title: 'Входящий перевод от Морозов Дмитрий (Счёт №883104)', reason: 'Возврат долга', amount: 250000 },
+  { date: '14.10.2026', time: '11:05', type: 'minus', title: 'Пополнение депозита ЖКХ (Квартира г. Приволжск)', reason: 'Оплата коммунальных услуг', amount: 25000 },
   { date: '11.10.2026', time: '20:45', type: 'minus', title: 'Оплата штрафа ГИБДД МВД', reason: 'Превышение скорости (камера) · ст. 12.9 КоАП', amount: 1000 }
 ];
 
-/* Справочник счетов игроков для быстрых переводов */
 var KNOWN_ACCOUNTS = {
+  '123456': 'Романов Алексей',
   '419082': 'Ковалёв Сергей',
   '883104': 'Морозов Дмитрий',
   '552910': 'Лебедев Максим',
@@ -462,7 +449,6 @@ function copyAcc() {
   toast('✓ Номер банковского счёта №' + PLAYER.account + ' скопирован');
 }
 
-/* ===================== СИСТЕМА PUSH-УВЕДОМЛЕНИЙ ТЕЛЕФОНА (ГИБДД МВД vs МВД) ===================== */
 function triggerPush(preset) {
   var data;
   if (preset === 'gibdd_cam') {
@@ -486,7 +472,7 @@ function triggerPush(preset) {
         article: 'ст. 12.9 КоАП',
         car: 'В777АК 52 · Toyota Camry',
         officer: null,
-        faction: 'ЦАФАП ГИБДД МВД',
+        faction: 'ГИБДД МВД',
         amount: sum
       }
     };
@@ -559,10 +545,9 @@ function triggerPush(preset) {
   setTimeout(function() { if (box && box.parentNode) box.remove(); }, 9500);
 }
 
-/* ===================== РЕНДЕР РАЗДЕЛОВ БАНКА ===================== */
 var NAV_ITEMS = [
   ['overview', '📊', 'Обзор счёта'],
-  ['fines',    '🚓', 'Штрафы ГИБДД / МВД'],
+  ['fines',    '🚓', 'Оплата штрафов'],
   ['housing',  '🏠', 'Оплата ЖКХ и жилья'],
   ['transfer', '💸', 'Переводы и пополнение'],
   ['deposits', '📈', 'Банковские вклады'],
@@ -604,9 +589,9 @@ function renderOverviewSection() {
       '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'fines\')"><div class="v" style="color:' + (FINES.length ? 'var(--red)' : 'var(--green)') + '">' + FINES.length + ' шт. (' + fmt(totalFines) + ' ₽)</div><div class="l">Неоплаченные штрафы →</div></div>' +
     '</div>' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
-      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевести по счёту</button>' +
+      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевод по номеру счёта</button>' +
       '<button class="btn blue" onclick="goTab(\'housing\')">🏠 Оплатить ЖКХ / Жильё</button>' +
-      '<button class="btn ghost" onclick="goTab(\'fines\')">🚓 Оплатить штрафы (' + FINES.length + ')</button>' +
+      '<button class="btn ghost" onclick="goTab(\'fines\')">🚓 Оплата штрафов (' + FINES.length + ')</button>' +
     '</div>' +
   '</div>' +
   '<div class="b-panel">' +
@@ -618,10 +603,9 @@ function renderOverviewSection() {
   '</div>';
 }
 
-/* Раздел оплаты штрафов по пунктам с галочками */
 function renderFinesSection() {
   if (!FINES.length) {
-    return '<div class="b-panel"><div class="b-h1">🚓 Оплата штрафов ГИБДД и МВД</div><div class="b-sub">Все штрафы погашены</div><div style="padding:30px;text-align:center;color:var(--green);font-weight:800">✅ У вас нет неоплаченных штрафов!</div></div>';
+    return '<div class="b-panel"><div class="b-h1">🚓 Оплата штрафов</div><div class="b-sub">Все штрафы погашены</div><div style="padding:30px;text-align:center;color:var(--green);font-weight:800">✅ У вас нет неоплаченных штрафов!</div></div>';
   }
   var selCount = 0, selSum = 0, allSum = 0;
   FINES.forEach(function(f) {
@@ -635,7 +619,7 @@ function renderFinesSection() {
       ? '<span class="f-badge cam">📷 Городская камера · ' + f.sender + '</span>'
       : '<span class="f-badge emp">👮 Выписал сотрудник · ' + f.sender + '</span>';
     var details = f.kind === 'cam'
-      ? 'Дата: <b>' + f.date + ' в ' + f.time + '</b> · Статус: <b>Автофиксация ЦАФАП</b> · ТС: <b>' + f.car + '</b> · Статья: <b>' + f.article + '</b>'
+      ? 'Дата: <b>' + f.date + ' в ' + f.time + '</b> · Статус: <b>Автофиксация городской камерой</b> · ТС: <b>' + f.car + '</b> · Статья: <b>' + f.article + '</b>'
       : 'Дата: <b>' + f.date + ' в ' + f.time + '</b> · Статья: <b>' + f.article + '</b><br>Выписал: <b>' + f.officer + '</b> · Подразделение: <b>' + f.faction + '</b>' + (f.car ? ' · ТС: <b>' + f.car + '</b>' : '');
     return '<label class="fine-item' + (f.checked ? ' checked' : '') + '">' +
       '<input type="checkbox" ' + (f.checked ? 'checked' : '') + ' onchange="toggleFine(' + idx + ',this.checked)">' +
@@ -649,7 +633,7 @@ function renderFinesSection() {
   }).join('');
 
   return '<div class="b-panel">' +
-    '<div class="b-h1">🚓 Оплата штрафов (ГИБДД МВД / МВД)</div>' +
+    '<div class="b-h1">🚓 Оплата штрафов</div>' +
     '<div class="b-sub">Отметьте галочками штрафы, которые хотите оплатить сейчас, либо оплатите все сразу</div>' +
     '<div class="fine-bar">' +
       '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:800;font-size:13px">' +
@@ -696,7 +680,6 @@ window.payAllFines = function() {
   paySelectedFines();
 };
 
-/* Раздел оплаты ЖКХ и пополнения депозита за жильё */
 function renderHousingSection() {
   var cards = PROPERTIES.map(function(p, idx) {
     var daysLeft = Math.floor(p.deposit / p.ratePerDay);
@@ -738,7 +721,7 @@ window.topUpHousing = function(idx, days) {
   HISTORY.unshift({
     date: nowDate(), time: nowTime(), type: 'minus',
     title: 'Пополнение депозита ЖКХ (' + p.type + ')',
-    reason: p.address,
+    reason: 'Оплата коммунальных услуг',
     amount: cost
   });
   renderAll();
@@ -746,20 +729,19 @@ window.topUpHousing = function(idx, days) {
 };
 window.topUpHousingMax = function(idx) { topUpHousing(idx, 30); };
 
-/* Раздел переводов по 6-значному счёту и пополнения */
 function renderTransferSection() {
   return '<div class="b-panel">' +
-    '<div class="b-h1">💸 Перевод другому игроку по номеру счёта</div>' +
+    '<div class="b-h1">💸 Перевод по номеру счёта</div>' +
     '<div class="b-sub">Ваш счёт отправителя: <b>№ ' + PLAYER.account + ' (' + PLAYER.name + ')</b></div>' +
     '<div class="b-grid2">' +
-      '<div><label class="flab">6-значный банковский счёт получателя *</label><input class="inp" id="trAcc" maxlength="6" placeholder="Например: 419082 (Ковалёв С.)"></div>' +
+      '<div><label class="flab">Банковский счёт получателя *</label><input class="inp" id="trAcc" maxlength="6" placeholder="Например: 123456"></div>' +
       '<div><label class="flab">Сумма перевода, ₽ *</label><input class="inp" id="trAmt" type="number" value="50000" min="100" step="1000"></div>' +
-      '<div style="grid-column:1/-1"><label class="flab">Причина / комментарий к переводу *</label><input class="inp" id="trReason" placeholder="Например: Оплата по договору / Покупка автомобиля"></div>' +
+      '<div style="grid-column:1/-1"><label class="flab">Причина / комментарий к переводу *</label><input class="inp" id="trReason" placeholder="Например: Личный перевод / Покупка имущества"></div>' +
     '</div>' +
     '<div style="margin-top:14px"><button class="btn" onclick="doTransfer()">💸 Отправить перевод</button></div>' +
   '</div>' +
   '<div class="b-panel">' +
-    '<div class="b-h1">🏧 Операции с наличными (Касса / Банкомат)</div>' +
+    '<div class="b-h1">🏧 Операции с наличными</div>' +
     '<div class="b-sub">На руках: <b>' + fmt(PLAYER.cash) + ' ₽</b> · На счёте №' + PLAYER.account + ': <b>' + fmt(PLAYER.balance) + ' ₽</b></div>' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
       '<input class="inp" id="cashAmt" type="number" value="100000" style="max-width:220px">' +
@@ -773,20 +755,20 @@ window.doTransfer = function() {
   var acc = (document.getElementById('trAcc').value || '').trim();
   var amt = parseInt(document.getElementById('trAmt').value, 10) || 0;
   var rsn = (document.getElementById('trReason').value || '').trim();
-  if (!/^\d{6}$/.test(acc)) { toast('Введите корректный 6-значный номер счёта (например, 419082)'); return; }
+  if (!/^\d{6}$/.test(acc)) { toast('Введите корректный 6-значный номер счёта (например: 123456)'); return; }
   if (acc === PLAYER.account) { toast('Нельзя перевести на собственный счёт'); return; }
   if (amt <= 0 || amt > PLAYER.balance) { toast('Некорректная сумма или недостаточно средств'); return; }
   if (!rsn) { toast('Укажите причину перевода'); return; }
-  var recName = KNOWN_ACCOUNTS[acc] || ('Игрок со счётом №' + acc);
+  var recName = KNOWN_ACCOUNTS[acc] || ('Счёт №' + acc);
   PLAYER.balance -= amt;
   HISTORY.unshift({
     date: nowDate(), time: nowTime(), type: 'minus',
-    title: 'Перевод игроку ' + recName + ' (Счёт №' + acc + ')',
+    title: 'Перевод на счёт №' + acc + (KNOWN_ACCOUNTS[acc] ? ' (' + KNOWN_ACCOUNTS[acc] + ')' : ''),
     reason: rsn,
     amount: amt
   });
   renderAll();
-  toast('✓ Перевод ' + fmt(amt) + ' ₽ на счёт №' + acc + ' (' + recName + ') выполнен');
+  toast('✓ Перевод ' + fmt(amt) + ' ₽ на счёт №' + acc + ' выполнен');
 };
 
 window.doCashOp = function(dir) {
@@ -795,18 +777,17 @@ window.doCashOp = function(dir) {
   if (dir === 'in') {
     if (PLAYER.cash < amt) { toast('Недостаточно наличных на руках'); return; }
     PLAYER.cash -= amt; PLAYER.balance += amt;
-    HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Пополнение банковского счёта №' + PLAYER.account, reason: 'Внесение наличных через банкомат', amount: amt });
+    HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Пополнение банковского счёта №' + PLAYER.account, reason: 'Внесение наличных', amount: amt });
     toast('✓ Счёт пополнен на ' + fmt(amt) + ' ₽');
   } else {
     if (PLAYER.balance < amt) { toast('Недостаточно средств на счёте'); return; }
     PLAYER.balance -= amt; PLAYER.cash += amt;
-    HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Снятие наличных со счёта №' + PLAYER.account, reason: 'Выдача наличных через банкомат', amount: amt });
+    HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Снятие наличных со счёта №' + PLAYER.account, reason: 'Выдача наличных', amount: amt });
     toast('✓ Снято наличными: ' + fmt(amt) + ' ₽');
   }
   renderAll();
 };
 
-/* Раздел банковских вкладов */
 function renderDepositsSection() {
   var list = DEPOSITS.map(function(d, idx) {
     return '<div class="prop-card">' +
@@ -853,7 +834,6 @@ window.openNewDeposit = function() {
   renderAll(); toast('✓ Открыт новый вклад на 500 000 ₽');
 };
 
-/* Раздел истории операций */
 function txRowHtml(tx) {
   var isPlus = tx.type === 'plus';
   return '<div class="tx-row">' +
@@ -876,14 +856,12 @@ function renderHistorySection() {
   '</div>';
 }
 
-/* ===================== ОБЩИЙ РЕНДЕР ТЕРМИНАЛА И СМАРТФОНА ===================== */
 function renderAll() {
   document.getElementById('uiOwnerName').textContent = PLAYER.name;
   document.getElementById('uiAccNum').textContent = PLAYER.account;
   document.getElementById('uiBalance').textContent = fmt(PLAYER.balance) + ' ₽';
   document.getElementById('uiCash').textContent = fmt(PLAYER.cash) + ' ₽';
 
-  /* Навигация терминала */
   document.getElementById('deskNav').innerHTML = NAV_ITEMS.map(function(it) {
     var bdg = (it[0] === 'fines' && FINES.length) ? '<span class="bdg">' + FINES.length + '</span>' : '';
     return '<div class="b-ni' + (CUR_TAB === it[0] ? ' on' : '') + '" onclick="goTab(\'' + it[0] + '\')"><span>' + it[1] + '</span><span>' + it[2] + '</span>' + bdg + '</div>';
@@ -892,7 +870,6 @@ function renderAll() {
   var contentHtml = buildSectionHtml();
   document.getElementById('deskMain').innerHTML = contentHtml;
 
-  /* Рендер мобильной версии внутри смартфона */
   var mobHeader = '<div class="b-card-widget" style="margin-bottom:14px">' +
     '<div class="bc-lbl">Провинция Банк Онлайн · ' + PLAYER.name + '</div>' +
     '<div class="bc-acc" onclick="copyAcc()">💳 Счёт № ' + PLAYER.account + ' 📋</div>' +
