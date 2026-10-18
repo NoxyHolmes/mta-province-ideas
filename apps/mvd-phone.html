@@ -155,7 +155,7 @@ textarea.inp{font-family:inherit;resize:vertical}
 .ph-app:hover .ph-ic{transform:translateY(-2px)}
 .ph-app span{font-size:10.5px;color:#c9d4e4;font-weight:600;text-align:center}
 .ph-bdg{position:absolute;top:-6px;right:-7px;background:var(--red);font-style:normal;font-size:9.5px;font-weight:800;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff}
-.ph-back{color:var(--acc);font-weight:700;font-size:12.5px;cursor:pointer;margin-bottom:8px}
+.ph-back{color:var(--acc);font-weight:700;font-size:12.5px;cursor:pointer;margin-bottom:8px;display:inline-block}
 .ph-app-t{font-weight:800;font-size:16px;margin-bottom:14px}
 .ph-mi{display:flex;gap:12px;align-items:center;background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;transition:.15s;margin-bottom:10px}
 .ph-mi:hover{border-color:#3a4757;transform:translateY(-1px)}
@@ -248,7 +248,7 @@ window.addEventListener('error',function(ev){
   <aside id="sidebar">
     <div class="logo"><div class="logo-ic">🛡️</div><div><div class="logo-t">МВД</div><div class="logo-s">Личный состав</div></div></div>
     <nav id="nav"></nav>
-    <div class="sb-foot">Прототип v5.4 · 54 чел.</div>
+    <div class="sb-foot">Прототип v5.5 · 54 чел.</div>
   </aside>
   <div id="wrap">
     <header id="topbar">
@@ -274,7 +274,7 @@ window.addEventListener('error',function(ev){
   <aside id="dbsidebar">
     <div class="logo"><div class="logo-ic">🗄️</div><div><div class="logo-t">База данных</div><div class="logo-s">МВД · розыск и проверка</div></div></div>
     <nav id="dbnav"></nav>
-    <div class="sb-foot">База данных v2.5</div>
+    <div class="sb-foot">База данных v2.6</div>
   </aside>
   <div id="dbwrap">
     <header id="dbtop">
@@ -683,10 +683,7 @@ function wPage(){
 }
 window.wSet=function(k,v){WSTATE[k]=v;if(CUR==='wh')go('wh')};
 
-/* ==================================================================
-   РАЗДЕЛ 1: ЗАКАЗАТЬ ПОСТАВКУ (МО / МЗ) с прямыми строками
-   и указанием, кто принял доставку с другой стороны
-   ================================================================== */
+/* ============ ЗАКАЗАТЬ ПОСТАВКУ (МО / МЗ) ============ */
 var SUP_STATE={provider:'mo',targetFac:'uvdP',itemKey:'mo_ammo',crates:5};
 
 var SUPPLY_CATALOG={
@@ -738,7 +735,6 @@ function pageSupply(){
    '<div class="chip'+(SUP_STATE.provider==='mz'?' on':'')+'" style="--cc:#ff5c5c" onclick="supSetProv(\'mz\')">🏥 Министерство здравоохранения (МЗ)</div>'+
   '</div>';
 
- /* Прямые горизонтальные строки вместо прямоугольных карточек */
  var rowsStack=prov.items.map(function(it){
   var on=(it.k===SUP_STATE.itemKey);
   return '<div class="sup-row'+(on?' sel':'')+'" onclick="supSetItem(\''+it.k+'\')">'+
@@ -824,9 +820,7 @@ window.supAcceptOrder=function(idx){
  go('supply');
 };
 
-/* ==================================================================
-   РАЗДЕЛ 2: ЦЕЛИ (Практичные служебные задачи сотрудника)
-   ================================================================== */
+/* ============ ЦЕЛИ ============ */
 var GOALS_FILTER='all';
 var GOALS_LIST=[
  {id:'g1',cat:'daily',title:'Патрулирование юрисдикции УМВД / ОГИБДД',desc:'Провести в патруле на служебном автомобиле не менее 4 часов за рабочую смену.',cur:3,max:4,unit:'ч.',reward:35000,done:false},
@@ -930,7 +924,7 @@ var SF={fac:'all',st:'all',q:''};
 function empRow(e){
  var ex=extraPos(e),onl=e.o.d>0,w=isWatch(e);
  var penCell=w?'<div class="e-pen"><span class="mut" style="font-size:11.5px;font-weight:700">👁 Следящий</span></div>':'<div class="e-pen"><span class="pv '+penCls(e.pen)+'">'+fmtPen(e.pen)+'</span><div class="segs '+penCls(e.pen)+'">'+penSegs(e.pen)+'</div></div>';
- return '<div class="emp'+((!w&&conv(e.pen)>=2)?' crit':'')+'" data-uid="'+esc(e.uid)+'"><div class="e-id"><div class="ava'+(e.rank>=15?' gold':'')+'">'+ini(e.name)+'</div><div style="min-width:0"><div class="nm">'+e.name+'</div><div class="emp-uid">UID '+e.uid+' · '+e.days+' дн. в МВД</div><div class="emp-uid" style="color:#6faf9d">💳 №'+bankAcc(e)+'</div></div></div><div><div class="e-rk1"><span class="rk '+g(e.rank)+'">'+e.rank+' · '+RANKS[e.rank-1].name+'</span></div><div class="e-rk2">'+posTagHtml(e.pos,e.fac)+ex.map(function(x){return '<span class="ptag x">'+x+'</span>'}).join('')+'</div></div><div class="e-onl"><div style="display:inline-flex;align-items:center;gap:7px;background:rgba(77,163,255,.08);border:1px solid rgba(77,163,255,.28);border-radius:9px;padding:4px 11px"><i style="width:6px;height:6px;border-radius:50%;background:'+(onl?'var(--green)':'#55606f')+'"></i><b style="font-size:12.5px;font-weight:800">'+fmtH(e.o.d)+'</b></div><span class="onl-l">сегодня</span></div>'+penCell+'<div><span class="fb" style="color:'+ST[e.st].c+';border-color:'+ST[e.st].c+'55;background:'+ST[e.st].c+'14"><i style="background:'+ST[e.st].c+'"></i>'+ST[e.st].n+'</span></div><div class="e-go">›</div></div>';
+ return '<div class="emp'+((!w&&conv(e.pen)>=2)?' crit':'')+'" data-uid="'+esc(e.uid)+'"><div class="e-id"><div class="ava'+(e.rank>=15?' gold':'')+'">'+ini(e.name)+'</div><div style="min-width:0"><div class="nm">'+e.name+'</div><div class="emp-uid">UID #'+e.uid+' · '+e.days+' дн. в МВД</div><div class="emp-uid" style="color:#6faf9d">💳 №'+bankAcc(e)+'</div></div></div><div><div class="e-rk1"><span class="rk '+g(e.rank)+'">'+e.rank+' · '+RANKS[e.rank-1].name+'</span></div><div class="e-rk2">'+posTagHtml(e.pos,e.fac)+ex.map(function(x){return '<span class="ptag x">'+x+'</span>'}).join('')+'</div></div><div class="e-onl"><div style="display:inline-flex;align-items:center;gap:7px;background:rgba(77,163,255,.08);border:1px solid rgba(77,163,255,.28);border-radius:9px;padding:4px 11px"><i style="width:6px;height:6px;border-radius:50%;background:'+(onl?'var(--green)':'#55606f')+'"></i><b style="font-size:12.5px;font-weight:800">'+fmtH(e.o.d)+'</b></div><span class="onl-l">сегодня</span></div>'+penCell+'<div><span class="fb" style="color:'+ST[e.st].c+';border-color:'+ST[e.st].c+'55;background:'+ST[e.st].c+'14"><i style="background:'+ST[e.st].c+'"></i>'+ST[e.st].n+'</span></div><div class="e-go">›</div></div>';
 }
 function staffFiltered(){var q=SF.q.trim().toLowerCase();return E.filter(function(e){if(SF.fac!=='all'&&e.fac!==SF.fac){return false}if(SF.st!=='all'&&e.st!==SF.st){return false}if(q&&e.name.toLowerCase().indexOf(q)<0&&e.pos.toLowerCase().indexOf(q)<0&&e.uid.toLowerCase().indexOf(q)<0){return false}return true}).sort(function(a,b){return b.rank-a.rank})}
 function staffRows(){var l=staffFiltered();return l.length?l.map(empRow).join(''):'<div class="empty">Никого</div>'}
@@ -1004,7 +998,7 @@ var HRMENU=[
  ['prem','💰','Премирование','Начисление денежного вознаграждения сотруднику.'],
  ['fire','🚪','Увольнение','Увольнение сотрудника с возможной отметкой ЧС или ОЧС.']
 ];
-function hrOpts(sel){return '<option value="">— выберите —</option>'+E.map(function(e){return '<option value="'+esc(e.uid)+'"'+(sel===e.uid?' selected':'')+'>'+e.uid+' · '+e.name+' · '+e.pos+'</option>'}).join('')}
+function hrOpts(sel){return '<option value="">— выберите —</option>'+E.map(function(e){return '<option value="'+esc(e.uid)+'"'+(sel===e.uid?' selected':'')+'>#'+e.uid+' · '+e.name+' · '+e.pos+'</option>'}).join('')}
 function pageHR(){
  var s=hrStats();
  function tile(n,l){return '<div class="tile"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>'}
@@ -1125,8 +1119,8 @@ function dbOpenCitizen(i){
  var facName=(c.job&&c.job.org)?c.job.org:'—';
  var regCars=(c.vehicles||[]).filter(function(v){return !!v.plate});
  var carsHtml=regCars.length?'<div class="panel" style="padding:6px 16px">'+regCars.map(function(v){return '<div class="att"><div style="font-size:18px">🚗</div><div class="att-x"><b>'+esc(v.make)+'</b><span class="mut">Зарегистрированное ТС</span></div><span class="ptag" style="font-size:12.5px;border-color:#4da3ff55;color:#fff">'+esc(v.plate)+'</span></div>'}).join('')+'</div>':'<div class="empty">Зарегистрированных ТС с гос. номерами не найдено</div>';
- var docPanel='<div class="tiles" style="margin:12px 0"><div class="tile"><div class="n" style="font-size:18px">'+esc(c.uid)+'</div><div class="l">UID гражданина</div></div><div class="tile"><div class="n" style="font-size:18px;color:#a9c7ef">'+esc(c.doc||'—')+'</div><div class="l">Паспорт / документ</div></div><div class="tile"><div class="n" style="font-size:18px">'+rd(c.born)+'</div><div class="l">Дата рождения</div></div><div class="tile"><div class="n" style="font-size:16px;color:'+(facName==='—'?'var(--mut)':'#6cc0ff')+'">'+esc(facName)+'</div><div class="l">Фракция</div></div></div>';
- dbModal(c.name,'UID '+c.uid+' · г. '+c.city,docPanel+'<div class="sec">Транспорт на учёте · '+regCars.length+'</div>'+carsHtml+'<div class="sec">История правонарушений · '+c.arc.length+'</div>'+dbArcList(c.arc));
+ var docPanel='<div class="tiles" style="margin:12px 0"><div class="tile"><div class="n" style="font-size:18px">#'+esc(c.uid)+'</div><div class="l">UID гражданина</div></div><div class="tile"><div class="n" style="font-size:18px;color:#a9c7ef">'+esc(c.doc||'—')+'</div><div class="l">Паспорт / документ</div></div><div class="tile"><div class="n" style="font-size:18px">'+rd(c.born)+'</div><div class="l">Дата рождения</div></div><div class="tile"><div class="n" style="font-size:16px;color:'+(facName==='—'?'var(--mut)':'#6cc0ff')+'">'+esc(facName)+'</div><div class="l">Фракция</div></div></div>';
+ dbModal(c.name,'UID #'+c.uid+' · г. '+c.city,docPanel+'<div class="sec">Транспорт на учёте · '+regCars.length+'</div>'+carsHtml+'<div class="sec">История правонарушений · '+c.arc.length+'</div>'+dbArcList(c.arc));
 }
 function dbOpenWanted(i){var w=DB_WANTED[i];if(!w)return;var ci=citIdxByUid(w.uid);if(ci>-1)dbOpenCitizen(ci)}
 
@@ -1136,12 +1130,12 @@ function dbPageCheck(){
  return '<div class="ph"><div><h1>🔎 Проверка граждан <span class="cnt">'+list.length+'</span></h1></div></div><div class="panel"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="inp" id="dbCheckInp" style="flex:1;min-width:250px" placeholder="Например: Иван Иванов, Александр Смирнов..." value="'+esc(DB_CHECK_Q)+'" oninput="dbCheckFilter(this.value)"><button class="btn ghost" onclick="dbCheckFilter(\'Иван Иванов\')">Иван Иванов (5)</button></div></div><div id="dbCheckList">'+dbCheckRowsHtml(list)+'</div>';
 }
 function dbCheckRowsHtml(list){
- return '<div class="emps">'+list.slice(0,60).map(function(c){var idx=citIdxByUid(c.uid),w=wantByUid(c.uid),regCars=(c.vehicles||[]).filter(function(v){return !!v.plate}).length;return '<div class="prow" onclick="dbOpenCitizen('+idx+')"><div class="e-id"><div class="ava">'+ini(c.name)+'</div><div><div class="nm">'+esc(c.name)+'</div><div class="emp-uid">UID '+esc(c.uid)+' · род. '+rd(c.born)+'</div></div></div><div><span class="ptag">📄 Док: '+esc(c.doc||'—')+'</span></div><div><span class="ptag">🚗 ТС: '+regCars+'</span></div><div>'+(w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>')+'</div><div class="e-go">›</div></div>'}).join('')+'</div>';
+ return '<div class="emps">'+list.slice(0,60).map(function(c){var idx=citIdxByUid(c.uid),w=wantByUid(c.uid),regCars=(c.vehicles||[]).filter(function(v){return !!v.plate}).length;return '<div class="prow" onclick="dbOpenCitizen('+idx+')"><div class="e-id"><div class="ava">'+ini(c.name)+'</div><div><div class="nm">'+esc(c.name)+'</div><div class="emp-uid">UID #'+esc(c.uid)+' · род. '+rd(c.born)+'</div></div></div><div><span class="ptag">📄 Док: '+esc(c.doc||'—')+'</span></div><div><span class="ptag">🚗 ТС: '+regCars+'</span></div><div>'+(w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>')+'</div><div class="e-go">›</div></div>'}).join('')+'</div>';
 }
 window.dbCheckFilter=function(val){DB_CHECK_Q=val;renderDB()};
 function dbPageCrt(){
  var h='<div class="ph"><div><h1>Розыск <span class="cnt">'+DB_WANTED.length+'</span></h1></div></div>';
- for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);h+='<div class="panel" style="cursor:pointer;padding:13px 16px;margin:8px 0" onclick="dbOpenWanted('+i+')"><b>'+esc(c?c.name:'UID '+w.uid)+'</b> <span class="mut">UID '+w.uid+'</span><div style="margin-top:4px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px;margin-top:4px">Выдал: '+formatOfficerRef(w.by)+'</div></div>'}
+ for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);h+='<div class="panel" style="cursor:pointer;padding:13px 16px;margin:8px 0" onclick="dbOpenWanted('+i+')"><b>'+esc(c?c.name:'UID #'+w.uid)+'</b> <span class="mut">UID #'+w.uid+'</span><div style="margin-top:4px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px;margin-top:4px">Выдал: '+formatOfficerRef(w.by)+'</div></div>'}
  return h;
 }
 function dbPageArc(){
@@ -1169,7 +1163,7 @@ function openDB(){PHSCR='mvd';var po=document.getElementById('phoneOv');if(po)po
 
 function pageOchs(){
  var chs=DISM.filter(function(d){return d.bl});
- return '<div class="ph"><div><h1>ЧС / ОЧС<span class="cnt">'+chs.length+'</span></h1></div></div>'+chs.map(function(d){return '<div class="panel" style="padding:13px 16px;margin:8px 0"><b>'+d.name+'</b> <span class="mut">UID '+d.uid+'</span><div style="margin-top:4px">'+d.reason+'</div></div>'}).join('');
+ return '<div class="ph"><div><h1>ЧС / ОЧС<span class="cnt">'+chs.length+'</span></h1></div></div>'+chs.map(function(d){return '<div class="panel" style="padding:13px 16px;margin:8px 0"><b>'+d.name+'</b> <span class="mut">UID #'+d.uid+'</span><div style="margin-top:4px">'+d.reason+'</div></div>'}).join('');
 }
 
 var MUID='',MTAB='career';
@@ -1180,7 +1174,7 @@ function empWorkLogs(e){return LOGS.filter(function(l){return (l.actorUid===e.ui
 function renderModal(){var e=byUid(MUID);if(!e)return;var c=genCustom(e);$('#mroot').innerHTML='<div class="back" onclick="if(event.target===this)closeModal()"><div class="modal">'+mHead(e)+'<div class="m-body">'+mPills(e,c)+mTabBody(e,c)+'</div><div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div></div></div>'}
 function mHead(e){
  var w=isWatch(e);
- return '<div class="m-head"><button class="m-close" onclick="closeModal()">✕</button><div class="mh-row"><div class="ava'+(e.rank>=15?' gold':'')+'">'+ini(e.name)+'</div><div><div class="mh-nm">'+e.name+'</div><div class="mh-sub"><span class="rk '+g(e.rank)+'">'+e.rank+' · '+RANKS[e.rank-1].name+'</span><span style="color:'+(posColor(e.pos)||F[e.fac].c)+'">'+e.pos+'</span></div></div></div><div class="mh-tags"><span class="ptag" style="border-color:'+F[e.fac].c+'55;color:'+F[e.fac].c+'">'+F[e.fac].s+'</span><span class="ptag">UID '+e.uid+'</span><span class="ptag" style="color:#5fd9c0">💳 №'+bankAcc(e)+'</span>'+(!w?'<span class="ptag">взыскания '+fmtPen(e.pen)+'</span>':'')+'</div></div>';
+ return '<div class="m-head"><button class="m-close" onclick="closeModal()">✕</button><div class="mh-row"><div class="ava'+(e.rank>=15?' gold':'')+'">'+ini(e.name)+'</div><div><div class="mh-nm">'+e.name+'</div><div class="mh-sub"><span class="rk '+g(e.rank)+'">'+e.rank+' · '+RANKS[e.rank-1].name+'</span><span style="color:'+(posColor(e.pos)||F[e.fac].c)+'">'+e.pos+'</span></div></div></div><div class="mh-tags"><span class="ptag" style="border-color:'+F[e.fac].c+'55;color:'+F[e.fac].c+'">'+F[e.fac].s+'</span><span class="ptag">UID #'+e.uid+'</span><span class="ptag" style="color:#5fd9c0">💳 №'+bankAcc(e)+'</span>'+(!w?'<span class="ptag">взыскания '+fmtPen(e.pen)+'</span>':'')+'</div></div>';
 }
 function mPills(e,c){
  var w=isWatch(e),activeCnt=activePenList(e).length,actLogsCnt=empWorkLogs(e).length;
@@ -1203,9 +1197,20 @@ function mTabBody(e,c){
  return '<div class="tscroll tl">'+sorted.map(function(ev){return '<div class="tli"><div class="tld">'+fmtD(pd(ev.d))+'</div><div class="tlx"><b>'+ev.txt+'</b><span>'+signerLink(ev.by)+'</span></div></div>'}).join('')+'</div>';
 }
 
-/* ============ ТЕЛЕФОН И 5 ГРУПП СМС (Включая [ГИБДД] Радар) ============ */
+/* ============ ТЕЛЕФОН, 5 ГРУПП СМС И НОВОЕ ПРИЛОЖЕНИЕ «⚖️ НАКАЗАНИЯ» (Пункты 12, 15, 16) ============ */
 var PHSCR='home';
 var SMS_GROUP=null;
+var PUNISH_FLT='all';
+var HIDE_ADMIN_PUNISH_CHAT=false;
+
+var PUNISHMENTS_LIST=[
+ {d:'16.10.2026',t:'21:14',type:'mute',   badge:'МУТ ЧАТА',     col:'#f7c948', dur:'30 мин.',  admin:'Администратор Савин В.',  reason:'CapsLock в общий чат (/b)'},
+ {d:'11.10.2026',t:'18:40',type:'jail',   badge:'ДЕМОРГАН',     col:'#fb923c', dur:'60 мин.',  admin:'Администратор Осипов Т.', reason:'NonRP езда (срез по полям)'},
+ {d:'04.10.2026',t:'15:05',type:'kick',   badge:'КИК С СЕРВЕРА',col:'#60a5fa', dur:'—',        admin:'Администратор Гуров К.',  reason:'Помеха спавну (AFK на дороге)'},
+ {d:'22.09.2026',t:'19:30',type:'nick',   badge:'СМЕНА НИКА',   col:'#34d399', dur:'Одобрено', admin:'Администратор Мальцев Д.',reason:'Смена никнейма: Evgeniy_Sokolov → Evgeniy_Holmes'},
+ {d:'10.08.2026',t:'22:10',type:'mute',   badge:'МУТ ГОЛОСА',   col:'#f7c948', dur:'60 мин.',  admin:'Администратор Савин В.',  reason:'Громкие звуки / музыка в голосовой чат'},
+ {d:'14.05.2026',t:'14:00',type:'ban',    badge:'РАЗБЛОКИРОВАН',col:'#ef4444', dur:'Снят',     admin:'Главный администратор',   reason:'Ошибочная блокировка (амнистирован по жалобе)'}
+];
 
 var SMS_GROUPS={
  bank:{
@@ -1272,19 +1277,26 @@ function onSmsMsgClick(fineId,tab){
 }
 window.onSmsMsgClick=onSmsMsgClick;
 
+window.setPunishFilter=function(f){PUNISH_FLT=f;phRender()};
+window.toggleHideAdminChat=function(){
+ HIDE_ADMIN_PUNISH_CHAT=!HIDE_ADMIN_PUNISH_CHAT;
+ phRender();
+ toast(HIDE_ADMIN_PUNISH_CHAT?'✓ Чужие наказания от администрации в чате скрыты':'Уведомления о наказаниях в чате включены');
+};
+
 function phRender(){
  var scr=$('#phScr');if(!scr)return;
  if(PHSCR==='home'){
   var totalSms=SMS_GROUPS.bank.msgs.length+SMS_GROUPS.gibdd.msgs.length+SMS_GROUPS.cam.msgs.length+SMS_GROUPS.radar.msgs.length+SMS_GROUPS.mvd.msgs.length;
-  /* Приложения «Автопарк» и «Обыск» убраны из телефона */
   var apps=[
    ['🛡️',"phGo('mvd')",'МВД',3,'background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-color:#60a5fa'],
    ['🏦',"location.href='bank.html?mode=phone'",'Банк',0,'background:linear-gradient(135deg,#10b981,#047857);border-color:#34d399'],
    ['💬',"openSmsGroup(null)",'СМС',totalSms,'background:linear-gradient(135deg,#8b5cf6,#5b21b6);border-color:#a78bfa'],
+   ['⚖️',"phGo('punish')",'Наказания',PUNISHMENTS_LIST.length,'background:linear-gradient(135deg,#ef4444,#991b1b);border-color:#f87171'],
    ['📞',"toast('Вызовы')",'Вызовы',0,'background:#1c2432;border-color:#2d3849'],
    ['🗺️',"toast('Навигатор')",'Карта',0,'background:#1c2432;border-color:#2d3849'],
    ['📷',"toast('Камера')",'Камера',0,'background:#1c2432;border-color:#2d3849'],
-   ['⚙️',"toast('Настройки')",'Опции',0,'background:#1c2432;border-color:#2d3849']
+   ['⚙️',"phGo('settings')",'Опции',0,'background:#1c2432;border-color:#2d3849']
   ];
   scr.innerHTML=
    '<div class="ph-clock" id="phClock2"></div><div class="ph-date" id="phDate"></div>'+
@@ -1315,7 +1327,7 @@ function phRender(){
   if(!SMS_GROUP){
    var gKeys=['bank','gibdd','cam','radar','mvd'];
    scr.innerHTML=
-    '<div class="ph-back" onclick="phGo(\'home\')">← На главный экран</div>'+
+    '<div class="ph-back" onclick="phGo(\'home\')">← Назад</div>'+
     '<div class="ph-app-t">💬 Уведомления</div>'+
     gKeys.map(function(k){
      var g=SMS_GROUPS[k];
@@ -1327,8 +1339,9 @@ function phRender(){
     }).join('');
   }else{
    var grp=SMS_GROUPS[SMS_GROUP];
+   /* Пункт 12: «Все группы СМС» заменено на «← Назад» */
    scr.innerHTML=
-    '<div class="ph-back" onclick="openSmsGroup(null)">← Все группы СМС</div>'+
+    '<div class="ph-back" onclick="openSmsGroup(null)">← Назад</div>'+
     '<div class="ph-app-t">'+grp.ic+' '+esc(grp.name)+'</div>'+
     grp.msgs.map(function(m){
      var clickable=!!(m.fineId||m.tab);
@@ -1343,9 +1356,46 @@ function phRender(){
      '</div>';
     }).join('');
   }
+ }else if(PHSCR==='punish'){
+  /* Пункт 15 и 16: Приложение «Наказания» (история банов, мутов, киков, деморганов и смены никнеймов) */
+  var flts=[['all','Все ('+PUNISHMENTS_LIST.length+')'],['mute','Муты'],['jail','Деморган'],['kick','Кики'],['ban','Баны'],['nick','Смена ника']];
+  var filtered=PUNISHMENTS_LIST.filter(function(p){return PUNISH_FLT==='all'||p.type===PUNISH_FLT});
+  scr.innerHTML=
+   '<div class="ph-back" onclick="phGo(\'home\')">← Назад</div>'+
+   '<div class="ph-app-t">⚖️ История наказаний</div>'+
+   '<div style="font-size:11.5px;color:var(--mut);margin-bottom:10px">Последние записи аккаунта #K8W4C6 (Евгений Холмс)</div>'+
+   '<div onclick="toggleHideAdminChat()" style="cursor:pointer;background:#151c28;border:1px solid '+(HIDE_ADMIN_PUNISH_CHAT?'#10b981':'#27303d')+';border-radius:12px;padding:10px 12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px">'+
+    '<div style="font-size:11.5px;line-height:1.35"><b>Скрывать чужие наказания в чате</b><span style="display:block;font-size:10.5px;color:var(--mut)">Не показывать красные строки от администрации</span></div>'+
+    '<span style="padding:4px 9px;border-radius:8px;font-size:10.5px;font-weight:800;background:'+(HIDE_ADMIN_PUNISH_CHAT?'rgba(16,185,129,.2)':'rgba(255,255,255,.06)')+';color:'+(HIDE_ADMIN_PUNISH_CHAT?'#34d399':'#94a3b8')+'">'+(HIDE_ADMIN_PUNISH_CHAT?'ВКЛ':'ВЫКЛ')+'</span>'+
+   '</div>'+
+   '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">'+
+    flts.map(function(f){
+     var on=(PUNISH_FLT===f[0]);
+     return '<span onclick="setPunishFilter(\''+f[0]+'\')" style="cursor:pointer;padding:5px 9px;border-radius:8px;font-size:10.5px;font-weight:800;background:'+(on?'rgba(77,163,255,.22)':'#151c28')+';border:1px solid '+(on?'#4da3ff':'#27303d')+';color:'+(on?'#fff':'var(--mut)')+'">'+f[1]+'</span>';
+    }).join('')+
+   '</div>'+
+   filtered.map(function(p){
+    return '<div style="background:#151c28;border:1px solid #27303d;border-left:3px solid '+p.col+';border-radius:12px;padding:11px 12px;margin-bottom:8px">'+
+     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">'+
+      '<span style="font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px;background:'+p.col+'22;color:'+p.col+';border:1px solid '+p.col+'55">'+p.badge+' · '+p.dur+'</span>'+
+      '<span style="font-size:10.5px;color:var(--mut)">'+p.d+' в '+p.t+'</span>'+
+     '</div>'+
+     '<b style="font-size:12px;color:#fff;display:block;margin-bottom:3px">'+esc(p.reason)+'</b>'+
+     '<div style="font-size:11px;color:#94a3b8">Выдал: '+esc(p.admin)+'</div>'+
+    '</div>';
+   }).join('');
+ }else if(PHSCR==='settings'){
+  scr.innerHTML=
+   '<div class="ph-back" onclick="phGo(\'home\')">← Назад</div>'+
+   '<div class="ph-app-t">⚙️ Настройки телефона и чата</div>'+
+   '<div class="ph-mi" onclick="toggleHideAdminChat()">'+
+    '<div class="ph-mi-ic">🔇</div>'+
+    '<div style="flex:1"><b>Скрывать наказания администрации в чате</b><span class="sub">Отключает глобальные сообщения о банах, мутах и киках других игроков</span></div>'+
+    '<span class="ptag" style="color:'+(HIDE_ADMIN_PUNISH_CHAT?'#34d399':'var(--mut)')+'">'+(HIDE_ADMIN_PUNISH_CHAT?'ВКЛ':'ВЫКЛ')+'</span>'+
+   '</div>';
  }else{
   scr.innerHTML=
-   '<div class="ph-back" onclick="phGo(\'home\')">← Телефон</div>'+
+   '<div class="ph-back" onclick="phGo(\'home\')">← Назад</div>'+
    '<div class="ph-app-t">МВД · Служебные приложения</div>'+
    '<div class="ph-mi" onclick="openLS(\'home\')"><div class="ph-mi-ic">👥</div><div><b>Личный состав</b><span class="sub">'+E.length+' сотрудников · логи, склад, финансы, кадры, ЧС/ОЧС</span></div></div>'+
    '<div class="ph-mi" onclick="openLS(\'supply\')"><div class="ph-mi-ic">🚚</div><div><b>Заказать поставку (МО / МЗ)</b><span class="sub">патроны, бронежилеты, сухпайки ИРП, аптечки и медикаменты</span></div></div>'+
@@ -1460,6 +1510,9 @@ function buildNav(){
  var params=new URLSearchParams(location.search);
  if(params.get('view')==='mvd'||location.search.indexOf('view=mvd')>=0){
   PHSCR='mvd';
+  phRender();
+ }else if(params.get('view')==='punish'||location.search.indexOf('view=punish')>=0){
+  PHSCR='punish';
   phRender();
  }
 
