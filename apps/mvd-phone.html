@@ -191,7 +191,8 @@ textarea.inp{font-family:inherit;resize:vertical}
 .ph-mi-ic{width:40px;height:40px;border-radius:12px;background:#223047;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 40px}
 .ph-mi b{display:block;font-size:13.5px}
 .ph-mi .sub{font-size:11px;color:var(--mut)}
-.ph-home{height:5px;width:130px;background:#2a3342;border-radius:4px;margin:8px auto 10px}
+.ph-home{height:5px;width:130px;background:#2a3342;border-radius:4px;margin:8px auto 10px;cursor:pointer;transition:background .15s,transform .15s}
+.ph-home:hover{background:#6cc0ff;transform:scaleX(1.08)}
 #phoneOv{position:fixed;inset:0;z-index:350;background:rgba(4,7,11,.8);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 #mroot .back{position:fixed;inset:0;background:rgba(4,7,11,.75);backdrop-filter:blur(7px);z-index:400;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px}
 #froot .pback{position:fixed;inset:0;background:rgba(4,7,11,.78);backdrop-filter:blur(7px);z-index:410;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px}
@@ -296,7 +297,7 @@ window.addEventListener('error',function(ev){
   <aside id="sidebar">
     <div class="logo"><div class="logo-ic">🛡️</div><div><div class="logo-t">МВД</div><div class="logo-s">Личный состав</div></div></div>
     <nav id="nav"></nav>
-    <div class="sb-foot">Прототип v4.6 · 54 чел.</div>
+    <div class="sb-foot">Прототип v5.0 · 54 чел.</div>
   </aside>
   <div id="wrap">
     <header id="topbar">
@@ -322,7 +323,7 @@ window.addEventListener('error',function(ev){
   <aside id="dbsidebar">
     <div class="logo"><div class="logo-ic">🗄️</div><div><div class="logo-t">База данных</div><div class="logo-s">МВД · розыск и проверка</div></div></div>
     <nav id="dbnav"></nav>
-    <div class="sb-foot">База данных v2.1</div>
+    <div class="sb-foot">База данных v2.2</div>
   </aside>
   <div id="dbwrap">
     <header id="dbtop">
@@ -340,7 +341,7 @@ window.addEventListener('error',function(ev){
   <div class="phone-in">
    <div class="ph-bar"><b id="phClock">21:47</b><span style="font-size:10px;color:#7a8699;letter-spacing:1px">LTE · 🔋 87%</span></div>
    <div class="ph-scr" id="phScr"></div>
-   <div class="ph-home"></div>
+   <div class="ph-home" onclick="exitToPhone()" title="Выйти в главное меню телефона"></div>
   </div>
  </div>
 </div>
@@ -351,7 +352,7 @@ window.addEventListener('error',function(ev){
 /* ============ УТИЛИТЫ ============ */
 function $(s){return document.querySelector(s)}
 function pad(n){return String(n).padStart(2,'0')}
-var TODAY=new Date(2026,9,16);
+var TODAY=new Date(2026,9,18);
 var MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 function addD(d,n){return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n)}
 function daysAgo(d){return Math.round((TODAY-d)/864e5)}
@@ -373,7 +374,7 @@ function isWatch(e){return !!e && (e.fac==='watch'||(e.pos&&e.pos.toLowerCase().
 function toast(msg,warn){var t=document.createElement('div');t.className='toast'+(warn?' warn':'');t.textContent=msg;$('#troot').appendChild(t);setTimeout(function(){t.classList.add('out')},2800);setTimeout(function(){t.remove()},3300)}
 function carNo(rng){var L='АВЕКМНОРСТУХ';function ch(){return L[Math.floor(rng()*L.length)]}return ch()+(100+Math.floor(rng()*900))+ch()+ch()+' '+(16+Math.floor(rng()*80))}
 function docNo(rng){return (4000+Math.floor(rng()*2000))+' '+(100000+Math.floor(rng()*900000))}
-function bankAcc(e){var rng=mulberry32(String(e.uid).length*101+7);return String(100000+Math.floor(rng()*900000))}
+function bankAcc(e){if(e.uid==='K8W4C6')return '748291';var rng=mulberry32(String(e.uid).length*101+7);return String(100000+Math.floor(rng()*900000))}
 var ACTOR='Холмс Е.';
 function nowT(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())}
 
@@ -521,7 +522,6 @@ var DISM=[
 {name:'Куликова Вера',uid:'X1C5V7',fac:'uvdM',pos:'Инспектор ППС',ago:95,rank:7,reason:'Уход по собственному желанию',by:'Егоров В.',bl:false,global:false},
 {name:'Родин Всеволод',uid:'B4P8K3',fac:'uvdM',pos:'Зам. начальника ОМВД',ago:140,rank:12,reason:'Коррупция — получение взятки при исполнении',by:'Савин В.',bl:true,global:true}];
 
-/* Поиск действующего или уволенного сотрудника по имени / инициалу */
 function findEmpByAnyName(str){
  if(!str)return null;
  str=String(str).trim();
@@ -563,7 +563,6 @@ function signerLink(by){
  if(d)return '<span class="emp-fired" title="Сотрудник уволен, личная карточка недоступна">'+esc(d.pos||'Инспектор')+', '+RANKS[Math.max(0,d.rank-1)].name+' '+esc(d.name)+' (уволен)</span>';
  return esc(by);
 }
-/* Отображение сотрудника в истории нарушений БД (с должностью и званием; если уволен — без клика) */
 function formatOfficerRef(by){
  if(!by)return 'Сотрудник МВД';
  var e=findEmpByAnyName(by);
@@ -792,8 +791,8 @@ function wIcon(n){
  var k='box';
  if(has('наручник','кандал')){k='cuffs'}
  else if(has('патрон','боеприпас')){k='ammo'}
- else if(has('ак-47','автомат','калаш','винтовк','дробовик','помпов','обрез')){k='rifle'}
- else if(has('пм','макаров','пистолет','травмат','оса','глок')){k='pistol'}
+ else if(has('ак-47','ак-74','автомат','калаш','винтовк','дробовик','помпов','обрез','мр-133')){k='rifle'}
+ else if(has('пм','макаров','пистолет','тт','грач','травмат','оса','глок')){k='pistol'}
  else if(has('бронежилет','броня','кирас')){k='vest'}
  else if(has('жилет')){k='svest'}
  else if(has('рация','радиостанц')){k='radio'}
@@ -801,7 +800,7 @@ function wIcon(n){
  else if(has('дубинк','палк','тонфа')){k='baton'}
  else if(has('фонар')){k='torch'}
  else if(has('шлем','каск')){k='helmet'}
- else if(has('аптечк','медикам','носилк')){k='med'}
+ else if(has('аптечк','медикам','носилк','таблет','бинт')){k='med'}
  else if(has('нож','мачете','штык')){k='knife'}
  else if(has('дымов','шашк','гранат','газов','перцов')){k='grenade'}
  else if(has('видео','камер','регистратор','нагрудн')){k='cam'}
@@ -844,7 +843,7 @@ function wPerLabel(){var p=WSTATE.period;if(p==='day'){return 'сегодня'}i
 function wIn(L){var b=wBounds();if(L.d<b[0]||L.d>b[1]){return false}if(WSTATE.fac!=='all'&&L.fac!==WSTATE.fac){return false}return true}
 function lowStock(){return WSTOCK.filter(function(s){return s.q<=s.min}).length}
 function wStockRows(){var list=WSTOCK.filter(function(s){return (WSTATE.fac==='all'||s.fac===WSTATE.fac)&&WCAT[wIcon(s.n).k]===WSTATE.cat});if(!list.length){return '<div class="empty">Пусто</div>'}return '<div class="wlist">'+list.map(function(s){var ic=wIcon(s.n),low=s.q<=s.min;return '<div class="witem"><div class="wic" style="color:'+ic.col+';border-color:'+ic.col+'55;background:'+ic.col+'14">'+ic.svg+'</div><div><b>'+s.n+'</b><div class="mut" style="font-size:11px">'+F[s.fac].s+' · мин '+s.min+'</div></div><div class="wqty"><b'+(low?' class="low-t"':'')+'>'+fmtN(s.q)+'</b><span>в наличии</span></div><div>'+(low?'<span style="color:var(--red);font-size:11px;font-weight:800">НИЗКИЙ</span>':'<span style="color:var(--green);font-size:11px;font-weight:800">В НОРМЕ</span>')+'</div></div>'}).join('')+'</div>'}
-function wLogRows(){var list=WLOG.filter(wIn);if(!list.length){return '<div class="empty">Нет движений</div>'}list.sort(function(a,b){if(a.d!==b.d)return a.d<b.d?1:-1;return a.t<b.t?1:-1});return '<div class="wlog">'+list.slice(0,150).map(function(L){var A=WACT[L.act],d=pd(L.d);return '<div class="wh-row"><div class="wtime"><b>'+pad(d.getDate())+'.'+pad(d.getMonth()+1)+'</b><br>'+L.t+'</div><span class="wh-a '+A[0]+'">'+A[1]+'</span><div class="wh-i"><span class="emp-link" data-uid="'+esc(L.uid)+'">👤 '+esc(L.emp)+'</span> <span class="ptag" style="border-color:'+F[L.fac].c+'44;color:'+F[L.fac].c+';font-size:10px;padding:1px 8px">'+F[L.fac].s+'</span><div style="margin-top:5px">'+L.items.map(function(it){var ic=wIcon(it.n);return '<span class="wtag" style="color:'+ic.col+'">'+ic.svg+'<span>'+it.n+' ×'+it.q+'</span></span>'}).join('')+'</div></div></div>'}).join('')+'</div>'}
+function wLogRows(){var list=WLOG.filter(wIn);if(!list.length){return '<div class="empty">Нет движений</div>'}list.sort(function(a,b){if(a.d!==b.d)return a.d<b.d?1:-1;return a.t<b.t?1:-1});return '<div class="wlog">'+list.slice(0,150).map(function(L){var A=WACT[L.act],d=pd(L.d);return '<div class="wh-row"><div class="wtime"><b>'+pad(d.getDate())+'.'+pad(d.getMonth()+1)+'</b><br>'+L.t+'</div><span class="wh-a '+A[0]+'">'+A[1]+'</span><div class="wh-i"><span class="emp-link" data-uid="'+esc(L.uid)+'">👤 '+esc(L.emp)+'</span> <span class="ptag" style="border-color:'+F[L.fac].c+'44;color:'+F[L.fac].c+';font-size:10px;padding:1px 8px">'+F[L.fac].s+'</span><div style="margin-top:5px">'+L.items.map(function(it){var ic=wIcon(it.n);return '<span class="wtag" style="color:'+ic.col+'">'+ic.svg+'<span>'+it.n+' ×'+it.q+'</span></span>'}).join('')+(L.note?'<div class="wh-note">'+esc(L.note)+'</div>':'')+'</div></div></div>'}).join('')+'</div>'}
 function wPage(){
  var perChips=WPER.map(function(p){return '<div class="chip'+(WSTATE.period===p[0]?' on':'')+'" onclick="wSet(\'period\',\''+p[0]+'\')">'+p[1]+'</div>'}).join('');
  var facChips='<div class="chip'+(WSTATE.fac==='all'?' on':'')+'" onclick="wSet(\'fac\',\'all\')">Все подразделения</div>'+FAC_IDS.filter(function(f){return f!=='watch'}).map(function(f){return '<div class="chip'+(WSTATE.fac===f?' on':'')+'" style="--cc:'+F[f].c+'" onclick="wSet(\'fac\',\''+f+'\')">'+F[f].s+'</div>'}).join('');
@@ -856,7 +855,7 @@ function wPage(){
 }
 window.wSet=function(k,v){if(k==='date'&&!v){return}WSTATE[k]=v;if(CUR==='wh'){go('wh')}};
 
-/* ============ ГЕНЕРАТОР ИСТОРИЙ (со складом из WLOG) ============ */
+/* ============ ГЕНЕРАТОР ИСТОРИЙ ============ */
 function genCustom(e){
  if(isWatch(e)){e.pen=0}
  if(!e.custom){
@@ -1118,7 +1117,7 @@ function logTxt(e){
  if(e.cat==='wh'){
   var A={out:'ВЗЯЛ',in:'СДАЛ',add:'ПОЛОЖИЛ',wr:'СПИСАНО'}[e.k]||'—';
   var its=e.items?e.items.map(function(x){return esc(x.n)+' ×'+x.q}).join(', '):'';
-  return '<b style="color:#f7c948">'+A+'</b> со склада · '+its+(e.note?' · '+esc(e.note):'');
+  return '<b style="color:#f7c948">'+A+'</b> · '+its+(e.note?' · '+esc(e.note):'');
  }
  if(e.cat==='citizen'){
   if(e.k==='fine')return 'Выписан штраф <b style="color:#f7c948">'+fmtN(e.amount)+' ₽</b> · '+esc(e.target)+' · '+esc(e.reason);
@@ -1172,7 +1171,7 @@ function pageLogs(){
    logCatBadge(l.cat)+actorHtml+'</div></div></div>';
  }).join('');
  return '<div class="ph"><div><h1>Логи<span class="cnt">'+list.length+'</span></h1><div class="ph-sub">история за 90 дней · клик по имени — карточка</div></div></div>'+
- '<div class="tiles"><div class="tile"><div class="n">'+LOGS.length+'</div><div class="l">записей</div></div><div class="tile"><div class="n" style="color:#f7c948">'+totalCit+'</div><div class="l">с гражданами</div></div><div class="tile"><div class="n" style="color:#4da3ff">'+totalSt+'</div><div class="l">с л/с</div></div><div class="tile"><div class="n" style="color:#f7c948">'+totalWh+'</div><div class="l">со склада</div></div><div class="tile"><div class="n" style="color:#a78bfa">'+totalSet+'</div><div class="l">настройки</div></div></div>'+
+ '<div class="tiles"><div class="tile"><div class="n">'+LOGS.length+'</div><div class="l">записей</div></div><div class="tile"><div class="n" style="color:#f7c948">'+totalCit+'</div><div class="l">с гражданами</div></div><div class="tile"><div class="n" style="color:#4da3ff">'+totalSt+'</div><div class="l">с л/с</div></div><div class="tile"><div class="n" style="color:#f7c948">'+totalWh+'</div><div class="l">со склада / вещдоки</div></div><div class="tile"><div class="n" style="color:#a78bfa">'+totalSet+'</div><div class="l">настройки</div></div></div>'+
  '<div class="panel"><div class="fl-h" style="margin-bottom:10px">Категория</div><div class="chips" style="margin:0">'+catChips+'</div><div class="fl-h" style="margin:14px 0 10px">Подразделение</div><div class="chips" style="margin:0">'+facChips+'</div><div class="fl-h" style="margin:14px 0 10px">Период</div><div class="ctl" style="margin:0">'+perChips+'</div></div>'+
  '<div class="sec">Журнал · показано '+shown+' из '+list.length+'</div>'+
  (rows?'<div class="panel" style="padding:4px 18px">'+rows+'</div>':'<div class="empty">Нет записей</div>');
@@ -1183,33 +1182,25 @@ var FINF={per:'month',date:dStr(TODAY),fac:'all',kind:'Все'};
 function finB(){var p=FINF.per;if(p==='day'){return[dStr(TODAY),dStr(TODAY)]}if(p==='week'){return[dStr(addD(TODAY,-6)),dStr(TODAY)]}if(p==='month'){return[dStr(new Date(TODAY.getFullYear(),TODAY.getMonth(),1)),dStr(TODAY)]}if(p==='year'){return[dStr(new Date(TODAY.getFullYear(),0,1)),dStr(TODAY)]}if(p==='date'){return[FINF.date,FINF.date]}return['0000-01-01','9999-12-31']}
 function finLbl(){var p=FINF.per;if(p==='day'){return 'сегодня'}if(p==='week'){return '7 дней'}if(p==='month'){return MONTHS[TODAY.getMonth()]}if(p==='year'){return TODAY.getFullYear()+' год'}if(p==='date'){return fmtD(pd(FINF.date))}return 'всё время'}
 function finIn(L){var b=finB(),ds=dStr(addD(TODAY,-L.ago));if(ds<b[0]||ds>b[1])return false;if(FINF.fac!=='all'&&L.f!==FINF.fac)return false;if(FINF.kind!=='Все'&&L.kind!==FINF.kind)return false;return true}
-function currentUser(){
- for(var i=0;i<E.length;i++){if(E[i].fac==='hq'&&E[i].rank>=15){return E[i]}}
- return null;
-}
+function currentUser(){for(var i=0;i<E.length;i++){if(E[i].fac==='hq'&&E[i].rank>=15)return E[i]}return null}
 function canTopUpFromHQ(){var u=currentUser();return !!(u&&(u.fac==='watch'||u.fac==='hq'))}
 window.finDoTopUp=function(){
  var f=($('#finFaction')||{}).value;
  var amt=parseInt(($('#finAmount')||{}).value,10);
  var reason=($('#finReason')||{}).value.trim();
- if(!f){toast('Выберите фракцию',true);return}
- if(!amt||amt<=0){toast('Введите сумму',true);return}
- FINLOG.unshift({f:f,ago:0,t:nowT(),kind:'Доход',amt:amt,txt: reason ? ('Пополнение — '+reason) : 'Пополнение —',by:ACTOR});
- pushLog({actor:ACTOR,cat:'staff',k:'prem',target:'',amount:amt,reason:'Пополнение банка '+F[f].s+(reason?' ('+reason+')':'')});
+ if(!f||!amt||amt<=0){toast('Введите сумму',true);return}
+ FINLOG.unshift({f:f,ago:0,t:nowT(),kind:'Доход',amt:amt,txt:reason?('Пополнение — '+reason):'Пополнение',by:ACTOR});
  toast('Пополнено: '+F[f].s+' +'+fmtN(amt)+' ₽');
  go('fin');
 };
 window.finDoHQTopUp=function(){
- if(!canTopUpFromHQ()){toast('Недостаточно прав',true);return}
+ if(!canTopUpFromHQ())return;
  var f=($('#finHQFaction')||{}).value;
  var amt=parseInt(($('#finHQAmount')||{}).value,10);
  var reason=($('#finHQReason')||{}).value.trim();
- if(!f){toast('Выберите фракцию',true);return}
- if(!amt||amt<=0){toast('Введите сумму',true);return}
- if(bank('hq')<amt){toast('Недостаточно средств в банке МВД',true);return}
+ if(!f||!amt||amt<=0||bank('hq')<amt){toast('Проверьте сумму',true);return}
  FINLOG.unshift({f:'hq',ago:0,t:nowT(),kind:'Расход',amt:amt,txt:'Перевод в '+F[f].n,by:ACTOR});
- FINLOG.unshift({f:f,ago:0,t:nowT(),kind:'Доход',amt:amt,txt:'Пополнение из банка Руководства МВД'+(reason?' — '+reason:' —'),by:ACTOR});
- pushLog({actor:ACTOR,cat:'staff',k:'prem',target:'',amount:amt,reason:'Перевод из банка МВД в '+F[f].s+(reason?' ('+reason+')':'')});
+ FINLOG.unshift({f:f,ago:0,t:nowT(),kind:'Доход',amt:amt,txt:'Пополнение из банка Руководства МВД'+(reason?' — '+reason:''),by:ACTOR});
  toast('Переведено: '+F[f].s+' +'+fmtN(amt)+' ₽');
  go('fin');
 };
@@ -1219,32 +1210,12 @@ function pageFin(){
  var allB=0;
  var fbanks=FAC_IDS.filter(function(f){return f!=='watch'}).map(function(f){var b=bank(f);allB+=b;return {f:f,b:b}});
  var bankTiles='<div class="tiles">'+fbanks.map(function(fb){return '<div class="tile" style="border-color:'+F[fb.f].c+'44"><div class="n" style="color:'+F[fb.f].c+';font-size:22px">'+fmtN(fb.b)+' ₽</div><div class="l">'+F[fb.f].s+'</div></div>'}).join('')+'</div>';
- var topupPanel='<div class="panel"><div class="fl-h" style="margin-bottom:10px">Пополнить банк фракции</div>'+
-  '<div class="ctl" style="margin:0">'+
-  '<select class="sel" id="finFaction">'+FAC_IDS.filter(function(f){return f!=='watch'}).map(function(f){return '<option value="'+f+'">'+F[f].n+'</option>'}).join('')+'</select>'+
-  '<input class="inp" id="finAmount" type="number" value="50000" min="1000" step="1000" style="width:150px">'+
-  '<input class="inp" id="finReason" placeholder="Причина (необязательно)" style="flex:1;min-width:200px">'+
-  '<button class="btn green" onclick="finDoTopUp()">➕ Пополнить</button>'+
-  '</div></div>';
- var hqPanel='';
- if(canTopUpFromHQ()){
-  hqPanel='<div class="panel" style="border-color:#8a6a2a55;background:rgba(217,165,76,.06)"><div class="fl-h" style="color:#ffd98a;margin-bottom:10px">Перевод из банка Руководства МВД · доступно только следящим и руководству МВД</div>'+
-   '<div class="ctl" style="margin:0">'+
-   '<select class="sel" id="finHQFaction">'+FAC_IDS.filter(function(f){return f!=='watch'&&f!=='hq'}).map(function(f){return '<option value="'+f+'">'+F[f].n+'</option>'}).join('')+'</select>'+
-   '<input class="inp" id="finHQAmount" type="number" value="100000" min="1000" step="1000" style="width:150px">'+
-   '<input class="inp" id="finHQReason" placeholder="Причина (необязательно)" style="flex:1;min-width:200px">'+
-   '<button class="btn gold" onclick="finDoHQTopUp()">➕ Перевести</button>'+
-   '</div></div>';
- }
- var facFilter='<div class="chip'+(FINF.fac==='all'?' on':'')+'" onclick="FINF.fac=\'all\';go(\'fin\')">Все фракции</div>'+FAC_IDS.filter(function(f){return f!=='watch'}).map(function(f){return '<div class="chip'+(FINF.fac===f?' on':'')+'" style="--cc:'+F[f].c+'" onclick="FINF.fac=\''+f+'\';go(\'fin\')">'+F[f].s+'</div>'}).join('');
  var log=FINLOG.filter(finIn).sort(function(a,b){return a.ago-b.ago});
  var logRows=log.length?log.map(function(L){return '<div class="pl-row"><div class="pl-d">'+fmtD(addD(TODAY,-L.ago))+'<span>'+L.t+'</span></div><span class="wh-a '+(L.kind==='Доход'?'r':'w')+'">'+L.kind+'</span><div class="pl-x"><b>'+L.txt+'</b><span>'+F[L.f].s+' · '+signerLink(L.by)+'</span></div><div class="pl-amt" style="width:auto;color:'+(L.kind==='Доход'?'var(--green)':'var(--red)')+'">'+(L.kind==='Доход'?'+':'−')+fmtN(L.amt)+' ₽</div></div>'}).join(''):'<div class="empty">Нет записей</div>';
  return '<div class="ph"><div><h1>Финансы<span class="cnt">'+fmtN(allB)+' ₽</span></h1></div></div>'+
   '<div class="sec">Банки фракций</div>'+bankTiles+
-  '<div class="sec">Пополнение</div>'+topupPanel+hqPanel+
   '<div class="sec">Журнал · '+finLbl()+'</div>'+
-  '<div class="panel"><div class="fl-h" style="margin-bottom:10px">Период</div><div class="ctl" style="margin:0 0 10px">'+perChips+'</div><div class="fl-h" style="margin-bottom:10px">Фракция</div><div class="chips" style="margin:0">'+facFilter+'</div></div>'+
-  '<div class="tiles"><div class="tile"><div class="n" style="color:var(--green)">'+fmtN(inc)+'</div><div class="l">доходы</div></div><div class="tile"><div class="n" style="color:var(--red)">'+fmtN(exp)+'</div><div class="l">расходы</div></div><div class="tile"><div class="n">'+fmtN(inc-exp)+'</div><div class="l">сальдо</div></div></div>'+
+  '<div class="panel"><div class="ctl" style="margin:0">'+perChips+'</div></div>'+
   '<div class="panel">'+logRows+'</div>';
 }
 
@@ -1252,29 +1223,12 @@ function pageFin(){
 function rankSel(v,attr){var s='<select class="sel" style="padding:5px 9px;font-size:12px" '+attr+'>';for(var r=1;r<=18;r++){s+='<option value="'+r+'"'+(v===r?' selected':'')+'>'+r+' · '+RANKS[r-1].name+'</option>'}return s+'</select>'}
 var RIGHTN=[['bank','💰 Банк'],['wh','📦 Склад'],['prem','💰 Премии'],['pen','⚠️ Взыскания'],['ord','📋 Приказы'],['cars','🚗 Автопарк'],['crt','🚨 Розыск'],['guns','🔫 Оружие'],['evid','📦 Вещдоки'],['fine','💸 Неустойки'],['transfer','💸 Переводы'],['sponsor','➕ Пополнение'],['fire','🚫 Увольнение']];
 function pageSet(){
- var head='<tr><th>Право</th>';for(var r=1;r<=18;r++){head+='<th style="text-align:center;padding:6px 3px'+(r>=17?';color:#ffe9b0':'')+'">'+r+'</th>'}
+ var head='<tr><th>Право</th>';for(var r=1;r<=18;r++){head+='<th style="text-align:center;padding:6px 3px">'+r+'</th>'}
  var rows=RIGHTN.map(function(rn){var tds='';for(var i=0;i<18;i++){tds+='<td style="text-align:center;padding:5px 3px"><input type="checkbox" style="accent-color:var(--acc)"'+(SETT.rights[rn[0]][i]?' checked':'')+' onchange="setRight(\''+rn[0]+'\','+(i+1)+',this.checked)"></td>'}return '<tr><td><b style="font-size:12.5px">'+rn[1]+'</b></td>'+tds+'</tr>'}).join('');
- var aHead='<tr><th>Патроны / звание</th>';for(var a=1;a<=18;a++){aHead+='<th style="text-align:center;padding:6px 3px'+(a>=17?';color:#ffe9b0':'')+'">'+a+'</th>'}
- var aRows=SETT.ammo.map(function(am,t){var tds='';for(var i=0;i<18;i++){var inf=am.v[i]==='inf';tds+='<td style="text-align:center;padding:3px">'+'<input type="number" class="inp" style="width:52px;padding:3px 5px;font-size:11.5px;text-align:center"'+(inf?' value="" placeholder="∞" disabled':' value="'+am.v[i]+'" min="0" step="10"')+' onchange="setAmmo('+t+','+(i+1)+',this.value)">'+'<div style="margin-top:3px"><input type="checkbox" style="accent-color:var(--acc)"'+(inf?' checked':'')+' onchange="setAmmoInf('+t+','+(i+1)+',this.checked)"></div>'+'</td>'}return '<tr><td><b style="font-size:12.5px">'+am.n+'</b></td>'+tds+'</tr>'}).join('');
- var carChips=FAKD.map(function(f){return '<div class="chip'+(SETF.carF===f?' on':'')+'" style="--cc:'+F[f].c+'" onclick="SETF.carF=\''+f+'\';go(\'set\')">'+F[f].s+'</div>'}).join('');
- var carRows=SETT.cars[SETF.carF].map(function(c,i){return '<div class="hrow"><div class="hlab" style="flex:1;width:auto;flex-basis:0;font-size:12.5px;color:var(--txt);font-weight:600">'+c.n+'</div>'+rankSel(c.min,'onchange="setCar(\''+SETF.carF+'\','+i+',this.value)"')+'</div>'}).join('');
- var armCatChips=ARM_CATS.map(function(c){return '<div class="chip'+(SETF.armCat===c[0]?' on':'')+'" onclick="SETF.armCat=\''+c[0]+'\';go(\'set\')">'+c[1]+'</div>'}).join('');
- var armFiltered=SETT.arm.filter(function(a){return SETF.armCat==='all'||a.cat===SETF.armCat});
- var armRows=armFiltered.map(function(a){var ix=SETT.arm.indexOf(a);return '<div class="hrow"><div class="hlab" style="flex:1;width:auto;flex-basis:0;font-size:12.5px;color:var(--txt);font-weight:600">'+a.n+'</div>'+rankSel(a.min,'onchange="setArm('+ix+',this.value)"')+'</div>'}).join('');
  return '<div class="ph"><div><h1>Настройки<span class="cnt">демо</span></h1></div></div>'+
- '<div class="panel" style="border-color:#8a6a2a55;background:rgba(217,165,76,.06)"><b style="color:#ffd98a">Все изменения сразу попадают в «Логи» → «Настройки».</b></div>'+
- '<div class="sec">Права по званиям</div>'+'<div class="fscroll" style="max-height:420px;overflow-x:auto"><table class="tbl" style="min-width:980px"><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table></div>'+
- '<div class="sec">Боеприпасы · лимит по званиям</div>'+'<div class="fscroll" style="max-height:360px;overflow-x:auto"><table class="tbl" style="min-width:980px"><thead><tr>'+aHead+'</tr></thead><tbody>'+aRows+'</tbody></table></div>'+
- '<div class="sec">Автопарк · 10 машин на подразделение</div>'+'<div class="chips">'+carChips+'</div>'+'<div class="panel">'+carRows+'</div>'+
- '<div class="sec">Склад · с какого звания выдаётся вооружение и снаряжение</div>'+'<div class="chips">'+armCatChips+'</div>'+'<div class="panel">'+armRows+'</div>'+
- '<div class="sec">Статичные должности</div>'+'<div class="panel"><label class="ochk"><input type="checkbox"'+(SETT.statRank?' checked':'')+' onchange="setStat(this.checked)"> Следящие могут менять звания статичных должностей</label></div>';
+ '<div class="sec">Права по званиям</div>'+'<div class="fscroll" style="max-height:420px;overflow-x:auto"><table class="tbl" style="min-width:980px"><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 window.setRight=function(k,r,v){SETT.rights[k][r-1]=v?1:0;var rn=RIGHTN.filter(function(x){return x[0]===k})[0];pushLog({actor:ACTOR,cat:'settings',k:'setright',rank:r,right:(rn?rn[1]:k),val:v?'включён':'отключён'})};
-window.setAmmo=function(t,r,v){if(SETT.ammo[t].v[r-1]==='inf'){return}var n=parseInt(v,10);if(!isNaN(n)&&n>=0){SETT.ammo[t].v[r-1]=n;pushLog({actor:ACTOR,cat:'settings',k:'setammo',rank:r,ammo:SETT.ammo[t].n,val:n});go('set')}};
-window.setAmmoInf=function(t,r,v){if(v){SETT.ammo[t].v[r-1]='inf'}else{SETT.ammo[t].v[r-1]=0}pushLog({actor:ACTOR,cat:'settings',k:'setammo',rank:r,ammo:SETT.ammo[t].n,val:v?'∞':0});go('set')};
-window.setCar=function(f,i,v){SETT.cars[f][i].min=parseInt(v,10);pushLog({actor:ACTOR,cat:'settings',k:'setcar',rank:parseInt(v,10),car:SETT.cars[f][i].n,val:parseInt(v,10)})};
-window.setArm=function(i,v){SETT.arm[i].min=parseInt(v,10);pushLog({actor:ACTOR,cat:'settings',k:'setcar',rank:parseInt(v,10),car:'вооружение: '+SETT.arm[i].n,val:parseInt(v,10)})};
-window.setStat=function(v){SETT.statRank=v?true:false;pushLog({actor:ACTOR,cat:'settings',k:'setstat',val:v?'включены':'отключены'})};
 
 /* ==================================================================
    БАЗА ДАННЫХ (155+ ГРАЖДАН, ОДНОФАМИЛЬЦЫ, ФРАКЦИИ, ТРАНСПОРТ)
@@ -1315,21 +1269,13 @@ var DB_CITIZENS=[],DB_ARC=[];
 (function(){
  var rng=mulberry32(987654321);
  var usedU={},BW={'27501':1,'31288':1,'41207':1,'38912':1,'52310':1,'49812':1};
- var MAKES=['Lada Vesta','Lada Priora','Toyota Camry XV70','BMW M5 F90','Mercedes-Benz E63','Kia Rio','Hyundai Solaris','Skoda Octavia','Volkswagen Polo','УАЗ Патриот','Ford Focus','Audi A6','Mazda 6','Renault Logan'];
- /* Пул оформлявших сотрудников: как действующие, так и уволенные (DISM) */
+ var MAKES=['Lada Vesta','Lada Priora','Toyota Camry XV70','BMW M5 F90','Mercedes-Benz E63','Kia Rio','Hyundai Solaris','Skoda Octavia','Volkswagen Polo','УАЗ Патриот'];
  var DPS_OFFICERS=['Мельников Григорий','Бирюков Артемий','Пахомов Егор','Логинов Савва','Черкасова Юлия','Щербаков Лев','Наумов Аркадий','Лапин Степан'];
  var PPS_OFFICERS=['Савельев Тимофей','Николаев Станислав','Афанасьев Кирилл','Максимов Денис','Гусев Владислав','Прохоров Илья','Богданов Кирилл','Ефремова Дарья'];
  function uid(){var u;do{u=String(20000+Math.floor(rng()*79000))}while(usedU[u]);usedU[u]=1;return u}
  function rdate(max){return dStr(addD(TODAY,-Math.floor(rng()*(max+1))))}
  function rborn(){return (1968+Math.floor(rng()*38))+'-'+pad(1+Math.floor(rng()*12))+'-'+pad(1+Math.floor(rng()*28))}
- function genVehicles(){
-  var cnt=Math.floor(rng()*4),arr=[];
-  for(var i=0;i<cnt;i++){
-   var hasPlate=rng()>0.28;
-   arr.push({make:pick(rng,MAKES),plate:hasPlate?carNo(rng):null});
-  }
-  return arr;
- }
+ function genVehicles(){var cnt=Math.floor(rng()*4),arr=[];for(var i=0;i<cnt;i++){var hasPlate=rng()>0.28;arr.push({make:pick(rng,MAKES),plate:hasPlate?carNo(rng):null})}return arr}
  function genArc(hot){
   var n=hot?(2+Math.floor(rng()*3)):(rng()<.2?0:1+Math.floor(rng()*3)),a=[];
   for(var i=0;i<n;i++){
@@ -1368,28 +1314,13 @@ var DB_CITIZENS=[],DB_ARC=[];
  E.slice(0,22).forEach(function(emp){
   var u=String(70000+Math.floor(rng()*25000));
   usedU[u]=1;
-  DB_CITIZENS.push({
-   uid:u,name:emp.name,born:rborn(),city:CITY3[0],doc:docNo(rng),
-   job:{org:F[emp.fac].n},
-   vehicles:[{make:'Lada Vesta',plate:carNo(rng)},{make:'Mercedes-Benz E63',plate:null}],
-   arc:[]
-  });
+  DB_CITIZENS.push({uid:u,name:emp.name,born:rborn(),city:CITY3[0],doc:docNo(rng),job:{org:F[emp.fac].n},vehicles:[{make:'Lada Vesta',plate:carNo(rng)},{make:'Mercedes-Benz E63',plate:null}],arc:[]});
  });
- var EXTRA_ORGS=['ЦГБ г. Приволжск','РЖД г. Мирный','ОКБ г. Мирный','ЦГБ г. Приволжск','РЖД г. Мирный','ОКБ г. Мирный','ОКБ г. Мирный'];
- var extraIdx=0;
- var FNAMES_M=['Александр','Дмитрий','Сергей','Андрей','Артём','Иван','Максим','Егор','Кирилл','Никита','Роман','Павел','Илья','Владимир','Тимур','Денис'];
- var LNAMES_M=['Морозов','Новиков','Волков','Алексеев','Семенов','Егоров','Павлов','Козлов','Степанов','Николаев','Орлов','Андреев','Макаров','Захаров','Зайцев'];
- var FNAMES_F=['Анна','Мария','Елена','Ольга','Юлия','Дарья','Екатерина','Полина','Алина','София'];
- var LNAMES_F=['Морозова','Новикова','Волкова','Алексеева','Семенова','Егорова','Павлова','Козлова','Степанова','Николаева','Орлова'];
+ var FNAMES_M=['Александр','Дмитрий','Сергей','Андрей','Артём','Иван','Максим','Егор','Кирилл','Никита','Роман','Павел'];
+ var LNAMES_M=['Морозов','Новиков','Волков','Алексеев','Семенов','Егоров','Павлов','Козлов','Степанов','Николаев','Орлов'];
  while(DB_CITIZENS.length<155){
-  var isF=rng()<.32;
-  var fullName=isF?(pick(rng,FNAMES_F)+' '+pick(rng,LNAMES_F)):(pick(rng,FNAMES_M)+' '+pick(rng,LNAMES_M));
-  var u2=uid();
-  var jb2=null;
-  if(extraIdx<EXTRA_ORGS.length && rng()<.35){
-   jb2={org:EXTRA_ORGS[extraIdx++]};
-  }
-  DB_CITIZENS.push({uid:u2,name:fullName,born:rborn(),city:pick(rng,CITY3),doc:docNo(rng),job:jb2,vehicles:genVehicles(),arc:genArc(false)});
+  var fullName=pick(rng,FNAMES_M)+' '+pick(rng,LNAMES_M);
+  DB_CITIZENS.push({uid:uid(),name:fullName,born:rborn(),city:pick(rng,CITY3),doc:docNo(rng),job:null,vehicles:genVehicles(),arc:genArc(false)});
  }
  for(var c=0;c<DB_CITIZENS.length;c++){
   var ar2=DB_CITIZENS[c].arc;
@@ -1404,280 +1335,105 @@ function rd(s){return fmtD(pd(s))}
 function dbAddM(d,n){return new Date(d.getFullYear(),d.getMonth()+n,d.getDate())}
 function citIdxByUid(u){for(var i=0;i<DB_CITIZENS.length;i++){if(DB_CITIZENS[i].uid===String(u))return i}return -1}
 function citByUid(u){var i=citIdxByUid(u);return i>-1?DB_CITIZENS[i]:null}
-function citByDoc(doc){
- var d=String(doc||'').replace(/\s+/g,'').toLowerCase();
- if(!d)return null;
- for(var i=0;i<DB_CITIZENS.length;i++){
-  if(String(DB_CITIZENS[i].doc||'').replace(/\s+/g,'').toLowerCase()===d)return DB_CITIZENS[i];
- }
- return null;
-}
+function citByDoc(doc){var d=String(doc||'').replace(/\s+/g,'').toLowerCase();if(!d)return null;for(var i=0;i<DB_CITIZENS.length;i++){if(String(DB_CITIZENS[i].doc||'').replace(/\s+/g,'').toLowerCase()===d)return DB_CITIZENS[i]}return null}
 function nextCitUid(){var u;do{u=String(20000+Math.floor(Math.random()*79000))}while(citByUid(u));return u}
-function findCitizenByUidOrDoc(uid,doc){
- var u=String(uid||'').trim();
- if(u){var c=citByUid(u);if(c)return c}
- var d=String(doc||'').trim();
- if(d){var c2=citByDoc(d);if(c2)return c2}
- return null;
-}
+function findCitizenByUidOrDoc(uid,doc){var u=String(uid||'').trim();if(u){var c=citByUid(u);if(c)return c}var d=String(doc||'').trim();if(d){var c2=citByDoc(d);if(c2)return c2}return null}
 function wantIdxByUid(u){for(var i=0;i<DB_WANTED.length;i++){if(DB_WANTED[i].uid===String(u))return i}return -1}
 function wantByUid(u){var i=wantIdxByUid(u);return i>-1?DB_WANTED[i]:null}
 function dbCloseModal(){document.getElementById('mroot').innerHTML=''}
 function dbModal(title,sub,body,foot,av){var f=foot||'<span style="flex:1"></span><button class="btn ghost" onclick="dbCloseModal()">Закрыть</button>';document.getElementById('mroot').innerHTML='<div class="back" onclick="if(event.target===this)dbCloseModal()"><div class="modal"><div class="m-head"><button class="m-close" onclick="dbCloseModal()">✕</button><div class="mh-row"><div class="ava">'+(av||esc(ini(title)))+'</div><div><div class="mh-nm">'+esc(title)+'</div><div class="mh-sub">'+sub+'</div></div></div></div><div class="m-body">'+body+'</div><div class="m-foot">'+f+'</div></div></div>'}
 function dbArcBadge(t){var m={fine:['ШТРАФ','#f7c948'],finecam:['ШТРАФ · КАМЕРА','#f7c948'],deprive:['ЛИШЕНИЕ ПРАВ','#ff5c5c'],arrest:['АРЕСТ','#6cc0ff'],caught:['СНЯТ С РОЗЫСКА','#2fd97a']};var x=m[t]||['ЗАПИСЬ','#8b95a7'];return '<span class="stx" style="color:'+x[1]+';border-color:'+x[1]+'66;background:'+x[1]+'14">'+x[0]+'</span>'}
 function dbArcDesc(a){if(a.t==='fine'){return 'Штраф '+fmtN(a.amt)+' ₽ — '+esc(a.txt)}if(a.t==='finecam'){return 'Штраф с камеры '+fmtN(a.amt)+' ₽ — '+esc(a.txt)+' · машина '+a.car}if(a.t==='deprive'){if(a.days)return 'Лишение прав на '+a.days+' дн. — '+esc(a.txt);return 'Лишение прав на '+a.m+' мес. — '+esc(a.txt)+' · до '+fmtD(dbAddM(pd(a.d),a.m))}if(a.t==='arrest'){return 'Арест — '+a.days+' сут. ('+esc(a.txt)+')'}if(a.t==='caught'){return 'Задержан по розыску'}return ''}
-function dbArcRow(a){
- return '<div class="att"><div class="att-x"><b>'+dbArcBadge(a.t)+' '+dbArcDesc(a)+'</b><span style="display:block;margin-top:4px">Оформил: '+formatOfficerRef(a.by)+'</span></div><div style="text-align:right"><div class="mut" style="font-size:11px">'+rd(a.d)+'</div>'+(a.amt?'<div style="color:#f7c948;font-weight:800;font-size:12.5px">'+fmtN(a.amt)+' ₽</div>':'')+'</div></div>';
-}
+function dbArcRow(a){return '<div class="att"><div class="att-x"><b>'+dbArcBadge(a.t)+' '+dbArcDesc(a)+'</b><span style="display:block;margin-top:4px">Оформил: '+formatOfficerRef(a.by)+'</span></div><div style="text-align:right"><div class="mut" style="font-size:11px">'+rd(a.d)+'</div>'+(a.amt?'<div style="color:#f7c948;font-weight:800;font-size:12.5px">'+fmtN(a.amt)+' ₽</div>':'')+'</div></div>'}
 function dbArcList(arc){if(!arc.length){return '<div class="empty">Нарушений нет</div>'}var h='';for(var i=0;i<arc.length;i++){h+=dbArcRow(arc[i])}return '<div class="panel" style="padding:4px 18px">'+h+'</div>'}
 
-function dbOpenWanted(i){
- var w=DB_WANTED[i];
- if(!w)return;
- var ci=citIdxByUid(w.uid);
- if(ci>-1){
-  dbOpenCitizen(ci);
-  return;
- }
- var newC={uid:w.uid,name:'Гражданин (UID '+w.uid+')',born:'1992-01-01',city:CITY3[0],doc:w.doc||'—',job:null,vehicles:w.car?[{make:w.car.make,plate:w.car.no}]:[],arc:[]};
- DB_CITIZENS.push(newC);
- dbOpenCitizen(DB_CITIZENS.length-1);
-}
-
+function dbOpenWanted(i){var w=DB_WANTED[i];if(!w)return;var ci=citIdxByUid(w.uid);if(ci>-1){dbOpenCitizen(ci);return}var newC={uid:w.uid,name:'Гражданин (UID '+w.uid+')',born:'1992-01-01',city:CITY3[0],doc:w.doc||'—',job:null,vehicles:w.car?[{make:w.car.make,plate:w.car.no}]:[],arc:[]};DB_CITIZENS.push(newC);dbOpenCitizen(DB_CITIZENS.length-1)}
 function dbOpenCar(i){var c=DB_CARW[i];var body='<div class="panel" style="margin:0"><div style="font-size:24px;font-weight:800">'+c.no+'</div><div class="mut">'+c.make+'</div><div style="margin-top:12px"><span class="vlbl">Причина</span><b>'+esc(c.reason)+'</b></div><div class="mut" style="margin-top:10px">'+rd(c.since)+' · Оформил: '+formatOfficerRef(c.by)+'</div></div>';dbModal('Розыск транспорта','по гос. номеру',body,null,'🚗')}
 
-/* Полная личная карточка гражданина */
 function dbOpenCitizen(i){
  var c=DB_CITIZENS[i],w=wantByUid(c.uid);
  var st=w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 В розыске '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>';
  var lic='<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Права: действуют</span>';
- for(var j=0;j<c.arc.length;j++){
-  var a=c.arc[j];
-  if(a.t==='deprive'&&a.days){lic='<span class="stx" style="color:#f7c948;border-color:#8a6a2a">Лишён прав до '+fmtD(addD(pd(a.d),a.days))+'</span>'}
-  else if(a.t==='deprive'&&dbAddM(pd(a.d),a.m)>TODAY){lic='<span class="stx" style="color:#f7c948;border-color:#8a6a2a">Лишён прав до '+fmtD(dbAddM(pd(a.d),a.m))+'</span>'}
- }
+ for(var j=0;j<c.arc.length;j++){var a=c.arc[j];if(a.t==='deprive'&&a.days){lic='<span class="stx" style="color:#f7c948;border-color:#8a6a2a">Лишён прав до '+fmtD(addD(pd(a.d),a.days))+'</span>'}else if(a.t==='deprive'&&dbAddM(pd(a.d),a.m)>TODAY){lic='<span class="stx" style="color:#f7c948;border-color:#8a6a2a">Лишён прав до '+fmtD(dbAddM(pd(a.d),a.m))+'</span>'}}
  var wantBlock='';
- if(w){
-  var segs='',s;for(s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}
-  var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');
-  wantBlock='<div class="panel warn" style="margin:12px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Активный розыск · уровень '+w.lvl+'/6</div><div class="segs '+cls+'">'+segs+'</div></div><div style="margin-top:10px"><span class="vlbl">Причина розыска</span><b>'+esc(w.reason)+'</b></div><div class="mut" style="margin-top:6px;font-size:11.5px">Выдал: '+formatOfficerRef(w.by)+' · с '+rd(w.since)+'</div></div>';
- }
+ if(w){var segs='',s;for(s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');wantBlock='<div class="panel warn" style="margin:12px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Активный розыск · уровень '+w.lvl+'/6</div><div class="segs '+cls+'">'+segs+'</div></div><div style="margin-top:10px"><span class="vlbl">Причина розыска</span><b>'+esc(w.reason)+'</b></div><div class="mut" style="margin-top:6px;font-size:11.5px">Выдал: '+formatOfficerRef(w.by)+' · с '+rd(w.since)+'</div></div>'}
  var facName=(c.job && c.job.org)?c.job.org:'—';
  var regCars=(c.vehicles||[]).filter(function(v){return !!v.plate});
- if(w && w.car && w.car.no){
-  var hasWCar=regCars.some(function(v){return v.plate===w.car.no});
-  if(!hasWCar)regCars.unshift({make:w.car.make||'ТС',plate:w.car.no});
- }
- var carsHtml='';
- if(regCars.length){
-  carsHtml='<div class="panel" style="padding:6px 16px">'+regCars.map(function(v){
-   return '<div class="att"><div style="font-size:18px">🚗</div><div class="att-x"><b>'+esc(v.make)+'</b><span class="mut">Зарегистрированное ТС</span></div><span class="ptag" style="font-size:12.5px;border-color:#4da3ff55;color:#fff">'+esc(v.plate)+'</span></div>';
-  }).join('')+'</div>';
- } else {
-  carsHtml='<div class="empty">Зарегистрированных ТС с гос. номерами не найдено</div>';
- }
+ var carsHtml=regCars.length?'<div class="panel" style="padding:6px 16px">'+regCars.map(function(v){return '<div class="att"><div style="font-size:18px">🚗</div><div class="att-x"><b>'+esc(v.make)+'</b><span class="mut">Зарегистрированное ТС</span></div><span class="ptag" style="font-size:12.5px;border-color:#4da3ff55;color:#fff">'+esc(v.plate)+'</span></div>'}).join('')+'</div>':'<div class="empty">Зарегистрированных ТС с гос. номерами не найдено</div>';
  var noteCars='<div class="mut" style="font-size:11.5px;margin-top:6px">ℹ️ Примечание: если транспортное средство находится без государственных регистрационных номеров, оно не отображается в базе данных учёта.</div>';
- var docPanel='<div class="tiles" style="margin:12px 0">'+
-  '<div class="tile"><div class="n" style="font-size:18px">'+esc(c.uid)+'</div><div class="l">UID гражданина</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:18px;color:#a9c7ef">'+esc(c.doc||'4512 884120')+'</div><div class="l">Паспорт / документ</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:18px">'+rd(c.born)+'</div><div class="l">Дата рождения</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:18px">г. '+esc(c.city)+'</div><div class="l">Прописка</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:16px;color:'+(facName==='—'?'var(--mut)':'#6cc0ff')+'">'+esc(facName)+'</div><div class="l">Фракция</div></div>'+
-  '</div>';
- var body='<div style="display:flex;gap:8px;flex-wrap:wrap">'+st+lic+'</div>'+wantBlock+docPanel+
-  '<div class="sec">Транспортные средства на учёте · '+regCars.length+'</div>'+carsHtml+noteCars+
-  '<div class="sec">История правонарушений · '+c.arc.length+'</div>'+dbArcList(c.arc);
+ var docPanel='<div class="tiles" style="margin:12px 0"><div class="tile"><div class="n" style="font-size:18px">'+esc(c.uid)+'</div><div class="l">UID гражданина</div></div><div class="tile"><div class="n" style="font-size:18px;color:#a9c7ef">'+esc(c.doc||'4512 884120')+'</div><div class="l">Паспорт / документ</div></div><div class="tile"><div class="n" style="font-size:18px">'+rd(c.born)+'</div><div class="l">Дата рождения</div></div><div class="tile"><div class="n" style="font-size:18px">г. '+esc(c.city)+'</div><div class="l">Прописка</div></div><div class="tile"><div class="n" style="font-size:16px;color:'+(facName==='—'?'var(--mut)':'#6cc0ff')+'">'+esc(facName)+'</div><div class="l">Фракция</div></div></div>';
+ var body='<div style="display:flex;gap:8px;flex-wrap:wrap">'+st+lic+'</div>'+wantBlock+docPanel+'<div class="sec">Транспортные средства на учёте · '+regCars.length+'</div>'+carsHtml+noteCars+'<div class="sec">История правонарушений · '+c.arc.length+'</div>'+dbArcList(c.arc);
  dbModal(c.name,'UID '+c.uid+' · Документ № '+(c.doc||'—')+' · г. '+c.city,body);
 }
 
-/* ====== БАЗА: ПРОВЕРКА ГРАЖДАН ====== */
 function dbPageCheck(){
  var q=(DB_CHECK_Q||'').trim().toLowerCase();
- var list=DB_CITIZENS.filter(function(c){
-  if(!q)return true;
-  return c.name.toLowerCase().indexOf(q)>-1 || String(c.uid).toLowerCase().indexOf(q)>-1 || String(c.doc||'').toLowerCase().indexOf(q)>-1;
- });
+ var list=DB_CITIZENS.filter(function(c){if(!q)return true;return c.name.toLowerCase().indexOf(q)>-1 || String(c.uid).toLowerCase().indexOf(q)>-1 || String(c.doc||'').toLowerCase().indexOf(q)>-1});
  var h='<div class="ph"><div><h1>🔎 Проверка граждан <span class="cnt">'+list.length+' из '+DB_CITIZENS.length+'</span></h1><div class="ph-sub">поиск по имени и фамилии (включая однофамильцев), UID или номеру документа</div></div></div>';
- h+='<div class="panel"><div style="display:flex;gap:10px;flex-wrap:wrap">'+
-  '<input class="inp" id="dbCheckInp" style="flex:1;min-width:250px" placeholder="Например: Иван Иванов, Александр Смирнов, Дмитрий Кузнецов..." value="'+esc(DB_CHECK_Q)+'" oninput="dbCheckFilter(this.value)">'+
-  '<button class="btn ghost" onclick="dbCheckFilter(\'Иван Иванов\')">Пример: Иван Иванов (5)</button>'+
-  '<button class="btn ghost" onclick="dbCheckFilter(\'Александр Смирнов\')">Александр Смирнов (4)</button>'+
-  (DB_CHECK_Q?'<button class="btn warn" onclick="dbCheckFilter(\'\')">Сбросить</button>':'')+
-  '</div>'+
-  '<div class="mut" style="font-size:11.5px;margin-top:8px">💡 Кликните на конкретного гражданина из списка, чтобы открыть его личную карточку (там отображаются паспортные данные, фракция или прочерк «—», зарегистрированные ТС и история правонарушений с указанием звания и должности оформлявшего сотрудника).</div>'+
-  '</div>';
+ h+='<div class="panel"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="inp" id="dbCheckInp" style="flex:1;min-width:250px" placeholder="Например: Иван Иванов, Александр Смирнов..." value="'+esc(DB_CHECK_Q)+'" oninput="dbCheckFilter(this.value)"><button class="btn ghost" onclick="dbCheckFilter(\'Иван Иванов\')">Иван Иванов (5)</button><button class="btn ghost" onclick="dbCheckFilter(\'Александр Смирнов\')">Александр Смирнов (4)</button>'+(DB_CHECK_Q?'<button class="btn warn" onclick="dbCheckFilter(\'\')">Сбросить</button>':'')+'</div></div>';
  h+='<div id="dbCheckList">'+dbCheckRowsHtml(list)+'</div>';
  return h;
 }
 function dbCheckRowsHtml(list){
  if(!list.length)return '<div class="empty">По вашему запросу граждан не найдено</div>';
  return '<div class="emps">'+list.slice(0,80).map(function(c){
-  var idx=citIdxByUid(c.uid);
-  var w=wantByUid(c.uid);
-  var regCars=(c.vehicles||[]).filter(function(v){return !!v.plate}).length;
-  return '<div class="prow" onclick="dbOpenCitizen('+idx+')">'+
-   '<div class="e-id"><div class="ava">'+ini(c.name)+'</div><div style="min-width:0"><div class="nm">'+esc(c.name)+'</div><div class="emp-uid">UID '+esc(c.uid)+' · род. '+rd(c.born)+'</div></div></div>'+
-   '<div><span class="ptag">📄 Документ: '+esc(c.doc||'—')+' · г. '+esc(c.city)+'</span></div>'+
-   '<div><span class="ptag">🚗 ТС на учёте: '+regCars+'</span></div>'+
-   '<div>'+(w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>')+'</div>'+
-   '<div class="e-go">›</div></div>';
+  var idx=citIdxByUid(c.uid),w=wantByUid(c.uid),regCars=(c.vehicles||[]).filter(function(v){return !!v.plate}).length;
+  return '<div class="prow" onclick="dbOpenCitizen('+idx+')"><div class="e-id"><div class="ava">'+ini(c.name)+'</div><div style="min-width:0"><div class="nm">'+esc(c.name)+'</div><div class="emp-uid">UID '+esc(c.uid)+' · род. '+rd(c.born)+'</div></div></div><div><span class="ptag">📄 Документ: '+esc(c.doc||'—')+' · г. '+esc(c.city)+'</span></div><div><span class="ptag">🚗 ТС на учёте: '+regCars+'</span></div><div>'+(w?'<span class="stx" style="color:#ff5c5c;border-color:#7a2f2f">🚨 Розыск '+w.lvl+'/6</span>':'<span class="stx" style="color:#2fd97a;border-color:#1d6a5c">Не в розыске</span>')+'</div><div class="e-go">›</div></div>';
  }).join('')+'</div>';
 }
-window.dbCheckFilter=function(val){
- DB_CHECK_Q=val;
- var inp=$('#dbCheckInp');if(inp && inp.value!==val)inp.value=val;
- var q=(DB_CHECK_Q||'').trim().toLowerCase();
- var list=DB_CITIZENS.filter(function(c){
-  if(!q)return true;
-  return c.name.toLowerCase().indexOf(q)>-1 || String(c.uid).toLowerCase().indexOf(q)>-1 || String(c.doc||'').toLowerCase().indexOf(q)>-1;
- });
- var box=$('#dbCheckList');
- if(box)box.innerHTML=dbCheckRowsHtml(list);
- else renderDB();
-};
+window.dbCheckFilter=function(val){DB_CHECK_Q=val;var inp=$('#dbCheckInp');if(inp&&inp.value!==val)inp.value=val;var q=(DB_CHECK_Q||'').trim().toLowerCase();var list=DB_CITIZENS.filter(function(c){if(!q)return true;return c.name.toLowerCase().indexOf(q)>-1||String(c.uid).toLowerCase().indexOf(q)>-1||String(c.doc||'').toLowerCase().indexOf(q)>-1});var box=$('#dbCheckList');if(box)box.innerHTML=dbCheckRowsHtml(list);else renderDB()};
 
-function dbSearch(){var inp=document.getElementById('dbq');var q=inp?inp.value.trim():'';if(!q){toast('Введите запрос',true);return}var pn=plateN(q);if(pn.length>=4&&/[0-9]/.test(pn)){for(var i=0;i<DB_CARW.length;i++){if(plateN(DB_CARW[i].no)===pn){dbOpenCar(i);return}}for(var j=0;j<DB_WANTED.length;j++){if(DB_WANTED[j].car&&plateN(DB_WANTED[j].car.no)===pn){dbOpenWanted(j);return}}}var wi=wantIdxByUid(q);if(wi>-1){dbOpenWanted(wi);return}var ci=citIdxByUid(q);if(ci>-1){dbOpenCitizen(ci);return}var res=[];for(var k=0;k<DB_CITIZENS.length;k++){if(!qMatch(q,DB_CITIZENS[k].name))continue;var wk=wantIdxByUid(DB_CITIZENS[k].uid);if(wk>-1){res.push({ic:'🚨',t:DB_CITIZENS[k].name+' — В РОЗЫСКЕ',s:'UID '+DB_CITIZENS[k].uid+' · Док: '+(DB_CITIZENS[k].doc||'—'),w:wk})}else{res.push({ic:'👤',t:DB_CITIZENS[k].name,s:'UID '+DB_CITIZENS[k].uid+' · Док: '+(DB_CITIZENS[k].doc||'—')+' · '+DB_CITIZENS[k].city,c:k})}}if(res.length===1){if(res[0].w!=null){dbOpenWanted(res[0].w)}else{dbOpenCitizen(res[0].c)}return}if(res.length>1){var body='<div class="ph-sub">Найдено совпадений: '+res.length+'</div>';for(var r=0;r<Math.min(res.length,15);r++){var fn=res[r].w!=null?('dbOpenWanted('+res[r].w+')'):('dbOpenCitizen('+res[r].c+')');body+='<div class="ph-mi" onclick="dbCloseModal();'+fn+'"><div class="ph-mi-ic">'+res[r].ic+'</div><div><b>'+esc(res[r].t)+'</b><div class="sub">'+res[r].s+'</div></div></div>'}dbModal('Результаты','по «'+esc(q)+'»',body);return}toast('Не найдено',true)}
 function plateN(s){s=String(s).toLowerCase();var r='';var L2C={a:'а',b:'в',e:'е',k:'к',m:'м',h:'н',o:'о',p:'р',c:'с',t:'т',y:'у',x:'х'};for(var i=0;i<s.length;i++){r+=(L2C[s[i]]||s[i])}return r.replace(/[^а-я0-9]/g,'')}
-function nT(s){s=String(s).toLowerCase().replace(/ё/g,'е');var L2C={a:'а',b:'в',e:'е',k:'к',m:'м',h:'н',o:'о',p:'р',c:'с',t:'т',y:'у',x:'х'};var r='';for(var i=0;i<s.length;i++){r+=(L2C[s[i]]||s[i])}return r.split(/[^а-я0-9]+/).filter(Boolean)}
-function qMatch(q,name){var qt=nT(q),nt=nT(name);if(!qt.length)return false;for(var i=0;i<qt.length;i++){var ok=false;for(var j=0;j<nt.length;j++){if(nt[j].indexOf(qt[i])===0||qt[i].indexOf(nt[j])===0){ok=true;break}}if(!ok)return false}return true}
-
 function dbPageCrt(){
- var h='<div class="ph"><div><h1>Розыск <span class="cnt">'+(DB_WANTED.length+DB_CARW.length)+'</span></h1><div class="ph-sub">клик по гражданину открывает его полную карточку (документы, фракция, ТС на учёте)</div></div></div>';
- h+='<div class="panel"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="inp" id="dbq" style="flex:1;min-width:250px" placeholder="UID / номер документа / гос. номер" onkeydown="if(event.key===\'Enter\')dbSearch()"><button class="btn" onclick="dbSearch()">🔍</button></div></div>';
+ var h='<div class="ph"><div><h1>Розыск <span class="cnt">'+(DB_WANTED.length+DB_CARW.length)+'</span></h1></div></div>';
  h+='<div class="chips"><div class="chip'+(DB_FLT==='all'?' on':'')+'" onclick="DB_FLT=\'all\';renderDB()">🚨 Все</div><div class="chip'+(DB_FLT==='p'?' on':'')+'" onclick="DB_FLT=\'p\';renderDB()">👤 Граждане</div><div class="chip'+(DB_FLT==='c'?' on':'')+'" onclick="DB_FLT=\'c\';renderDB()">🚗 Транспорт</div></div>';
- if(DB_FLT!=='c'){h+='<div class="sec">Розыск граждан · '+DB_WANTED.length+'</div>';for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='';for(var s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');h+='<div class="panel" style="cursor:pointer;padding:13px 16px;margin:8px 0" onclick="dbOpenWanted('+i+')"><div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b>'+esc(c?c.name:'UID '+w.uid)+'</b> <span class="mut" style="font-size:11px">UID '+esc(w.uid)+(w.doc?' · Док: '+esc(w.doc):'')+'</span><div style="font-size:12.5px;margin-top:4px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px">с '+rd(w.since)+' · Выдал: '+formatOfficerRef(w.by)+'</div></div><div style="text-align:right"><div class="mut" style="font-size:9px">ОПАСНОСТЬ '+w.lvl+'/6</div><div class="segs '+cls+'">'+segs+'</div></div></div></div>'}}
+ if(DB_FLT!=='c'){h+='<div class="sec">Розыск граждан · '+DB_WANTED.length+'</div>';for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='';for(var s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}var cls=w.lvl>=5?'bad':(w.lvl>=3?'mid':'');h+='<div class="panel" style="cursor:pointer;padding:13px 16px;margin:8px 0" onclick="dbOpenWanted('+i+')"><div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b>'+esc(c?c.name:'UID '+w.uid)+'</b> <span class="mut" style="font-size:11px">UID '+esc(w.uid)+'</span><div style="font-size:12.5px;margin-top:4px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px">с '+rd(w.since)+' · Выдал: '+formatOfficerRef(w.by)+'</div></div><div style="text-align:right"><div class="mut" style="font-size:9px">ОПАСНОСТЬ '+w.lvl+'/6</div><div class="segs '+cls+'">'+segs+'</div></div></div></div>'}}
  if(DB_FLT!=='p'){h+='<div class="sec">Транспорт · '+DB_CARW.length+'</div>';for(var i=0;i<DB_CARW.length;i++){var cw=DB_CARW[i];h+='<div class="panel" style="cursor:pointer;padding:13px 16px;margin:8px 0" onclick="dbOpenCar('+i+')"><b style="font-size:15px">'+cw.no+'</b> <span class="mut">· '+cw.make+'</span><div style="font-size:12.5px;margin-top:4px">'+esc(cw.reason)+'</div></div>'}}
  return h;
 }
-
 function dbPageWant(){
- var h='<div class="ph"><div><h1>🚨 Выдать розыск гражданину</h1><div class="ph-sub">достаточно заполнить UID ИЛИ номер документа (одно из двух), остальные поля обязательны</div></div></div>';
- h+='<div class="panel">'+
-  '<div class="formgrid">'+
-  '<div><div class="vlbl">UID гражданина (или заполните документ)</div><input class="inp" id="wqUid" style="width:100%" placeholder="например: 27501" list="wqList"><datalist id="wqList">'+DB_CITIZENS.slice(0,40).map(function(c){return '<option value="'+c.uid+'">UID '+c.uid+' · Док '+c.doc+'</option>'}).join('')+'</datalist></div>'+
-  '<div><div class="vlbl">Номер документа (или заполните UID)</div><input class="inp" id="wqDoc" style="width:100%" placeholder="серия и номер паспорта"></div>'+
-  '<div style="grid-column:1/-1"><div class="vlbl">Уровень розыска *</div><select class="sel" id="wqLvl" style="width:100%">'+[1,2,3,4,5,6].map(function(n){return '<option value="'+n+'">'+n+'/6'+(n>=5?' · особо опасен':(n>=3?' · опасен':''))+'</option>'}).join('')+'</select></div>'+
-  '</div>'+
-  '<div class="vlbl" style="margin-top:12px">Причина розыска (обязательно) *</div>'+
-  '<textarea class="inp" id="wqReason" style="width:100%;min-height:70px" placeholder="Укажите статью УК и причину объявления в розыск..."></textarea>'+
-  '<div style="margin-top:14px"><button class="btn warn" onclick="dbIssueWant()">🚨 Выдать в розыск</button></div>'+
- '</div>';
- h+='<div class="sec">Активные розыски граждан · '+DB_WANTED.length+'</div>';
- for(var i=0;i<DB_WANTED.length;i++){var w=DB_WANTED[i],c=citByUid(w.uid);var segs='';for(var s=1;s<=6;s++){segs+='<i'+(s<=w.lvl?' class="on"':'')+'></i>'}h+='<div class="panel" style="cursor:pointer;padding:11px 16px;margin:6px 0" onclick="dbOpenWanted('+i+')"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><b>'+esc(c?c.name:'Гражданин UID '+w.uid)+'</b> <span class="mut" style="font-size:11px">UID '+esc(w.uid)+(w.doc?' · Док: '+esc(w.doc):'')+'</span><div style="font-size:12.5px;margin-top:3px">'+esc(w.reason)+'</div><div class="mut" style="font-size:11px;margin-top:3px">'+rd(w.since)+' · '+formatOfficerRef(w.by)+'</div></div><div class="segs '+(w.lvl>=5?'bad':w.lvl>=3?'mid':'')+'">'+segs+'</div></div></div>'}
+ var h='<div class="ph"><div><h1>🚨 Выдать розыск гражданину</h1><div class="ph-sub">достаточно заполнить UID ИЛИ номер документа, остальные поля обязательны</div></div></div>';
+ h+='<div class="panel"><div class="formgrid"><div><div class="vlbl">UID гражданина</div><input class="inp" id="wqUid" style="width:100%" placeholder="например: 27501"></div><div><div class="vlbl">Номер документа</div><input class="inp" id="wqDoc" style="width:100%" placeholder="серия и номер паспорта"></div><div style="grid-column:1/-1"><div class="vlbl">Уровень розыска *</div><select class="sel" id="wqLvl" style="width:100%">'+[1,2,3,4,5,6].map(function(n){return '<option value="'+n+'">'+n+'/6</option>'}).join('')+'</select></div></div><div class="vlbl" style="margin-top:12px">Причина розыска *</div><textarea class="inp" id="wqReason" style="width:100%;min-height:70px"></textarea><div style="margin-top:14px"><button class="btn warn" onclick="dbIssueWant()">🚨 Выдать в розыск</button></div></div>';
  return h;
 }
 window.dbIssueWant=function(){
- var uid=($('#wqUid')||{}).value.trim();
- var doc=($('#wqDoc')||{}).value.trim();
- var lvl=parseInt(($('#wqLvl')||{}).value,10);
- var reason=($('#wqReason')||{}).value.trim();
- if(!uid&&!doc){toast('Заполните хотя бы одно поле: UID гражданина ИЛИ номер документа',true);return}
- if(!lvl||lvl<1||lvl>6){toast('Выберите уровень розыска',true);return}
- if(!reason){toast('Поле «Причина розыска» обязательно к заполнению',true);return}
+ var uid=($('#wqUid')||{}).value.trim(),doc=($('#wqDoc')||{}).value.trim(),lvl=parseInt(($('#wqLvl')||{}).value,10),reason=($('#wqReason')||{}).value.trim();
+ if(!uid&&!doc){toast('Укажите UID или номер документа',true);return}
+ if(!reason){toast('Укажите причину',true);return}
  var c=findCitizenByUidOrDoc(uid,doc);
- if(!c){
-  var newU=uid||nextCitUid();
-  c={uid:newU,name:'Гражданин (UID '+newU+')',born:'1992-01-01',city:CITY3[0],doc:doc||'—',job:null,vehicles:[],arc:[]};
-  DB_CITIZENS.push(c);
- }
- if(doc)c.doc=doc;
- for(var i=0;i<DB_WANTED.length;i++){if(DB_WANTED[i].uid===c.uid){DB_WANTED.splice(i,1);break}}
+ if(!c){var newU=uid||nextCitUid();c={uid:newU,name:'Гражданин (UID '+newU+')',born:'1992-01-01',city:CITY3[0],doc:doc||'—',job:null,vehicles:[],arc:[]};DB_CITIZENS.push(c)}
  DB_WANTED.unshift({uid:c.uid,lvl:lvl,reason:reason,since:dStr(TODAY),by:ACTOR,car:null,doc:c.doc||doc||null});
- pushLog({actor:ACTOR,cat:'citizen',k:'arrest',target:c.name+' (UID '+c.uid+')',reason:'объявлен в розыск '+lvl+'/6: '+reason});
- toast('Розыск выдан: '+c.name+' · '+lvl+'/6');
- goDB('want');
+ toast('Розыск выдан: '+c.name);goDB('crt');
 };
-
 function dbPageCarWant(){
- var h='<div class="ph"><div><h1>🚗 Розыск транспорта</h1><div class="ph-sub">выдача ориентировки по государственному номеру (все поля обязательны)</div></div></div>';
- h+='<div class="panel">'+
-  '<div class="formgrid">'+
-  '<div><div class="vlbl">Гос. номер *</div><input class="inp" id="cqNo" style="width:100%" placeholder="А123БВ 52"></div>'+
-  '<div><div class="vlbl">Марка / модель *</div><input class="inp" id="cqMake" style="width:100%" placeholder="Lada Granta"></div>'+
-  '</div>'+
-  '<div class="vlbl" style="margin-top:12px">Причина *</div>'+
-  '<textarea class="inp" id="cqReason" style="width:100%;min-height:70px" placeholder="например: скрылся с места ДТП, транспорт в угоне..."></textarea>'+
-  '<div style="margin-top:14px"><button class="btn warn" onclick="dbIssueCar()">🚗 Выдать в розыск</button></div>'+
- '</div>';
- h+='<div class="sec">Активные розыски ТС · '+DB_CARW.length+'</div>';
- for(var i=0;i<DB_CARW.length;i++){var cw=DB_CARW[i];h+='<div class="panel" style="padding:11px 16px;margin:6px 0"><b style="font-size:15px">'+cw.no+'</b> <span class="mut">· '+cw.make+'</span><div style="font-size:12.5px;margin-top:3px">'+esc(cw.reason)+'</div><div class="mut" style="font-size:11px;margin-top:3px">'+rd(cw.since)+' · '+formatOfficerRef(cw.by)+'</div></div>'}
- return h;
+ return '<div class="ph"><div><h1>🚗 Розыск транспорта</h1></div></div><div class="panel"><div class="formgrid"><div><div class="vlbl">Гос. номер *</div><input class="inp" id="cqNo" style="width:100%" placeholder="А123БВ 52"></div><div><div class="vlbl">Марка / модель *</div><input class="inp" id="cqMake" style="width:100%" placeholder="Lada Granta"></div></div><div class="vlbl" style="margin-top:12px">Причина *</div><textarea class="inp" id="cqReason" style="width:100%;min-height:70px"></textarea><div style="margin-top:14px"><button class="btn warn" onclick="dbIssueCar()">🚗 Выдать в розыск</button></div></div>';
 }
 window.dbIssueCar=function(){
- var no=($('#cqNo')||{}).value.trim().toUpperCase();
- var make=($('#cqMake')||{}).value.trim();
- var reason=($('#cqReason')||{}).value.trim();
- if(!no){toast('Укажите государственный номер ТС',true);return}
- if(!make){toast('Укажите марку / модель ТС',true);return}
- if(!reason){toast('Укажите причину розыска ТС',true);return}
- for(var i=0;i<DB_CARW.length;i++){if(plateN(DB_CARW[i].no)===plateN(no)){DB_CARW.splice(i,1);break}}
+ var no=($('#cqNo')||{}).value.trim().toUpperCase(),make=($('#cqMake')||{}).value.trim(),reason=($('#cqReason')||{}).value.trim();
+ if(!no||!make||!reason){toast('Заполните все поля',true);return}
  DB_CARW.unshift({no:no,make:make,reason:reason,since:dStr(TODAY),by:ACTOR});
- pushLog({actor:ACTOR,cat:'citizen',k:'finecam',target:no,reason:'розыск ТС: '+reason,car:no});
- toast('Розыск ТС выдан: '+no);
- goDB('carwant');
+ toast('Розыск ТС выдан: '+no);goDB('crt');
 };
-
 function dbPageFine(){
- var h='<div class="ph"><div><h1>💸 Штраф / Лишение прав</h1><div class="ph-sub">достаточно указать UID ИЛИ номер документа, все остальные поля обязательны</div></div></div>';
- h+='<div class="panel">'+
-  '<div class="formgrid">'+
-  '<div><div class="vlbl">UID гражданина (или заполните документ)</div><input class="inp" id="fqUid" style="width:100%" placeholder="например: 27501" list="fqList"><datalist id="fqList">'+DB_CITIZENS.slice(0,40).map(function(c){return '<option value="'+c.uid+'">UID '+c.uid+' · Док '+c.doc+'</option>'}).join('')+'</datalist></div>'+
-  '<div><div class="vlbl">Номер документа (или заполните UID)</div><input class="inp" id="fqDoc" style="width:100%" placeholder="серия и номер"></div>'+
-  '<div><div class="vlbl">Тип наказания *</div><select class="sel" id="fqType" style="width:100%" onchange="fqToggle()"><option value="fine">Штраф</option><option value="deprive">Лишение прав</option></select></div>'+
-  '<div id="fqAmountWrap"><div class="vlbl">Сумма штрафа, ₽ *</div><input class="inp" id="fqAmount" style="width:100%" type="number" value="1000" min="500" step="500"></div>'+
-  '<div id="fqDaysWrap" style="display:none"><div class="vlbl">Срок лишения прав (дней, 1–7) *</div><input class="inp" id="fqDays" style="width:100%" type="number" value="3" min="1" max="7"></div>'+
-  '</div>'+
-  '<div class="vlbl" style="margin-top:12px">Причина / статья КоАП (обязательно) *</div>'+
-  '<textarea class="inp" id="fqReason" style="width:100%;min-height:70px" placeholder="например: ст. 12.8 КоАП — управление ТС в состоянии опьянения"></textarea>'+
-  '<div style="margin-top:14px"><button class="btn warn" onclick="dbIssueFine()">💸 Выдать наказание</button></div>'+
- '</div>';
- return h;
+ return '<div class="ph"><div><h1>💸 Штраф / Лишение прав</h1><div class="ph-sub">достаточно указать UID ИЛИ номер документа, остальные поля обязательны</div></div></div><div class="panel"><div class="formgrid"><div><div class="vlbl">UID гражданина</div><input class="inp" id="fqUid" style="width:100%" placeholder="например: 27501"></div><div><div class="vlbl">Номер документа</div><input class="inp" id="fqDoc" style="width:100%" placeholder="серия и номер"></div><div><div class="vlbl">Тип наказания *</div><select class="sel" id="fqType" style="width:100%" onchange="fqToggle()"><option value="fine">Штраф</option><option value="deprive">Лишение прав</option></select></div><div id="fqAmountWrap"><div class="vlbl">Сумма штрафа, ₽ *</div><input class="inp" id="fqAmount" style="width:100%" type="number" value="1000" min="500" step="500"></div><div id="fqDaysWrap" style="display:none"><div class="vlbl">Срок лишения прав (1–7 дн.) *</div><input class="inp" id="fqDays" style="width:100%" type="number" value="3" min="1" max="7"></div></div><div class="vlbl" style="margin-top:12px">Причина / статья КоАП *</div><textarea class="inp" id="fqReason" style="width:100%;min-height:70px"></textarea><div style="margin-top:14px"><button class="btn warn" onclick="dbIssueFine()">💸 Выдать наказание</button></div></div>';
 }
 window.fqToggle=function(){var t=($('#fqType')||{}).value;var aw=$('#fqAmountWrap'),dw=$('#fqDaysWrap');if(t==='fine'){if(aw)aw.style.display='';if(dw)dw.style.display='none'}else{if(aw)aw.style.display='none';if(dw)dw.style.display=''}};
 window.dbIssueFine=function(){
- var uid=($('#fqUid')||{}).value.trim();
- var doc=($('#fqDoc')||{}).value.trim();
- var type=($('#fqType')||{}).value;
- var amount=parseInt(($('#fqAmount')||{}).value,10)||0;
- var days=parseInt(($('#fqDays')||{}).value,10)||0;
- var reason=($('#fqReason')||{}).value.trim();
- if(!uid&&!doc){toast('Заполните хотя бы одно поле: UID гражданина ИЛИ номер документа',true);return}
- if(type==='fine' && (!amount || amount<500)){toast('Укажите корректную сумму штрафа (от 500 ₽)',true);return}
- if(type==='deprive' && (!days || days<1 || days>7)){toast('Укажите срок лишения прав (от 1 до 7 дней)',true);return}
- if(!reason){toast('Поле «Причина / статья КоАП» обязательно к заполнению',true);return}
+ var uid=($('#fqUid')||{}).value.trim(),doc=($('#fqDoc')||{}).value.trim(),type=($('#fqType')||{}).value,amount=parseInt(($('#fqAmount')||{}).value,10)||0,days=parseInt(($('#fqDays')||{}).value,10)||0,reason=($('#fqReason')||{}).value.trim();
+ if(!uid&&!doc){toast('Укажите UID или документ',true);return}
+ if(!reason){toast('Укажите причину',true);return}
  var c=findCitizenByUidOrDoc(uid,doc);
- if(!c){
-  var newU=uid||nextCitUid();
-  c={uid:newU,name:'Гражданин (UID '+newU+')',born:'1992-01-01',city:CITY3[0],doc:doc||'—',job:null,vehicles:[],arc:[]};
-  DB_CITIZENS.push(c);
- }
- if(doc)c.doc=doc;
- var rec;
- if(type==='fine'){
-  rec={t:'fine',d:dStr(TODAY),amt:amount,txt:reason,by:ACTOR,doc:c.doc||doc||null};
- } else {
-  rec={t:'deprive',d:dStr(TODAY),days:days,txt:reason,by:ACTOR,doc:c.doc||doc||null};
- }
- if(!c.arc){c.arc=[]}
+ if(!c){var newU=uid||nextCitUid();c={uid:newU,name:'Гражданин (UID '+newU+')',born:'1992-01-01',city:CITY3[0],doc:doc||'—',job:null,vehicles:[],arc:[]};DB_CITIZENS.push(c)}
+ var rec=(type==='fine')?{t:'fine',d:dStr(TODAY),amt:amount,txt:reason,by:ACTOR}:{t:'deprive',d:dStr(TODAY),days:days,txt:reason,by:ACTOR};
  c.arc.unshift(rec);
  DB_ARC.unshift({d:rec.d,t:rec.t,amt:rec.amt,txt:rec.txt,days:rec.days,by:ACTOR,name:c.name,uid:c.uid});
- pushLog({actor:ACTOR,cat:'citizen',k:type==='fine'?'fine':'lic',target:c.name+' (UID '+c.uid+')',amount:type==='fine'?amount:0,days:type!=='fine'?days:0,months:type!=='fine'?days:0,reason:reason});
- toast((type==='fine'?'Штраф '+fmtN(amount)+' ₽':'Лишение прав на '+days+' дн.')+' · '+c.name);
- goDB('fine');
+ toast('Наказание оформлено: '+c.name);goDB('arc');
 };
-
 function dbPageArc(){
- var fines=0,sum=0,depr=0,arr=0,caught=0,i;
- for(i=0;i<DB_ARC.length;i++){var t=DB_ARC[i].t;if(t==='fine'||t==='finecam'){fines++;sum+=DB_ARC[i].amt||0}else if(t==='deprive'){depr++}else if(t==='arrest'){arr++}else if(t==='caught'){caught++}}
- var h='<div class="ph"><div><h1>Архив <span class="cnt">'+DB_ARC.length+'</span></h1></div></div>';
- h+='<div class="tiles"><div class="tile"><div class="n" style="color:#f7c948">'+fines+'</div><div class="l">Штрафов</div><div class="tile-x">на '+fmtN(sum)+' ₽</div></div><div class="tile"><div class="n" style="color:#ff5c5c">'+depr+'</div><div class="l">Лишений</div></div><div class="tile"><div class="n" style="color:#6cc0ff">'+arr+'</div><div class="l">Арестов</div></div><div class="tile"><div class="n" style="color:#2fd97a">'+caught+'</div><div class="l">Снято с розыска</div></div></div>';
  var rows=DB_ARC.slice(0,300);
- h+='<div class="fscroll"><table class="tbl"><thead><tr><th>Дата</th><th>Гражданин</th><th>Тип</th><th>Запись</th><th>Оформил сотрудник</th></tr></thead><tbody>';
- h+=rows.map(function(r){var ci=citIdxByUid(r.uid);return '<tr><td class="mut" style="font-size:12px">'+rd(r.d)+'</td><td>'+(ci>-1?'<b style="color:#4da3ff;cursor:pointer" onclick="dbOpenCitizen('+ci+')">'+esc(r.name)+'</b>':'<b>'+esc(r.name)+'</b>')+'</td><td>'+dbArcBadge(r.t)+'</td><td style="font-size:12.5px">'+dbArcDesc(r)+'</td><td style="font-size:12px">'+formatOfficerRef(r.by)+'</td></tr>'}).join('');
- h+='</tbody></table></div>';
- return h;
+ return '<div class="ph"><div><h1>Архив <span class="cnt">'+DB_ARC.length+'</span></h1></div></div><div class="fscroll"><table class="tbl"><thead><tr><th>Дата</th><th>Гражданин</th><th>Тип</th><th>Запись</th><th>Оформил сотрудник</th></tr></thead><tbody>'+
+  rows.map(function(r){var ci=citIdxByUid(r.uid);return '<tr><td class="mut" style="font-size:12px">'+rd(r.d)+'</td><td>'+(ci>-1?'<b style="color:#4da3ff;cursor:pointer" onclick="dbOpenCitizen('+ci+')">'+esc(r.name)+'</b>':'<b>'+esc(r.name)+'</b>')+'</td><td>'+dbArcBadge(r.t)+'</td><td style="font-size:12.5px">'+dbArcDesc(r)+'</td><td style="font-size:12px">'+formatOfficerRef(r.by)+'</td></tr>'}).join('')+'</tbody></table></div>';
 }
-
 function renderDBNav(){
  document.getElementById('dbnav').innerHTML=
  '<div class="ni'+(DB_CUR==='check'?' on':'')+'" onclick="goDB(\'check\')">🔎<span>Проверка граждан</span><i class="bd">'+DB_CITIZENS.length+'</i></div>'+
@@ -1689,332 +1445,65 @@ function renderDBNav(){
 }
 function renderDB(){
  var el=document.getElementById('dbcontent');
- var old=(document.getElementById('dbq')||{}).value||'';
  var fn={check:dbPageCheck,crt:dbPageCrt,arc:dbPageArc,want:dbPageWant,carwant:dbPageCarWant,fine:dbPageFine}[DB_CUR]||dbPageCheck;
  el.innerHTML=fn();
- var ni=document.getElementById('dbq');if(ni&&old){ni.value=old}
 }
 function goDB(pg){
  var allow=['check','crt','arc','want','carwant','fine'];
  DB_CUR=allow.indexOf(pg)>=0?pg:'check';
  var ap=document.getElementById('app'),db=document.getElementById('dbapp');
- if(ap){ap.style.display='none'}if(db){db.style.display='flex'}
- var d=document.getElementById('ndrop');if(d){d.classList.remove('open')}
+ if(ap)ap.style.display='none';if(db)db.style.display='flex';
  renderDBNav();renderDB();window.scrollTo(0,0);
 }
 window.goDB=goDB;
-function openDB(){PHSCR='mvd';var po=document.getElementById('phoneOv');if(po){po.style.display='none'}goDB('check')}
+function openDB(){PHSCR='mvd';var po=document.getElementById('phoneOv');if(po)po.style.display='none';goDB('check')}
 
 /* ============ ЧС / ОЧС ============ */
 var OCHS={act:'add',q:''};
-var OCHMENU=[['add','➕','Добавить'],['rem','➖','Снять'],['log','📜','Журнал']];
-function ochsSearchResultsHtml(){
- var ochs=DISM.filter(function(d){return d.global});
- if(!OCHS.q){return '<div class="mut" style="padding:14px 4px;font-size:12.5px">Введите ФИО или UID сотрудника для поиска в ОЧС</div>'}
- var q=OCHS.q.toLowerCase();
- var found=ochs.filter(function(d){return d.name.toLowerCase().indexOf(q)>=0||d.uid.toLowerCase().indexOf(q)>=0});
- if(!found.length){return '<div class="empty">Не найдено в ОЧС</div>'}
- return found.map(function(d){
-  return '<div class="panel warn" style="padding:13px 16px;margin:8px 0"><div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font-size:14px">'+d.name+'</b> <span class="mut" style="font-size:11px">UID '+d.uid+'</span><div style="font-size:12.5px;margin-top:5px">'+d.reason+'</div><div class="mut" style="font-size:11px;margin-top:4px">'+fmtD(addD(TODAY,-d.ago))+' · '+signerLink(d.by)+'</div></div><span class="ptag" style="border-color:#a34444;color:#ff8a8a;background:#2a1414">ОЧС</span></div></div>'
- }).join('');
-}
-window.ochsSearch=function(v){OCHS.q=v;var el=document.getElementById('ochsResults');if(el){el.innerHTML=ochsSearchResultsHtml()}};
 function pageOchs(){
  var chs=DISM.filter(function(d){return d.bl});
- var ochsCount=DISM.filter(function(d){return d.global}).length;
- var menu=OCHMENU.map(function(m){return '<div class="om-i'+(OCHS.act===m[0]?' on':'')+'" onclick="ochsSet(\''+m[0]+'\')">'+m[1]+' '+m[2]+'</div>'}).join('');
- var chsRows=chs.length?chs.slice().sort(function(a,b){return a.ago-b.ago}).map(function(d){
-  return '<div class="panel" style="padding:13px 16px;margin:8px 0;border-color:#7a2f2f55"><div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font-size:14px">'+d.name+'</b> <span class="mut" style="font-size:11px">UID '+d.uid+'</span><div style="font-size:12.5px;margin-top:5px">'+d.reason+'</div><div class="mut" style="font-size:11px;margin-top:4px">'+fmtD(addD(TODAY,-d.ago))+' · '+signerLink(d.by)+'</div></div><span class="ptag" style="border-color:#a34444;color:#ff8a8a;background:#2a1414">ЧС</span></div></div>'
- }).join(''):'<div class="empty">Пусто</div>';
- return '<div class="ph"><div><h1>ЧС / ОЧС<span class="cnt">'+(chs.length+ochsCount)+'</span></h1><div class="ph-sub">чёрный и особо чёрный списки</div></div></div>'+
- '<div class="ochs"><div class="ochs-menu"><div class="om-t">Управление</div><div class="om-s">внесение / снятие / журнал</div>'+menu+'</div><div class="ochs-win" id="ochsWin">'+ochsWin()+'</div></div>'+
- '<div class="sec">Чёрный список (ЧС) · '+chs.length+'</div>'+
- chsRows+
- '<div class="sec">ОЧС · поиск · '+ochsCount+'</div>'+
- '<div class="panel"><div class="ctl" style="margin:0"><input class="inp" placeholder="Поиск по ФИО или UID…" style="flex:1;min-width:240px" value="'+esc(OCHS.q)+'" oninput="ochsSearch(this.value)"><span class="mut" style="font-size:11.5px">список не отображается — только поиск</span></div><div id="ochsResults" style="margin-top:10px">'+ochsSearchResultsHtml()+'</div></div>';
+ var chsRows=chs.length?chs.map(function(d){return '<div class="panel" style="padding:13px 16px;margin:8px 0;border-color:#7a2f2f55"><b style="font-size:14px">'+d.name+'</b> <span class="mut" style="font-size:11px">UID '+d.uid+'</span><div style="font-size:12.5px;margin-top:5px">'+d.reason+'</div></div>'}).join(''):'<div class="empty">Пусто</div>';
+ return '<div class="ph"><div><h1>ЧС / ОЧС<span class="cnt">'+chs.length+'</span></h1></div></div><div class="sec">Чёрный список (ЧС)</div>'+chsRows;
 }
-window.ochsSet=function(a){OCHS.act=a;go('out')};
-function ochsWin(){
- var h='';
- if(OCHS.act==='add'){var opts='<option value="">— выберите —</option>';E.forEach(function(x){opts+='<option value="'+esc(x.uid)+'">'+x.name+'</option>'});h='<div class="ow-t">➕ Добавить</div><select class="sel" id="ochsSel" style="width:100%">'+opts+'</select><input class="inp" id="ochsRsn" style="width:100%;margin-top:10px" placeholder="Причина"><div style="display:flex;flex-direction:column;gap:8px;margin:10px 0"><label class="ochk"><input type="checkbox" id="ochsBl" checked> ЧС</label><label class="ochk"><input type="checkbox" id="ochsGl"> ОЧС</label></div><button class="btn warn" onclick="ochsDoAdd()">Внести</button>'}
- else if(OCHS.act==='rem'){var blp=DISM.filter(function(d){return d.bl||d.global});var opts2='<option value="">— выберите —</option>';blp.forEach(function(x){opts2+='<option value="'+esc(x.uid)+'">'+x.name+'</option>'});h='<div class="ow-t">➖ Снять</div><select class="sel" id="ochsRemSel" style="width:100%">'+opts2+'</select><button class="btn green" onclick="ochsDoRem()" style="margin-top:12px">Снять</button>'}
- else{var jr=DISM.filter(function(d){return d.bl||d.global}).slice().sort(function(a,b){return a.ago-b.ago}).map(function(d){return '<div class="pl-row"><div class="pl-d">'+fmtD(addD(TODAY,-d.ago))+'</div><span class="wh-a w">'+(d.global?'ОЧС':'ЧС')+'</span><div class="pl-x"><b>'+d.name+'</b><span>'+d.reason+'</span></div></div>'}).join('');h='<div class="ow-t">📋 Журнал</div>'+(jr||'<div class="empty">Пусто</div>')}
- return h;
-}
-window.ochsDoAdd=function(){var v=($('#ochsSel')||{}).value;if(!v){toast('Выберите',true);return}var e=byUid(v);if(!e){return}var reason=($('#ochsRsn')||{}).value.trim();if(!reason){toast('Причина',true);return}var chs=($('#ochsBl')||{}).checked;var och=($('#ochsGl')||{}).checked;actFire(e,reason,chs,och);go('out')};
-window.ochsDoRem=function(){var v=($('#ochsRemSel')||{}).value;if(!v){toast('Выберите',true);return}var d=null;DISM.forEach(function(x){if(x.uid===v){d=x}});if(!d){return}if(d.global){d.global=false}else{d.bl=false}toast(d.name+' снят');go('out')};
 
 /* ============ КАРТОЧКА СОТРУДНИКА ============ */
-var MUID='',MTAB='career',EDPOS='';
-var MZ={per:'day',date:dStr(TODAY)};
-var PENFRM={mode:'add'};
-function openEmp(uid){var e=byUid(uid);if(!e){return}MUID=uid;MTAB='career';EDPOS='';PENFRM={mode:'add'};renderModal()}
+var MUID='',MTAB='career',EDPOS='',MZ={per:'day',date:dStr(TODAY)};
+function openEmp(uid){var e=byUid(uid);if(!e)return;MUID=uid;MTAB='career';EDPOS='';renderModal()}
 window.closeModal=function(){$('#mroot').innerHTML=''};
 window.closeForm=function(){$('#froot').innerHTML=''};
 window.mTab=function(t){MTAB=t;EDPOS='';renderModal()};
-window.mzSet=function(k,v){if(k==='date'&&!v){return}MZ[k]=v;renderModal()};
-window.renderModal=renderModal;
-function renderModal(){var e=byUid(MUID);if(!e){return}var c=genCustom(e);$('#mroot').innerHTML='<div class="back" onclick="if(event.target===this)closeModal()"><div class="modal">'+mHead(e)+'<div class="m-body">'+mPills(e,c)+mTabBody(e,c)+'</div>'+mFoot(e)+'</div></div>'}
-
-window.openPenForm=function(){var e=byUid(MUID);if(!e||isWatch(e))return;PENFRM.mode='add';renderPenForm()};
-window.penFrmMode=function(m){PENFRM.mode=m;renderPenForm()};
-window.penRemPreview=function(){renderPenRemPreview()};
-function renderPenForm(){
- var e=byUid(MUID);if(!e||isWatch(e)){return}
- var c=genCustom(e);
- var actives=c.pen.filter(function(p){return p.v>0&&!p.workedOff&&!p.removed});
- var h='<div class="pback" onclick="if(event.target===this)closeForm()"><div class="modal smw">'+
-  '<div class="m-head"><button class="m-close" onclick="closeForm()">✕</button><div class="mh-row"><div class="ava">'+ini(e.name)+'</div><div><div class="mh-nm" style="font-size:17px">Взыскания</div><div class="mh-sub">'+e.name+' · сейчас '+fmtPen(e.pen)+'</div></div></div></div>'+
-  '<div class="m-body">'+
-  '<div class="chips" style="margin:0 0 14px">'+
-  '<div class="chip'+(PENFRM.mode==='add'?' on':'')+'" onclick="penFrmMode(\'add\')">⚠️ Выдать</div>'+
-  '<div class="chip'+(PENFRM.mode==='rem'?' on':'')+'" onclick="penFrmMode(\'rem\')">✅ Снять</div>'+
-  '</div>';
- if(PENFRM.mode==='add'){
-  h+='<select class="sel" id="fpV" style="width:100%" onchange="penPreview()">'+PENVALS.map(function(p){return '<option value="'+p[0]+'">'+p[1]+'</option>'}).join('')+'</select>'+
-   '<div class="ctl" style="margin:10px 0"><input type="date" class="inp" id="fpWO" value="'+dStr(addD(TODAY,SETT.workoff))+'" min="'+dStr(TODAY)+'" onchange="penPreview()"><button class="btn ghost" style="padding:8px 12px" onclick="fpNoWO()">— без срока</button></div>'+
-   '<input class="inp" id="fpR" style="width:100%" placeholder="причина">'+
-   '<input class="inp" id="fpT" style="width:100%;margin-top:10px" placeholder="что требуется" oninput="penPreview()">'+
-   '<div id="penPrev" class="panel" style="margin-top:14px"></div>';
- } else {
-  if(!actives.length){h+='<div class="empty">Нет активных</div>'}
-  else{h+='<div class="vlbl">Выберите для снятия</div><div>';h+=actives.map(function(p,i){return '<label class="penpick"><input type="radio" name="fpPick" value="'+i+'" onchange="penRemPreview()"><div><b>+'+p.v+'/3 — '+esc(p.txt)+'</b><div class="mut" style="font-size:11.5px">'+fmtD(pd(p.d))+' · '+esc(p.by)+'</div></div></label>'}).join('')+'</div>';h+='<input class="inp" id="fpRemR" style="width:100%;margin-top:10px" placeholder="основание" oninput="penRemPreview()"><div id="penRemPrev" class="panel" style="margin-top:14px"></div>'}
- }
- h+='</div><div class="m-foot"><button class="btn ghost" onclick="closeForm()">Отмена</button>';
- if(PENFRM.mode==='add'){h+='<button class="btn warn" onclick="penFormApply()">⚠️ Выдать</button>'}
- else if(PENFRM.mode==='rem'&&actives.length){h+='<button class="btn green" onclick="penRemApply()">✅ Снять</button>'}
- h+='</div></div></div>';
- $('#froot').innerHTML=h;
- if(PENFRM.mode==='add'){penPreview()}
- else if(PENFRM.mode==='rem'&&actives.length){renderPenRemPreview()}
-}
-window.fpNoWO=function(){var w=$('#fpWO');if(w){w.value=''}penPreview()};
-window.penPreview=function(){var e=byUid(MUID);if(!e){return}var v=parseFloat(($('#fpV')||{}).value);var cur=conv(e.pen);var delta=isNaN(v)?0:v;var nv=Math.round((cur+delta)*10)/10;var cls=nv>=2?'bad':(nv>=1?'mid':'ok');var wo=($('#fpWO')||{}).value;var woTxt=wo?('до '+fmtD(pd(wo))):'— без срока';var t=($('#fpT')||{}).value.trim();var p=$('#penPrev');if(!p){return}p.innerHTML='<div class="rk-line"><span class="rk-next">Текущая:</span><span class="pv '+penCls(e.pen)+'">'+fmtPen(e.pen)+'</span></div>'+'<div class="rk-line"><span class="rk-next">Добавляется:</span><b style="color:#ff8a8a">'+delta+'/3</b></div>'+'<div class="rk-line"><span class="rk-next">Станет:</span><span class="pv '+cls+'">'+nv+'/3</span></div>'+'<div class="rk-line"><span class="rk-next">Отработка:</span><b>'+woTxt+'</b></div>'+(t?'<div class="rk-line"><span class="rk-next">Что требуется:</span><span>'+esc(t)+'</span></div>':'')};
-window.penFormApply=function(){var e=byUid(MUID);if(!e){return}var v=parseFloat(($('#fpV')||{}).value);if(isNaN(v)||v<=0){toast('Выберите',true);return}var reason=($('#fpR')||{}).value.trim();if(!reason){toast('Причина',true);return}var wo=($('#fpWO')||{}).value;var task=($('#fpT')||{}).value.trim();actPen(e,v,reason,wo||null,task);closeForm();renderModal();go(CUR)};
-function renderPenRemPreview(){var e=byUid(MUID);if(!e){return}var c=genCustom(e);var actives=c.pen.filter(function(p){return p.v>0&&!p.workedOff&&!p.removed});var pick=document.querySelector('input[name="fpPick"]:checked');var p=$('#penRemPrev');if(!p){return}if(!pick){p.innerHTML='<div class="mut">Выберите</div>';return}var rec=actives[+pick.value];if(!rec){return}var cur=conv(e.pen);var nv=Math.max(0,Math.round((cur-rec.v)*10)/10);var cls=nv>=2?'bad':(nv>=1?'mid':'ok');p.innerHTML='<div class="rk-line"><span class="rk-next">Взыскание:</span><b style="color:#ff8a8a">+'+rec.v+'/3 — '+esc(rec.txt)+'</b></div>'+'<div class="rk-line"><span class="rk-next">Станет:</span><span class="pv '+cls+'">'+nv+'/3</span></div>'}
-window.penRemApply=function(){
- var e=byUid(MUID);if(!e){return}
- var c=genCustom(e);
- var actives=c.pen.filter(function(p){return p.v>0&&!p.workedOff&&!p.removed});
- var pick=document.querySelector('input[name="fpPick"]:checked');
- if(!pick){toast('Выберите',true);return}
- var rec=actives[+pick.value];
- if(!rec){return}
- var reason=($('#fpRemR')||{}).value.trim();
- if(!reason){toast('Основание',true);return}
- var old=e.pen;
- e.pen=Math.max(0,Math.round((old-rec.v)*10)/10);
- rec.removed=true;
- rec.removedDate=dStr(TODAY);
- c.pen.unshift({d:dStr(TODAY),v:-rec.v,txt:'Снято взыскание «'+rec.txt+'» — '+reason,by:ACTOR});
- c.pen.sort(function(a,b){return a.d<b.d?1:-1});
- pushLog({actor:ACTOR,cat:'staff',k:'penoff',target:e.name,reason:'снято «'+rec.txt+'»'});
- toast('Взыскание снято');
- closeForm();renderModal();go(CUR)
-};
-window.openWorkoffList=function(){
- var e=byUid(MUID);if(!e||isWatch(e)){return}
- var c=genCustom(e);
- var list=c.pen.filter(function(p){return p.v>0&&(p.workedOff||p.removed)});
- var body;
- if(!list.length){body='<div class="empty">Закрытых взысканий нет</div>'}
- else{body='<div class="tot">Всего: <b>'+list.length+'</b></div>'+list.map(function(p){
-  var lbl=p.removed?'<span class="bchip" style="color:var(--yellow);background:#2a2314;padding:2px 8px;border-radius:7px">снято</span>':'<span class="bchip" style="color:var(--green);background:#0f2a1d;padding:2px 8px;border-radius:7px">отработано</span>';
-  var dt=p.removed&&p.removedDate?('снято '+fmtD(pd(p.removedDate))):(p.workedOffDate?('отраб. '+fmtD(pd(p.workedOffDate))):'');
-  return '<div class="pl-row"><div class="pl-d">'+fmtD(pd(p.d))+(dt?'<span>'+dt+'</span>':'')+'</div><div class="pl-amt" style="color:var(--mut)">+'+p.v+'/3</div>'+lbl+'<div class="pl-x"><b>'+esc(p.txt)+'</b><span>'+signerLink(p.by)+'</span></div></div>'
- }).join('')}
- $('#froot').innerHTML='<div class="pback" onclick="if(event.target===this)closeForm()"><div class="modal smw"><div class="m-head"><button class="m-close" onclick="closeForm()">✕</button><div class="mh-row"><div class="ava" style="background:#0f2a1d;color:#7be6a4;border-color:#1d5a3a">'+ini(e.name)+'</div><div><div class="mh-nm" style="font-size:17px">Закрытые взыскания</div><div class="mh-sub">'+e.name+'</div></div></div></div><div class="m-body">'+body+'</div><div class="m-foot"><button class="btn ghost" onclick="closeForm()">Закрыть</button></div></div></div>';
-};
-window.openTransferForm=function(){
- var e=byUid(MUID);if(!e){return}
- var opts=FAKD.filter(function(f){return f!==e.fac}).map(function(f){return '<option value="'+f+'">'+F[f].n+'</option>'}).join('');
- $('#froot').innerHTML='<div class="pback" onclick="if(event.target===this)closeForm()"><div class="modal smw"><div class="m-head"><button class="m-close" onclick="closeForm()">✕</button><div class="mh-row"><div class="ava">'+ini(e.name)+'</div><div><div class="mh-nm" style="font-size:17px">Перевод</div><div class="mh-sub">'+e.name+' · сейчас: '+F[e.fac].s+'</div></div></div></div><div class="m-body"><div class="vlbl">Новое подразделение</div><select class="sel" id="tfFac" style="width:100%">'+opts+'</select><div class="vlbl" style="margin-top:10px">Основание</div><input class="inp" id="tfReason" style="width:100%"></div><div class="m-foot"><button class="btn ghost" onclick="closeForm()">Отмена</button><button class="btn" onclick="transferFormApply()">⇄ Перевести</button></div></div></div>';
-};
-window.transferFormApply=function(){var e=byUid(MUID);if(!e){return}var to=($('#tfFac')||{}).value;var reason=($('#tfReason')||{}).value.trim()||'служебная необходимость';if(!to||to===e.fac){toast('Выберите',true);return}actTransfer(e,to,reason);closeForm();renderModal();go(CUR)};
-window.openPremForm=function(){
- var e=byUid(MUID);if(!e){return}
- $('#froot').innerHTML='<div class="pback" onclick="if(event.target===this)closeForm()"><div class="modal smw"><div class="m-head"><button class="m-close" onclick="closeForm()">✕</button><div class="mh-row"><div class="ava">'+ini(e.name)+'</div><div><div class="mh-nm" style="font-size:17px">Выдать премию</div><div class="mh-sub">'+e.name+'</div></div></div></div><div class="m-body"><div class="vlbl">Сумма, ₽</div><input class="inp" id="fmA" style="width:180px" type="number" value="30000" min="1000" step="1000"><div class="vlbl" style="margin-top:10px">За что</div><input class="inp" id="fmR" style="width:100%"></div><div class="m-foot"><button class="btn ghost" onclick="closeForm()">Отмена</button><button class="btn green" onclick="premFormApply()">💰 Выдать</button></div></div></div>';
-};
-window.premFormApply=function(){var e=byUid(MUID);if(!e){return}var amt=parseInt(($('#fmA')||{}).value,10);if(!amt||amt<=0){toast('Сумма',true);return}var txt=($('#fmR')||{}).value.trim();if(!txt){toast('За что',true);return}actPrem(e,amt,txt);closeForm();renderModal();go(CUR)};
-window.openFireForm=function(){
- var e=byUid(MUID);if(!e){return}
- $('#froot').innerHTML='<div class="pback" onclick="if(event.target===this)closeForm()"><div class="modal smw"><div class="m-head"><button class="m-close" onclick="closeForm()">✕</button><div class="mh-row"><div class="ava" style="background:#241414;color:#ff8a8a;border-color:#7a2f2f">'+ini(e.name)+'</div><div><div class="mh-nm" style="font-size:17px">Уволить</div><div class="mh-sub">'+e.name+'</div></div></div></div><div class="m-body"><div class="vlbl">Причина</div><input class="inp" id="ffR" style="width:100%"><div style="display:flex;flex-direction:column;gap:8px;margin-top:12px"><label class="ochk"><input type="checkbox" id="ffBl"> ЧС</label><label class="ochk"><input type="checkbox" id="ffGlb"> ОЧС</label></div></div><div class="m-foot"><button class="btn ghost" onclick="closeForm()">Отмена</button><button class="btn warn" onclick="fireFormApply()">🚪 Уволить</button></div></div></div>';
-};
-window.fireFormApply=function(){var e=byUid(MUID);if(!e){return}var reason=($('#ffR')||{}).value.trim();if(!reason){toast('Причина',true);return}var bl=($('#ffBl')||{}).checked;var glb=($('#ffGlb')||{}).checked;actFire(e,reason,bl,glb);closeForm();closeModal();go(CUR)};
-
-function empWorkLogs(e){
- return LOGS.filter(function(l){return (l.actorUid===e.uid || l.actor===e.name) && l.cat!=='wh'});
-}
-
+window.mzSet=function(k,v){if(k==='date'&&!v)return;MZ[k]=v;renderModal()};
+function empWorkLogs(e){return LOGS.filter(function(l){return (l.actorUid===e.uid||l.actor===e.name)&&l.cat!=='wh'})}
+function renderModal(){var e=byUid(MUID);if(!e)return;var c=genCustom(e);$('#mroot').innerHTML='<div class="back" onclick="if(event.target===this)closeModal()"><div class="modal">'+mHead(e)+'<div class="m-body">'+mPills(e,c)+mTabBody(e,c)+'</div>'+mFoot(e)+'</div></div>'}
 function mHead(e){
- var tr=TRANSFERS[e.uid],w=isWatch(e);
- return '<div class="m-head"><button class="m-close" onclick="closeModal()">✕</button>'+
- '<div class="mh-row"><div class="ava'+(e.rank>=15?' gold':'')+'">'+ini(e.name)+'</div><div style="min-width:0">'+
- '<div class="mh-nm">'+e.name+'</div>'+
- '<div class="mh-sub"><span class="rk '+g(e.rank)+'">'+e.rank+' · '+RANKS[e.rank-1].name+'</span><span style="color:'+(posColor(e.pos)||F[e.fac].c)+'">'+e.pos+'</span></div></div></div>'+
- '<div class="mh-tags">'+
- '<span class="ptag" style="border-color:'+F[e.fac].c+'55;color:'+F[e.fac].c+'">'+F[e.fac].s+'</span>'+
- (w?'<span class="ptag" style="border-color:#a78bfa55;color:#a78bfa">👁 Следящая администрация</span>':'')+
- '<span class="ptag">UID '+e.uid+'</span>'+
- '<span class="ptag">'+e.days+' дн.</span>'+
- '<span class="ptag" style="color:#5fd9c0">💳 №'+bankAcc(e)+'</span>'+
- (!w?'<span class="ptag" style="color:#ffd98a">оклад '+fmtN(RANKS[e.rank-1].s)+' ₽/ч</span>':'')+
- (tr?'<span class="ptag ptag2">перевод из '+F[tr.from].s+'</span>':'')+
- extraPos(e).map(function(x){return '<span class="ptag x">'+x+'</span>'}).join('')+
- (!w?'<span class="ptag" style="'+(conv(e.pen)>0?'border-color:#7a2f2f;color:#ff8a8a':'')+'">взыскания '+fmtPen(e.pen)+'</span>':'')+
- '<span class="fb" style="color:'+ST[e.st].c+';border-color:'+ST[e.st].c+'55;background:'+ST[e.st].c+'14"><i style="background:'+ST[e.st].c+'"></i>'+ST[e.st].n+'</span>'+
- '</div>'+
- '<div class="mh-days">Принят '+fmtD(addD(TODAY,-e.days))+' · сегодня <b>'+fmtH(e.o.d)+'</b>, за месяц <b>'+fmtH(e.o.m)+'</b>, всего <b>'+fmtN(e.o.t)+' ч</b></div>'+
- '</div>';
+ var w=isWatch(e);
+ return '<div class="m-head"><button class="m-close" onclick="closeModal()">✕</button><div class="mh-row"><div class="ava'+(e.rank>=15?' gold':'')+'">'+ini(e.name)+'</div><div><div class="mh-nm">'+e.name+'</div><div class="mh-sub"><span class="rk '+g(e.rank)+'">'+e.rank+' · '+RANKS[e.rank-1].name+'</span><span style="color:'+(posColor(e.pos)||F[e.fac].c)+'">'+e.pos+'</span></div></div></div><div class="mh-tags"><span class="ptag" style="border-color:'+F[e.fac].c+'55;color:'+F[e.fac].c+'">'+F[e.fac].s+'</span><span class="ptag">UID '+e.uid+'</span><span class="ptag" style="color:#5fd9c0">💳 №'+bankAcc(e)+'</span>'+(!w?'<span class="ptag">взыскания '+fmtPen(e.pen)+'</span>':'')+'</div></div>';
 }
 function mPills(e,c){
- var w=isWatch(e);
- var activeCnt=activePenList(e).length;
- var actLogsCnt=empWorkLogs(e).length;
+ var w=isWatch(e),activeCnt=activePenList(e).length,actLogsCnt=empWorkLogs(e).length;
  var P=[['career','📈 Служба'],['actions','⚡ Действия'+(actLogsCnt?' · '+actLogsCnt:'')]];
- if(!w){
-  P.push(['zp','💵 Зарплата']);
-  P.push(['prem','💰 Премии'+(c.prem.length?' · '+c.prem.length:'')]);
- }
+ if(!w){P.push(['zp','💵 Зарплата']);P.push(['prem','💰 Премии'+(c.prem.length?' · '+c.prem.length:'')])}
  P.push(['wh','📦 Склад'+(c.wh.length?' · '+c.wh.length:'')]);
- if(!w){
-  P.push(['pen','⚠️ Взыскания'+(activeCnt?' · '+activeCnt:'')]);
- }
- P.push(['edit','✏️ Изменить']);
+ if(!w){P.push(['pen','⚠️ Взыскания'+(activeCnt?' · '+activeCnt:'')])}
  return '<div class="pills">'+P.map(function(p){return '<div class="pill'+(MTAB===p[0]?' on':'')+'" onclick="mTab(\''+p[0]+'\')">'+p[1]+'</div>'}).join('')+'</div>';
 }
 function mTabBody(e,c){
- if(MTAB==='career'){return mCareer(e)}
- if(MTAB==='actions'){return mActions(e)}
- if(MTAB==='zp'){return mZp(e,c)}
- if(MTAB==='prem'){return mPrem(e,c)}
- if(MTAB==='wh'){return mWh(e,c)}
- if(MTAB==='edit'){return mEdit(e)}
- if(MTAB==='pen'&&!isWatch(e)){return mPenTab(e,c)}
- return mCareer(e);
-}
-function mCareer(e){
- var h='';var rr=rankRule(e.pos);
- if(rr.m==='fix'){h+='<div class="tot" style="margin:6px 0 14px">Звание статичной должности: <b>'+RANKS[rr.r-1].name+'</b></div>'}
- else if(rr.m==='watch'){h+='<div class="tot" style="margin:6px 0 14px">Следящая администрация — любое звание</div>'}
- else{h+='<div class="tot" style="margin:6px 0 14px">Звание по инициативе руководства</div>'}
- var c=genCustom(e);var sorted=c.career.slice().reverse();
- h+='<div class="tscroll tl">'+sorted.map(function(ev){var ic={hire:'▶',promo:'▲',demote:'▼',transfer:'⇄',restore:'↺'}[ev.t]||'•';return '<div class="tli"><div class="tld">'+fmtD(pd(ev.d))+'</div><div class="tico '+ev.t+'">'+ic+'</div><div class="tlx"><b>'+ev.txt+'</b><span>'+signerLink(ev.by)+'</span></div></div>'}).join('')+'</div>';
- return h;
-}
-function mActions(e){
- var list=empWorkLogs(e);
- if(!list.length){return '<div class="empty">Зафиксированных служебных действий пока нет</div>'}
- var arrCnt=0,relCnt=0,fineCnt=0,fineSum=0,licCnt=0,staffCnt=0;
- list.forEach(function(l){
-  if(l.k==='arrest')arrCnt++;
-  else if(l.k==='release')relCnt++;
-  else if(l.k==='fine'||l.k==='finecam'){fineCnt++;fineSum+=(l.amount||0)}
-  else if(l.k==='lic')licCnt++;
-  else if(l.cat==='staff')staffCnt++;
- });
- var statTiles='<div class="tiles" style="margin:6px 0 12px">'+
-  '<div class="tile"><div class="n" style="font-size:21px;color:#6cc0ff">'+arrCnt+'</div><div class="l">Посажено в КПЗ</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:21px;color:#2fd97a">'+relCnt+'</div><div class="l">Выпущено из КПЗ</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:21px;color:#f7c948">'+fineCnt+'</div><div class="l">Штрафов</div><div class="tile-x">на '+fmtN(fineSum)+' ₽</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:21px;color:#ff5c5c">'+licCnt+'</div><div class="l">Лишений прав</div></div>'+
-  '<div class="tile"><div class="n" style="font-size:21px;color:#a78bfa">'+staffCnt+'</div><div class="l">Кадровых действий</div></div>'+
-  '</div>';
- var rows=list.slice(0,120).map(function(l){
-  var d=pd(l.d);
-  return '<div class="logrow">'+
-   '<div class="wtime"><b>'+pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+String(d.getFullYear()).slice(2)+'</b><br>'+l.t+'</div>'+
-   '<div class="log-ic">'+logIcon(l.k)+'</div>'+
-   '<div class="log-i"><b>'+logTxt(l)+'</b><div class="log-meta">'+logCatBadge(l.cat)+'</div></div></div>';
- }).join('');
- return statTiles+'<div class="tscroll" style="max-height:360px">'+rows+'</div>';
-}
-function mZp(e,c){if(isWatch(e)){return '<div class="empty">Не начисляется</div>'}
- var chips=[['day','Сутки'],['week','Неделя'],['month','Месяц'],['all','Всё'],['date','По дате']].map(function(p){return '<div class="chip'+(MZ.per===p[0]?' on':'')+'" onclick="mzSet(\'per\',\''+p[0]+'\')">'+p[1]+'</div>'}).join('');
- var perLbl='';if(MZ.per==='day'){perLbl='сутки'}else if(MZ.per==='week'){perLbl='неделя'}else if(MZ.per==='month'){perLbl='месяц'}else if(MZ.per==='all'){perLbl='всё'}else{perLbl='за '+fmtD(pd(MZ.date))}
- var h=empHours(e,MZ.per,MZ.date);var rate=RANKS[e.rank-1].s;var b=zpBounds(MZ.per,MZ.date);var prs=c.prem.filter(function(p){return p.d>=b[0]&&p.d<=b[1]});var psum=prs.reduce(function(s,p){return s+p.amt},0);
- if(h===null){return '<div class="chips" style="margin-top:0">'+chips+'</div><div class="empty">Нет данных</div>'}
- return '<div class="chips" style="margin-top:0">'+chips+'</div>'+'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px">'+'<div class="panel" style="flex:1;min-width:260px;margin:0"><div class="fl-h">Зарплата · '+perLbl+'</div><div class="fnum" style="font-size:26px">'+fmtN(Math.round(h*rate))+' ₽</div><div class="fnums">отработано <b>'+fmtH(h)+'</b> · оклад <b>'+fmtN(rate)+' ₽/ч</b></div></div>'+'<div class="panel" style="flex:1;min-width:260px;margin:0"><div class="fl-h">Премии · '+perLbl+'</div><div class="fnum" style="font-size:26px;color:var(--yellow)">'+fmtN(psum)+' ₽</div><div class="fnums">премий: <b>'+prs.length+'</b></div></div></div>'+'<div class="tot" style="margin-top:12px">Итого: <b style="color:var(--green)">'+fmtN(Math.round(h*rate)+psum)+' ₽</b></div>';
-}
-function mPrem(e,c){if(isWatch(e)){return '<div class="empty">Не начисляются</div>'}if(!c.prem.length){return '<div class="empty">Премий не было</div>'}var tot=c.prem.reduce(function(s,p){return s+p.amt},0);return '<div class="tot">Всего: <b>'+c.prem.length+'</b> на сумму <b>'+fmtN(tot)+' ₽</b></div>'+c.prem.map(function(p){return '<div class="pl-row"><div class="pl-d">'+fmtD(pd(p.d))+'<span>'+p.t+'</span></div><div class="pl-amt">+'+fmtN(p.amt)+' ₽</div><div class="pl-x"><b>'+p.txt+'</b><span>'+signerLink(p.by)+'</span></div></div>'}).join('')}
-function mWh(e,c){if(!c.wh.length){return '<div class="empty">Нет движений по складу</div>'}return '<div class="tscroll" style="max-height:380px">'+c.wh.map(function(w){var a=w.a==='ВЗЯЛ'?'t':(w.a==='СДАЛ'?'r':'p');return '<div class="wh-row"><div class="wtime"><b>'+fmtD(pd(w.d))+'</b><br>'+w.t+'</div><span class="wh-a '+a+'">'+w.a+'</span><div class="wh-i">'+w.items.map(function(s){var it=whItem(s),ic=wIcon(it.n);return '<span class="wtag" style="color:'+ic.col+'">'+ic.svg+'<span>'+it.n+' ×'+it.q+(it.note?' '+it.note:'')+'</span></span>'}).join('')+(w.note?'<div class="wh-note">'+esc(w.note)+'</div>':'')+'</div></div>'}).join('')+'</div>'}
-function mPenTab(e,c){
- var h='<div class="rk-line"><span class="rk-next">Текущее: <b class="pv '+penCls(e.pen)+'">'+fmtPen(e.pen)+'</b></span><span class="segs '+penCls(e.pen)+'">'+penSegs(e.pen)+'</span></div>';
- var w=workoff(e);
- if(w&&conv(e.pen)>0){var woState='';if(w.none){woState='без срока'}else if(w.left>0){woState='<b style="color:var(--red)">ПРОСРОЧЕНА '+w.left+' дн.</b>'}else{woState='осталось '+(-w.left)+' дн.'}h+='<div class="tot" style="margin:0 0 10px">Выговор от <b>'+fmtD(w.issue)+'</b> · '+woState+'</div>'}
- var actives=c.pen.filter(function(p){return p.v>0&&!p.workedOff&&!p.removed});
- var closed=c.pen.filter(function(p){return p.v>0&&(p.workedOff||p.removed)});
- h+='<div class="sec" style="margin-top:6px">Активные · '+actives.length+'</div>';
- if(!actives.length){h+='<div class="empty">Нет</div>'}
- else{h+=actives.map(function(p){var wInfo='';if(p.workoff){wInfo=' · до '+fmtD(pd(p.workoff))}else{wInfo=' · без срока'}if(p.task){wInfo+=' · '+esc(p.task)}return '<div class="pl-row"><div class="pl-d">'+fmtD(pd(p.d))+'</div><div class="pl-amt" style="color:var(--red)">+'+p.v+'/3</div><div class="pl-x"><b>'+esc(p.txt)+'</b><span>'+signerLink(p.by)+wInfo+'</span></div></div>'}).join('')}
- h+='<div class="sec" style="margin-top:14px">Закрытые · '+closed.length+'</div>';
- if(!closed.length){h+='<div class="empty">Нет</div>'}
- else{h+=closed.map(function(p){
-  var badge=p.removed?'<span style="color:var(--yellow);font-weight:800">СНЯТО</span>':'<span style="color:var(--green);font-weight:800">ОТРАБОТАНО</span>';
-  var extra=p.removed&&p.removedDate?(' · снято '+fmtD(pd(p.removedDate))):(p.workedOffDate?(' · отработано '+fmtD(pd(p.workedOffDate))):'');
-  return '<div class="pl-row"><div class="pl-d">'+fmtD(pd(p.d))+'</div><div class="pl-amt" style="color:var(--mut)">+'+p.v+'/3</div><div class="pl-x"><b>'+esc(p.txt)+'</b><span>'+badge+' · '+signerLink(p.by)+extra+'</span></div></div>'
- }).join('')}
- return h;
-}
-function edHintHtml(e,pos){var rr=rankRule(pos),nr=rankForPos(pos);if(rr.m==='fix')return'📌 <b style="color:var(--yellow)">'+RANKS[rr.r-1].name+'</b>'+(pos.indexOf('следящ')>-1?' · все взыскания будут сняты':'');if(rr.m==='watch')return'👁 Следящая администрация — все взыскания снимаются';if(nr)return'⇅ Авто: <b style="color:var(--yellow)">'+RANKS[nr-1].name+'</b>';return'Без изменений'}
-function mEdit(e){
- var curPos=EDPOS||e.pos;var rr=rankRule(curPos);
- var posOpts='<option value="">— оставить текущую —</option>'+'<option value="__remove__">❌ Снять с должности</option>'+STATIC_POS.map(function(p){return '<option value="'+esc(p.pos)+'"'+(p.pos===curPos?' selected':'')+'>'+p.pos+'</option>'}).join('');
- var rankCtl='',note='';
- if(rr.m==='fix'){if(SETT.statRank){var cur=(e.rank>=1&&e.rank<=18)?e.rank:rr.r;var o1='';for(var r=1;r<=18;r++){o1+='<option value="'+r+'"'+(r===cur?' selected':'')+'>'+r+' · '+RANKS[r-1].name+'</option>'}rankCtl='<select class="sel" id="edRank" style="width:100%">'+o1+'</select>';note='Звание по должности: <b>'+RANKS[rr.r-1].name+'</b>'}else{rankCtl='<select class="sel" id="edRank" disabled><option>'+rr.r+' · '+RANKS[rr.r-1].name+'</option></select>';note='Фиксировано'}}
- else if(rr.m==='watch'){if(SETT.statRank){var cur2=(e.rank>=1&&e.rank<=18)?e.rank:17;var o2='';for(var r2=1;r2<=18;r2++){o2+='<option value="'+r2+'"'+(r2===cur2?' selected':'')+'>'+r2+' · '+RANKS[r2-1].name+'</option>'}rankCtl='<select class="sel" id="edRank" style="width:100%">'+o2+'</select>';note='Любое звание'}else{rankCtl='<select class="sel" id="edRank" disabled><option>'+e.rank+'</option></select>';note='Отключено'}}
- else{var nr=rankForPos(curPos);rankCtl='<select class="sel" id="edRank" disabled><option>'+(nr?nr+' · '+RANKS[nr-1].name:'— авто —')+'</option></select>';note='По должности'}
- return '<div class="vlbl">Должность</div><select class="sel" id="edPos" style="width:100%" onchange="edPos(this.value)">'+posOpts+'</select>'+
- '<div class="panel" style="margin:10px 0;padding:10px 14px;font-size:12.5px">'+edHintHtml(e,curPos)+'</div>'+
- '<div class="vlbl">Звание</div>'+rankCtl+
- '<div class="fl-sub" style="margin:6px 0 12px">'+note+'</div>'+
- '<div class="vlbl">Доп. должность</div><input class="inp" id="edExtra" style="width:100%" value="'+esc(e.extra2||(extraPos(e)[0]||''))+'">'+
- '<div style="margin-top:14px"><button class="btn green" onclick="empSave()">💾 Сохранить</button> <button class="btn ghost" onclick="renderModal()">Отмена</button></div>';
-}
-window.edPos=function(v){EDPOS=v;renderModal()};
-window.empSave=function(){
- var e=byUid(MUID);if(!e){return}
- var pos=EDPOS||'';
- var ex=$('#edExtra')?$('#edExtra').value.trim():'';
- var oldPos=e.pos,oldRank=e.rank,oldFac=e.fac;
- if(pos==='__remove__'){e.pos=''}
- else if(pos){e.pos=pos}
- if(e.pos&&posFac(e.pos)==='watch'){
-  e.fac='watch';
-  e.pen=0;
-  if(e.custom)e.custom.pen=[];
+ if(MTAB==='actions'){
+  var list=empWorkLogs(e);
+  if(!list.length)return '<div class="empty">Действий пока нет</div>';
+  return '<div class="tscroll">'+list.slice(0,100).map(function(l){var d=pd(l.d);return '<div class="logrow"><div class="wtime"><b>'+pad(d.getDate())+'.'+pad(d.getMonth()+1)+'</b><br>'+l.t+'</div><div class="log-ic">'+logIcon(l.k)+'</div><div class="log-i"><b>'+logTxt(l)+'</b></div></div>'}).join('')+'</div>';
  }
- var rr=rankRule(e.pos||'');
- var rs=$('#edRank');
- var rankChanged=false;
- if(e.pos){
-  if(rr.m==='fix'||rr.m==='watch'){
-   if(SETT.statRank&&rs&&!rs.disabled){var r=parseInt(rs.value,10);if(r>=1&&r<=18&&r!==e.rank){e.rank=r;rankChanged=true}else if(rr.m==='fix'&&e.rank!==rr.r&&(!r||r===e.rank)){e.rank=rr.r;rankChanged=true}}
-   else if(rr.m==='fix'&&e.rank!==rr.r){e.rank=rr.r;rankChanged=true}
-  }else{var nr=rankForPos(e.pos);if(nr&&nr!==e.rank){e.rank=nr;rankChanged=true}}
+ if(MTAB==='wh'){
+  if(!c.wh.length)return '<div class="empty">Нет движений по складу</div>';
+  return '<div class="tscroll">'+c.wh.map(function(w){var a=w.a==='ВЗЯЛ'?'t':(w.a==='СДАЛ'?'r':'p');return '<div class="wh-row"><div class="wtime"><b>'+fmtD(pd(w.d))+'</b><br>'+w.t+'</div><span class="wh-a '+a+'">'+w.a+'</span><div class="wh-i">'+w.items.map(function(s){var it=whItem(s),ic=wIcon(it.n);return '<span class="wtag" style="color:'+ic.col+'">'+ic.svg+'<span>'+it.n+' ×'+it.q+(it.note?' '+it.note:'')+'</span></span>'}).join('')+(w.note?'<div class="wh-note">'+esc(w.note)+'</div>':'')+'</div></div>'}).join('')+'</div>';
  }
- e.extra2=ex;
- var c=genCustom(e);
- if(oldPos!==e.pos){var evTxt;if(!e.pos){evTxt='Снят с должности: '+oldPos}else if(!oldPos){evTxt='Назначен на должность: '+e.pos}else{evTxt='Назначен на должность: '+e.pos+' (ранее: '+oldPos+')'}if(rankChanged){evTxt+=' · присвоено звание: '+RANKS[e.rank-1].name}if(e.fac==='watch'&&oldFac!=='watch'){evTxt+=' · роль: Следящая администрация'}c.career.push({d:dStr(TODAY),t:'promo',txt:evTxt,by:ACTOR});if(!e.pos){pushLog({actor:ACTOR,cat:'staff',k:'dismiss',target:e.name,pos:oldPos})}else{pushLog({actor:ACTOR,cat:'staff',k:'appoint',target:e.name,pos:e.pos})}}
- else if(rankChanged){var up=e.rank>oldRank;c.career.push({d:dStr(TODAY),t:up?'promo':'demote',txt:(up?'Повышение: ':'Понижение: ')+RANKS[oldRank-1].name+' → '+RANKS[e.rank-1].name,by:ACTOR});pushLog({actor:ACTOR,cat:'staff',k:up?'promote':'demote',target:e.name,rank:e.rank})}
- c.career.sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0)});
- EDPOS='';
- toast('Сохранено: '+e.name);
- go(CUR);renderModal();
-};
-function mFoot(e){
- var act='';
- if(isWatch(e)){
-  act='<button class="btn warn" onclick="openFireForm()">🚫 Уволить</button>';
- } else {
-  act='<button class="btn green" onclick="openPremForm()">💰 Премия</button>'+
-      '<button class="btn warn" onclick="openPenForm()">⚠️ Взыскания</button>'+
-      '<button class="btn" onclick="openTransferForm()">⇄ Перевод</button>'+
-      '<button class="btn ghost" onclick="openWorkoffList()">✅ Закрытые</button>'+
-      '<button class="btn warn" onclick="openFireForm()">🚫 Уволить</button>';
- }
- return '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button>'+act+'</div>';
+ if(MTAB==='zp'){var rate=RANKS[e.rank-1].s,h=empHours(e,MZ.per,MZ.date)||0;return '<div class="panel"><div class="fnum">'+fmtN(Math.round(h*rate))+' ₽</div><div class="fnums">отработано <b>'+fmtH(h)+'</b> · оклад <b>'+fmtN(rate)+' ₽/ч</b></div></div>'}
+ if(MTAB==='prem'){return c.prem.length?c.prem.map(function(p){return '<div class="pl-row"><div class="pl-d">'+fmtD(pd(p.d))+'</div><div class="pl-amt">+'+fmtN(p.amt)+' ₽</div><div class="pl-x"><b>'+p.txt+'</b><span>'+signerLink(p.by)+'</span></div></div>'}).join(''):'<div class="empty">Премий нет</div>'}
+ if(MTAB==='pen'&&!isWatch(e)){var actives=activePenList(e);return actives.length?actives.map(function(p){return '<div class="pl-row"><div class="pl-d">'+fmtD(pd(p.d))+'</div><div class="pl-amt" style="color:var(--red)">+'+p.v+'/3</div><div class="pl-x"><b>'+esc(p.txt)+'</b></div></div>'}).join(''):'<div class="empty">Активных взысканий нет</div>'}
+ var sorted=c.career.slice().reverse();
+ return '<div class="tscroll tl">'+sorted.map(function(ev){return '<div class="tli"><div class="tld">'+fmtD(pd(ev.d))+'</div><div class="tlx"><b>'+ev.txt+'</b><span>'+signerLink(ev.by)+'</span></div></div>'}).join('')+'</div>';
 }
+function mFoot(e){return '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>'}
 
 /* ============ ТЕЛЕФОН И ПРИЛОЖЕНИЕ «СМС» С 4 ГРУППАМИ ============ */
 var PHSCR='home';
@@ -2039,10 +1528,9 @@ var SMS_GROUPS={
   col:'#38bdf8',
   sub:'Штрафы от сотрудников ДПС, эвакуация авто, лишение прав',
   msgs:[
-   {time:'21:14',title:'Постановление инспектора ДПС',txt:'Выписан штраф 2 000 ₽ по ст. 12.2 ч.1 КоАП (нечитаемые гос. номера). Выписал: Капитан Мельников Григорий (ОГИБДД г. Приволжск). Нажмите для перехода к оплате.',fineId:'f3'},
+   {time:'21:14',title:'Постановление инспектора ДПС · 2 000 ₽',txt:'Выписан штраф 2 000 ₽ по ст. 12.2 ч.1 КоАП (нечитаемые гос. номера). Выписал: Капитан Мельников Григорий (ОГИБДД г. Приволжск). Нажмите для перехода к оплате.',fineId:'f3'},
    {time:'16:40',title:'Эвакуация транспортного средства',txt:'Ваш автомобиль Toyota Camry (В777АК 52) задержан и помещён на спецстоянку ГИБДД г. Приволжск за нарушение правил парковки (ст. 12.19 КоАП). Оформил: Ст. лейтенант Бирюков Артемий.'},
-   {time:'14:10',title:'Предупреждение о неоплаченных штрафах',txt:'Внимание! У вас имеется 4 неоплаченных штрафа. При превышении лимита задолженности действие водительского удостоверения может быть приостановлено.',fineId:'f3'},
-   {time:'10:15',title:'Информация по водительскому удостоверению',txt:'Проверка по базе ГИБДД МВД России: водительское удостоверение действительно, ограничений на управление ТС нет.'}
+   {time:'14:10',title:'Предупреждение о неоплаченных штрафах',txt:'Внимание! У вас имеется 4 неоплаченных штрафа. При превышении лимита задолженности действие водительского удостоверения может быть приостановлено.',fineId:'f3'}
   ]
  },
  cam:{
@@ -2061,39 +1549,22 @@ var SMS_GROUPS={
   col:'#f59e0b',
   sub:'Действия и постановления сотрудников УМВД',
   msgs:[
-   {time:'18:40',title:'Постановление сотрудника МВД · 3 000 ₽',txt:'Выписан административный штраф 3 000 ₽ по ст. 20.1 ч.1 КоАП (нарушение общественного порядка). Выписал: Ст. прапорщик Савельев Тимофей (УМВД г. Приволжск). Нажмите для оплаты.',fineId:'f4'},
-   {time:'12:15',title:'Уведомление участкового уполномоченного',txt:'По вашему обращению в дежурную часть УМВД г. Приволжск проведена проверка, материалы приобщены к архиву.'}
+   {time:'18:40',title:'Постановление сотрудника МВД · 3 000 ₽',txt:'Выписан административный штраф 3 000 ₽ по ст. 20.1 ч.1 КоАП (нарушение общественного порядка). Выписал: Ст. прапорщик Савельев Тимофей (УМВД г. Приволжск). Нажмите для оплаты.',fineId:'f4'}
   ]
  }
 };
 
-function openSmsGroup(gk){
- PHSCR='sms';
- SMS_GROUP=gk||null;
- phRender();
-}
+function openSmsGroup(gk){PHSCR='sms';SMS_GROUP=gk||null;phRender()}
 window.openSmsGroup=openSmsGroup;
 
 function onSmsMsgClick(fineId,tab){
- if(fineId){
-  location.href='bank.html?mode=phone&tab=fines&fineId='+encodeURIComponent(fineId);
-  return;
- }
- if(tab){
-  location.href='bank.html?mode=phone&tab='+encodeURIComponent(tab);
- }
+ if(fineId){location.href='bank.html?mode=phone&tab=fines&fineId='+encodeURIComponent(fineId);return}
+ if(tab){location.href='bank.html?mode=phone&tab='+encodeURIComponent(tab)}
 }
 window.onSmsMsgClick=onSmsMsgClick;
 
 function phRender(){
- var scr=$('#phScr');if(!scr){return}
- var homeBar=document.querySelector('.ph-home');
- if(homeBar){
-  homeBar.style.cursor='pointer';
-  homeBar.title='Выйти в главное меню телефона';
-  homeBar.onclick=function(){exitToPhone()};
- }
-
+ var scr=$('#phScr');if(!scr)return;
  if(PHSCR==='home'){
   var totalSms=SMS_GROUPS.bank.msgs.length+SMS_GROUPS.gibdd.msgs.length+SMS_GROUPS.cam.msgs.length+SMS_GROUPS.mvd.msgs.length;
   var apps=[
@@ -2101,30 +1572,29 @@ function phRender(){
    ['🏦',"location.href='bank.html?mode=phone'",'Банк',0,'background:linear-gradient(135deg,#10b981,#047857);border-color:#34d399'],
    ['💬',"openSmsGroup(null)",'СМС',totalSms,'background:linear-gradient(135deg,#8b5cf6,#5b21b6);border-color:#a78bfa'],
    ['🚔',"location.href='garage.html'",'Автопарк',0,'background:linear-gradient(135deg,#f59e0b,#b45309);border-color:#fbbf24'],
-   ['📞',"toast('Звонки в демо-режиме недоступны')",'Вызовы',0,'background:#1c2432;border-color:#2d3849'],
-   ['🗺️',"toast('Навигатор в демо-режиме недоступен')",'Карта',0,'background:#1c2432;border-color:#2d3849'],
-   ['📷',"toast('Камера в демо-режиме недоступна')",'Камера',0,'background:#1c2432;border-color:#2d3849'],
-   ['⚙️',"toast('Настройки телефона')",'Опции',0,'background:#1c2432;border-color:#2d3849']
+   ['🎡',"location.href='mvd-radial.html'",'Обыск',0,'background:linear-gradient(135deg,#ec4899,#be185d);border-color:#f472b6'],
+   ['🗺️',"toast('Навигатор')",'Карта',0,'background:#1c2432;border-color:#2d3849'],
+   ['📷',"toast('Камера')",'Камера',0,'background:#1c2432;border-color:#2d3849'],
+   ['⚙️',"toast('Настройки')",'Опции',0,'background:#1c2432;border-color:#2d3849']
   ];
   scr.innerHTML=
    '<div class="ph-clock" id="phClock2"></div><div class="ph-date" id="phDate"></div>'+
    '<div class="ph-grid">'+apps.map(function(a){
     return '<div class="ph-app" onclick="'+a[1]+'"><div class="ph-ic" style="'+a[4]+'">'+a[0]+(a[3]?'<i class="ph-bdg">'+a[3]+'</i>':'')+'</div><span>'+a[2]+'</span></div>';
    }).join('')+'</div>'+
-   /* Блок «Уведомления» на главном экране — клик сразу перебрасывает в СМС */
-   '<div style="margin-top:26px;padding:13px 14px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09)">'+
+   '<div style="margin-top:24px;padding:13px 14px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09)">'+
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;cursor:pointer" onclick="openSmsGroup(null)">'+
      '<span style="font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#cbd5e1;font-weight:800">🔔 Уведомления</span>'+
-     '<span style="font-size:11px;color:#60a5fa;font-weight:700">Открыть СМС →</span>'+
+     '<span style="font-size:11px;color:#60a5fa;font-weight:700">Все СМС →</span>'+
     '</div>'+
     '<div style="display:flex;flex-direction:column;gap:7px">'+
      '<div onclick="openSmsGroup(\'cam\')" style="cursor:pointer;background:#141b26;border:1px solid rgba(96,165,250,.3);border-left:3px solid #60a5fa;border-radius:11px;padding:9px 11px">'+
       '<div style="font-size:10.5px;font-weight:800;color:#93c5fd">📷 [ГИБДД] Камера контроля движения</div>'+
-      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Выписан штраф камерой · 1 500 ₽ (Нажмите)</div>'+
+      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Выписан штраф камерой · 1 500 ₽</div>'+
      '</div>'+
      '<div onclick="openSmsGroup(\'gibdd\')" style="cursor:pointer;background:#141b26;border:1px solid rgba(56,189,248,.3);border-left:3px solid #38bdf8;border-radius:11px;padding:9px 11px">'+
       '<div style="font-size:10.5px;font-weight:800;color:#7dd3fc">🚓 ГИБДД МВД России</div>'+
-      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Штраф от инспектора ДПС · эвакуация ТС</div>'+
+      '<div style="font-size:11.5px;color:#e2e8f0;margin-top:2px">Штраф от инспектора ДПС · эвакуация авто</div>'+
      '</div>'+
      '<div onclick="openSmsGroup(\'mvd\')" style="cursor:pointer;background:#141b26;border:1px solid rgba(245,158,11,.3);border-left:3px solid #f59e0b;border-radius:11px;padding:9px 11px">'+
       '<div style="font-size:10.5px;font-weight:800;color:#fcd34d">🛡️ МВД России</div>'+
@@ -2134,11 +1604,10 @@ function phRender(){
    '</div>';
  }else if(PHSCR==='sms'){
   if(!SMS_GROUP){
-   /* Список групп в СМС */
    var gKeys=['bank','gibdd','cam','mvd'];
    scr.innerHTML=
     '<div class="ph-back" onclick="phGo(\'home\')">← На главный экран</div>'+
-    '<div class="ph-app-t">💬 СМС · Уведомления</div>'+
+    '<div class="ph-app-t">💬 Уведомления</div>'+
     gKeys.map(function(k){
      var g=SMS_GROUPS[k];
      return '<div class="ph-mi" onclick="openSmsGroup(\''+k+'\')" style="border-left:3px solid '+g.col+'">'+
@@ -2148,7 +1617,6 @@ function phRender(){
      '</div>';
     }).join('');
   }else{
-   /* Сообщения внутри выбранной группы СМС */
    var grp=SMS_GROUPS[SMS_GROUP];
    scr.innerHTML=
     '<div class="ph-back" onclick="openSmsGroup(null)">← Все группы СМС</div>'+
@@ -2156,9 +1624,9 @@ function phRender(){
     grp.msgs.map(function(m){
      var clickable=!!(m.fineId||m.tab);
      var actHint=m.fineId
-      ? '<div style="margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);font-size:11px;font-weight:800;color:#34d399">🏦 Нажмите, чтобы перейти в Банк к оплате этого штрафа →</div>'
-      : (m.tab?'<div style="margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);font-size:11px;font-weight:800;color:#60a5fa">🏦 Открыть операцию в приложении Банка →</div>':'');
-     return '<div onclick="'+(clickable?'onSmsMsgClick(\''+(m.fineId||'')+'\',\''+(m.tab||'')+'\')':'')+'" style="cursor:'+(clickable?'pointer':'default')+';background:#151c28;border:1px solid #27303d;border-left:3px solid '+grp.col+';border-radius:13px;padding:12px 13px;margin-bottom:9px;transition:.15s">'+
+      ? '<div style="margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);font-size:11px;font-weight:800;color:#34d399">🏦 Перейти в Банк к оплате данного штрафа →</div>'
+      : (m.tab?'<div style="margin-top:7px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.1);font-size:11px;font-weight:800;color:#60a5fa">🏦 Открыть в приложении Банка →</div>':'');
+     return '<div onclick="'+(clickable?'onSmsMsgClick(\''+(m.fineId||'')+'\',\''+(m.tab||'')+'\')':'')+'" style="cursor:'+(clickable?'pointer':'default')+';background:#151c28;border:1px solid #27303d;border-left:3px solid '+grp.col+';border-radius:13px;padding:12px 13px;margin-bottom:9px">'+
       '<div style="display:flex;justify-content:space-between;font-size:10.5px;font-weight:800;color:'+grp.col+';margin-bottom:4px"><span>'+grp.ic+' '+esc(grp.name)+'</span><span style="color:#8b95a7">'+m.time+'</span></div>'+
       '<b style="font-size:12.5px;display:block;margin-bottom:4px;color:#fff">'+esc(m.title)+'</b>'+
       '<div style="font-size:12px;color:#cbd5e1;line-height:1.48">'+esc(m.txt)+'</div>'+
@@ -2167,7 +1635,6 @@ function phRender(){
     }).join('');
   }
  }else{
-  /* Меню приложения МВД — БЕЗ Провинция Банка (Пункт 1) */
   scr.innerHTML=
    '<div class="ph-back" onclick="phGo(\'home\')">← Телефон</div>'+
    '<div class="ph-app-t">МВД · Служебные приложения</div>'+
@@ -2176,10 +1643,10 @@ function phRender(){
  }
  phTick();
 }
-function phTick(){var d=new Date(),s=pad(d.getHours())+':'+pad(d.getMinutes());var c1=$('#phClock');if(c1){c1.textContent=s}var c2=$('#phClock2');if(c2){c2.textContent=s}var WD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];var p=$('#phDate');if(p){p.textContent=WD[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()]}}
+function phTick(){var d=new Date(),s=pad(d.getHours())+':'+pad(d.getMinutes());var c1=$('#phClock');if(c1)c1.textContent=s;var c2=$('#phClock2');if(c2)c2.textContent=s;var WD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];var p=$('#phDate');if(p)p.textContent=WD[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()]}
 function phGo(s){PHSCR=s;SMS_GROUP=null;phRender()}
-function hideApps(){var a=$('#app'),d=$('#dbapp');if(a){a.style.display='none'}if(d){d.style.display='none'}}
-function openPhone(){hideApps();var o=$('#phoneOv');if(o){o.style.display='flex'}phRender()}
+function hideApps(){var a=$('#app'),d=$('#dbapp');if(a)a.style.display='none';if(d)d.style.display='none'}
+function openPhone(){hideApps();var o=$('#phoneOv');if(o)o.style.display='flex';phRender()}
 function openLS(){PHSCR='mvd';$('#phoneOv').style.display='none';$('#app').style.display='flex'}
 function backToPhone(){openPhone()}
 function exitToPhone(){PHSCR='home';SMS_GROUP=null;openPhone()}
@@ -2193,7 +1660,7 @@ function go(pg){CUR=pg;rebuildOrders();buildNav();$('#content').innerHTML=RENDER
 window.go=go;
 function buildNav(){
  var bd={pen:E.filter(function(e){return activePenList(e).length>0&&!isWatch(e)}).length,wh:lowStock()};
- var och=DISM.filter(function(d){return d.bl}).length+DISM.filter(function(d){return d.global}).length;
+ var och=DISM.filter(function(d){return d.bl||d.global}).length;
  var items=[
   ['home','📊','Обзор',0],
   ['staff','👥','Личный состав',0],
@@ -2210,9 +1677,44 @@ function buildNav(){
  $('#nav').innerHTML=items.map(function(it){return '<div class="ni'+(CUR===it[0]?' on':'')+'" data-pg="'+it[0]+'">'+it[1]+'<span>'+it[2]+'</span>'+(it[3]?'<i class="bd">'+it[3]+'</i>':'')+'</div>'}).join('');
 }
 (function init(){
+ /* Подгрузка сданных в камеру вещдоков улик из радиального меню обыска */
+ try{
+  var evList=JSON.parse(localStorage.getItem('mvd_seized_evidence_v1')||'[]');
+  if(evList&&evList.length){
+   var holmes=byUid('K8W4C6');
+   evList.forEach(function(rec){
+    LOGS.unshift({
+     d:rec.d||'2026-10-18',
+     t:rec.t||'12:00',
+     fac:rec.fac||'hq',
+     actor:rec.actor||'Холмс Евгений',
+     actorUid:rec.actorUid||'K8W4C6',
+     cat:'wh',
+     k:'add',
+     items:rec.items||[],
+     note:rec.note||'сдано дежурному в камеру хранения вещдоков'
+    });
+    if(holmes){
+     var c=genCustom(holmes);
+     c.wh.unshift({
+      d:rec.d||'2026-10-18',
+      t:rec.t||'12:00',
+      a:'ПОЛОЖИЛ',
+      items:rec.rawItems||['вещдок ×1'],
+      note:rec.note||'сдано дежурному в камеру хранения вещдоков МВД'
+     });
+    }
+   });
+  }
+ }catch(e){}
+
  go('home');
  renderDBNav();renderDB();
  openPhone();
+ if(location.search.indexOf('view=mvd')>=0){
+  PHSCR='mvd';
+  phRender();
+ }
  $('#bell').onclick=function(ev){ev.stopPropagation();$('#ndrop').classList.toggle('open')};
  document.addEventListener('click',function(ev){var d=$('#ndrop');if(d&&d.classList.contains('open')&&!ev.target.closest('.bell-wrap')){d.classList.remove('open')}});
  $('#nav').addEventListener('click',function(ev){var t=ev.target.closest('.ni');if(t){go(t.getAttribute('data-pg'))}});
