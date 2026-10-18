@@ -25,6 +25,7 @@ function normItems(a) {
     if (!a[i].images) a[i].images = [];
     if (!a[i].videos) a[i].videos = [];
     if (typeof a[i].title !== 'string') a[i].title = '';
+    /* Обновляем тексты и заголовки системных карточек, сохраняя прикреплённые владельцем фото и видео */
     if (seedMap[a[i].id]) {
       a[i].title = seedMap[a[i].id].title;
       a[i].text = seedMap[a[i].id].text;
@@ -32,14 +33,13 @@ function normItems(a) {
       a[i].fac = seedMap[a[i].id].fac;
     }
   }
-  /* Гарантируем, что «Улучшение телефона» (s0) идёт первым в списке */
   var hasS0 = a.some(function(x) { return x && x.id === 's0'; });
   if (!hasS0 && seedMap['s0']) {
     a.unshift(seedMap['s0']);
   }
   defSeeds.forEach(function(sd) {
     if (sd.id === 's0') return;
-    var exists = a.some(function(x) { return x && (x.id === sd.id || x.appUrl === sd.appUrl); });
+    var exists = a.some(function(x) { return x && x.id === sd.id; });
     if (!exists) a.push(sd);
   });
   return a;
