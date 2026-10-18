@@ -1,4 +1,6 @@
 var activeAppKey = null;
+var openedSpoilers = {};
+var quickUploadTargetId = null;
 
 function renderTop() {
   var z = $('#adminZone'); if (!z) return;
@@ -48,13 +50,148 @@ function bodyToHtml(text) {
   return s.replace(/\n/g, '<br>');
 }
 
-function toggleIdeaSpoiler(btn) {
+function toggleIdeaSpoiler(btn, id) {
   var body = btn.nextElementSibling;
   if (!body) return;
   var isOpen = body.classList.toggle('open');
+  if (id) openedSpoilers[id] = isOpen;
   btn.innerHTML = isOpen ? '▴ Скрыть описание' : '▾ Открыть описание';
 }
 window.toggleIdeaSpoiler = toggleIdeaSpoiler;
+
+/* Загрузка фото и видео (до 10 файлов) прямо внутри описания предложения (только для владельца) */
+function ensureQuickFileInput() {
+  var inp = document.getElementById('quickMediaInp');
+  if (inp) return inp;
+  inp = document.createElement('input');
+  inp.type = 'file';
+  inp.id = 'quickMediaInp';
+  inp.multiple = true;
+  inp.accept = 'image/*,video/*';
+  inp.style.display = 'none';
+  document.body.appendChild(inp);
+
+  inp.addEventListener('change', function() {
+    var files = Array.prototype.slice.call(inp.files || []);
+    inp.value = '';
+    if (!files.length || !quickUploadTargetId || !adminMode) return;
+    var it = byId(quickUploadTargetId);
+    if (!it) return;
+    if (!it.images) it.images = [];
+    if (!it.videos) it.videos = [];
+
+    var totalNow = it.images.length + it.videos.length;
+    var slotsLeft = 10 - totalNow;
+    if (slotsLeft <= 0) {
+      toast('Достигнут лимит: максимум 10 медиафайлов в одном предложении', true);
+      return;
+    }
+    if (files.length > slotsLeft) {
+      toast('Можно добавить ещё не более ' + slotsLeft + ' файл(ов)', true);
+      files = files.slice(0, slotsLeft);
+    }
+
+    setSync('busy', 'Загрузка файлов…');
+    var chain = Promise.resolve();
+    files.forEach(function(file) {
+      chain = chain.then(function() {
+        var isVid = /^video\//i.test(file.type) || /\.(mp4|webm|mov|mkv)$/i.test(file.name);
+        var isImg = /^image\//i.test(file.type) || /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name);
+        if (!isVid && !isImg) return;
+        if (typeof uploadMediaFile === 'function') {
+          return uploadMediaFile(file, isVid ? 'vid' : 'img').then(function(url) {
+            if (isVid) it.videos.push(url);
+            else it.images.push(url);
+          });
+        } else {
+          return new Promise(function(resolve) {
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+              if (isVid) it.videos.push(ev.target.result);
+              else it.images.push(ev.target.result);
+              resolve();
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+      });
+    });
+
+    chain.then(function() {
+      openedSpoilers[it.id] = true;
+      if (typeof markDirty === 'function') markDirty(it.id);
+      if (typeof commit === 'function') commit();
+      render();
+      toast('✓ Файлы прикреплены к описанию');
+    }).catch(function() {
+      setSync('err', 'Ошибка загрузки файла');
+      toast('Не удалось загрузить файл', true);
+    });
+  });
+  return inp;
+}
+
+window.triggerQuickMediaUpload = function(itemId) {
+  if (!adminMode) return;
+  quickUploadTargetId = itemId;
+  var inp = ensureQuickFileInput();
+  inp.click();
+};
+
+window.removeQuickMedia = function(itemId, kind, idx) {
+  if (!adminMode) return;
+  var it = byId(itemId);
+  if (!it) return;
+  if (kind === 'img' && it.images) it.images.splice(idx, 1);
+  if (kind === 'vid' && it.videos) it.videos.splice(idx, 1);
+  openedSpoilers[it.id] = true;
+  if (typeof markDirty === 'function') markDirty(it.id);
+  if (typeof commit === 'function') commit();
+  render();
+  toast('Файл удалён');
+};
+
+function renderMediaBlockHtml(it) {
+  var imgs = (it.images && it.images.length) ? it.images : [];
+  var vids = (it.videos && it.videos.length) ? it.videos : [];
+  var total = imgs.length + vids.length;
+  var h = '';
+
+  if (imgs.length || vids.length) {
+    h += '<div class="sug-media-wrap">';
+    if (imgs.length) {
+      h += '<div class="sug-images">';
+      imgs.forEach(function(url, ix) {
+        h += '<div class="sug-media-item">' +
+          '<img src="' + esc(url) + '" alt="Фото ' + (ix + 1) + '" onclick="openLb(\'' + esc(url) + '\')">' +
+          (adminMode ? '<button type="button" class="media-del-btn" title="Удалить фото" onclick="removeQuickMedia(\'' + esc(it.id) + '\',\'img\',' + ix + ')">✕</button>' : '') +
+        '</div>';
+      });
+      h += '</div>';
+    }
+    if (vids.length) {
+      h += '<div class="sug-videos">';
+      vids.forEach(function(url, vx) {
+        h += '<div class="sug-media-item">' +
+          '<video src="' + esc(url) + '" controls preload="metadata"></video>' +
+          (adminMode ? '<button type="button" class="media-del-btn" title="Удалить видео" onclick="removeQuickMedia(\'' + esc(it.id) + '\',\'vid\',' + vx + ')">✕</button>' : '') +
+        '</div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+
+  /* Кнопка добавления файлов доступна ТОЛЬКО владельцу (adminMode), другим пользователям она не видна */
+  if (adminMode) {
+    h += '<div class="sug-owner-upload">' +
+      (total < 10
+        ? '<button type="button" class="btn ghost slim" onclick="triggerQuickMediaUpload(\'' + esc(it.id) + '\')">📎 Добавить фото / видео (' + total + ' из 10)</button>'
+        : '<span style="font-size:12px;color:var(--mut)">Достигнут максимум: 10 из 10 файлов</span>') +
+    '</div>';
+  }
+  return h;
+}
 
 function renderItems() {
   var list = itemsByFac(state.fac);
@@ -74,6 +211,8 @@ function renderItems() {
     var it = list[i]; var num = i + 1;
     var ttl = itemTitle(it) || 'Без заголовка';
     var appCfg = it.appUrl && DEMO_APPS[it.appUrl] ? DEMO_APPS[it.appUrl] : null;
+    var mediaCnt = ((it.images && it.images.length) ? it.images.length : 0) + ((it.videos && it.videos.length) ? it.videos.length : 0);
+    var isOpen = !!openedSpoilers[it.id];
 
     h += '<div class="sug" data-id="' + esc(it.id) + '" style="animation-delay:' + Math.min(i * 40, 340) + 'ms">';
     h += '<div class="sug-head">';
@@ -86,9 +225,13 @@ function renderItems() {
     h += '</div>';
 
     var body = itemBody(it);
-    if (body) {
-      h += '<button type="button" class="sug-spoiler-btn" onclick="toggleIdeaSpoiler(this)">▾ Открыть описание</button>';
-      h += '<div class="sug-spoiler-body"><div class="sug-body">' + bodyToHtml(body) + '</div></div>';
+    if (body || mediaCnt || adminMode) {
+      var btnLbl = isOpen ? '▴ Скрыть описание' : ('▾ Открыть описание' + (mediaCnt ? ' · 📎 ' + mediaCnt : ''));
+      h += '<button type="button" class="sug-spoiler-btn" onclick="toggleIdeaSpoiler(this,\'' + esc(it.id) + '\')">' + btnLbl + '</button>';
+      h += '<div class="sug-spoiler-body' + (isOpen ? ' open' : '') + '">' +
+           (body ? '<div class="sug-body">' + bodyToHtml(body) + '</div>' : '') +
+           renderMediaBlockHtml(it) +
+           '</div>';
     }
 
     if (adminMode) {
