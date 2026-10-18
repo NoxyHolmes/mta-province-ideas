@@ -3,93 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Динамические погоны МВД РФ · Полиция и Юстиция</title>
+<title>Динамические погоны образца 2015 г. · МВД, ГИБДД, ОМОН, Юстиция и Армия (МО)</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;user-select:none}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
 :root{
-  --bg:#0a0d14;
-  --card:#131924;
+  --bg:#090c12;
+  --card:#121824;
   --line:rgba(255,255,255,.09);
   --txt:#f1f5f9;
   --mut:#8c98ad;
-  --police:#ef4444;
-  --justice:#2563eb;
+  --acc:#3b82f6;
 }
 html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
 body{
   background:
-    radial-gradient(1000px 520px at 15% 0%,rgba(239,68,68,.12),transparent 60%),
-    radial-gradient(1000px 520px at 85% 100%,rgba(37,99,235,.16),transparent 60%),
-    #0a0d14;
-  padding:26px 20px 60px;
+    radial-gradient(1100px 540px at 10% 0%,rgba(220,38,38,.12),transparent 60%),
+    radial-gradient(1100px 540px at 90% 100%,rgba(37,99,235,.15),transparent 60%),
+    #090c12;
+  padding:22px 18px 60px;
 }
-.ep-wrap{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:24px;align-items:start}
+.ep-wrap{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:440px 1fr;gap:22px;align-items:start}
 
-/* Левая карточка предпросмотра пары погон */
+/* Левая витрина с парой погон */
 .ep-stage{
-  background:linear-gradient(165deg,#172030,#0f1520);
+  background:linear-gradient(165deg,#161f30,#0d131f);
   border:1px solid var(--line);
   border-radius:22px;
-  padding:24px 20px;
+  padding:20px 18px;
   position:sticky;
-  top:20px;
-  box-shadow:0 24px 60px rgba(0,0,0,.55);
+  top:18px;
+  box-shadow:0 24px 65px rgba(0,0,0,.6);
   text-align:center;
 }
-.branch-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.br-btn{
-  padding:11px 12px;
-  border-radius:12px;
+.sec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800;text-align:left;margin-bottom:7px}
+
+.mode-pills{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+.m-pill{
+  padding:8px 10px;
+  border-radius:10px;
   border:1px solid var(--line);
   background:rgba(255,255,255,.03);
   color:var(--mut);
   font-weight:800;
-  font-size:12.5px;
+  font-size:11.5px;
   cursor:pointer;
-  transition:.18s;
+  transition:.16s;
 }
-.br-btn.on.police{background:rgba(220,38,38,.22);border-color:#ef4444;color:#fff;box-shadow:0 6px 20px rgba(220,38,38,.25)}
-.br-btn.on.justice{background:rgba(37,99,235,.26);border-color:#3b82f6;color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.28)}
+.m-pill:hover{border-color:rgba(255,255,255,.22);color:#fff}
+.m-pill.on{background:rgba(59,130,246,.22);border-color:#60a5fa;color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.25)}
 
 .pair-box{
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:28px;
-  padding:22px 10px;
-  background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 70%);
+  gap:24px;
+  padding:18px 8px;
+  background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 72%);
+  border:1px solid rgba(255,255,255,.05);
   border-radius:18px;
-  margin-bottom:16px;
+  margin-bottom:14px;
 }
 .pair-box svg{
-  width:126px;
-  height:320px;
-  filter:drop-shadow(0 18px 28px rgba(0,0,0,.75));
-  transition:transform .22s;
+  width:136px;
+  height:340px;
+  filter:drop-shadow(0 18px 28px rgba(0,0,0,.8));
+  transition:transform .2s;
 }
-.pair-box svg:hover{transform:translateY(-4px) scale(1.02)}
+.pair-box svg:hover{transform:translateY(-3px) scale(1.02)}
 
-.ep-rank-title{font-size:21px;font-weight:900;color:#fff;margin-bottom:4px}
-.ep-rank-cat{font-size:12px;color:#93c5fd;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
-.ep-specs{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;font-size:12.5px;line-height:1.6}
-.ep-specs div{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(255,255,255,.07);padding:4px 0}
+.ep-rank-title{font-size:20px;font-weight:900;color:#fff;margin-bottom:3px}
+.ep-rank-cat{font-size:11.5px;color:#93c5fd;font-weight:700;text-transform:uppercase;letter-spacing:.9px;margin-bottom:12px}
+
+.ep-specs{background:rgba(0,0,0,.32);border:1px solid var(--line);border-radius:13px;padding:11px 13px;text-align:left;font-size:12px;line-height:1.55}
+.ep-specs div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed rgba(255,255,255,.07);padding:4px 0}
 .ep-specs div:last-child{border-bottom:none}
 .ep-specs span{color:var(--mut)}
-.ep-specs b{color:#fff}
+.ep-specs b{color:#fff;text-align:right}
 
-.step-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.s-btn{padding:11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:#1e293b;color:#fff;font-weight:800;font-size:13px;cursor:pointer;transition:.15s}
+.step-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.s-btn{padding:10px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:#1e293b;color:#fff;font-weight:800;font-size:12.5px;cursor:pointer;transition:.15s}
 .s-btn:hover{border-color:#60a5fa;background:#2563eb}
 
-/* Правая панель всех 18 званий */
+/* Правая панель управления ведомствами и званиями */
 .ep-list-panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
 .ep-h1{font-size:20px;font-weight:900;margin-bottom:4px}
-.ep-sub{font-size:12.5px;color:var(--mut);margin-bottom:18px;line-height:1.5}
-.cat-hdr{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;font-weight:800;margin:16px 0 8px}
+.ep-sub{font-size:12.5px;color:var(--mut);margin-bottom:16px;line-height:1.5}
+
+.dept-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px;margin-bottom:18px}
+.d-tab{
+  padding:11px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  color:var(--mut);
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  transition:.16s;
+  text-align:left;
+}
+.d-tab b{display:block;font-size:13px;color:#e2e8f0;margin-bottom:2px}
+.d-tab span{font-size:10.5px;color:var(--mut);font-weight:600}
+.d-tab:hover{border-color:rgba(255,255,255,.22)}
+.d-tab.on{background:linear-gradient(145deg,rgba(59,130,246,.22),rgba(37,99,235,.08));border-color:#60a5fa;color:#fff}
+.d-tab.on b{color:#fff}
+
+.cat-hdr{font-size:10.5px;text-transform:uppercase;letter-spacing:1.4px;color:#94a3b8;font-weight:800;margin:16px 0 8px}
 .ranks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px}
 .r-card{
-  padding:11px 13px;
-  border-radius:12px;
+  padding:10px 12px;
+  border-radius:11px;
   background:rgba(255,255,255,.025);
   border:1px solid var(--line);
   cursor:pointer;
@@ -99,212 +122,495 @@ body{
   gap:10px;
 }
 .r-card:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.05)}
-.r-card.on{border-color:#60a5fa;background:rgba(59,130,246,.16)}
-.r-num{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#cbd5e1;flex:0 0 28px}
+.r-card.on{border-color:#60a5fa;background:rgba(59,130,246,.18)}
+.r-num{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11.5px;color:#cbd5e1;flex:0 0 28px}
 .r-card.on .r-num{background:#2563eb;color:#fff}
 .r-nm{font-weight:800;font-size:12.5px;line-height:1.25}
 
-@media(max-width:960px){.ep-wrap{grid-template-columns:1fr}.ep-stage{position:static}}
+@media(max-width:980px){.ep-wrap{grid-template-columns:1fr}.ep-stage{position:static}}
 </style>
 </head>
 <body>
 
 <div class="ep-wrap">
+  <!-- Левая колонка: Витрина пары погон -->
   <div class="ep-stage">
-    <div class="branch-switch">
-      <button class="br-btn police on" id="btnPolice" onclick="setBranch('police')">🛡️ Полиция (Красный кант)</button>
-      <button class="br-btn justice" id="btnJustice" onclick="setBranch('justice')">⚖️ Юстиция (Синий кант)</button>
+    <div class="sec-lbl">Тип формы (Повседневная / Парадная / ОМОН / Полевая)</div>
+    <div class="mode-pills">
+      <button class="m-pill on" id="ut_everyday" onclick="setUniformType('everyday')">👔 Повседневные</button>
+      <button class="m-pill" id="ut_parade_white" onclick="setUniformType('parade_white')">🏳️ Парадные (Белые)</button>
+      <button class="m-pill" id="ut_parade_gold" onclick="setUniformType('parade_gold')">✨ Парадные (Золотые)</button>
+      <button class="m-pill" id="ut_omon_black" onclick="setUniformType('omon_black')">🦅 Форма ОМОН (Чёрные)</button>
+      <button class="m-pill" id="ut_field" style="grid-column:1/-1" onclick="setUniformType('field')">🌿 Полевые (Камуфляж / Защитные)</button>
     </div>
 
     <div class="pair-box" id="pairBox"></div>
 
-    <div class="ep-rank-title" id="uiRankTitle">Капитан полиции</div>
-    <div class="ep-rank-cat" id="uiRankCat">Средний начальствующий состав · 11 ранг</div>
+    <div class="ep-rank-title" id="uiRankTitle">Генерал-майор полиции</div>
+    <div class="ep-rank-cat" id="uiRankCat">Высший начальствующий состав · Образец 2015 г.</div>
 
     <div class="ep-specs" id="uiSpecs"></div>
 
     <div class="step-btns">
-      <button class="s-btn" onclick="stepRank(-1)">▼ Понизить звание</button>
-      <button class="s-btn" onclick="stepRank(1)">▲ Повысить звание</button>
+      <button class="s-btn" onclick="stepRank(-1)">▼ Понизить</button>
+      <button class="s-btn" onclick="stepRank(1)">▲ Повысить</button>
     </div>
   </div>
 
+  <!-- Правая колонка: Выбор ведомства/отдела и звания -->
   <div class="ep-list-panel">
-    <div class="ep-h1">🎖️ Интерактивный стенд динамических погон МВД РФ</div>
-    <div class="ep-sub">Нажмите на любое специальное звание или переключите род службы («Полиция» / «Юстиция»), чтобы увидеть, как система автоматически перестраивает просветы, лычки, кант и звёзды на погонах сотрудника.</div>
+    <div class="ep-h1">🎖️ Динамические погоны образца 2015 года (МВД, ГИБДД, ОМОН, Юстиция и Армия РФ)</div>
+    <div class="ep-sub">
+      Точная визуализация погон с <b>закруглённым верхним краем образца 2015 года</b> для МВД/ГИБДД/Юстиции (и трапециевидным для ВС РФ), специальными эмблемами ведомств поверх званий, двуглавым орлом у генералов полиции, званием <b>«Курсант»</b>, белыми парадными, чёрными (ОМОН) и полевыми защитными погонами.
+    </div>
+
+    <div class="sec-lbl">1. Выберите ведомство или подразделение</div>
+    <div class="dept-tabs" id="deptTabs"></div>
+
     <div id="ranksCatalog"></div>
   </div>
 </div>
 
 <script>
-var BRANCH = 'police'; // 'police' (красный кант/просветы) или 'justice' (васильково-синий кант/просветы)
-var CUR_RANK = 11;     // По умолчанию: 11 (Капитан)
+var CUR_DEPT = 'police';       // 'police', 'gibdd', 'omon', 'justice', 'army_ground', 'army_air', 'army_mp'
+var UNIFORM_TYPE = 'everyday'; // 'everyday', 'parade_white', 'parade_gold', 'omon_black', 'field'
+var CUR_RANK_IDX = 15;         // Индекс в массиве текущего ведомства
 
-var RANKS_DATA = [
-  { r: 1,  cat: 'Рядовой состав',                   base: 'Рядовой',            stripes: 0, bars: [],             stars: [] },
-  { r: 2,  cat: 'Младший начальствующий состав',    base: 'Младший сержант',    stripes: 0, bars: ['thin','thin'],stars: [] },
-  { r: 3,  cat: 'Младший начальствующий состав',    base: 'Сержант',            stripes: 0, bars: ['thin','thin','thin'], stars: [] },
-  { r: 4,  cat: 'Младший начальствующий состав',    base: 'Старший сержант',    stripes: 0, bars: ['wide'],       stars: [] },
-  { r: 5,  cat: 'Младший начальствующий состав',    base: 'Старшина',           stripes: 0, bars: ['vertical'],   stars: [] },
-  { r: 6,  cat: 'Младший начальствующий состав',    base: 'Прапорщик',          stripes: 0, bars: [],             stars: [{x:60,y:210,sz:11},{x:60,y:155,sz:11}] },
-  { r: 7,  cat: 'Младший начальствующий состав',    base: 'Старший прапорщик',  stripes: 0, bars: [],             stars: [{x:60,y:225,sz:11},{x:60,y:180,sz:11},{x:60,y:135,sz:11}] },
-  { r: 8,  cat: 'Средний начальствующий состав',    base: 'Младший лейтенант',  stripes: 1, bars: [],             stars: [{x:60,y:185,sz:11}] },
-  { r: 9,  cat: 'Средний начальствующий состав',    base: 'Лейтенант',          stripes: 1, bars: [],             stars: [{x:38,y:215,sz:11},{x:82,y:215,sz:11}] },
-  { r: 10, cat: 'Средний начальствующий состав',    base: 'Старший лейтенант',  stripes: 1, bars: [],             stars: [{x:38,y:225,sz:11},{x:82,y:225,sz:11},{x:60,y:170,sz:11}] },
-  { r: 11, cat: 'Средний начальствующий состав',    base: 'Капитан',            stripes: 1, bars: [],             stars: [{x:38,y:230,sz:11},{x:82,y:230,sz:11},{x:60,y:182,sz:11},{x:60,y:136,sz:11}] },
-  { r: 12, cat: 'Старший начальствующий состав',    base: 'Майор',              stripes: 2, bars: [],             stars: [{x:60,y:190,sz:16}] },
-  { r: 13, cat: 'Старший начальствующий состав',    base: 'Подполковник',       stripes: 2, bars: [],             stars: [{x:37,y:215,sz:16},{x:83,y:215,sz:16}] },
-  { r: 14, cat: 'Старший начальствующий состав',    base: 'Полковник',          stripes: 2, bars: [],             stars: [{x:37,y:225,sz:16},{x:83,y:225,sz:16},{x:60,y:160,sz:16}] },
-  { r: 15, cat: 'Высший начальствующий состав',     base: 'Генерал-майор',      stripes: 0, bars: [],             stars: [{x:60,y:190,sz:20}], isGen: true },
-  { r: 16, cat: 'Высший начальствующий состав',     base: 'Генерал-лейтенант',  stripes: 0, bars: [],             stars: [{x:60,y:225,sz:20},{x:60,y:155,sz:20}], isGen: true },
-  { r: 17, cat: 'Высший начальствующий состав',     base: 'Генерал-полковник',  stripes: 0, bars: [],             stars: [{x:60,y:238,sz:20},{x:60,y:184,sz:20},{x:60,y:130,sz:20}], isGen: true },
-  { r: 18, cat: 'Высший начальствующий состав',     base: 'Генерал',            stripes: 0, bars: [],             stars: [{x:60,y:205,sz:26,wreath:true}], isGen: true, isTopGen: true }
-];
+var DEPTS = {
+  police: {
+    name: '🛡️ Полиция (УМВД)',
+    sub: 'Красный кант · Закруглённые (2015 г.)',
+    shape: 'rounded',
+    trim: '#dc2626',
+    stripe: '#ef4444',
+    cloth: 'navy',
+    suffix: 'полиции',
+    emblem: 'police',
+    hasCadet: true,
+    maxRank: 18
+  },
+  gibdd: {
+    name: '🚓 ОГИБДД (ДПС)',
+    sub: 'Красный кант · Курсант — Полковник',
+    shape: 'rounded',
+    trim: '#dc2626',
+    stripe: '#ef4444',
+    cloth: 'navy',
+    suffix: 'полиции',
+    emblem: 'gibdd',
+    hasCadet: true,
+    maxRank: 14
+  },
+  omon: {
+    name: '🦅 ОМОН / СОБР',
+    sub: 'Чёрные повседневные · Красный кант',
+    shape: 'rounded',
+    trim: '#dc2626',
+    stripe: '#ef4444',
+    cloth: 'black',
+    suffix: 'полиции',
+    emblem: 'police',
+    hasCadet: false,
+    maxRank: 15
+  },
+  justice: {
+    name: '⚖️ Юстиция (Следствие)',
+    sub: 'Васильковый синий кант · Весы на щите',
+    shape: 'rounded',
+    trim: '#2563eb',
+    stripe: '#3b82f6',
+    cloth: 'navy',
+    suffix: 'юстиции',
+    emblem: 'justice',
+    hasCadet: true,
+    maxRank: 18
+  },
+  army_ground: {
+    name: '🎖️ Армия · Сухопутные войска',
+    sub: 'МО РФ · Красный кант · Звезда в венке',
+    shape: 'trapezoid',
+    trim: '#dc2626',
+    stripe: '#ef4444',
+    cloth: 'olive',
+    suffix: '',
+    emblem: 'army_ground',
+    hasCadet: true,
+    maxRank: 19
+  },
+  army_air: {
+    name: '✈️ Армия · ВКС и ВДВ',
+    sub: 'МО РФ · Голубой кант и просветы',
+    shape: 'trapezoid',
+    trim: '#0284c7',
+    stripe: '#38bdf8',
+    cloth: 'olive',
+    suffix: '',
+    emblem: 'army_air',
+    hasCadet: true,
+    maxRank: 18
+  },
+  army_mp: {
+    name: '🛡️ Армия · Военная полиция',
+    sub: 'МО РФ · Краповый кант · Щит ВП',
+    shape: 'trapezoid',
+    trim: '#991b1b',
+    stripe: '#dc2626',
+    cloth: 'olive',
+    suffix: '',
+    emblem: 'army_mp',
+    hasCadet: false,
+    maxRank: 16
+  }
+};
 
-function fullRankName(d) {
-  if (d.r === 18) return BRANCH === 'police' ? 'Генерал полиции Российской Федерации' : 'Генерал юстиции Российской Федерации';
-  return d.base + (BRANCH === 'police' ? ' полиции' : ' юстиции');
+function getRanksForDept(deptKey) {
+  var d = DEPTS[deptKey];
+  var isArmy = (deptKey.indexOf('army_') === 0);
+  var list = [];
+
+  if (d.hasCadet) {
+    list.push({ code: 'К', r: 0, cat: 'Курсанты образовательных организаций', base: 'Курсант', stripes: 0, bars: [], stars: [], isCadet: true });
+  }
+
+  list.push({ code: '1', r: 1, cat: 'Рядовой состав', base: 'Рядовой', stripes: 0, bars: [], stars: [] });
+  if (isArmy) {
+    list.push({ code: '1+', r: 1.5, cat: 'Рядовой состав', base: 'Ефрейтор', stripes: 0, bars: ['thin'], stars: [] });
+  }
+
+  var baseRanks = [
+    { r: 2,  cat: 'Младший состав', base: 'Младший сержант',   stripes: 0, bars: ['thin','thin'], stars: [] },
+    { r: 3,  cat: 'Младший состав', base: 'Сержант',           stripes: 0, bars: ['thin','thin','thin'], stars: [] },
+    { r: 4,  cat: 'Младший состав', base: 'Старший сержант',   stripes: 0, bars: ['wide'], stars: [] },
+    { r: 5,  cat: 'Младший состав', base: 'Старшина',          stripes: 0, bars: ['vertical'], stars: [] },
+    { r: 6,  cat: 'Прапорщики',     base: 'Прапорщик',         stripes: 0, bars: [], stars: [{x:60,y:222,sz:10.5},{x:60,y:172,sz:10.5}] },
+    { r: 7,  cat: 'Прапорщики',     base: 'Старший прапорщик', stripes: 0, bars: [], stars: [{x:60,y:236,sz:10.5},{x:60,y:194,sz:10.5},{x:60,y:152,sz:10.5}] },
+    { r: 8,  cat: 'Средний состав', base: 'Младший лейтенант', stripes: 1, bars: [], stars: [{x:60,y:200,sz:10.5}] },
+    { r: 9,  cat: 'Средний состав', base: 'Лейтенант',         stripes: 1, bars: [], stars: [{x:38,y:224,sz:10.5},{x:82,y:224,sz:10.5}] },
+    { r: 10, cat: 'Средний состав', base: 'Старший лейтенант', stripes: 1, bars: [], stars: [{x:38,y:232,sz:10.5},{x:82,y:232,sz:10.5},{x:60,y:184,sz:10.5}] },
+    { r: 11, cat: 'Средний состав', base: 'Капитан',           stripes: 1, bars: [], stars: [{x:38,y:238,sz:10.5},{x:82,y:238,sz:10.5},{x:60,y:194,sz:10.5},{x:60,y:152,sz:10.5}] },
+    { r: 12, cat: 'Старший состав', base: 'Майор',             stripes: 2, bars: [], stars: [{x:60,y:205,sz:15.5}] },
+    { r: 13, cat: 'Старший состав', base: 'Подполковник',      stripes: 2, bars: [], stars: [{x:37,y:224,sz:15.5},{x:83,y:224,sz:15.5}] },
+    { r: 14, cat: 'Старший состав', base: 'Полковник',         stripes: 2, bars: [], stars: [{x:37,y:234,sz:15.5},{x:83,y:234,sz:15.5},{x:60,y:178,sz:15.5}] },
+    { r: 15, cat: 'Высший состав',  base: 'Генерал-майор',     stripes: 0, bars: [], stars: [{x:60,y:205,sz:20}], isGen: true },
+    { r: 16, cat: 'Высший состав',  base: 'Генерал-лейтенант', stripes: 0, bars: [], stars: [{x:60,y:232,sz:19.5},{x:60,y:172,sz:19.5}], isGen: true },
+    { r: 17, cat: 'Высший состав',  base: 'Генерал-полковник', stripes: 0, bars: [], stars: [{x:60,y:244,sz:19},{x:60,y:196,sz:19},{x:60,y:148,sz:19}], isGen: true },
+    { r: 18, cat: 'Высший состав',  base: isArmy ? 'Генерал армии' : 'Генерал', stripes: 0, bars: [], stars: [{x:60,y:212,sz:25,wreath:true}], isGen: true, isTopGen: true }
+  ];
+
+  baseRanks.forEach(function(br) {
+    if (br.r <= d.maxRank) {
+      list.push(Object.assign({ code: String(br.r) }, br));
+    }
+  });
+
+  if (isArmy && d.maxRank >= 19) {
+    list.push({ code: '19', r: 19, cat: 'Высший состав', base: 'Маршал Российской Федерации', stripes: 0, bars: [], stars: [{x:60,y:216,sz:27,wreath:true}], isGen: true, isTopGen: true });
+  }
+  return list;
 }
 
-function starPolygonPoints(cx, cy, rOut) {
-  var rIn = rOut * 0.42;
-  var pts = [];
+function formatRankTitle(item, dept) {
+  if (item.isCadet) return 'Курсант ' + (dept.suffix || 'ВС РФ');
+  if (item.r === 18 && dept.suffix) return 'Генерал ' + dept.suffix + ' Российской Федерации';
+  if (item.r >= 18 && !dept.suffix) return item.base;
+  return item.base + (dept.suffix ? (' ' + dept.suffix) : '');
+}
+
+function starPts(cx, cy, rOut) {
+  var rIn = rOut * 0.41, p = [];
   for (var i = 0; i < 10; i++) {
     var rad = (i * 36 - 90) * Math.PI / 180;
     var r = (i % 2 === 0) ? rOut : rIn;
-    pts.push((cx + r * Math.cos(rad)).toFixed(1) + ',' + (cy + r * Math.sin(rad)).toFixed(1));
+    p.push((cx + r * Math.cos(rad)).toFixed(1) + ',' + (cy + r * Math.sin(rad)).toFixed(1));
   }
-  return pts.join(' ');
+  return p.join(' ');
 }
 
-function buildEpauletteSvg(d) {
-  var trimCol = (BRANCH === 'police') ? '#dc2626' : '#2563eb';
-  var stripeCol = (BRANCH === 'police') ? '#ef4444' : '#3b82f6';
-  var bodyFill = d.isGen ? 'url(#genWave)' : 'url(#clothGrad)';
+/* Специальные эмблемы поверх званий (под пуговицей) и двуглавый орёл у генералов */
+function renderTopEmblemSvg(dept, item, isField) {
+  var metalFill = isField ? '#4d5d44' : 'url(#goldGrad)';
+  var strokeCol = isField ? '#2b3626' : '#713f12';
+
+  /* У Генералов (и Генерала полиции) — золотой двуглавый орёл с крыльями и триколором на груди (как на вашем скриншоте 2015 г.) */
+  if (item.isGen) {
+    return '<g transform="translate(60, 102)">' +
+      /* Раскрытые крылья орла */
+      '<path d="M-34 -2 C-22 -12, -10 -10, -4 -2 L-28 6 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="0.9"/>' +
+      '<path d="M34 -2 C22 -12, 10 -10, 4 -2 L28 6 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="0.9"/>' +
+      '<path d="M-29 3 L-8 2 L-22 10 Z" fill="' + metalFill + '"/>' +
+      '<path d="M29 3 L8 2 L22 10 Z" fill="' + metalFill + '"/>' +
+      /* Две головы и три короны */
+      '<circle cx="-6" cy="-11" r="4" fill="' + metalFill + '"/>' +
+      '<circle cx="6" cy="-11" r="4" fill="' + metalFill + '"/>' +
+      '<circle cx="0" cy="-17" r="3" fill="' + metalFill + '"/>' +
+      /* Хвост и лапы */
+      '<path d="M-6 8 L6 8 L9 17 L-9 17 Z" fill="' + metalFill + '"/>' +
+      /* Грудной щиток с триколором РФ (как на скриншоте) */
+      '<ellipse cx="0" cy="1" rx="6.5" ry="8" fill="#ffffff" stroke="' + strokeCol + '" stroke-width="1"/>' +
+      '<rect x="-5.5" y="-1" width="11" height="3.5" fill="#1d4ed8"/>' +
+      '<rect x="-5" y="2.5" width="10" height="4" fill="#dc2626"/>' +
+    '</g>';
+  }
+
+  /* Эмблема Юстиции: Щит на двух перекрещенных мечах + Весы правосудия */
+  if (dept.emblem === 'justice') {
+    return '<g transform="translate(60, 96)">' +
+      '<line x1="-14" y1="14" x2="14" y2="-14" stroke="' + metalFill + '" stroke-width="2.4"/>' +
+      '<line x1="14" y1="14" x2="-14" y2="-14" stroke="' + metalFill + '" stroke-width="2.4"/>' +
+      '<path d="M-9 -9 H9 V2 C9 10, 0 15, 0 15 C0 15, -9 10, -9 2 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="1"/>' +
+      '<path d="M-6 -2 H6 M0 -6 V7 M-6 -2 L-8 4 H-4 Z M6 -2 L4 4 H8 Z" stroke="#1e293b" stroke-width="1.2" fill="none"/>' +
+    '</g>';
+  }
+
+  /* Эмблема ГИБДД: Щит с мечами и золотыми крыльями/жезлом дорожного надзора */
+  if (dept.emblem === 'gibdd') {
+    return '<g transform="translate(60, 96)">' +
+      '<path d="M-22 -2 C-14 -9, -6 -7, -2 -1 L-18 5 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="0.8"/>' +
+      '<path d="M22 -2 C14 -9, 6 -7, 2 -1 L18 5 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="0.8"/>' +
+      '<line x1="0" y1="-15" x2="0" y2="15" stroke="' + metalFill + '" stroke-width="2.5"/>' +
+      '<circle cx="0" cy="0" r="8" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="1"/>' +
+      '<circle cx="0" cy="0" r="4" fill="#dc2626"/>' +
+    '</g>';
+  }
+
+  /* Эмблема Армии (ВКС / ВДВ): Крылья с пропеллером и куполом */
+  if (dept.emblem === 'army_air') {
+    return '<g transform="translate(60, 96)">' +
+      '<path d="M-24 2 L-4 -2 L-18 8 Z M24 2 L4 -2 L18 8 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="0.8"/>' +
+      '<path d="M-10 -8 C-10 -16, 10 -16, 10 -8 L4 4 H-4 Z" fill="none" stroke="' + metalFill + '" stroke-width="1.8"/>' +
+      '<line x1="0" y1="-14" x2="0" y2="12" stroke="' + metalFill + '" stroke-width="2.2"/>' +
+    '</g>';
+  }
+
+  /* Эмблема Армии (Сухопутные войска): Звезда в лавровом венке */
+  if (dept.emblem === 'army_ground') {
+    return '<g transform="translate(60, 96)">' +
+      '<circle cx="0" cy="0" r="12" fill="none" stroke="' + metalFill + '" stroke-width="2.5" stroke-dasharray="4 1.5"/>' +
+      '<polygon points="' + starPts(0, 0, 8) + '" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="0.8"/>' +
+    '</g>';
+  }
+
+  /* Эмблема Полиции / ОМОН / ВП: Венок со щитом и мечами */
+  return '<g transform="translate(60, 96)">' +
+    '<circle cx="0" cy="0" r="12" fill="none" stroke="' + metalFill + '" stroke-width="2.2" stroke-dasharray="4 1.5"/>' +
+    '<line x1="-13" y1="13" x2="13" y2="-13" stroke="' + metalFill + '" stroke-width="2"/>' +
+    '<line x1="13" y1="13" x2="-13" y2="-13" stroke="' + metalFill + '" stroke-width="2"/>' +
+    '<path d="M-7 -8 H7 V2 C7 8, 0 12, 0 12 C0 12, -7 8, -7 2 Z" fill="' + metalFill + '" stroke="' + strokeCol + '" stroke-width="1"/>' +
+  '</g>';
+}
+
+function buildEpauletteSvg2015(item, dept) {
+  var isField = (UNIFORM_TYPE === 'field');
+  var isWhiteParade = (UNIFORM_TYPE === 'parade_white');
+  var isGoldParade  = (UNIFORM_TYPE === 'parade_gold');
+  var isOmonBlack   = (UNIFORM_TYPE === 'omon_black') || (dept.cloth === 'black' && UNIFORM_TYPE === 'everyday');
+
+  var trimCol = isField ? '#3b4934' : dept.trim;
+  var stripeCol = isField ? '#2e3a28' : dept.stripe;
+
+  var bodyFill = 'url(#navyWave2015)';
+  if (isField) bodyFill = 'url(#fieldCamo)';
+  else if (isWhiteParade) bodyFill = 'url(#whiteParadeWeave)';
+  else if (isGoldParade) bodyFill = 'url(#goldParadeWeave)';
+  else if (isOmonBlack) bodyFill = 'url(#blackOmonWeave)';
+  else if (dept.cloth === 'olive') bodyFill = 'url(#oliveArmyWeave)';
+
+  var metalFill = isField ? '#4d5d44' : 'url(#goldGrad)';
+  var starFill  = isField ? '#43523b' : (isGoldParade ? 'url(#silverGrad)' : 'url(#goldGrad)');
+  var starStroke = isField ? '#252e20' : '#713f12';
 
   var svg = '<svg viewBox="0 0 120 300" xmlns="http://www.w3.org/2000/svg">' +
     '<defs>' +
-      '<linearGradient id="clothGrad" x1="0" y1="0" x2="1" y2="1">' +
-        '<stop offset="0%" stop-color="#172336"/>' +
-        '<stop offset="50%" stop-color="#111a29"/>' +
-        '<stop offset="100%" stop-color="#0b121e"/>' +
-      '</linearGradient>' +
-      '<pattern id="genWave" width="12" height="12" patternUnits="userSpaceOnUse">' +
-        '<rect width="12" height="12" fill="#142033"/>' +
-        '<path d="M0 6 Q3 2 6 6 T12 6" fill="none" stroke="#1e304c" stroke-width="2"/>' +
+      /* Диагональное переплетение сукна образца 2015 года (как на скриншоте) */
+      '<pattern id="navyWave2015" width="14" height="14" patternUnits="userSpaceOnUse">' +
+        '<rect width="14" height="14" fill="#141e30"/>' +
+        '<path d="M0 14 L14 0 M-3 3 L3 -3 M11 17 L17 11" stroke="#1b2940" stroke-width="2.2"/>' +
+      '</pattern>' +
+      '<pattern id="blackOmonWeave" width="12" height="12" patternUnits="userSpaceOnUse">' +
+        '<rect width="12" height="12" fill="#121316"/>' +
+        '<path d="M0 12 L12 0" stroke="#1c1e24" stroke-width="2"/>' +
+      '</pattern>' +
+      '<pattern id="oliveArmyWeave" width="12" height="12" patternUnits="userSpaceOnUse">' +
+        '<rect width="12" height="12" fill="#2c3829"/>' +
+        '<path d="M0 12 L12 0" stroke="#364532" stroke-width="2"/>' +
+      '</pattern>' +
+      '<pattern id="whiteParadeWeave" width="10" height="10" patternUnits="userSpaceOnUse">' +
+        '<rect width="10" height="10" fill="#f1f5f9"/>' +
+        '<path d="M0 10 L10 0" stroke="#cbd5e1" stroke-width="1.8"/>' +
+      '</pattern>' +
+      '<pattern id="goldParadeWeave" width="10" height="8" patternUnits="userSpaceOnUse">' +
+        '<rect width="10" height="8" fill="#eab308"/>' +
+        '<path d="M0 4 Q2.5 1 5 4 T10 4" fill="none" stroke="#ca8a04" stroke-width="1.8"/>' +
+      '</pattern>' +
+      '<pattern id="fieldCamo" width="24" height="24" patternUnits="userSpaceOnUse">' +
+        '<rect width="24" height="24" fill="#3a4833"/>' +
+        '<circle cx="7" cy="8" r="5" fill="#2f3b29"/>' +
+        '<rect x="12" y="13" width="9" height="7" rx="3" fill="#48573f"/>' +
       '</pattern>' +
       '<linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">' +
         '<stop offset="0%" stop-color="#fef08a"/>' +
         '<stop offset="50%" stop-color="#eab308"/>' +
         '<stop offset="100%" stop-color="#a16207"/>' +
       '</linearGradient>' +
+      '<linearGradient id="silverGrad" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#ffffff"/>' +
+        '<stop offset="55%" stop-color="#cbd5e1"/>' +
+        '<stop offset="100%" stop-color="#64748b"/>' +
+      '</linearGradient>' +
     '</defs>';
 
-  /* Внешний кант погона (красный у Полиции / васильково-синий у Юстиции) */
-  svg += '<path d="M12 288 L16 48 L36 14 L84 14 L104 48 L108 288 Z" fill="' + trimCol + '"/>';
-  /* Основное поле погона (тёмно-синее сукно МВД) */
-  svg += '<path d="M17 284 L21 50 L39 19 L81 19 L99 50 L103 284 Z" fill="' + bodyFill + '" stroke="rgba(255,255,255,.08)" stroke-width="1"/>';
-
-  /* Продольные просветы (1 для мл. лейтенанта — капитана, 2 для майора — полковника) */
-  if (d.stripes === 1) {
-    svg += '<rect x="57.5" y="54" width="5" height="230" fill="' + stripeCol + '" opacity="0.95"/>';
-  } else if (d.stripes === 2) {
-    svg += '<rect x="35.5" y="54" width="5" height="230" fill="' + stripeCol + '" opacity="0.95"/>';
-    svg += '<rect x="79.5" y="54" width="5" height="230" fill="' + stripeCol + '" opacity="0.95"/>';
+  /* ФОРМА ПОГОНА:
+     1) Образец 2015 г. (МВД / ГИБДД / ОМОН / Юстиция) — закруглённый полукруглый верх (арка) точно как на правом фото скриншота!
+     2) Армия (МО РФ) — уставной трапециевидный скос сверху */
+  if (dept.shape === 'rounded') {
+    svg += '<path d="M 14 290 L 14 58 A 46 46 0 0 1 106 58 L 106 290 Z" fill="' + trimCol + '"/>';
+    svg += '<path d="M 19 286 L 19 58 A 41 41 0 0 1 101 58 L 101 286 Z" fill="' + bodyFill + '"/>';
+  } else {
+    svg += '<path d="M 14 290 L 16 48 L 36 14 L 84 14 L 104 48 L 106 290 Z" fill="' + trimCol + '"/>';
+    svg += '<path d="M 19 286 L 21 50 L 39 19 L 81 19 L 99 50 L 101 286 Z" fill="' + bodyFill + '"/>';
   }
 
-  /* Сержантские и старшинские золотистые лычки */
-  if (d.bars.length) {
-    if (d.bars[0] === 'vertical') {
-      svg += '<rect x="52" y="62" width="16" height="222" fill="url(#goldGrad)" stroke="#713f12" stroke-width="1"/>';
-    } else if (d.bars[0] === 'wide') {
-      svg += '<rect x="19" y="195" width="82" height="22" fill="url(#goldGrad)" stroke="#713f12" stroke-width="1"/>';
+  /* КУРСАНТ: золотистый басон по краям и буква «К» внизу */
+  if (item.isCadet) {
+    svg += '<rect x="21" y="58" width="5.5" height="226" fill="' + metalFill + '"/>';
+    svg += '<rect x="93.5" y="58" width="5.5" height="226" fill="' + metalFill + '"/>';
+    svg += '<text x="60" y="254" text-anchor="middle" font-family="serif" font-weight="900" font-size="38" fill="' + metalFill + '" stroke="' + starStroke + '" stroke-width="1">К</text>';
+  }
+
+  /* Продольные просветы (1 или 2) */
+  if (item.stripes === 1) {
+    svg += '<rect x="57.5" y="56" width="5" height="230" fill="' + stripeCol + '"/>';
+  } else if (item.stripes === 2) {
+    svg += '<rect x="36.5" y="56" width="5" height="230" fill="' + stripeCol + '"/>';
+    svg += '<rect x="78.5" y="56" width="5" height="230" fill="' + stripeCol + '"/>';
+  }
+
+  /* Лычки младшего состава */
+  if (item.bars && item.bars.length) {
+    if (item.bars[0] === 'vertical') {
+      svg += '<rect x="52" y="66" width="16" height="220" fill="' + metalFill + '" stroke="' + starStroke + '" stroke-width="0.9"/>';
+    } else if (item.bars[0] === 'wide') {
+      svg += '<rect x="20" y="198" width="80" height="22" fill="' + metalFill + '" stroke="' + starStroke + '" stroke-width="0.9"/>';
     } else {
-      d.bars.forEach(function(_, ix) {
-        var y = 225 - ix * 16;
-        svg += '<rect x="19" y="' + y + '" width="82" height="9" fill="url(#goldGrad)" stroke="#713f12" stroke-width="0.8"/>';
+      item.bars.forEach(function(_, ix) {
+        var y = 228 - ix * 15;
+        svg += '<rect x="20" y="' + y + '" width="80" height="9" fill="' + metalFill + '" stroke="' + starStroke + '" stroke-width="0.8"/>';
       });
     }
   }
 
-  /* Золотая форменная пуговица сверху */
-  svg += '<circle cx="60" cy="36" r="10.5" fill="url(#goldGrad)" stroke="#78350f" stroke-width="1.5"/>';
-  svg += '<circle cx="60" cy="36" r="7" fill="none" stroke="#92400e" stroke-width="0.8"/>';
+  /* Верхняя форменная пуговица с гербовым тиснением (как на фото 2015 г.) */
+  svg += '<circle cx="60" cy="40" r="12.5" fill="' + metalFill + '" stroke="' + starStroke + '" stroke-width="1.4"/>';
+  svg += '<circle cx="60" cy="40" r="8.5" fill="none" stroke="' + starStroke + '" stroke-width="0.8" stroke-dasharray="2 1"/>';
+  svg += '<circle cx="60" cy="40" r="3.5" fill="' + starStroke + '" opacity="0.45"/>';
 
-  /* Эмблема/венок для Генерала полиции / юстиции (18 ранг) */
-  if (d.isTopGen) {
-    svg += '<circle cx="60" cy="112" r="19" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="5 2"/>';
-    svg += '<circle cx="60" cy="112" r="11" fill="url(#goldGrad)"/>';
-  }
+  /* Специальная эмблема ведомства ИЛИ двуглавый орёл у генералов поверх званий */
+  svg += renderTopEmblemSvg(dept, item, isField);
 
-  /* Звёзды с гранёным блеском */
-  d.stars.forEach(function(st) {
+  /* Гранёные звёзды (с лучами от центра, как на настоящих погонах 2015 г.) */
+  item.stars.forEach(function(st) {
     if (st.wreath) {
-      svg += '<circle cx="' + st.x + '" cy="' + st.y + '" r="' + (st.sz + 7) + '" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="6 2"/>';
+      svg += '<circle cx="' + st.x + '" cy="' + st.y + '" r="' + (st.sz + 6) + '" fill="none" stroke="' + metalFill + '" stroke-width="3.2" stroke-dasharray="5 2"/>';
     }
-    var pts = starPolygonPoints(st.x, st.y, st.sz);
-    svg += '<polygon points="' + pts + '" fill="url(#goldGrad)" stroke="#78350f" stroke-width="1.2"/>';
-    svg += '<circle cx="' + st.x + '" cy="' + st.y + '" r="2" fill="#fef9c3"/>';
+    var pts = starPts(st.x, st.y, st.sz);
+    svg += '<polygon points="' + pts + '" fill="' + starFill + '" stroke="' + starStroke + '" stroke-width="1.1"/>';
+    svg += '<circle cx="' + st.x + '" cy="' + st.y + '" r="' + (st.sz * 0.22).toFixed(1) + '" fill="#fef9c3" opacity="0.75"/>';
   });
 
   svg += '</svg>';
   return svg;
 }
 
-window.setBranch = function(b) {
-  BRANCH = b;
-  document.getElementById('btnPolice').classList.toggle('on', b === 'police');
-  document.getElementById('btnJustice').classList.toggle('on', b === 'justice');
-  renderStage();
+window.setDept = function(dKey) {
+  CUR_DEPT = dKey;
+  var list = getRanksForDept(CUR_DEPT);
+  if (CUR_RANK_IDX >= list.length) CUR_RANK_IDX = list.length - 1;
+  if (dKey === 'omon' && UNIFORM_TYPE === 'everyday') {
+    /* Для ОМОН автоматически показываем чёрные погоны */
+  }
+  renderAll();
 };
 
-window.selectRank = function(r) {
-  CUR_RANK = r;
-  renderStage();
+window.setUniformType = function(ut) {
+  UNIFORM_TYPE = ut;
+  ['everyday', 'parade_white', 'parade_gold', 'omon_black', 'field'].forEach(function(k) {
+    document.getElementById('ut_' + k).classList.toggle('on', k === ut);
+  });
+  renderAll();
+};
+
+window.selectRankIdx = function(idx) {
+  CUR_RANK_IDX = idx;
+  renderAll();
 };
 
 window.stepRank = function(dir) {
-  var next = CUR_RANK + dir;
-  if (next < 1) next = 18;
-  if (next > 18) next = 1;
-  CUR_RANK = next;
-  renderStage();
+  var list = getRanksForDept(CUR_DEPT);
+  CUR_RANK_IDX = (CUR_RANK_IDX + dir + list.length) % list.length;
+  renderAll();
 };
 
-function renderStage() {
-  var d = RANKS_DATA[CUR_RANK - 1];
-  var oneSvg = buildEpauletteSvg(d);
-  document.getElementById('pairBox').innerHTML = oneSvg + oneSvg;
-  document.getElementById('uiRankTitle').textContent = fullRankName(d);
-  document.getElementById('uiRankCat').textContent = d.cat + ' · ' + d.r + ' ранг';
+function renderAll() {
+  var dept = DEPTS[CUR_DEPT];
+  var list = getRanksForDept(CUR_DEPT);
+  if (CUR_RANK_IDX >= list.length) CUR_RANK_IDX = list.length - 1;
+  var cur = list[CUR_RANK_IDX];
 
-  var colorDesc = (BRANCH === 'police') ? 'Красный (Алый) — Полиция' : 'Синий (Васильковый) — Юстиция';
-  var stripeDesc = d.isGen ? 'Фигурное генеральское шитьё' : (d.stripes === 0 ? 'Без просветов' : (d.stripes === 1 ? '1 продольный просвет' : '2 продольных просвета'));
-  var starDesc = d.stars.length ? (d.stars.length + ' шт. (' + (d.isGen ? '22 мм' : (d.stripes === 2 ? '20 мм' : '13 мм')) + ')') : (d.bars.length ? 'Золотистые лычки' : 'Чистое поле');
+  /* Вкладки ведомств */
+  document.getElementById('deptTabs').innerHTML = Object.keys(DEPTS).map(function(k) {
+    var d = DEPTS[k];
+    return '<div class="d-tab' + (k === CUR_DEPT ? ' on' : '') + '" onclick="setDept(\'' + k + '\')">' +
+      '<b>' + d.name + '</b><span>' + d.sub + '</span>' +
+    '</div>';
+  }).join('');
+
+  /* Отрисовка пары погон */
+  var svgOne = buildEpauletteSvg2015(cur, dept);
+  document.getElementById('pairBox').innerHTML = svgOne + svgOne;
+
+  var fullTitle = formatRankTitle(cur, dept);
+  document.getElementById('uiRankTitle').textContent = fullTitle;
+  document.getElementById('uiRankCat').textContent = cur.cat + ' · ' + (dept.shape === 'rounded' ? 'Закруглённый образец 2015 г.' : 'Армейский образец ВС РФ');
+
+  var uLabels = {
+    everyday: 'Повседневная форма',
+    parade_white: 'Парадная белая рубашка',
+    parade_gold: 'Парадный золотой китель',
+    omon_black: 'Спецформа ОМОН (Чёрные погоны)',
+    field: 'Полевая / Камуфляжная форма'
+  };
+
+  var topBadgeName = cur.isGen
+    ? 'Золотой двуглавый орёл с триколором'
+    : (dept.emblem === 'justice' ? 'Щит с мечами и весами Юстиции' : (dept.emblem === 'gibdd' ? 'Спецэмблема ГИБДД МВД' : 'Ведомственная эмблема на щите'));
 
   document.getElementById('uiSpecs').innerHTML =
-    '<div><span>Род внутренней службы:</span><b>' + (BRANCH === 'police' ? 'Полиция (УМВД / ОГИБДД)' : 'Юстиция (Следствие)') + '</b></div>' +
-    '<div><span>Цвет канта и просветов:</span><b style="color:' + (BRANCH === 'police' ? '#f87171' : '#60a5fa') + '">' + colorDesc + '</b></div>' +
-    '<div><span>Просветы на поле погона:</span><b>' + stripeDesc + '</b></div>' +
-    '<div><span>Звёзды / нашивки:</span><b>' + starDesc + '</b></div>';
+    '<div><span>Подразделение:</span><b>' + dept.name + '</b></div>' +
+    '<div><span>Тип погона:</span><b>' + uLabels[UNIFORM_TYPE] + '</b></div>' +
+    '<div><span>Форма верхнего края:</span><b>' + (dept.shape === 'rounded' ? 'Полукруглая (Образец 2015 г.)' : 'Трапециевидная (ВС РФ)') + '</b></div>' +
+    '<div><span>Эмблема над звёздами:</span><b style="color:#fcd34d">' + topBadgeName + '</b></div>';
 
-  var cats = ['Рядовой состав', 'Младший начальствующий состав', 'Средний начальствующий состав', 'Старший начальствующий состав', 'Высший начальствующий состав'];
-  var html = '';
+  /* Каталог званий */
+  var cats = [];
+  list.forEach(function(x) { if (cats.indexOf(x.cat) < 0) cats.push(x.cat); });
+
+  var catHtml = '';
   cats.forEach(function(cName) {
-    html += '<div class="cat-hdr">' + cName + '</div><div class="ranks-grid">';
-    RANKS_DATA.filter(function(x) { return x.cat === cName; }).forEach(function(item) {
-      var on = (item.r === CUR_RANK);
-      html += '<div class="r-card' + (on ? ' on' : '') + '" onclick="selectRank(' + item.r + ')">' +
-        '<div class="r-num">' + item.r + '</div>' +
-        '<div class="r-nm">' + fullRankName(item) + '</div>' +
+    catHtml += '<div class="cat-hdr">' + cName + '</div><div class="ranks-grid">';
+    list.forEach(function(it, idx) {
+      if (it.cat !== cName) return;
+      var on = (idx === CUR_RANK_IDX);
+      catHtml += '<div class="r-card' + (on ? ' on' : '') + '" onclick="selectRankIdx(' + idx + ')">' +
+        '<div class="r-num">' + it.code + '</div>' +
+        '<div class="r-nm">' + formatRankTitle(it, dept) + '</div>' +
       '</div>';
     });
-    html += '</div>';
+    catHtml += '</div>';
   });
-  document.getElementById('ranksCatalog').innerHTML = html;
+  document.getElementById('ranksCatalog').innerHTML = catHtml;
 }
 
-renderStage();
+renderAll();
 </script>
 </body>
 </html>
