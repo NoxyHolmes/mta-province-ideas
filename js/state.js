@@ -4,7 +4,7 @@ var state = { fac: 'all', q: '' };
 var dirtyIds = {}, deletedIds = {};
 
 function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
-function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete deletedIds[id]; }
+function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete dirtyIds[id]; }
 
 function toArr(x) {
   if (!x) return null;
@@ -32,7 +32,13 @@ function normItems(a) {
       a[i].fac = seedMap[a[i].id].fac;
     }
   }
+  /* Гарантируем, что «Улучшение телефона» (s0) идёт первым в списке */
+  var hasS0 = a.some(function(x) { return x && x.id === 's0'; });
+  if (!hasS0 && seedMap['s0']) {
+    a.unshift(seedMap['s0']);
+  }
   defSeeds.forEach(function(sd) {
+    if (sd.id === 's0') return;
     var exists = a.some(function(x) { return x && (x.id === sd.id || x.appUrl === sd.appUrl); });
     if (!exists) a.push(sd);
   });
@@ -101,35 +107,4 @@ function itemsByFac(k) {
 function countItems(k) {
   if (k === 'all') return ITEMS.length;
   return itemsByFac(k).length;
-}
-/* Спойлер описания предложения */
-.sug-spoiler-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 4px;
-  padding: 6px 13px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, .04);
-  border: 1px solid rgba(255, 255, 255, .1);
-  color: #a5b4fc;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all .18s;
-}
-.sug-spoiler-btn:hover {
-  background: rgba(167, 139, 250, .15);
-  border-color: rgba(167, 139, 250, .4);
-  color: #fff;
-}
-.sug-spoiler-body {
-  display: none;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed rgba(255, 255, 255, .09);
-  animation: fadeIn .22s;
-}
-.sug-spoiler-body.open {
-  display: block;
 }
