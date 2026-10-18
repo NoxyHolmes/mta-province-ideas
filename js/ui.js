@@ -48,6 +48,14 @@ function bodyToHtml(text) {
   return s.replace(/\n/g, '<br>');
 }
 
+function toggleIdeaSpoiler(btn) {
+  var body = btn.nextElementSibling;
+  if (!body) return;
+  var isOpen = body.classList.toggle('open');
+  btn.innerHTML = isOpen ? '▴ Скрыть описание' : '▾ Открыть описание';
+}
+window.toggleIdeaSpoiler = toggleIdeaSpoiler;
+
 function renderItems() {
   var list = itemsByFac(state.fac);
   var q = state.q.toLowerCase();
@@ -73,12 +81,15 @@ function renderItems() {
 
     if (appCfg && appCfg.url) {
       h += '<button type="button" class="sug-open-btn" data-open-app="' + esc(it.appUrl) + '" data-app-title="' + esc(ttl) + '">' +
-           esc(appCfg.btnText || '📱 Открыть телефон') + '</button>';
+           esc(appCfg.btnText || '📱 Открыть приложение') + '</button>';
     }
     h += '</div>';
 
     var body = itemBody(it);
-    if (body) h += '<div class="sug-body">' + bodyToHtml(body) + '</div>';
+    if (body) {
+      h += '<button type="button" class="sug-spoiler-btn" onclick="toggleIdeaSpoiler(this)">▾ Открыть описание</button>';
+      h += '<div class="sug-spoiler-body"><div class="sug-body">' + bodyToHtml(body) + '</div></div>';
+    }
 
     if (adminMode) {
       h += '<div class="sug-tools">' +
@@ -98,7 +109,7 @@ function render() {
   var total = (state.fac === 'all') ? ITEMS.length : itemsByFac(state.fac).length;
   $('#hTitle').textContent = state.fac === 'all' ? 'Все предложения' : facName(state.fac);
   $('#hCnt').textContent = total;
-  $('#hSub').textContent = 'Нажмите на кнопку напротив названия предложения, чтобы открыть телефон и перейти в функционал фракции';
+  $('#hSub').textContent = 'Нажмите на кнопку напротив названия предложения, чтобы открыть интерактивную демонстрацию, или раскройте описание под заголовком';
   $('#addBtn').style.display = adminMode ? '' : 'none';
   renderItems();
 }
