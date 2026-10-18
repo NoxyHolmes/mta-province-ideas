@@ -33,94 +33,97 @@ body{
 button,input,select{font-family:inherit}
 
 /* ================= БАНКОВСКАЯ СИСТЕМА (МЕНЮ В БАНКЕ) ================= */
-#terminalWrap{max-width:1380px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:295px 1fr;gap:24px;align-items:start}
+#terminalWrap{max-width:1380px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:310px 1fr;gap:24px;align-items:start}
 .b-side{
   background:linear-gradient(165deg,rgba(20,27,42,.88),rgba(13,18,28,.94));
   border:1px solid var(--line);
-  border-radius:22px;
+  border-radius:18px;
   padding:20px 16px;
   position:sticky;
   top:24px;
   box-shadow:0 20px 50px rgba(0,0,0,.45);
 }
 .b-brand{display:flex;align-items:center;gap:12px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:16px}
-.b-brand-ic{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#10b981,#047857);display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 6px 20px rgba(16,185,129,.35)}
+.b-brand-ic{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#10b981,#047857);display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 6px 20px rgba(16,185,129,.35)}
 .b-brand b{font-size:15.5px;font-weight:900;letter-spacing:.4px;display:block}
 .b-brand span{font-size:11px;color:var(--mut)}
 
-/* Виджет счёта в точном стиле вашего скриншота */
+/* Пункт 6: Карточка счёта с 4 прямыми ячейками наверху (На счёте, Наличные, На вкладах, Штрафы) */
 .b-card-widget{
-  background:linear-gradient(145deg,#182235 0%,#0f1625 55%,#1b1a3c 100%);
-  border:1px solid rgba(148,163,184,.22);
-  border-radius:20px;
-  padding:18px;
-  margin-bottom:16px;
+  background:linear-gradient(145deg,#162032 0%,#0e1523 55%,#171836 100%);
+  border:1px solid rgba(148,163,184,.24);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:14px;
   position:relative;
-  overflow:hidden;
-  box-shadow:0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);
+  box-shadow:0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1);
 }
 .bc-top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.bc-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800;line-height:1.25}
-.bc-owner{font-size:17px;font-weight:900;color:#ffffff;margin-top:6px;line-height:1.25}
+.bc-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800;line-height:1.25}
+.bc-owner{font-size:17px;font-weight:900;color:#ffffff;margin-top:5px;line-height:1.22}
 .bc-acc{
   display:inline-flex;
   align-items:center;
   gap:7px;
-  background:rgba(9,13,22,.65);
-  border:1px solid rgba(255,255,255,.14);
-  padding:7px 12px;
-  border-radius:11px;
+  background:rgba(9,13,22,.75);
+  border:1px solid rgba(255,255,255,.16);
+  padding:6px 11px;
+  border-radius:6px;
   font-family:monospace;
   font-size:13.5px;
   font-weight:800;
   color:#5eead4;
   cursor:pointer;
   white-space:nowrap;
-  transition:border-color .15s;
 }
 .bc-acc:hover{border-color:#5eead4}
 
+/* Прямые строгие ячейки 2x2 для всех 4 сумм */
 .bc-sums-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:16px;
+  gap:8px;
+  margin-top:14px;
   padding-top:14px;
-  border-top:1px solid rgba(255,255,255,.08);
+  border-top:1px solid rgba(255,255,255,.09);
 }
 .bc-sum-item{
-  background:rgba(9,13,22,.5);
-  border:1px solid rgba(255,255,255,.07);
-  border-radius:14px;
-  padding:11px 13px;
+  background:rgba(9,13,22,.65);
+  border:1px solid rgba(255,255,255,.09);
+  border-left:3px solid #34d399;
+  border-radius:4px;
+  padding:10px 11px;
+  transition:border-color .15s,background .15s;
 }
-.bc-sum-item .s-l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;font-weight:800}
-.bc-sum-item .s-v{font-size:16px;font-weight:900;color:#fff;margin-top:4px;white-space:nowrap}
+.bc-sum-item.cash-box{border-left-color:#fcd34d}
+.bc-sum-item.dep-box{border-left-color:#60a5fa;cursor:pointer}
+.bc-sum-item.fine-box{border-left-color:#ff5c5c;cursor:pointer}
+.bc-sum-item.dep-box:hover,.bc-sum-item.fine-box:hover{background:rgba(255,255,255,.05)}
+.bc-sum-item .s-l{font-size:9.5px;text-transform:uppercase;letter-spacing:.9px;color:#94a3b8;font-weight:800}
+.bc-sum-item .s-v{font-size:14.5px;font-weight:900;color:#fff;margin-top:4px;white-space:nowrap}
 .bc-sum-item .s-v.green{color:#34d399}
 .bc-sum-item .s-v.gold{color:#fcd34d}
+.bc-sum-item .s-v.blue{color:#93c5fd}
+.bc-sum-item .s-v.red{color:#ff5c5c}
 
 .b-nav{display:flex;flex-direction:column;gap:4px}
-.b-ni{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;color:var(--mut);font-weight:700;font-size:13.5px;cursor:pointer;transition:.18s;border:1px solid transparent}
+.b-ni{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:8px;color:var(--mut);font-weight:700;font-size:13.5px;cursor:pointer;transition:.18s;border:1px solid transparent}
 .b-ni:hover{color:var(--txt);background:rgba(255,255,255,.04)}
 .b-ni.on{color:#fff;background:linear-gradient(90deg,rgba(16,185,129,.22),rgba(16,185,129,.04));border-color:rgba(16,185,129,.4)}
-.b-ni .bdg{margin-left:auto;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.45);color:#fca5a5;padding:1px 8px;border-radius:12px;font-size:11px;font-weight:800}
+.b-ni .bdg{margin-left:auto;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.45);color:#fca5a5;padding:1px 8px;border-radius:8px;font-size:11px;font-weight:800}
 
 .b-main{min-width:0}
 .b-panel{
   background:linear-gradient(160deg,rgba(22,29,44,.84),rgba(15,20,31,.9));
   border:1px solid var(--line);
-  border-radius:20px;
+  border-radius:14px;
   padding:20px 22px;
   margin-bottom:16px;
   box-shadow:0 14px 38px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05);
 }
-.b-h1{font-size:21px;font-weight:900;margin-bottom:4px}
+.b-h1{font-size:20px;font-weight:900;margin-bottom:4px}
 .b-sub{font-size:12.5px;color:var(--mut);margin-bottom:16px;line-height:1.45}
-.b-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.b-grid-sums{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-.stat-box{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
-.stat-box .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800}
-.stat-box .v{font-size:18px;font-weight:900;margin-top:4px}
+.b-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 
 .fine-bar{
   display:flex;
@@ -130,7 +133,7 @@ button,input,select{font-family:inherit}
   gap:10px;
   background:rgba(15,23,42,.75);
   border:1px solid rgba(255,255,255,.1);
-  border-radius:14px;
+  border-radius:8px;
   padding:12px 14px;
   margin-bottom:12px;
 }
@@ -140,7 +143,7 @@ button,input,select{font-family:inherit}
   gap:12px;
   background:rgba(255,255,255,.025);
   border:1px solid var(--line);
-  border-radius:14px;
+  border-radius:8px;
   padding:14px 16px;
   margin-bottom:10px;
   transition:.18s;
@@ -152,7 +155,7 @@ button,input,select{font-family:inherit}
 .fine-item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:#3b82f6;cursor:pointer;flex:0 0 18px}
 .fine-info{flex:1;min-width:0}
 .fine-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
-.f-badge{padding:3px 8px;border-radius:7px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
+.f-badge{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
 .f-badge.cam{background:rgba(56,189,248,.14);color:#7dd3fc;border:1px solid rgba(56,189,248,.35)}
 .f-badge.emp{background:rgba(245,158,11,.14);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
 .fine-title{font-weight:800;font-size:13.5px;color:#fff}
@@ -160,28 +163,49 @@ button,input,select{font-family:inherit}
 .fine-meta b{color:#d1d9e8}
 .fine-sum{font-size:15px;font-weight:900;color:var(--red);white-space:nowrap;text-align:right}
 
-.prop-card{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:11px}
+.prop-card{background:rgba(15,21,34,.85);border:1px solid rgba(255,255,255,.1);border-top:3px solid var(--acc);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .prop-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.prop-head b{font-size:15px;display:block}
-.prop-head span{font-size:11.5px;color:var(--mut)}
-.prop-days{padding:4px 9px;border-radius:9px;font-size:11px;font-weight:800;background:rgba(47,217,122,.14);color:#6ee7b7;border:1px solid rgba(47,217,122,.35);white-space:nowrap}
-.prop-bar{height:8px;background:#1e293b;border-radius:6px;overflow:hidden}
-.prop-bar>div{height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:6px}
+.prop-head b{font-size:15px;display:block;color:#fff}
+.prop-head span{font-size:11.5px;color:var(--mut);margin-top:2px;display:block}
+.prop-days{padding:4px 9px;border-radius:5px;font-size:11px;font-weight:800;background:rgba(47,217,122,.14);color:#6ee7b7;border:1px solid rgba(47,217,122,.35);white-space:nowrap}
+.prop-bar{height:8px;background:#1e293b;border-radius:4px;overflow:hidden}
+.prop-bar>div{height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px}
 
-.inp,.sel{background:#0b0f17;border:1px solid rgba(255,255,255,.12);color:var(--txt);padding:10px 13px;border-radius:11px;font-size:13.5px;outline:none;width:100%}
-.inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.15)}
+/* Карточки 4 тарифов вкладов (Пункт 10) */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px;margin-top:12px}
+.plan-card{
+  background:linear-gradient(160deg,rgba(20,28,44,.95),rgba(12,17,27,.98));
+  border:1px solid rgba(255,255,255,.1);
+  border-top:3px solid var(--pc,#3b82f6);
+  border-radius:8px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.plan-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.plan-name{font-weight:900;font-size:15px;color:#fff}
+.plan-rate{font-weight:900;font-size:13px;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--pc,#60a5fa);border:1px solid rgba(255,255,255,.12);white-space:nowrap}
+.plan-rules{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:#cbd5e1;background:rgba(0,0,0,.28);padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,.05)}
+.plan-rules span{display:flex;justify-content:space-between;gap:8px}
+.plan-rules b{color:#fff}
+
+.inp,.sel{background:#0b0f17;border:1px solid rgba(255,255,255,.14);color:var(--txt);padding:10px 13px;border-radius:6px;font-size:13.5px;outline:none;width:100%}
+.inp:focus,.sel:focus{border-color:var(--acc)}
 .flab{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:800;margin-bottom:6px}
-.btn{background:linear-gradient(135deg,#10b981,#059669);border:1px solid rgba(110,231,183,.35);color:#fff;padding:9px 16px;border-radius:11px;font-weight:800;font-size:12.5px;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(16,185,129,.28)}
+.btn{background:linear-gradient(135deg,#10b981,#059669);border:1px solid rgba(110,231,183,.35);color:#fff;padding:9px 15px;border-radius:7px;font-weight:800;font-size:12.5px;cursor:pointer;transition:.18s}
 .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);border-color:rgba(147,197,253,.35);box-shadow:0 6px 18px rgba(37,99,235,.28)}
-.btn.ghost{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--txt);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);border-color:rgba(147,197,253,.35)}
+.btn.warn{background:linear-gradient(135deg,#dc2626,#991b1b);border-color:rgba(252,165,165,.35)}
+.btn.ghost{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--txt)}
 .btn.ghost:hover{background:rgba(255,255,255,.09)}
-.btn.slim{padding:7px 12px;font-size:11.5px}
+.btn.slim{padding:7px 11px;font-size:11.5px}
 
 .tx-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
 .tx-row:last-child{border-bottom:none}
 .tx-left{display:flex;align-items:center;gap:11px;min-width:0}
-.tx-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 36px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.tx-ic{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 36px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
 .tx-title{font-weight:800;font-size:13px;color:#fff}
 .tx-sub{font-size:11.5px;color:var(--mut);margin-top:2px}
 .tx-amt{font-weight:900;font-size:14px;white-space:nowrap;text-align:right}
@@ -191,7 +215,7 @@ button,input,select{font-family:inherit}
 /* ================= МОБИЛЬНОЕ ПРИЛОЖЕНИЕ В СМАРТФОНЕ ================= */
 #phoneWrap{display:none;justify-content:center;align-items:center;padding:18px 14px;min-height:100vh}
 .smartphone{
-  width:415px;
+  width:420px;
   max-width:100%;
   background:linear-gradient(160deg,#1e2636,#0b0f17);
   border:2px solid #334155;
@@ -212,7 +236,6 @@ button,input,select{font-family:inherit}
 .sp-statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 6px;font-size:12px;font-weight:800;color:#cbd5e1}
 .sp-body{flex:1;overflow-y:auto;padding:10px 16px 16px}
 
-/* Удобная сетка кнопок меню 3x2 прямо под карточкой счёта (на видном месте без прокрутки!) */
 .sp-menu-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -221,8 +244,8 @@ button,input,select{font-family:inherit}
 }
 .sp-mbtn{
   background:rgba(22,30,46,.9);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:13px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:6px;
   padding:10px 6px;
   display:flex;
   flex-direction:column;
@@ -237,24 +260,23 @@ button,input,select{font-family:inherit}
   text-align:center;
   position:relative;
 }
-.sp-mbtn i{font-style:normal;font-size:18px}
+.sp-mbtn i{font-style:normal;font-size:17px}
 .sp-mbtn:hover{border-color:rgba(255,255,255,.22);color:#fff}
 .sp-mbtn.on{
   background:linear-gradient(145deg,rgba(16,185,129,.24),rgba(16,185,129,.08));
   border-color:rgba(52,211,153,.55);
   color:#ffffff;
-  box-shadow:0 6px 16px rgba(16,185,129,.2);
 }
 .sp-mbtn .m-bdg{
   position:absolute;
-  top:5px;
-  right:6px;
+  top:4px;
+  right:5px;
   background:#ef4444;
   color:#fff;
   font-size:9.5px;
   font-weight:900;
   padding:1px 5px;
-  border-radius:8px;
+  border-radius:4px;
 }
 
 .sp-home-wrap{
@@ -276,7 +298,7 @@ button,input,select{font-family:inherit}
 .sp-home-wrap:hover .sp-home-bar{background:#6ee7b7;transform:scaleX(1.08)}
 
 #troot{position:fixed;left:24px;bottom:24px;z-index:950;display:flex;flex-direction:column;gap:8px}
-.toast{background:#161f30;border:1px solid rgba(16,185,129,.45);border-left:4px solid var(--green);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.toast{background:#161f30;border:1px solid rgba(16,185,129,.45);border-left:4px solid var(--green);padding:12px 16px;border-radius:8px;font-size:13px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.5)}
 
 @media(max-width:960px){
   #terminalWrap{grid-template-columns:1fr}
@@ -297,27 +319,7 @@ button,input,select{font-family:inherit}
       </div>
     </div>
 
-    <div class="b-card-widget">
-      <div class="bc-top-row">
-        <div>
-          <div class="bc-lbl">ВЛАДЕЛЕЦ<br>СЧЁТА</div>
-          <div class="bc-owner" id="uiOwnerName">Евгений<br>Холмс</div>
-        </div>
-        <div class="bc-acc" onclick="copyAcc()" title="Нажмите, чтобы скопировать счёт">
-          <span>💳 №<b id="uiAccNum">748291</b></span>
-        </div>
-      </div>
-      <div class="bc-sums-grid">
-        <div class="bc-sum-item">
-          <div class="s-l">НА СЧЁТЕ</div>
-          <div class="s-v green" id="uiBalance">0 ₽</div>
-        </div>
-        <div class="bc-sum-item">
-          <div class="s-l">НАЛИЧНЫЕ</div>
-          <div class="s-v gold" id="uiCash">0 ₽</div>
-        </div>
-      </div>
-    </div>
+    <div id="deskCardWidget"></div>
 
     <nav class="b-nav" id="deskNav"></nav>
   </aside>
@@ -353,7 +355,7 @@ var PLAYER = {
   name: 'Евгений Холмс',
   uid: 'K8W4C6',
   account: '748291',
-  balance: 4850000,
+  balance: 6850000,
   cash: 320000
 };
 
@@ -362,9 +364,80 @@ var PROPERTIES = [
   { id: 'p2', type: 'Частный дом с гаражом', address: 'г. Мирный, коттеджный посёлок, уч. 8', ratePerDay: 6000, deposit: 48000, maxDays: 30 }
 ];
 
-var DEPOSITS = [
-  { id: 'd1', name: 'Вклад «Накопительный»', rate: '8.5% годовых', amount: 1500000, profit: 42500, since: '01.09.2026', canTopUp: true }
+/* Пункт 10: 4 вида накопительных вкладов с разными условиями начисления, пополнения, снятия и закрытия */
+var DEPOSIT_PLANS = [
+  {
+    key: 'daily_free',
+    name: 'Вклад «Свободный»',
+    ratePct: 0.50,
+    periodLbl: '0.50% каждые сутки в 00:00',
+    periodType: 'midnight',
+    minAmt: 50000,
+    maxAmt: 5000000,
+    canTopUp: true,
+    canWithdraw: true,
+    canCloseAnytime: true,
+    minHours: 0,
+    col: '#34d399',
+    desc: 'Процент (0.50% от общей суммы) начисляется каждые сутки ровно в полночь. Пополняемый, со свободным частичным снятием и закрытием в любое время.'
+  },
+  {
+    key: 'payday_flex',
+    name: 'Вклад «Почасовой»',
+    ratePct: 0.12,
+    periodLbl: '0.12% каждый PayDay (час)',
+    periodType: 'payday',
+    minAmt: 100000,
+    maxAmt: 5000000,
+    canTopUp: true,
+    canWithdraw: true,
+    canCloseAnytime: true,
+    minHours: 0,
+    col: '#60a5fa',
+    desc: 'Процент (0.12%) капает каждый час в PayDay. Доступно свободное пополнение, снятие части средств и закрытие в любое время.'
+  },
+  {
+    key: 'payday_locked',
+    name: 'Вклад «Накопительный»',
+    ratePct: 0.15,
+    periodLbl: '0.15% каждый PayDay (час)',
+    periodType: 'payday',
+    minAmt: 1000000,
+    maxAmt: 10000000,
+    canTopUp: true,
+    canWithdraw: false,
+    canCloseAnytime: false,
+    minHours: 24,
+    col: '#a78bfa',
+    desc: 'Сумма от 1 000 000 ₽ до 10 000 000 ₽. Процент 0.15% начисляется каждый PayDay. Пополняемый, но без частичного снятия и нельзя закрыть до истечения 24 ч.'
+  },
+  {
+    key: 'payday_max',
+    name: 'Вклад «Максимальный»',
+    ratePct: 0.20,
+    periodLbl: '0.20% каждый PayDay (от 50 ч.)',
+    periodType: 'payday',
+    minAmt: 5000000,
+    maxAmt: 20000000,
+    canTopUp: false,
+    canWithdraw: false,
+    canCloseAnytime: false,
+    minHours: 50,
+    col: '#f5c451',
+    desc: 'Сумма от 5 000 000 ₽ до 20 000 000 ₽ на срок от 50 часов (PayDay). Ставка 0.20% в час. Непополняемый, неснимаемый и нельзя закрыть досрочно.'
+  }
 ];
+
+/* Активные открытые вклады игрока */
+var DEPOSITS = [
+  { id: 'd1', planKey: 'daily_free',    amount: 800000,  profit: 12000, hoursPassed: 18, since: '15.10.2026' },
+  { id: 'd2', planKey: 'payday_locked', amount: 2000000, profit: 45000, hoursPassed: 15, since: '17.10.2026' }
+];
+
+function getPlan(k) {
+  for (var i = 0; i < DEPOSIT_PLANS.length; i++) if (DEPOSIT_PLANS[i].key === k) return DEPOSIT_PLANS[i];
+  return DEPOSIT_PLANS[0];
+}
 
 var FINES = [
   {
@@ -470,7 +543,6 @@ function exitToPhoneMenu() {
   location.href = 'mvd-phone.html?view=phone';
 }
 
-/* Пункт 9: «ЖКХ и жильё» заменено на «ЖКХ» */
 var NAV_ITEMS = [
   ['overview', '📊', 'Главная'],
   ['fines',    '🚓', 'Оплата штрафов'],
@@ -485,6 +557,24 @@ function goTab(t) {
   renderAll();
 }
 
+/* Пункт 6: Верхняя карточка счёта с 4 прямыми ячейками (На счёте, Наличные, На вкладах, Штрафы) */
+function buildAccountWidgetHtml() {
+  var totalFines = FINES.reduce(function(s, x) { return s + x.amount; }, 0);
+  var totalDeps = DEPOSITS.reduce(function(s, x) { return s + x.amount + x.profit; }, 0);
+  return '<div class="b-card-widget">' +
+    '<div class="bc-top-row">' +
+      '<div><div class="bc-lbl">ВЛАДЕЛЕЦ<br>СЧЁТА</div><div class="bc-owner">Евгений<br>Холмс</div></div>' +
+      '<div class="bc-acc" onclick="copyAcc()" title="Скопировать счёт">💳 №<b>' + PLAYER.account + '</b></div>' +
+    '</div>' +
+    '<div class="bc-sums-grid">' +
+      '<div class="bc-sum-item"><div class="s-l">НА СЧЁТЕ</div><div class="s-v green">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
+      '<div class="bc-sum-item cash-box"><div class="s-l">НАЛИЧНЫЕ</div><div class="s-v gold">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
+      '<div class="bc-sum-item dep-box" onclick="goTab(\'deposits\')"><div class="s-l">НА ВКЛАДАХ →</div><div class="s-v blue">' + fmt(totalDeps) + ' ₽</div></div>' +
+      '<div class="bc-sum-item fine-box" onclick="goTab(\'fines\')"><div class="s-l">ШТРАФЫ (' + FINES.length + ') →</div><div class="s-v ' + (FINES.length ? 'red' : 'green') + '">' + fmt(totalFines) + ' ₽</div></div>' +
+    '</div>' +
+  '</div>';
+}
+
 function buildSectionHtml() {
   if (CUR_TAB === 'fines') return renderFinesSection();
   if (CUR_TAB === 'housing') return renderHousingSection();
@@ -494,24 +584,9 @@ function buildSectionHtml() {
   return renderOverviewSection();
 }
 
-/* Пункт 8: Убран дубляж баланса на счёте и наличных (они уже красиво показаны в карточке счёта!) */
+/* Пункт 5: Убран текст «Управление счётом № 748291 / Быстрый обзор...» и убран дубляж сумм */
 function renderOverviewSection() {
-  var totalFines = FINES.reduce(function(s, x) { return s + x.amount; }, 0);
-  var totalDeps = DEPOSITS.reduce(function(s, x) { return s + x.amount; }, 0);
   return '<div class="b-panel">' +
-    '<div class="b-h1">Управление счётом № ' + PLAYER.account + '</div>' +
-    '<div class="b-sub">Быстрый обзор вкладов, задолженностей и последних операций</div>' +
-    '<div class="b-grid-sums">' +
-      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'deposits\')"><div class="l">Сумма на вкладах →</div><div class="v" style="color:#93c5fd">' + fmt(totalDeps) + ' ₽</div></div>' +
-      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'fines\')"><div class="l">Неоплаченные штрафы (' + FINES.length + ' шт.) →</div><div class="v" style="color:' + (FINES.length ? 'var(--red)' : 'var(--green)') + '">' + fmt(totalFines) + ' ₽</div></div>' +
-    '</div>' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевод по номеру счёта</button>' +
-      '<button class="btn blue" onclick="goTab(\'housing\')">🏠 Оплата ЖКХ</button>' +
-      '<button class="btn ghost" onclick="goTab(\'fines\')">🚓 Оплата штрафов (' + FINES.length + ')</button>' +
-    '</div>' +
-  '</div>' +
-  '<div class="b-panel">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
       '<b style="font-size:15px">Последние операции</b>' +
       '<button class="btn ghost slim" onclick="goTab(\'history\')">Все →</button>' +
@@ -559,7 +634,7 @@ function renderFinesSection() {
         '<span>Выбрать все (' + FINES.length + ' шт. · ' + fmt(allSum) + ' ₽)</span>' +
       '</label>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button class="btn blue slim" onclick="paySelectedFines()" ' + (!selCount ? 'disabled style="opacity:.45"' : '') + '>✓ Оплатить выбранные (' + fmt(selSum) + ' ₽)</button>' +
+        '<button class="btn blue slim" onclick="paySelectedFines()" ' + (!selCount ? 'disabled' : '') + '>✓ Оплатить выбранные (' + fmt(selSum) + ' ₽)</button>' +
         '<button class="btn slim" onclick="payAllFines()">Оплатить все (' + fmt(allSum) + ' ₽)</button>' +
       '</div>' +
     '</div>' +
@@ -648,7 +723,6 @@ window.topUpHousing = function(idx, days) {
 };
 window.topUpHousingMax = function(idx) { topUpHousing(idx, 30); };
 
-/* Пункт 8: В разделе переводов и наличных также убран дубляж баланса */
 function renderTransferSection() {
   return '<div class="b-panel">' +
     '<div class="b-h1">💸 Перевод по номеру счёта</div>' +
@@ -707,49 +781,170 @@ window.doCashOp = function(dir) {
   renderAll();
 };
 
+/* Пункт 10: Раздел с 4 накопительными вкладами (Полночь 0.50%, PayDay 0.12%, PayDay 0.15% 1-10кк, PayDay 0.20% 5-20кк от 50ч) */
 function renderDepositsSection() {
-  var list = DEPOSITS.map(function(d, idx) {
-    return '<div class="prop-card">' +
-      '<div class="prop-head"><div><b>📈 ' + d.name + '</b><span>Открыт: ' + d.since + ' · Ставка: ' + d.rate + '</span></div><span class="prop-days">Активен</span></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:13px">' +
-        '<span>Сумма: <b style="color:#fff">' + fmt(d.amount) + ' ₽</b></span>' +
-        '<span>Проценты: <b style="color:var(--green)">+' + fmt(d.profit) + ' ₽</b></span>' +
+  var activeHtml = DEPOSITS.map(function(d, idx) {
+    var pl = getPlan(d.planKey);
+    var lockLeft = Math.max(0, pl.minHours - (d.hoursPassed || 0));
+    var canCloseNow = pl.canCloseAnytime || (lockLeft === 0);
+
+    return '<div class="prop-card" style="border-top-color:' + pl.col + '">' +
+      '<div class="prop-head">' +
+        '<div><b>📈 ' + pl.name + '</b><span>Открыт: ' + d.since + ' · Начисление: <b style="color:' + pl.col + '">' + pl.periodLbl + '</b></span></div>' +
+        '<span class="prop-days">' + (lockLeft > 0 ? ('Срок: ещё ' + lockLeft + ' ч.') : 'Доступен') + '</span>' +
       '</div>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button class="btn slim" onclick="topUpDeposit(' + idx + ')">➕ Пополнить (+100 000 ₽)</button>' +
-        '<button class="btn ghost slim" onclick="closeDeposit(' + idx + ')">Закрыть вклад</button>' +
+      '<div class="plan-rules">' +
+        '<span>Тело вклада: <b>' + fmt(d.amount) + ' ₽</b></span>' +
+        '<span>Начислено процентов: <b style="color:var(--green)">+' + fmt(d.profit) + ' ₽</b></span>' +
+        '<span>Лимит программы: <b>от ' + fmt(pl.minAmt) + ' до ' + fmt(pl.maxAmt) + ' ₽</b></span>' +
+        '<span>Операции: <b>' + (pl.canTopUp ? 'Пополняемый' : 'Непополняемый') + ' · ' + (pl.canWithdraw ? 'Снимаемый' : 'Без снятия') + '</b></span>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+        (pl.canTopUp ? '<button class="btn slim" onclick="topUpDeposit(' + idx + ')">➕ Пополнить (+200 000 ₽)</button>' : '<button class="btn ghost slim" disabled>🔒 Непополняемый</button>') +
+        (pl.canWithdraw ? '<button class="btn blue slim" onclick="withdrawDeposit(' + idx + ')">➖ Снять 100 000 ₽</button>' : '<button class="btn ghost slim" disabled>🔒 Без снятия</button>') +
+        (canCloseNow
+          ? '<button class="btn warn slim" onclick="closeDeposit(' + idx + ')">Закрыть вклад</button>'
+          : '<button class="btn ghost slim" disabled title="Нельзя закрыть до истечения срока">🔒 Закрытие через ' + lockLeft + ' ч.</button>') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var catalogHtml = DEPOSIT_PLANS.map(function(pl) {
+    return '<div class="plan-card" style="--pc:' + pl.col + '">' +
+      '<div class="plan-top">' +
+        '<div class="plan-name">' + pl.name + '</div>' +
+        '<span class="plan-rate">' + pl.ratePct.toFixed(2) + '%</span>' +
+      '</div>' +
+      '<div style="font-size:11.5px;color:var(--mut);line-height:1.45">' + pl.desc + '</div>' +
+      '<div class="plan-rules">' +
+        '<span>Начисление: <b>' + (pl.periodType === 'midnight' ? 'Каждые сутки в 00:00' : 'Каждый PayDay (1 ч.)') + '</b></span>' +
+        '<span>Сумма вклада: <b>' + fmt(pl.minAmt) + ' – ' + fmt(pl.maxAmt) + ' ₽</b></span>' +
+        '<span>Пополнение: <b style="color:' + (pl.canTopUp ? '#34d399' : '#f87171') + '">' + (pl.canTopUp ? 'Да' : 'Нет') + '</b></span>' +
+        '<span>Частичное снятие: <b style="color:' + (pl.canWithdraw ? '#34d399' : '#f87171') + '">' + (pl.canWithdraw ? 'Да' : 'Нет') + '</b></span>' +
+        '<span>Закрытие: <b>' + (pl.canCloseAnytime ? 'В любое время' : ('Только после ' + pl.minHours + ' ч.')) + '</b></span>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:6px">' +
+        '<input class="inp" id="openAmt_' + pl.key + '" type="number" value="' + pl.minAmt + '" min="' + pl.minAmt + '" max="' + pl.maxAmt + '" step="100000" style="padding:7px 10px;font-size:12.5px">' +
+        '<button class="btn slim" style="white-space:nowrap" onclick="openPlanDeposit(\'' + pl.key + '\')">＋ Открыть</button>' +
       '</div>' +
     '</div>';
   }).join('');
 
   return '<div class="b-panel">' +
-    '<div class="b-h1">📈 Банковские вклады</div>' +
-    '<div class="b-sub">Управление сбережениями по счёту №' + PLAYER.account + '</div>' +
-    (list ? '<div class="b-grid2" style="margin-bottom:14px">' + list + '</div>' : '<div style="margin-bottom:14px;color:var(--mut)">Активных вкладов нет</div>') +
-    '<button class="btn blue" onclick="openNewDeposit()">＋ Открыть вклад «Премиум 10%» (500 000 ₽)</button>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">' +
+      '<div><div class="b-h1">📈 Мои активные вклады (' + DEPOSITS.length + ')</div><div class="b-sub" style="margin-bottom:0">Начисление процентов каждые сутки в 00:00 или каждый PayDay (час)</div></div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+        '<button class="btn blue slim" onclick="simTick(\'payday\')">⏰ Симулировать PayDay (+1 час)</button>' +
+        '<button class="btn ghost slim" onclick="simTick(\'midnight\')">🌙 Симулировать Полночь (00:00)</button>' +
+      '</div>' +
+    '</div>' +
+    (activeHtml ? '<div class="b-grid2">' + activeHtml + '</div>' : '<div style="color:var(--mut);padding:14px 0">У вас пока нет активных вкладов</div>') +
+  '</div>' +
+  '<div class="b-panel">' +
+    '<div class="b-h1">🏦 Доступные программы накопительных вкладов (4 тарифа)</div>' +
+    '<div class="b-sub">Выберите подходящие условия: от свободного суточного вклада до максимального под 0.20% в час</div>' +
+    '<div class="plan-grid">' + catalogHtml + '</div>' +
   '</div>';
 }
 
-window.topUpDeposit = function(idx) {
-  var d = DEPOSITS[idx]; if (!d || PLAYER.balance < 100000) return;
-  PLAYER.balance -= 100000; d.amount += 100000;
-  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Пополнение вклада «' + d.name + '»', reason: 'Перевод со счёта №' + PLAYER.account, amount: 100000 });
-  renderAll(); toast('✓ Вклад пополнен на 100 000 ₽');
+window.simTick = function(kind) {
+  var totalAdded = 0;
+  DEPOSITS.forEach(function(d) {
+    var pl = getPlan(d.planKey);
+    if (kind === 'payday') {
+      d.hoursPassed = (d.hoursPassed || 0) + 1;
+      if (pl.periodType === 'payday') {
+        var gain = Math.round((d.amount + d.profit) * (pl.ratePct / 100));
+        d.profit += gain;
+        totalAdded += gain;
+      }
+    } else if (kind === 'midnight') {
+      d.hoursPassed = (d.hoursPassed || 0) + 24;
+      if (pl.periodType === 'midnight') {
+        var gain2 = Math.round((d.amount + d.profit) * (pl.ratePct / 100));
+        d.profit += gain2;
+        totalAdded += gain2;
+      }
+    }
+  });
+  renderAll();
+  toast(kind === 'payday'
+    ? ('⏰ Наступил PayDay! Начислено по почасовым вкладам: +' + fmt(totalAdded) + ' ₽')
+    : ('🌙 Полночь (00:00)! Начислено 0.50% по суточным вкладам: +' + fmt(totalAdded) + ' ₽'));
 };
+
+window.openPlanDeposit = function(planKey) {
+  var pl = getPlan(planKey);
+  var inp = document.getElementById('openAmt_' + planKey);
+  var amt = parseInt(inp ? inp.value : pl.minAmt, 10) || 0;
+  if (amt < pl.minAmt || amt > pl.maxAmt) {
+    toast('По тарифу «' + pl.name + '» допустима сумма от ' + fmt(pl.minAmt) + ' до ' + fmt(pl.maxAmt) + ' ₽');
+    return;
+  }
+  if (PLAYER.balance < amt) {
+    toast('Недостаточно средств на банковском счёте');
+    return;
+  }
+  PLAYER.balance -= amt;
+  DEPOSITS.unshift({
+    id: 'd' + Date.now(),
+    planKey: planKey,
+    amount: amt,
+    profit: 0,
+    hoursPassed: 0,
+    since: nowDate()
+  });
+  HISTORY.unshift({
+    date: nowDate(), time: nowTime(), type: 'minus',
+    title: 'Открытие вклада «' + pl.name + '» (' + pl.ratePct.toFixed(2) + '%)',
+    reason: pl.periodLbl,
+    amount: amt
+  });
+  renderAll();
+  toast('✓ Открыт ' + pl.name + ' на сумму ' + fmt(amt) + ' ₽');
+};
+
+window.topUpDeposit = function(idx) {
+  var d = DEPOSITS[idx]; if (!d) return;
+  var pl = getPlan(d.planKey);
+  if (!pl.canTopUp) { toast('Этот вклад непополняемый'); return; }
+  var add = 200000;
+  if (d.amount + add > pl.maxAmt) { toast('Превышен максимальный лимит вклада (' + fmt(pl.maxAmt) + ' ₽)'); return; }
+  if (PLAYER.balance < add) { toast('Недостаточно средств на счёте'); return; }
+  PLAYER.balance -= add;
+  d.amount += add;
+  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Пополнение вклада «' + pl.name + '»', reason: 'Пополнение со счёта №' + PLAYER.account, amount: add });
+  renderAll();
+  toast('✓ Вклад пополнен на ' + fmt(add) + ' ₽');
+};
+
+window.withdrawDeposit = function(idx) {
+  var d = DEPOSITS[idx]; if (!d) return;
+  var pl = getPlan(d.planKey);
+  if (!pl.canWithdraw) { toast('Частичное снятие по этому вкладу запрещено'); return; }
+  var take = 100000;
+  if (d.amount - take < pl.minAmt) { toast('Нельзя снизить остаток ниже минимальной суммы (' + fmt(pl.minAmt) + ' ₽)'); return; }
+  d.amount -= take;
+  PLAYER.balance += take;
+  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Частичное снятие с вклада «' + pl.name + '»', reason: 'Перевод на счёт №' + PLAYER.account, amount: take });
+  renderAll();
+  toast('✓ С вклада снято ' + fmt(take) + ' ₽ на ваш счёт');
+};
+
 window.closeDeposit = function(idx) {
   var d = DEPOSITS[idx]; if (!d) return;
+  var pl = getPlan(d.planKey);
+  var lockLeft = Math.max(0, pl.minHours - (d.hoursPassed || 0));
+  if (!pl.canCloseAnytime && lockLeft > 0) {
+    toast('Этот вклад нельзя закрыть до истечения срока (осталось ' + lockLeft + ' ч.)');
+    return;
+  }
   var total = d.amount + d.profit;
   PLAYER.balance += total;
-  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Закрытие вклада «' + d.name + '»', reason: 'Возврат вклада и процентов', amount: total });
+  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'plus', title: 'Закрытие вклада «' + pl.name + '»', reason: 'Возврат тела вклада и процентов', amount: total });
   DEPOSITS.splice(idx, 1);
-  renderAll(); toast('✓ Зачислено ' + fmt(total) + ' ₽');
-};
-window.openNewDeposit = function() {
-  if (PLAYER.balance < 500000) { toast('Необходимо минимум 500 000 ₽'); return; }
-  PLAYER.balance -= 500000;
-  DEPOSITS.push({ id: 'd' + Date.now(), name: 'Вклад «Премиум»', rate: '10% годовых', amount: 500000, profit: 0, since: nowDate(), canTopUp: true });
-  HISTORY.unshift({ date: nowDate(), time: nowTime(), type: 'minus', title: 'Открытие вклада «Премиум»', reason: 'Размещение под 10% годовых', amount: 500000 });
-  renderAll(); toast('✓ Открыт вклад на 500 000 ₽');
+  renderAll();
+  toast('✓ Вклад закрыт! На счёт зачислено ' + fmt(total) + ' ₽');
 };
 
 function txRowHtml(tx) {
@@ -778,9 +973,8 @@ function renderAll() {
   document.getElementById('terminalWrap').style.display = (VIEW_MODE === 'terminal') ? 'grid' : 'none';
   document.getElementById('phoneWrap').style.display = (VIEW_MODE === 'phone') ? 'flex' : 'none';
 
-  document.getElementById('uiAccNum').textContent = PLAYER.account;
-  document.getElementById('uiBalance').textContent = fmt(PLAYER.balance) + ' ₽';
-  document.getElementById('uiCash').textContent = fmt(PLAYER.cash) + ' ₽';
+  var cardHtml = buildAccountWidgetHtml();
+  document.getElementById('deskCardWidget').innerHTML = cardHtml;
 
   document.getElementById('deskNav').innerHTML = NAV_ITEMS.map(function(it) {
     var bdg = (it[0] === 'fines' && FINES.length) ? '<span class="bdg">' + FINES.length + '</span>' : '';
@@ -790,24 +984,12 @@ function renderAll() {
   var contentHtml = buildSectionHtml();
   document.getElementById('deskMain').innerHTML = contentHtml;
 
-  /* В мобильном приложении: карточка счёта в стиле скриншота + сетка меню 3x2 прямо на видном месте */
-  var mobCard = '<div class="b-card-widget">' +
-    '<div class="bc-top-row">' +
-      '<div><div class="bc-lbl">ВЛАДЕЛЕЦ<br>СЧЁТА</div><div class="bc-owner">Евгений<br>Холмс</div></div>' +
-      '<div class="bc-acc" onclick="copyAcc()">💳 №<b>' + PLAYER.account + '</b></div>' +
-    '</div>' +
-    '<div class="bc-sums-grid">' +
-      '<div class="bc-sum-item"><div class="s-l">НА СЧЁТЕ</div><div class="s-v green">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
-      '<div class="bc-sum-item"><div class="s-l">НАЛИЧНЫЕ</div><div class="s-v gold">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
-    '</div>' +
-  '</div>';
-
   var mobMenuGrid = '<div class="sp-menu-grid">' + NAV_ITEMS.map(function(t) {
     var bdg = (t[0] === 'fines' && FINES.length) ? '<span class="m-bdg">' + FINES.length + '</span>' : '';
     return '<div class="sp-mbtn' + (CUR_TAB === t[0] ? ' on' : '') + '" onclick="goTab(\'' + t[0] + '\')">' + bdg + '<i>' + t[1] + '</i><span>' + t[2] + '</span></div>';
   }).join('') + '</div>';
 
-  document.getElementById('mobileMain').innerHTML = mobCard + mobMenuGrid + contentHtml;
+  document.getElementById('mobileMain').innerHTML = cardHtml + mobMenuGrid + contentHtml;
 }
 
 renderAll();
