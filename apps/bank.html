@@ -33,7 +33,7 @@ body{
 button,input,select{font-family:inherit}
 
 /* ================= БАНКОВСКАЯ СИСТЕМА (МЕНЮ В БАНКЕ) ================= */
-#terminalWrap{max-width:1380px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:285px 1fr;gap:24px;align-items:start}
+#terminalWrap{max-width:1380px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:295px 1fr;gap:24px;align-items:start}
 .b-side{
   background:linear-gradient(165deg,rgba(20,27,42,.88),rgba(13,18,28,.94));
   border:1px solid var(--line);
@@ -43,40 +43,59 @@ button,input,select{font-family:inherit}
   top:24px;
   box-shadow:0 20px 50px rgba(0,0,0,.45);
 }
-.b-brand{display:flex;align-items:center;gap:12px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.b-brand{display:flex;align-items:center;gap:12px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:16px}
 .b-brand-ic{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#10b981,#047857);display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 6px 20px rgba(16,185,129,.35)}
 .b-brand b{font-size:15.5px;font-weight:900;letter-spacing:.4px;display:block}
 .b-brand span{font-size:11px;color:var(--mut)}
 
+/* Виджет счёта в точном стиле вашего скриншота */
 .b-card-widget{
-  background:linear-gradient(135deg,#1e293b 0%,#0f172a 55%,#1e1b4b 100%);
-  border:1px solid rgba(148,163,184,.25);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
+  background:linear-gradient(145deg,#182235 0%,#0f1625 55%,#1b1a3c 100%);
+  border:1px solid rgba(148,163,184,.22);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:16px;
   position:relative;
   overflow:hidden;
-  box-shadow:0 12px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15);
+  box-shadow:0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);
 }
-.b-card-widget::after{content:'';position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(77,163,255,.25),transparent 70%);pointer-events:none}
-.bc-top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.bc-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800}
-.bc-owner{font-size:15.5px;font-weight:800;color:#fff;margin-top:2px}
-.bc-acc{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:9px;font-family:monospace;font-size:13px;font-weight:800;color:#6ee7b7;cursor:pointer;white-space:nowrap}
-.bc-acc:hover{border-color:#6ee7b7}
+.bc-top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.bc-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800;line-height:1.25}
+.bc-owner{font-size:17px;font-weight:900;color:#ffffff;margin-top:6px;line-height:1.25}
+.bc-acc{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  background:rgba(9,13,22,.65);
+  border:1px solid rgba(255,255,255,.14);
+  padding:7px 12px;
+  border-radius:11px;
+  font-family:monospace;
+  font-size:13.5px;
+  font-weight:800;
+  color:#5eead4;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:border-color .15s;
+}
+.bc-acc:hover{border-color:#5eead4}
 
-/* Удобная сетка сумм в карточке банка */
 .bc-sums-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid rgba(255,255,255,.09);
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.08);
 }
-.bc-sum-item{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px 12px}
-.bc-sum-item .s-l{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;font-weight:800}
-.bc-sum-item .s-v{font-size:16.5px;font-weight:900;color:#fff;margin-top:3px;white-space:nowrap}
+.bc-sum-item{
+  background:rgba(9,13,22,.5);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;
+  padding:11px 13px;
+}
+.bc-sum-item .s-l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;font-weight:800}
+.bc-sum-item .s-v{font-size:16px;font-weight:900;color:#fff;margin-top:4px;white-space:nowrap}
 .bc-sum-item .s-v.green{color:#34d399}
 .bc-sum-item .s-v.gold{color:#fcd34d}
 
@@ -172,7 +191,7 @@ button,input,select{font-family:inherit}
 /* ================= МОБИЛЬНОЕ ПРИЛОЖЕНИЕ В СМАРТФОНЕ ================= */
 #phoneWrap{display:none;justify-content:center;align-items:center;padding:18px 14px;min-height:100vh}
 .smartphone{
-  width:410px;
+  width:415px;
   max-width:100%;
   background:linear-gradient(160deg,#1e2636,#0b0f17);
   border:2px solid #334155;
@@ -191,45 +210,58 @@ button,input,select{font-family:inherit}
   position:relative;
 }
 .sp-statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 6px;font-size:12px;font-weight:800;color:#cbd5e1}
-/* Верхняя панель навигации внутри приложения банка (вместо нижней, чтобы снизу была полоска выхода) */
-.sp-top-pills{
-  display:flex;
-  gap:6px;
-  padding:6px 16px 10px;
-  overflow-x:auto;
-  scrollbar-width:none;
-  border-bottom:1px solid var(--line);
-}
-.sp-top-pills::-webkit-scrollbar{display:none}
-.sp-pill{
-  flex:0 0 auto;
-  padding:7px 12px;
-  border-radius:10px;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--line);
-  color:var(--mut);
-  font-size:11.5px;
-  font-weight:800;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  transition:.15s;
-}
-.sp-pill.on{
-  background:rgba(16,185,129,.2);
-  border-color:rgba(16,185,129,.5);
-  color:#fff;
-}
-.sp-body{flex:1;overflow-y:auto;padding:14px 16px 16px}
+.sp-body{flex:1;overflow-y:auto;padding:10px 16px 16px}
 
-/* Нижняя полоска телефона — клик по ней возвращает в главное меню телефона */
-.sp-home-wrap{
-  padding:6px 0 10px;
+/* Удобная сетка кнопок меню 3x2 прямо под карточкой счёта (на видном месте без прокрутки!) */
+.sp-menu-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+.sp-mbtn{
+  background:rgba(22,30,46,.9);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;
+  padding:10px 6px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:3px;
+  justify-content:center;
+  gap:5px;
+  color:#94a3b8;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  transition:all .18s;
+  text-align:center;
+  position:relative;
+}
+.sp-mbtn i{font-style:normal;font-size:18px}
+.sp-mbtn:hover{border-color:rgba(255,255,255,.22);color:#fff}
+.sp-mbtn.on{
+  background:linear-gradient(145deg,rgba(16,185,129,.24),rgba(16,185,129,.08));
+  border-color:rgba(52,211,153,.55);
+  color:#ffffff;
+  box-shadow:0 6px 16px rgba(16,185,129,.2);
+}
+.sp-mbtn .m-bdg{
+  position:absolute;
+  top:5px;
+  right:6px;
+  background:#ef4444;
+  color:#fff;
+  font-size:9.5px;
+  font-weight:900;
+  padding:1px 5px;
+  border-radius:8px;
+}
+
+.sp-home-wrap{
+  padding:8px 0 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
   cursor:pointer;
   background:rgba(9,13,20,.95);
   border-top:1px solid rgba(255,255,255,.05);
@@ -242,7 +274,6 @@ button,input,select{font-family:inherit}
   transition:background .18s,transform .18s;
 }
 .sp-home-wrap:hover .sp-home-bar{background:#6ee7b7;transform:scaleX(1.08)}
-.sp-home-lbl{font-size:9.5px;color:#64748b;font-weight:700}
 
 #troot{position:fixed;left:24px;bottom:24px;z-index:950;display:flex;flex-direction:column;gap:8px}
 .toast{background:#161f30;border:1px solid rgba(16,185,129,.45);border-left:4px solid var(--green);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.5)}
@@ -269,8 +300,8 @@ button,input,select{font-family:inherit}
     <div class="b-card-widget">
       <div class="bc-top-row">
         <div>
-          <div class="bc-lbl">Владелец счёта</div>
-          <div class="bc-owner" id="uiOwnerName">Евгений Холмс</div>
+          <div class="bc-lbl">ВЛАДЕЛЕЦ<br>СЧЁТА</div>
+          <div class="bc-owner" id="uiOwnerName">Евгений<br>Холмс</div>
         </div>
         <div class="bc-acc" onclick="copyAcc()" title="Нажмите, чтобы скопировать счёт">
           <span>💳 №<b id="uiAccNum">748291</b></span>
@@ -278,11 +309,11 @@ button,input,select{font-family:inherit}
       </div>
       <div class="bc-sums-grid">
         <div class="bc-sum-item">
-          <div class="s-l">На счёте</div>
+          <div class="s-l">НА СЧЁТЕ</div>
           <div class="s-v green" id="uiBalance">0 ₽</div>
         </div>
         <div class="bc-sum-item">
-          <div class="s-l">Наличные</div>
+          <div class="s-l">НАЛИЧНЫЕ</div>
           <div class="s-v gold" id="uiCash">0 ₽</div>
         </div>
       </div>
@@ -302,12 +333,9 @@ button,input,select{font-family:inherit}
         <span id="spClock">21:45</span>
         <span style="font-size:10.5px;color:#94a3b8">Province LTE · 🔋 94%</span>
       </div>
-      <!-- Навигация перенесена наверх, чтобы внизу была полоска выхода в меню телефона -->
-      <nav class="sp-top-pills" id="mobileNav"></nav>
       <div class="sp-body" id="mobileMain"></div>
       <div class="sp-home-wrap" onclick="exitToPhoneMenu()" title="Выйти в главное меню телефона">
         <div class="sp-home-bar"></div>
-        <span class="sp-home-lbl">Главное меню телефона</span>
       </div>
     </div>
   </div>
@@ -397,11 +425,8 @@ var FINES = [
   }
 ];
 
-/* Если перешли из СМС по конкретному штрафу — отмечаем именно его */
 if (TARGET_FINE_ID) {
-  FINES.forEach(function(f) {
-    f.checked = (f.id === TARGET_FINE_ID);
-  });
+  FINES.forEach(function(f) { f.checked = (f.id === TARGET_FINE_ID); });
 }
 
 var HISTORY = [
@@ -442,13 +467,14 @@ function copyAcc() {
   toast('✓ Номер банковского счёта №' + PLAYER.account + ' скопирован');
 }
 function exitToPhoneMenu() {
-  location.href = 'mvd-phone.html';
+  location.href = 'mvd-phone.html?view=phone';
 }
 
+/* Пункт 9: «ЖКХ и жильё» заменено на «ЖКХ» */
 var NAV_ITEMS = [
   ['overview', '📊', 'Главная'],
   ['fines',    '🚓', 'Оплата штрафов'],
-  ['housing',  '🏠', 'ЖКХ и жильё'],
+  ['housing',  '🏠', 'ЖКХ'],
   ['transfer', '💸', 'Переводы'],
   ['deposits', '📈', 'Вклады'],
   ['history',  '📜', 'История']
@@ -468,20 +494,19 @@ function buildSectionHtml() {
   return renderOverviewSection();
 }
 
+/* Пункт 8: Убран дубляж баланса на счёте и наличных (они уже красиво показаны в карточке счёта!) */
 function renderOverviewSection() {
   var totalFines = FINES.reduce(function(s, x) { return s + x.amount; }, 0);
   var totalDeps = DEPOSITS.reduce(function(s, x) { return s + x.amount; }, 0);
   return '<div class="b-panel">' +
-    '<div class="b-h1">Сводка по счёту № ' + PLAYER.account + '</div>' +
-    '<div class="b-sub">Владелец: <b>' + PLAYER.name + '</b></div>' +
+    '<div class="b-h1">Управление счётом № ' + PLAYER.account + '</div>' +
+    '<div class="b-sub">Быстрый обзор вкладов, задолженностей и последних операций</div>' +
     '<div class="b-grid-sums">' +
-      '<div class="stat-box"><div class="l">Баланс счёта</div><div class="v" style="color:var(--green)">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
-      '<div class="stat-box"><div class="l">Наличные на руках</div><div class="v" style="color:var(--gold)">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
-      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'deposits\')"><div class="l">На вкладах →</div><div class="v" style="color:#93c5fd">' + fmt(totalDeps) + ' ₽</div></div>' +
-      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'fines\')"><div class="l">Штрафы (' + FINES.length + ' шт.) →</div><div class="v" style="color:' + (FINES.length ? 'var(--red)' : 'var(--green)') + '">' + fmt(totalFines) + ' ₽</div></div>' +
+      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'deposits\')"><div class="l">Сумма на вкладах →</div><div class="v" style="color:#93c5fd">' + fmt(totalDeps) + ' ₽</div></div>' +
+      '<div class="stat-box" style="cursor:pointer" onclick="goTab(\'fines\')"><div class="l">Неоплаченные штрафы (' + FINES.length + ' шт.) →</div><div class="v" style="color:' + (FINES.length ? 'var(--red)' : 'var(--green)') + '">' + fmt(totalFines) + ' ₽</div></div>' +
     '</div>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевод по счёту</button>' +
+      '<button class="btn" onclick="goTab(\'transfer\')">💸 Перевод по номеру счёта</button>' +
       '<button class="btn blue" onclick="goTab(\'housing\')">🏠 Оплата ЖКХ</button>' +
       '<button class="btn ghost" onclick="goTab(\'fines\')">🚓 Оплата штрафов (' + FINES.length + ')</button>' +
     '</div>' +
@@ -597,8 +622,8 @@ function renderHousingSection() {
   }).join('');
 
   return '<div class="b-panel">' +
-    '<div class="b-h1">🏠 Оплата ЖКХ и депозита за жильё</div>' +
-    '<div class="b-sub">Пополняйте жилищный депозит со счёта №' + PLAYER.account + '</div>' +
+    '<div class="b-h1">🏠 ЖКХ</div>' +
+    '<div class="b-sub">Пополнение депозита за жильё со счёта №' + PLAYER.account + '</div>' +
     '<div class="b-grid2">' + cards + '</div>' +
   '</div>';
 }
@@ -619,10 +644,11 @@ window.topUpHousing = function(idx, days) {
     amount: cost
   });
   renderAll();
-  toast('✓ Депозит за жильё пополнен на ' + fmt(cost) + ' ₽');
+  toast('✓ Депозит ЖКХ пополнен на ' + fmt(cost) + ' ₽');
 };
 window.topUpHousingMax = function(idx) { topUpHousing(idx, 30); };
 
+/* Пункт 8: В разделе переводов и наличных также убран дубляж баланса */
 function renderTransferSection() {
   return '<div class="b-panel">' +
     '<div class="b-h1">💸 Перевод по номеру счёта</div>' +
@@ -636,7 +662,7 @@ function renderTransferSection() {
   '</div>' +
   '<div class="b-panel">' +
     '<div class="b-h1">🏧 Операции с наличными</div>' +
-    '<div class="b-sub">На руках: <b>' + fmt(PLAYER.cash) + ' ₽</b> · На счёте №' + PLAYER.account + ': <b>' + fmt(PLAYER.balance) + ' ₽</b></div>' +
+    '<div class="b-sub">Внесение наличных на банковский счёт или снятие средств</div>' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
       '<input class="inp" id="cashAmt" type="number" value="100000" style="max-width:200px">' +
       '<button class="btn" onclick="doCashOp(\'in\')">➕ Пополнить счёт</button>' +
@@ -752,7 +778,6 @@ function renderAll() {
   document.getElementById('terminalWrap').style.display = (VIEW_MODE === 'terminal') ? 'grid' : 'none';
   document.getElementById('phoneWrap').style.display = (VIEW_MODE === 'phone') ? 'flex' : 'none';
 
-  document.getElementById('uiOwnerName').textContent = PLAYER.name;
   document.getElementById('uiAccNum').textContent = PLAYER.account;
   document.getElementById('uiBalance').textContent = fmt(PLAYER.balance) + ' ₽';
   document.getElementById('uiCash').textContent = fmt(PLAYER.cash) + ' ₽';
@@ -765,24 +790,24 @@ function renderAll() {
   var contentHtml = buildSectionHtml();
   document.getElementById('deskMain').innerHTML = contentHtml;
 
-  /* Удобная шапка счёта и сумм в мобильном банке */
-  var mobHeader = '<div class="b-card-widget">' +
+  /* В мобильном приложении: карточка счёта в стиле скриншота + сетка меню 3x2 прямо на видном месте */
+  var mobCard = '<div class="b-card-widget">' +
     '<div class="bc-top-row">' +
-      '<div><div class="bc-lbl">Провинция Банк Онлайн</div><div class="bc-owner">' + PLAYER.name + '</div></div>' +
-      '<div class="bc-acc" onclick="copyAcc()">💳 №' + PLAYER.account + ' 📋</div>' +
+      '<div><div class="bc-lbl">ВЛАДЕЛЕЦ<br>СЧЁТА</div><div class="bc-owner">Евгений<br>Холмс</div></div>' +
+      '<div class="bc-acc" onclick="copyAcc()">💳 №<b>' + PLAYER.account + '</b></div>' +
     '</div>' +
     '<div class="bc-sums-grid">' +
-      '<div class="bc-sum-item"><div class="s-l">На счёте</div><div class="s-v green">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
-      '<div class="bc-sum-item"><div class="s-l">Наличные</div><div class="s-v gold">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
+      '<div class="bc-sum-item"><div class="s-l">НА СЧЁТЕ</div><div class="s-v green">' + fmt(PLAYER.balance) + ' ₽</div></div>' +
+      '<div class="bc-sum-item"><div class="s-l">НАЛИЧНЫЕ</div><div class="s-v gold">' + fmt(PLAYER.cash) + ' ₽</div></div>' +
     '</div>' +
   '</div>';
 
-  document.getElementById('mobileMain').innerHTML = mobHeader + contentHtml;
+  var mobMenuGrid = '<div class="sp-menu-grid">' + NAV_ITEMS.map(function(t) {
+    var bdg = (t[0] === 'fines' && FINES.length) ? '<span class="m-bdg">' + FINES.length + '</span>' : '';
+    return '<div class="sp-mbtn' + (CUR_TAB === t[0] ? ' on' : '') + '" onclick="goTab(\'' + t[0] + '\')">' + bdg + '<i>' + t[1] + '</i><span>' + t[2] + '</span></div>';
+  }).join('') + '</div>';
 
-  document.getElementById('mobileNav').innerHTML = NAV_ITEMS.map(function(t) {
-    var bdg = (t[0] === 'fines' && FINES.length) ? ' (' + FINES.length + ')' : '';
-    return '<div class="sp-pill' + (CUR_TAB === t[0] ? ' on' : '') + '" onclick="goTab(\'' + t[0] + '\')"><span>' + t[1] + '</span><span>' + t[2] + bdg + '</span></div>';
-  }).join('');
+  document.getElementById('mobileMain').innerHTML = mobCard + mobMenuGrid + contentHtml;
 }
 
 renderAll();
