@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Эталонные погоны РФ · УМВД, ГИБДД, Юстиция, ОМОН/СОБР, Росгвардия и Армия</title>
+<title>Эталонные погоны и знаки различия · УМВД, ГИБДД, Юстиция, ОМОН, Росгвардия, Армия и ОАО «РЖД»</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
 :root{
@@ -22,9 +22,8 @@ body{
     #080b11;
   padding:22px 18px 60px;
 }
-.ep-wrap{max-width:1360px;margin:0 auto;display:grid;grid-template-columns:450px 1fr;gap:22px;align-items:start}
+.ep-wrap{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:450px 1fr;gap:22px;align-items:start}
 
-/* Левая витрина с парой погон */
 .ep-stage{
   background:linear-gradient(165deg,#161f30,#0d131f);
   border:1px solid var(--line);
@@ -62,11 +61,11 @@ body{
   border:1px solid rgba(255,255,255,.06);
   border-radius:18px;
   margin-bottom:14px;
-  min-height:360px;
+  min-height:350px;
 }
 .ep-render-item{
   width:132px;
-  height:325px;
+  height:320px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -74,10 +73,9 @@ body{
   transition:transform .2s;
 }
 .ep-render-item:hover{transform:translateY(-3px) scale(1.02)}
-.ep-render-item img,.ep-render-item svg{
+.ep-render-item svg{
   width:100%;
   height:100%;
-  object-fit:contain;
   display:block;
 }
 .ep-render-item.mirror-left{
@@ -87,7 +85,7 @@ body{
   transform:scaleX(-1) translateY(-3px) scale(1.02);
 }
 
-.ep-rank-title{font-size:20px;font-weight:900;color:#fff;margin-bottom:3px}
+.ep-rank-title{font-size:19px;font-weight:900;color:#fff;margin-bottom:4px;line-height:1.25}
 .ep-rank-cat{font-size:11.5px;color:#93c5fd;font-weight:700;text-transform:uppercase;letter-spacing:.9px;margin-bottom:12px}
 
 .ep-specs{background:rgba(0,0,0,.32);border:1px solid var(--line);border-radius:13px;padding:11px 13px;text-align:left;font-size:12px;line-height:1.55}
@@ -100,7 +98,6 @@ body{
 .s-btn{padding:10px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:#1e293b;color:#fff;font-weight:800;font-size:12.5px;cursor:pointer;transition:.15s}
 .s-btn:hover{border-color:#60a5fa;background:#2563eb}
 
-/* Правая панель управления ведомствами и званиями */
 .ep-list-panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
 .ep-h1{font-size:20px;font-weight:900;margin-bottom:4px}
 .ep-sub{font-size:12.5px;color:var(--mut);margin-bottom:16px;line-height:1.5}
@@ -141,9 +138,9 @@ body{
 }
 .r-card:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.05);transform:translateY(-2px)}
 .r-card.on{border-color:#60a5fa;background:rgba(59,130,246,.18);box-shadow:0 6px 20px rgba(37,99,235,.22)}
-.r-thumb{width:54px;height:124px;display:flex;align-items:center;justify-content:center}
-.r-thumb img,.r-thumb svg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
-.r-nm{font-weight:800;font-size:12px;line-height:1.25;color:#e2e8f0}
+.r-thumb{width:56px;height:126px;display:flex;align-items:center;justify-content:center}
+.r-thumb svg{width:100%;height:100%;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.r-nm{font-weight:800;font-size:11.5px;line-height:1.25;color:#e2e8f0}
 .r-code{font-size:10px;color:#93c5fd;font-weight:800}
 
 @media(max-width:980px){.ep-wrap{grid-template-columns:1fr}.ep-stage{position:static}}
@@ -177,9 +174,9 @@ body{
 
   <!-- Правая колонка: Ведомства и полная витрина всех погон -->
   <div class="ep-list-panel">
-    <div class="ep-h1">🎖️ Полный каталог реалистичных погон (100% соответствие образцам)</div>
+    <div class="ep-h1">🎖️ Полный каталог динамических погон и знаков различия</div>
     <div class="ep-sub">
-      Выберите структуру (<b>УМВД, ОГИБДД, Юстиция, ОМОН / СОБР / Спецназ, Росгвардия (ВНГ), Сухопутные войска, ВКС / ВДВ, ВМФ</b>) и тип формы. Все погоны отображаются как в паре на плечах (слева), так и в общей таблице (ниже).
+      Выберите структуру (<b>УМВД, ОГИБДД, Юстиция, ОМОН / СОБР / Спецназ, Росгвардия (ВНГ), Сухопутные войска, ВКС / ВДВ, ВМФ</b> или <b>ОАО «РЖД»</b>) и вариант формы одежды.
     </div>
 
     <div class="sec-lbl">1. Выберите структуру / подразделение</div>
@@ -257,7 +254,7 @@ var DEPTS = {
   },
   army_ground: {
     name: '🎖️ Армия · Сухопутные войска',
-    sub: 'ВС РФ · Защитные / Красные · Полная шкала до Маршала',
+    sub: 'ВС РФ · Защитные / Красные · До Маршала РФ',
     shape: 'trapezoid',
     trim: '#dc2626',
     stripe: '#dc2626',
@@ -290,10 +287,47 @@ var DEPTS = {
     emblem: 'navy',
     hasCadet: false,
     maxRank: 18
+  },
+  rzd: {
+    name: '🚂 ОАО «РЖД» (Минтранс)',
+    sub: 'Форменные нашивки, лычки и звёзды по вертикалям',
+    shape: 'rzd_patch',
+    trim: '#dc2626',
+    stripe: '#eab308',
+    cloth: 'rzd_dark',
+    suffix: '',
+    emblem: 'rzd',
+    hasCadet: false,
+    maxRank: 18
   }
 };
 
+/* Специальный список рангов и знаков различия для ОАО «РЖД» (18 ступеней по вертикалям) */
+function getRzdRanksList() {
+  return [
+    { code: '1',  r: 1,  cat: 'Рядовой состав (Службы ТЧМ / ДСП / Пути)', base: 'Ученик машиниста / Сигналист / Монтёр пути / Осмотрщик вагонов', rzdChevrons: 1, rzdLines: 0, stars: [] },
+    { code: '2',  r: 2,  cat: 'Рядовой состав (Службы ТЧМ / ДСП / Пути)', base: 'Помощник машиниста / Дежурный стрелочного поста / Бригадир пути', rzdChevrons: 2, rzdLines: 0, stars: [] },
+    { code: '3',  r: 3,  cat: 'Рядовой состав (Службы ТЧМ / ДСП / Пути)', base: 'Машинист / Составитель поездов / Дорожный мастер / Энергодиспетчер', rzdChevrons: 3, rzdLines: 0, stars: [] },
+    { code: '4',  r: 4,  cat: 'Средний состав (Диспетчеры, Машинисты 1–3 кл., ДСП)', base: 'Поездной диспетчер (ДНЦ) / Машинист 3 класса / Дежурный по станции (ДСП)', rzdChevrons: 0, rzdLines: 1, stars: [{x:60,y:210,sz:11}] },
+    { code: '5',  r: 5,  cat: 'Средний состав (Диспетчеры, Машинисты 1–3 кл., ДСП)', base: 'Старший поездной диспетчер / Машинист 2 класса / Старший ДСП / Начальник участка пути', rzdChevrons: 0, rzdLines: 1, stars: [{x:42,y:210,sz:11},{x:78,y:210,sz:11}] },
+    { code: '6',  r: 6,  cat: 'Средний состав (Диспетчеры, Машинисты 1–3 кл., ДСП)', base: 'Дорожный диспетчер (ЕДЦУ) / Машинист 1 класса / Начальник смены станции', rzdChevrons: 0, rzdLines: 1, stars: [{x:36,y:218,sz:10.5},{x:60,y:198,sz:10.5},{x:84,y:218,sz:10.5}] },
+    { code: '7',  r: 7,  cat: 'Средний состав (Диспетчеры, Машинисты 1–3 кл., ДСП)', base: 'Начальник смены ДЦУП / Машинист-инструктор / Зам. начальника станции', rzdChevrons: 0, rzdLines: 1, stars: [{x:36,y:222,sz:10},{x:84,y:222,sz:10},{x:48,y:192,sz:10},{x:72,y:192,sz:10}] },
+    { code: '8',  r: 8,  cat: 'Старший состав (Руководители депо, станций и центров)', base: 'Зам. начальника диспетчерского центра / Начальник колонны локомотивных бригад', rzdChevrons: 0, rzdLines: 2, stars: [{x:60,y:202,sz:13}] },
+    { code: '9',  r: 9,  cat: 'Старший состав (Руководители депо, станций и центров)', base: 'Заместитель начальника эксплуатационного локомотивного депо (ТЧЭ)', rzdChevrons: 0, rzdLines: 2, stars: [{x:40,y:205,sz:13},{x:80,y:205,sz:13}] },
+    { code: '10', r: 10, cat: 'Старший состав (Руководители депо, станций и центров)', base: 'Начальник станции / Начальник дистанции пути (ПЧ) / Начальник вагонного депо', rzdChevrons: 0, rzdLines: 2, stars: [{x:36,y:214,sz:12.5},{x:60,y:186,sz:12.5},{x:84,y:214,sz:12.5}] },
+    { code: '11', r: 11, cat: 'Старший состав (Руководители депо, станций и центров)', base: 'Начальник эксплуатационного локомотивного депо (ТЧМ) / Начальник ДЦУП', rzdChevrons: 0, rzdLines: 2, stars: [{x:36,y:218,sz:12},{x:84,y:218,sz:12},{x:60,y:192,sz:12},{x:60,y:164,sz:12}] },
+    { code: '12', r: 12, cat: 'Руководство железной дороги (Региональный уровень)', base: 'Заместитель начальника железной дороги (по службам)', rzdChevrons: 0, rzdLines: 3, stars: [{x:60,y:198,sz:16}], isGen: true },
+    { code: '13', r: 13, cat: 'Руководство железной дороги (Региональный уровень)', base: 'Первый заместитель начальника железной дороги', rzdChevrons: 0, rzdLines: 3, stars: [{x:40,y:202,sz:16},{x:80,y:202,sz:16}], isGen: true },
+    { code: '14', r: 14, cat: 'Руководство железной дороги (Региональный уровень)', base: 'Начальник железной дороги', rzdChevrons: 0, rzdLines: 3, stars: [{x:35,y:210,sz:15.5},{x:60,y:182,sz:15.5},{x:85,y:210,sz:15.5}], isGen: true },
+    { code: '15', r: 15, cat: 'Высшее руководство ОАО «РЖД» (Корпоративный уровень)', base: 'Вице-президент ОАО «РЖД» (по направлениям: тяга, перевозки, инфраструктура)', rzdChevrons: 0, rzdLines: 4, stars: [{x:60,y:195,sz:19}], isGen: true },
+    { code: '16', r: 16, cat: 'Высшее руководство ОАО «РЖД» (Корпоративный уровень)', base: 'Заместитель генерального директора ОАО «РЖД»', rzdChevrons: 0, rzdLines: 4, stars: [{x:60,y:222,sz:18.5},{x:60,y:172,sz:18.5}], isGen: true },
+    { code: '17', r: 17, cat: 'Высшее руководство ОАО «РЖД» (Корпоративный уровень)', base: 'Первый заместитель генерального директора ОАО «РЖД»', rzdChevrons: 0, rzdLines: 4, stars: [{x:60,y:236,sz:18},{x:60,y:192,sz:18},{x:60,y:148,sz:18}], isGen: true },
+    { code: '18', r: 18, cat: 'Высшее руководство ОАО «РЖД» (Корпоративный уровень)', base: 'Генеральный директор — Председатель правления ОАО «РЖД»', rzdChevrons: 0, rzdLines: 4, stars: [{x:60,y:208,sz:26,redBorder:true}], isGen: true, isTopGen: true }
+  ];
+}
+
 function getRanksList(deptKey) {
+  if (deptKey === 'rzd') return getRzdRanksList();
   var d = DEPTS[deptKey];
   var isMilitary = (deptKey === 'rosgvard' || deptKey.indexOf('army_') === 0);
   var isNavy = (deptKey === 'army_navy');
@@ -346,7 +380,6 @@ function getRankFullTitle(it, dept) {
   return it.base + (dept.suffix ? (' ' + dept.suffix) : '');
 }
 
-/* Отрисовка 3D-гранёной пятиконечной звезды точь-в-точь как на скриншотах Википедии */
 function render3DFacetedStar(cx, cy, R, isField, isSilver, hasRedOutline) {
   var r = R * 0.382;
   var outer = [], inner = [];
@@ -369,7 +402,6 @@ function render3DFacetedStar(cx, cy, R, isField, isSilver, hasRedOutline) {
         : ['#b45309', '#92400e', '#78350f', '#a16207', '#ca8a04']);
 
   var s = '';
-  /* Красная окантовка для большой звезды Генерала полиции / Генерала армии (как на скриншоте 1 и 3) */
   if (hasRedOutline && !isField) {
     var ptsRed = [];
     for (var k = 0; k < 5; k++) {
@@ -381,7 +413,6 @@ function render3DFacetedStar(cx, cy, R, isField, isSilver, hasRedOutline) {
     s += '<polygon points="' + ptsRed.join(' ') + '" fill="#dc2626" stroke="#fbbf24" stroke-width="0.7"/>';
   }
 
-  /* 10 треугольных граней от центра (3D-эффект) */
   for (var j = 0; j < 5; j++) {
     var prevIn = inner[(j + 4) % 5];
     var curOut = outer[j];
@@ -392,11 +423,20 @@ function render3DFacetedStar(cx, cy, R, isField, isSilver, hasRedOutline) {
   return s;
 }
 
-/* Отрисовка эмблемы Юстиции (Скриншот 2) и Двуглавого орла Генерала (Скриншот 1 и 3) */
 function renderAuthenticEmblem(dept, item, isField) {
   if (isField && !item.isTopGen) return '';
 
-  /* На скриншоте 2 у Юстиции с Рядового по Полковника под пуговицей стоит эмблема Юстиции (щит с мечами и столпом Закона) */
+  /* Эмблема ОАО «РЖД»: крылатое железнодорожное колесо и логотип РЖД */
+  if (dept.emblem === 'rzd') {
+    return '<g transform="translate(60, 74)">' +
+      '<path d="M-28 0 C-18 -8, -8 -6, -4 0 L-22 5 Z" fill="#eab308" stroke="#78350f" stroke-width="0.8"/>' +
+      '<path d="M28 0 C18 -8, 8 -6, 4 0 L22 5 Z" fill="#eab308" stroke="#78350f" stroke-width="0.8"/>' +
+      '<circle cx="0" cy="0" r="9" fill="#dc2626" stroke="#fef08a" stroke-width="1.8"/>' +
+      '<text x="0" y="3" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#ffffff">РЖД</text>' +
+    '</g>';
+  }
+
+  /* Эмблема Юстиции (Скриншот 2) */
   if (dept.emblem === 'justice' && !item.isCadet && !item.isGen) {
     return '<g transform="translate(60, 74)">' +
       '<line x1="-12" y1="11" x2="12" y2="-11" stroke="#eab308" stroke-width="2.2"/>' +
@@ -407,7 +447,7 @@ function renderAuthenticEmblem(dept, item, isField) {
     '</g>';
   }
 
-  /* У Генерала полиции РФ (Скриншот 1) и Генерала армии / Росгвардии (Скриншот 3) — золотой двуглавый орёл */
+  /* Двуглавый орёл у Генерала полиции РФ (Скриншот 1) и Генерала армии / Росгвардии (Скриншот 3) */
   if (item.isTopGen) {
     var yPos = (dept.shape === 'rounded') ? 105 : 112;
     return '<g transform="translate(60, ' + yPos + ')">' +
@@ -423,11 +463,10 @@ function renderAuthenticEmblem(dept, item, isField) {
     '</g>';
   }
 
-  /* У Генерала армии на повседневном/парадном (Скриншот 3, предпоследний столбец) — звезда в венке */
+  /* Звезда в лавровом венке для Генерала армии (Скриншот 3) */
   if (item.r === 18 && dept.shape === 'trapezoid' && !item.isMarshal) {
     return '<g transform="translate(60, 118)">' +
       '<circle cx="0" cy="0" r="14" fill="none" stroke="#eab308" stroke-width="3.2" stroke-dasharray="5 1.8"/>' +
-      '<polygon points="' + (function(){var p=[];for(var i=0;i<10;i++){var a=(i*36-90)*Math.PI/180,r=(i%2===0)?7:3;p.push((r*Math.cos(a)).toFixed(1)+','+(r*Math.sin(a)).toFixed(1))}return p.join(' ')})() + '" fill="#dc2626" stroke="#facc15" stroke-width="0.8"/>' +
     '</g>';
   }
 
@@ -442,16 +481,13 @@ function buildExactEpauletteSvg(item, dept) {
   var trimCol   = isField ? '#3b4732' : dept.trim;
   var stripeCol = isField ? '#333e2b' : dept.stripe;
 
-  /* Выбор текстуры сукна в 100% соответствии со скриншотами 1, 2, 3, 4 */
   var clothPattern = 'url(#mvdWeave)';
   if (isField) {
     clothPattern = 'url(#emrDigitalCamo)';
   } else if (isBlack) {
     clothPattern = 'url(#blackSpecWeave)';
   } else if (isParade) {
-    if (dept.shape === 'rounded' && (item.isEnlisted || item.isCadet)) {
-      clothPattern = 'url(#whiteShirtParade)';
-    } else if (dept.shape === 'rounded') {
+    if (dept.shape === 'rounded' || dept.shape === 'rzd_patch') {
       clothPattern = 'url(#whiteShirtParade)';
     } else if (item.isEnlisted) {
       clothPattern = (dept.cloth === 'vng') ? '#7f1d1d' : (dept.cloth === 'air_blue' ? '#0284c7' : '#b91c1c');
@@ -459,8 +495,7 @@ function buildExactEpauletteSvg(item, dept) {
       clothPattern = item.isGen ? 'url(#goldGenZigzag)' : 'url(#goldOfficerParade)';
     }
   } else {
-    /* Повседневная форма */
-    if (dept.shape === 'rounded') {
+    if (dept.shape === 'rounded' || dept.shape === 'rzd_patch') {
       clothPattern = item.isGen ? 'url(#mvdGenZigzag)' : 'url(#mvdWeave)';
     } else if (dept.cloth === 'vng') {
       clothPattern = item.isEnlisted ? '#6b141a' : (item.isGen ? 'url(#oliveGenZigzag)' : 'url(#oliveArmyWeave)');
@@ -477,7 +512,6 @@ function buildExactEpauletteSvg(item, dept) {
 
   var svg = '<svg viewBox="0 0 120 300" xmlns="http://www.w3.org/2000/svg">' +
     '<defs>' +
-      /* 1. Точная сотовая текстура тёмно-синего погона МВД / Юстиции со скриншотов 1 и 2 */
       '<pattern id="mvdWeave" width="10" height="10" patternUnits="userSpaceOnUse">' +
         '<rect width="10" height="10" fill="#1e2736"/>' +
         '<rect x="1" y="1" width="4" height="4" rx="1" fill="#283346"/>' +
@@ -485,19 +519,16 @@ function buildExactEpauletteSvg(item, dept) {
         '<rect x="6" y="1" width="3" height="3" fill="#171f2c"/>' +
         '<rect x="1" y="6" width="3" height="3" fill="#171f2c"/>' +
       '</pattern>' +
-      /* 2. Точный генеральский диагональный зигзаг МВД со скриншотов 1 и 2 */
       '<pattern id="mvdGenZigzag" width="24" height="24" patternUnits="userSpaceOnUse">' +
         '<rect width="24" height="24" fill="#1f293a"/>' +
         '<path d="M0 24 L24 0 M-6 6 L6 -6 M18 30 L30 18" stroke="#2a364b" stroke-width="5"/>' +
         '<path d="M0 12 L12 0 M12 24 L24 12" stroke="#161e2b" stroke-width="2"/>' +
       '</pattern>' +
-      /* 3. Чёрная текстура ОМОН / СОБР / ВМФ */
       '<pattern id="blackSpecWeave" width="8" height="8" patternUnits="userSpaceOnUse">' +
         '<rect width="8" height="8" fill="#121418"/>' +
         '<rect x="0" y="0" width="4" height="4" fill="#1b1e24"/>' +
         '<rect x="4" y="4" width="4" height="4" fill="#1b1e24"/>' +
       '</pattern>' +
-      /* 4. Оливковая текстура Армии и Росгвардии (Скриншот 3) */
       '<pattern id="oliveArmyWeave" width="8" height="8" patternUnits="userSpaceOnUse">' +
         '<rect width="8" height="8" fill="#2f3e1e"/>' +
         '<path d="M0 8 L8 0" stroke="#394a25" stroke-width="2.2"/>' +
@@ -506,12 +537,10 @@ function buildExactEpauletteSvg(item, dept) {
         '<rect width="20" height="20" fill="#2f3e1e"/>' +
         '<path d="M0 20 L20 0 M-5 5 L5 -5 M15 25 L25 15" stroke="#3b4d27" stroke-width="4.5"/>' +
       '</pattern>' +
-      /* 5. Тёмно-синяя текстура ВКС / ВДВ (Скриншот 3) */
       '<pattern id="airNavyWeave" width="8" height="8" patternUnits="userSpaceOnUse">' +
         '<rect width="8" height="8" fill="#132c3d"/>' +
         '<path d="M0 8 L8 0" stroke="#1a3a50" stroke-width="2.2"/>' +
       '</pattern>' +
-      /* 6. Золотой галун парадных погон Армии и Росгвардии (Скриншот 3) */
       '<pattern id="goldOfficerParade" width="12" height="6" patternUnits="userSpaceOnUse">' +
         '<rect width="12" height="6" fill="#eab308"/>' +
         '<rect x="0" y="0" width="12" height="2.5" fill="#fde047"/>' +
@@ -522,13 +551,11 @@ function buildExactEpauletteSvg(item, dept) {
         '<path d="M0 22 L22 0 M-5 5 L5 -5 M17 27 L27 17" stroke="#fde047" stroke-width="5"/>' +
         '<path d="M0 11 L11 0 M11 22 L22 11" stroke="#ca8a04" stroke-width="2"/>' +
       '</pattern>' +
-      /* 7. Белая парадная рубашка МВД */
       '<pattern id="whiteShirtParade" width="10" height="10" patternUnits="userSpaceOnUse">' +
         '<rect width="10" height="10" fill="#f1f5f9"/>' +
         '<rect x="1" y="1" width="4" height="4" fill="#ffffff"/>' +
         '<rect x="6" y="6" width="4" height="4" fill="#e2e8f0"/>' +
       '</pattern>' +
-      /* 8. Полевой пиксельный камуфляж «Цифра» ЕМР (Скриншот 4, верхний ряд) */
       '<pattern id="emrDigitalCamo" width="24" height="24" patternUnits="userSpaceOnUse">' +
         '<rect width="24" height="24" fill="#3f4d34"/>' +
         '<rect x="0" y="0" width="8" height="6" fill="#2c3624"/>' +
@@ -538,18 +565,15 @@ function buildExactEpauletteSvg(item, dept) {
         '<rect x="12" y="12" width="8" height="10" fill="#2c3624"/>' +
         '<rect x="18" y="18" width="6" height="6" fill="#526145"/>' +
       '</pattern>' +
-      /* Градиент золотого басона / лычек */
       '<linearGradient id="goldRibbon" x1="0" y1="0" x2="0" y2="1">' +
         '<stop offset="0%" stop-color="#fde047"/>' +
         '<stop offset="50%" stop-color="#eab308"/>' +
         '<stop offset="100%" stop-color="#b45309"/>' +
-      </linearGradient>' +
+      '</linearGradient>' +
     '</defs>';
 
-  /* КОНТУР ПОГОНА:
-     - Закруглённый полукруглый верх (Скриншоты 1 и 2 — УМВД, ГИБДД, Юстиция, ОМОН)
-     - Скошенный трапециевидный верх (Скриншоты 3 и 4 — Армия и Росгвардия) */
-  if (dept.shape === 'rounded') {
+  /* ФОРМА ПОГОНА ИЛИ ФОРМЕННОЙ НАШИВКИ РЖД */
+  if (dept.shape === 'rounded' || dept.shape === 'rzd_patch') {
     svg += '<path d="M 10 294 L 10 58 A 50 50 0 0 1 110 58 L 110 294 Z" fill="' + trimCol + '"/>';
     svg += '<path d="M 14.5 291 L 14.5 58 A 45.5 45.5 0 0 1 105.5 58 L 105.5 291 Z" fill="' + clothPattern + '"/>';
   } else {
@@ -557,20 +581,41 @@ function buildExactEpauletteSvg(item, dept) {
     svg += '<path d="M 16 291 L 16 45 L 104 17 L 104 291 Z" fill="' + clothPattern + '"/>';
   }
 
-  /* КУРСАНТ (Скриншот 1 и 2, первый погон слева): широкие золотые полосы по бокам и буква «К» внизу */
+  /* ЗНАКИ РАЗЛИЧИЯ ОАО «РЖД» (Уголки/шевроны, галунные полосы и звёзды) */
+  if (dept.shape === 'rzd_patch') {
+    if (item.rzdChevrons) {
+      for (var c = 0; c < item.rzdChevrons; c++) {
+        var cy = 245 - c * 18;
+        svg += '<path d="M 20 ' + (cy - 10) + ' L 60 ' + (cy + 8) + ' L 100 ' + (cy - 10) + '" fill="none" stroke="url(#goldRibbon)" stroke-width="7"/>';
+      }
+    }
+    if (item.rzdLines === 1) {
+      svg += '<rect x="16" y="252" width="88" height="10" fill="url(#goldRibbon)"/>';
+    } else if (item.rzdLines === 2) {
+      svg += '<rect x="16" y="256" width="88" height="9" fill="url(#goldRibbon)"/>';
+      svg += '<rect x="16" y="240" width="88" height="9" fill="url(#goldRibbon)"/>';
+    } else if (item.rzdLines === 3) {
+      svg += '<rect x="16" y="248" width="88" height="18" fill="url(#goldRibbon)"/>';
+      svg += '<rect x="16" y="232" width="88" height="8" fill="url(#goldRibbon)"/>';
+    } else if (item.rzdLines === 4) {
+      svg += '<rect x="16" y="244" width="88" height="26" fill="url(#goldRibbon)" stroke="#dc2626" stroke-width="1.2"/>';
+    }
+  }
+
+  /* КУРСАНТ (Скриншот 1 и 2) */
   if (item.isCadet) {
     svg += '<rect x="15" y="54" width="11" height="236" fill="url(#goldRibbon)"/>';
     svg += '<rect x="94" y="54" width="11" height="236" fill="url(#goldRibbon)"/>';
     svg += '<text x="60" y="274" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="38" fill="#fef08a" stroke="#78350f" stroke-width="1">К</text>';
   }
 
-  /* Надпись «ВНГ» на солдатских и сержантских погонах Росгвардии (Скриншот 3, ряды 2 и 5) */
-  if (dept.cloth === 'vng' && item.isEnlisted && !isField && item.bars[0] !== 'vertical') {
+  /* Надпись «ВНГ» для Росгвардии */
+  if (dept.cloth === 'vng' && item.isEnlisted && !isField && (!item.bars || item.bars[0] !== 'vertical')) {
     svg += '<text x="60" y="268" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="24" letter-spacing="1" fill="#eab308">ВНГ</text>';
   }
 
-  /* ПРОДОЛЬНЫЕ ПРОСВЕТЫ (1 или 2) с поперечной текстурой плетения как на скриншотах 1 и 2 */
-  if (!isField) {
+  /* ПРОДОЛЬНЫЕ ПРОСВЕТЫ (1 или 2) */
+  if (!isField && dept.shape !== 'rzd_patch') {
     if (item.stripes === 1) {
       svg += '<rect x="57" y="42" width="6" height="248" fill="' + stripeCol + '"/>';
     } else if (item.stripes === 2) {
@@ -579,16 +624,13 @@ function buildExactEpauletteSvg(item, dept) {
     }
   }
 
-  /* СЕРЖАНТСКИЕ И СТАРШИНСКИЕ ЛЫЧКИ (Точное расположение со скриншотов 1, 2, 3, 4) */
+  /* СЕРЖАНТСКИЕ И СТАРШИНСКИЕ ЛЫЧКИ */
   if (item.bars && item.bars.length) {
     if (item.bars[0] === 'vertical') {
-      /* Старшина — широкая продольная золотая полоса по центру (6-й погон верхнего ряда на скринах 1 и 2) */
       svg += '<rect x="44" y="18" width="32" height="273" fill="' + barFill + '" stroke="rgba(0,0,0,.35)" stroke-width="0.8"/>';
     } else if (item.bars[0] === 'wide') {
-      /* Старший сержант — одна широкая поперечная лычка по центру */
       svg += '<rect x="15" y="148" width="90" height="32" fill="' + barFill + '" stroke="rgba(0,0,0,.35)" stroke-width="0.8"/>';
     } else {
-      /* Мл. сержант (2 лычки), Сержант (3 лычки), Ефрейтор (1 лычка) */
       item.bars.forEach(function(_, ix) {
         var y = 175 - ix * 16;
         svg += '<rect x="15" y="' + y + '" width="90" height="10.5" fill="' + barFill + '" stroke="rgba(0,0,0,.35)" stroke-width="0.7"/>';
@@ -596,21 +638,23 @@ function buildExactEpauletteSvg(item, dept) {
     }
   }
 
-  /* ГЕРБОВАЯ ПУГОВИЦА С ДВУГЛАВЫМ ОРЛОМ ВВЕРХУ (Скриншоты 1 и 2) */
-  if (dept.shape === 'rounded' && !isField) {
+  /* ГЕРБОВАЯ ПУГОВИЦА ВВЕРХУ */
+  if ((dept.shape === 'rounded' || dept.shape === 'rzd_patch') && !isField) {
     svg += '<circle cx="60" cy="34" r="13.5" fill="url(#goldRibbon)" stroke="#713f12" stroke-width="1.2"/>';
     svg += '<circle cx="60" cy="34" r="10.5" fill="none" stroke="#92400e" stroke-width="0.8"/>';
     svg += '<path d="M53 34 C55 29, 65 29, 67 34 L64 39 L56 39 Z" fill="#78350f" opacity="0.65"/>';
   }
 
-  /* Эмблема Юстиции (для всех рядовых-полковников на скрине 2) или Двуглавый орёл у Генерала полиции / Генерала армии */
+  /* Эмблема Юстиции / РЖД / Двуглавый орёл у Генералов */
   svg += renderAuthenticEmblem(dept, item, isField);
 
   /* 3D-ГРАНЁНЫЕ ЗВЁЗДЫ */
   var useSilverStars = (isParade && dept.shape === 'rounded');
-  item.stars.forEach(function(st) {
-    svg += render3DFacetedStar(st.x, st.y, st.sz, isField, useSilverStars, !!st.redBorder);
-  });
+  if (item.stars && item.stars.length) {
+    item.stars.forEach(function(st) {
+      svg += render3DFacetedStar(st.x, st.y, st.sz, isField, useSilverStars, !!st.redBorder);
+    });
+  }
 
   svg += '</svg>';
   return svg;
@@ -666,17 +710,17 @@ function renderAll() {
   document.getElementById('uiRankCat').textContent = cur.cat;
 
   var uLabels = {
-    everyday: 'Повседневная форма (Скриншоты 1–4)',
+    everyday: 'Повседневная форма',
     parade: 'Парадная форма (Золотой галун / Белая рубашка)',
     black: 'Чёрная спецформа (ОМОН / СОБР / Спецназ)',
     field: 'Полевая форма (Камуфляж «Цифра» ЕМР)'
   };
 
   document.getElementById('uiSpecs').innerHTML =
-    '<div><span>Ведомство:</span><b>' + dept.name + '</b></div>' +
+    '<div><span>Структура:</span><b>' + dept.name + '</b></div>' +
     '<div><span>Тип исполнения:</span><b>' + uLabels[UNIFORM_TYPE] + '</b></div>' +
-    '<div><span>Верхний срез погона:</span><b>' + (dept.shape === 'rounded' ? 'Полукруглый (Образец 2015 г.)' : 'Скошенный трапециевидный') + '</b></div>' +
-    '<div><span>Знаки различия:</span><b style="color:#fcd34d">' + fullTitle + '</b></div>';
+    '<div><span>Вид знака:</span><b>' + (dept.shape === 'rzd_patch' ? 'Форменный знак / нашивка ОАО «РЖД»' : (dept.shape === 'rounded' ? 'Полукруглый погон (Образец 2015 г.)' : 'Скошенный трапециевидный погон')) + '</b></div>' +
+    '<div><span>Звание / Должность:</span><b style="color:#fcd34d">' + fullTitle + '</b></div>';
 
   var cats = [];
   list.forEach(function(x) { if (cats.indexOf(x.cat) < 0) cats.push(x.cat); });
