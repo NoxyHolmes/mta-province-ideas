@@ -102,3 +102,34 @@ function countItems(k) {
   if (k === 'all') return ITEMS.length;
   return itemsByFac(k).length;
 }
+/* Спойлер описания предложения */
+.sug-spoiler-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+  padding: 6px 13px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #a5b4fc;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .18s;
+}
+.sug-spoiler-btn:hover {
+  background: rgba(167, 139, 250, .15);
+  border-color: rgba(167, 139, 250, .4);
+  color: #fff;
+}
+.sug-spoiler-body {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255, 255, 255, .09);
+  animation: fadeIn .22s;
+}
+.sug-spoiler-body.open {
+  display: block;
+}
