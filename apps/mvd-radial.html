@@ -47,7 +47,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   position:fixed;
   top:14px;
   left:18px;
-  width:600px;
+  width:620px;
   max-width:calc(100vw - 36px);
   z-index:500;
   pointer-events:none;
@@ -61,16 +61,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:9px 13px;
   box-shadow:0 12px 32px rgba(0,0,0,.55);
   pointer-events:auto;
-  max-height:165px;
+  max-height:175px;
   overflow-y:auto;
 }
 .chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:5px}
-.chat-line{font-size:12px;line-height:1.45;margin-bottom:3px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+.chat-line{font-size:12px;line-height:1.48;margin-bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
 .chat-line.me{color:#e879f9;font-weight:600}
-.chat-line.do{color:#c084fc;font-style:italic}
-.chat-line.sys{color:#fbbf24;font-weight:800;background:rgba(245,158,11,.12);border-left:2px solid #f59e0b;padding:2px 7px;border-radius:4px}
+.chat-line.mega{color:#fde047;font-weight:800}
 .chat-line.err{color:#f87171;font-weight:700}
 
+/* Пункт 8: Убран крестик возле кнопки Сброс */
 #demoTopCtl{
   position:fixed;
   top:14px;
@@ -92,19 +92,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   transition:.18s;
 }
 .d-btn:hover{border-color:var(--acc)}
-.d-btn.close-x{
-  width:36px;
-  height:36px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(239,68,68,.18);
-  border-color:rgba(239,68,68,.45);
-  color:#fca5a5;
-  font-size:15px;
-}
-.d-btn.close-x:hover{background:#ef4444;color:#fff}
 
 #trunkKeyHint{
   position:fixed;
@@ -120,19 +107,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   align-items:center;
   gap:10px;
   font-weight:700;
-  font-size:12.5px;
+  font-size:12px;
   box-shadow:0 14px 35px rgba(0,0,0,.65);
-  cursor:pointer;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 #trunkKeyHint kbd{background:#2563eb;color:#fff;padding:2px 8px;border-radius:5px;font-weight:900;font-family:inherit}
-.trunk-toggle{margin-left:8px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:1px solid #10b981;background:rgba(16,185,129,.15);color:#6ee7b7}
+.trunk-toggle{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:1px solid #10b981;background:rgba(16,185,129,.15);color:#6ee7b7}
 .trunk-toggle.closed{border-color:#ef4444;background:rgba(239,68,68,.15);color:#fca5a5}
 
 /* Радиальное меню */
 #radialWrap{
   position:relative;
-  width:580px;
-  height:580px;
+  width:600px;
+  height:600px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -141,8 +129,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .radial-svg{
   position:absolute;
   inset:0;
-  width:580px;
-  height:580px;
+  width:600px;
+  height:600px;
   overflow:visible;
   filter:drop-shadow(0 22px 50px rgba(0,0,0,.75));
 }
@@ -169,7 +157,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .r-sub-sector{
   fill:rgba(20,30,52,.96);
   stroke:rgba(96,165,250,.55);
-  stroke-width:1.6px;
+  stroke-width:1.5px;
   cursor:pointer;
   transition:fill .18s,stroke .18s;
 }
@@ -189,8 +177,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .radial-center{
   position:relative;
   z-index:5;
-  width:144px;
-  height:144px;
+  width:142px;
+  height:142px;
   border-radius:50%;
   background:radial-gradient(circle,#1c2026 0%,#121519 100%);
   border:2px solid rgba(148,163,184,.28);
@@ -207,16 +195,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .rc-sub{font-size:10.5px;color:var(--mut);margin-top:5px;line-height:1.3}
 
 .r-labels{position:absolute;inset:0;pointer-events:none;z-index:4}
-.r-lbl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;width:88px}
-.r-lbl .ic{font-size:18px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))}
-.r-lbl .nm{font-size:10px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.15}
+.r-lbl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;width:82px}
+.r-lbl .ic{font-size:16px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))}
+.r-lbl .nm{font-size:9.5px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.12}
 
-/* Модальные окна выбора (Посадка/высадка задержанного и Снятие тонировки) */
+/* Модальные окна выбора (Посадка, Тонировка, Мегафон, Преследование 100м) */
 .act-modal-back{
   position:fixed;
   inset:0;
   z-index:580;
-  background:rgba(5,7,12,.8);
+  background:rgba(5,7,12,.82);
   backdrop-filter:blur(8px);
   display:none;
   align-items:center;
@@ -224,13 +212,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:16px;
 }
 .act-modal{
-  width:420px;
-  max-width:95vw;
+  width:540px;
+  max-width:96vw;
   background:#161b24;
   border:1px solid rgba(255,255,255,.14);
   border-radius:16px;
   padding:18px 20px;
   box-shadow:0 25px 70px rgba(0,0,0,.75);
+  max-height:85vh;
+  overflow-y:auto;
 }
 .act-m-title{font-weight:900;font-size:16px;color:#fff;margin-bottom:4px}
 .act-m-sub{font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.45}
@@ -238,7 +228,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
+  gap:12px;
   padding:11px 14px;
   border-radius:11px;
   background:#1f2633;
@@ -249,7 +239,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 }
 .act-opt:hover{border-color:#60a5fa;background:#263145}
 .act-opt b{font-size:13px;color:#fff;display:block}
-.act-opt span{font-size:11px;color:#94a3b8}
+.act-opt span{font-size:11.5px;color:#94a3b8;line-height:1.4;display:block;margin-top:2px}
 
 /* ================= СЛУЖЕБНОЕ УДОСТОВЕРЕНИЕ МВД РФ ================= */
 #idCardModal{
@@ -268,7 +258,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 }
 @keyframes fadeIn{from{opacity:0}}
 .mvd-id-wallet{
-  width:720px;
+  width:740px;
   max-width:96vw;
   background:linear-gradient(145deg,#5a121b,#3b0a10 50%,#4d0f17);
   border:3px solid #781d27;
@@ -310,25 +300,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   margin-bottom:10px;
   border:1px solid rgba(0,0,0,.1);
 }
-.id-min-hdr{text-align:center;font-weight:900;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:#1e293b;line-height:1.3}
+.id-min-hdr{text-align:center;font-weight:900;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:#1e293b;line-height:1.25}
 .id-emblem{
-  width:58px;
-  height:58px;
-  margin:12px auto 8px;
+  width:56px;
+  height:56px;
+  margin:10px auto 8px;
   border-radius:50%;
   background:radial-gradient(circle,#fef08a,#ca8a04);
   border:2px solid #854d0e;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:28px;
+  font-size:26px;
   box-shadow:0 4px 12px rgba(0,0,0,.25);
 }
-.id-big-code{text-align:center;font-weight:900;font-size:16px;letter-spacing:2px;color:#7f1d1d;margin-top:6px}
-.id-sub-dep{text-align:center;font-weight:800;font-size:11.5px;color:#334155;margin-top:4px}
-.id-valid{text-align:center;font-size:10px;color:#475569;margin-top:14px;font-weight:700}
+.id-big-code{text-align:center;font-weight:900;font-size:15px;letter-spacing:1.8px;color:#7f1d1d;margin-top:4px}
+.id-sub-dep{text-align:center;font-weight:800;font-size:10.5px;color:#1e293b;margin-top:5px;line-height:1.3}
+.id-valid{text-align:center;font-size:9.5px;color:#475569;margin-top:12px;font-weight:700}
 
-.id-right-top{font-weight:900;font-size:11px;letter-spacing:.6px;color:#7f1d1d;text-transform:uppercase;border-bottom:1.5px solid #cbd5e1;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between}
+.id-right-top{font-weight:900;font-size:10.5px;letter-spacing:.5px;color:#7f1d1d;text-transform:uppercase;border-bottom:1.5px solid #cbd5e1;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between}
 .id-body-row{display:flex;gap:14px;align-items:flex-start}
 .id-photo{
   width:86px;
@@ -355,19 +345,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   opacity:.75;
   border:1px solid #fff;
 }
-.id-fields{flex:1;font-size:11.5px;line-height:1.38}
-.id-f-lbl{font-size:9px;text-transform:uppercase;color:#64748b;font-weight:800;letter-spacing:.5px}
-.id-f-val{font-weight:900;font-size:13px;color:#0f172a;margin-bottom:6px}
+.id-fields{flex:1;font-size:11.5px;line-height:1.35}
+.id-f-lbl{font-size:8.5px;text-transform:uppercase;color:#64748b;font-weight:800;letter-spacing:.5px}
+.id-f-val{font-weight:900;font-size:12.5px;color:#0f172a;margin-bottom:5px}
 .id-stamp{
   position:absolute;
-  right:14px;
+  right:12px;
   bottom:10px;
   width:54px;
   height:54px;
   border-radius:50%;
   border:2px dashed rgba(29,78,216,.55);
   color:rgba(29,78,216,.65);
-  font-size:7.5px;
+  font-size:6.5px;
   font-weight:900;
   display:flex;
   align-items:center;
@@ -536,21 +526,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
       <span style="color:#6ee7b7">● MTA:Province</span>
     </div>
     <div id="chatMessages">
-      <div class="chat-line me">* Нажмите на верхний сектор «Фракционное», чтобы раскрыть полукруг функций сотрудника МВД.</div>
+      <div class="chat-line me">* Нажмите на сектор «Фракционное», чтобы открыть полукруг служебных действий.</div>
     </div>
   </div>
 </div>
 
+<!-- Пункт 8: Оставлена только кнопка Сброс без крестика -->
 <div id="demoTopCtl">
   <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
-  <button class="d-btn close-x" onclick="switchScene('radial')" title="Закрыть окно">✕</button>
 </div>
 
 <div id="gameScene">
   <div class="road-bg"></div>
 
   <div id="radialWrap">
-    <svg class="radial-svg" viewBox="0 0 580 580" id="radialSvg"></svg>
+    <svg class="radial-svg" viewBox="0 0 600 600" id="radialSvg"></svg>
     <div class="r-labels" id="radialLabels"></div>
     <div class="radial-center" id="radialCenter" onclick="toggleFacArc(false)">
       <div class="rc-title" id="rcTitle">Взаимодействие</div>
@@ -559,62 +549,60 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   </div>
 
   <div id="trunkKeyHint">
-    <span onclick="tryOpenTrunkSearch()">Возле автомобиля · Нажмите <kbd>E</kbd> для осмотра багажника</span>
-    <span class="trunk-toggle" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Открыт</span>
+    <span onclick="tryOpenTrunkSearch()" style="cursor:pointer">Возле авто · Нажмите <kbd>E</kbd> для осмотра багажника</span>
+    <span class="trunk-toggle" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Багажник: Открыт</span>
+    <span class="trunk-toggle" id="btnTintMeter" onclick="toggleTintMeter()">📟 Замерщик тонировки: В руках</span>
   </div>
 </div>
 
-<!-- Модальное окно выбора (Посадка/высадка задержанного в наручниках или Снятие тонировки) -->
+<!-- Универсальное модальное окно для Посадки, Замера/Снятия тонировки, Мегафона и Преследования (100 м) -->
 <div class="act-modal-back" id="actModalBack" onclick="if(event.target===this)closeActModal()">
   <div class="act-modal" id="actModalBox"></div>
 </div>
 
-<!-- Реалистичное служебное удостоверение МВД на имя Евгения Холмса + кнопка Закрыть снаружи -->
+<!-- Реалистичное служебное удостоверение УМВД по Республике Провинция г. Приволжск -->
 <div id="idCardModal" onclick="if(event.target===this)closeIdCard()">
   <div class="mvd-id-wallet">
-  <!-- Левая сторона удостоверения -->
-  <div class="id-page">
-    <div class="id-tri-bar"></div>
-    <div class="id-min-hdr" style="font-size: 9.5px; line-height: 1.2;">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ<br>РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
-    <div class="id-emblem">🦅</div>
-    <div class="id-big-code" style="font-size: 14px;">МВД РОССИИ</div>
-    <div class="id-sub-dep" style="font-size: 10px; line-height: 1.3;">УПРАВЛЕНИЕ МИНИСТЕРСТВА ВНУТРЕННИХ ДЕЛ<br>ПО РЕСПУБЛИКЕ ПРОВИНЦИЯ<br><strong>г. ПРИВОЛЖСК</strong></div>
-    <div class="id-valid" style="font-size: 9px; margin-top: 10px;">Настоящее удостоверение является официальным документом, подтверждающим личность и полномочия сотрудника органов внутренних дел.</div>
-  </div>
-  
-  <!-- Правая сторона удостоверения -->
-  <div class="id-page">
-    <div class="id-right-top" style="font-size: 10px;">
-      <span>УДОСТОВЕРЕНИЕ</span>
-      <span>№ 748291</span>
+    <div class="id-page">
+      <div class="id-tri-bar"></div>
+      <div class="id-min-hdr">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ<br>РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+      <div class="id-emblem">🦅</div>
+      <div class="id-big-code">МВД РОССИИ</div>
+      <div class="id-sub-dep">УПРАВЛЕНИЕ МИНИСТЕРСТВА ВНУТРЕННИХ ДЕЛ<br>ПО РЕСПУБЛИКЕ ПРОВИНЦИЯ<br><strong>г. ПРИВОЛЖСК</strong></div>
+      <div class="id-valid">Настоящее удостоверение является официальным документом, подтверждающим личность и полномочия сотрудника органов внутренних дел.</div>
     </div>
-    <div class="id-body-row">
-      <div class="id-photo">
-        <svg viewBox="0 0 80 100" style="width:100%;height:100%">
-          <rect width="80" height="100" fill="#cbd5e1"/>
-          <circle cx="40" cy="34" r="16" fill="#475569"/>
-          <path d="M12 98 C12 66, 68 66, 68 98 Z" fill="#1e3a8a"/>
-          <path d="M26 70 L40 88 L54 70" fill="#ffffff"/>
-          <path d="M38 74 L42 74 L41 92 L39 92 Z" fill="#1e293b"/>
-          <rect x="14" y="68" width="12" height="5" rx="1" fill="#eab308"/>
-          <rect x="54" y="68" width="12" height="5" rx="1" fill="#eab308"/>
-        </svg>
-        <div class="id-holo" title="Голограмма МВД"></div>
+    <div class="id-page">
+      <div class="id-right-top">
+        <span>УДОСТОВЕРЕНИЕ</span>
+        <span>№ 748291</span>
       </div>
-      <div class="id-fields">
-        <div class="id-f-lbl">Фамилия, Имя</div>
-        <div class="id-f-val">ХОЛМС Евгений</div>
-        <div class="id-f-lbl">Специальное звание</div>
-        <div class="id-f-val" style="color:#1e3a8a">Капитан полиции</div>
-        <div class="id-f-lbl">Подразделение</div>
-        <div class="id-f-val" style="font-size: 10.5px; line-height: 1.2;">УМВД по Республике Провинция (г. Приволжск)</div>
-        <div class="id-f-lbl">Личный номер / UID</div>
-        <div class="id-f-val" style="font-size:11px; margin-bottom:0">Ж-748291 · UID K8W4C6</div>
+      <div class="id-body-row">
+        <div class="id-photo">
+          <svg viewBox="0 0 80 100" style="width:100%;height:100%">
+            <rect width="80" height="100" fill="#cbd5e1"/>
+            <circle cx="40" cy="34" r="16" fill="#475569"/>
+            <path d="M12 98 C12 66, 68 66, 68 98 Z" fill="#1e3a8a"/>
+            <path d="M26 70 L40 88 L54 70" fill="#ffffff"/>
+            <path d="M38 74 L42 74 L41 92 L39 92 Z" fill="#1e293b"/>
+            <rect x="14" y="68" width="12" height="5" rx="1" fill="#eab308"/>
+            <rect x="54" y="68" width="12" height="5" rx="1" fill="#eab308"/>
+          </svg>
+          <div class="id-holo" title="Голограмма МВД"></div>
+        </div>
+        <div class="id-fields">
+          <div class="id-f-lbl">Фамилия, Имя</div>
+          <div class="id-f-val">ХОЛМС Евгений</div>
+          <div class="id-f-lbl">Специальное звание</div>
+          <div class="id-f-val" style="color:#1e3a8a">Капитан полиции</div>
+          <div class="id-f-lbl">Должность и подразделение</div>
+          <div class="id-f-val" style="font-size:11px;line-height:1.25">Оперуполномоченный ОУР · УМВД по Республике Провинция (г. Приволжск)</div>
+          <div class="id-f-lbl">Личный номер / UID</div>
+          <div class="id-f-val" style="font-size:11px;margin-bottom:0">Ж-748291 · UID #K8W4C6</div>
+        </div>
       </div>
+      <div class="id-stamp">МВД РФ<br>УМВД ПО РП<br>ПРИВОЛЖСК</div>
     </div>
-    <div class="id-stamp" style="font-size: 6.5px;">МВД РФ<br>УМВД ПО РП<br>ПРИВОЛЖСК</div>
   </div>
-</div>
   <button class="id-outside-close" onclick="closeIdCard()">Закрыть удостоверение</button>
 </div>
 
@@ -635,7 +623,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
       </div>
     </div>
 
-    <!-- РЕЖИМ А: ТОЛЬКО ИНВЕНТАРЬ ИГРОКА -->
     <div class="inv-grid-player" id="playerOnlyView">
       <div>
         <div class="inv-col-bar">
@@ -713,7 +700,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
       </div>
     </div>
 
-    <!-- РЕЖИМ Б: ТОЛЬКО БАГАЖНИК АВТОМОБИЛЯ -->
     <div id="trunkOnlyView">
       <div class="inv-col-bar">
         <div class="bar-left"><span>🚘</span><span>Багажник автомобиля</span></div>
@@ -757,9 +743,11 @@ var SVG_ICONS = {
   sil_hands: '<svg viewBox="0 0 64 64" opacity=".2"><path d="M16 26c0-5 10-5 10 0v14H16zm22 0c0-5 10-5 10 0v14H38z" fill="#9ca3af"/></svg>'
 };
 
-var OFFICER_NAME = 'Капитан Евгений Холмс';
+/* Пункт 11: В отыгровках убрано упоминание звания — только имя и фамилия */
+var OFFICER_NAME = 'Евгений Холмс';
 var SUSPECT_NAME = 'Sergey_Vorovskoy';
 var TRUNK_OPEN = true;
+var HAS_TINT_METER = true;
 var SEARCH_MODE = 'player';
 var FAC_ARC_OPEN = false;
 var CUFFED = false;
@@ -769,6 +757,24 @@ var IN_CAR_SUSPECTS = [];
 var CUFFED_CANDIDATES = [
   { name: 'Sergey_Vorovskoy', id: 142, status: 'В наручниках' },
   { name: 'Maksim_Saraev',    id: 289, status: 'В наручниках' }
+];
+
+/* Пункт 10: 5 заготовленных фраз мегафона */
+var MEGAPHONE_PHRASES = [
+  'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!',
+  'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!',
+  'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!',
+  'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!',
+  'Граждане, соблюдайте спокойствие и освободите проезжую часть!'
+];
+
+/* Пункт 17: Игроки в радиусе 100 метров для преследования */
+var NEARBY_PLAYERS = [
+  { uid: '#У173ТТ4', inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Водитель',  dist: 18 },
+  { uid: '#К904МВ2', inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Пассажир',  dist: 18 },
+  { uid: '#А418ОР7', inCar: true,  make: 'Toyota Camry XV70', plate: 'Без номеров',role: 'Водитель',  dist: 46 },
+  { uid: '#С821НТ5', inCar: false, make: null,                plate: null,         role: 'Пешеход',   dist: 64 },
+  { uid: '#В309ХК1', inCar: true,  make: 'Lada Priora',       plate: 'Е824РС 52',  role: 'Водитель',  dist: 92 }
 ];
 
 var ROOT_SECTORS = [
@@ -802,19 +808,19 @@ function renderRadialMenu() {
   lbls.innerHTML = '';
 
   var ns = 'http://www.w3.org/2000/svg';
-  var cx = 290, cy = 290;
+  var cx = 300, cy = 300;
   var n = ROOT_SECTORS.length, step = 360 / n, gap = 2.4;
 
   ROOT_SECTORS.forEach(function(it, i) {
     var a1 = i * step - step / 2 + gap / 2;
     var a2 = (i + 1) * step - step / 2 - gap / 2;
     var p = document.createElementNS(ns, 'path');
-    p.setAttribute('d', sectorPath(cx, cy, 80, 174, a1, a2));
+    p.setAttribute('d', sectorPath(cx, cy, 78, 170, a1, a2));
     p.setAttribute('class', 'r-sector' + (it.isFac ? (' fac-sec' + (FAC_ARC_OPEN ? ' active' : '')) : ''));
     p.addEventListener('click', function() { onSectorClick(it.id); });
     svg.appendChild(p);
 
-    var pos = polarToCartesian(cx, cy, 128, i * step);
+    var pos = polarToCartesian(cx, cy, 125, i * step);
     var div = document.createElement('div');
     div.className = 'r-lbl';
     div.style.left = pos.x + 'px';
@@ -828,7 +834,6 @@ function renderRadialMenu() {
       { id: 'idcard',       ic: '🪪', name: 'Удостоверение' },
       { id: 'cuffs',        ic: '⛓️', name: CUFFED ? 'Снять наручники' : 'Надеть наручники' }
     ];
-    /* Как только нажали «Надеть наручники» — появляется дополнительная кнопка «Прицепить к окружению» */
     if (CUFFED) {
       subList.push({
         id: 'attach_env',
@@ -841,17 +846,20 @@ function renderRadialMenu() {
       { id: 'frisk_player', ic: '🔍', name: 'Обыск' },
       { id: 'frisk_trunk',  ic: '🚘', name: 'Обыск багажника' },
       { id: 'car_detainee', ic: '🚔', name: IN_CAR_SUSPECTS.length ? 'Вытащить задержанного' : 'Посадить задержанного' },
-      { id: 'remove_tint',  ic: '🪟', name: 'Снять тонировку' }
+      { id: 'measure_tint', ic: '📟', name: 'Замер тонировки' },
+      { id: 'remove_tint',  ic: '🪟', name: 'Снять тонировку' },
+      { id: 'megaphone',    ic: '📢', name: 'Мегафон' },
+      { id: 'pursuit',      ic: '🎯', name: 'Преследование (100м)' }
     );
 
-    var arcStart = -112, arcSpan = 224;
+    var arcStart = -132, arcSpan = 264;
     var subStep = arcSpan / subList.length;
 
     subList.forEach(function(sub, s) {
-      var sa1 = arcStart + s * subStep + 1.2;
-      var sa2 = arcStart + (s + 1) * subStep - 1.2;
+      var sa1 = arcStart + s * subStep + 1.0;
+      var sa2 = arcStart + (s + 1) * subStep - 1.0;
       var sp = document.createElementNS(ns, 'path');
-      sp.setAttribute('d', sectorPath(cx, cy, 184, 268, sa1, sa2));
+      sp.setAttribute('d', sectorPath(cx, cy, 180, 272, sa1, sa2));
       sp.setAttribute('class', 'r-sub-sector' + (sub.isAttach ? ' attach-sec' : ''));
       sp.addEventListener('click', function() { doFacAction(sub.id); });
       svg.appendChild(sp);
@@ -893,19 +901,19 @@ window.doFacAction = function(act) {
     renderRadialMenu();
     return;
   }
+  /* Пункт 4: Отыгровка с указанием правой руки */
   if (act === 'attach_env') {
     ATTACHED_ENV = !ATTACHED_ENV;
     renderRadialMenu();
     if (ATTACHED_ENV) {
-      addChat('me', '* ' + OFFICER_NAME + ' снял браслет с руки ' + SUSPECT_NAME + ' и прицепил его к окружению');
-      addChat('do', 'Задержанный ' + SUSPECT_NAME + ' надёжно зафиксирован к окружению и не может передвигаться.');
+      addChat('me', '* ' + OFFICER_NAME + ' снял браслет наручников с правой руки ' + SUSPECT_NAME + ' и прицепил его к окружению');
     } else {
-      addChat('me', '* ' + OFFICER_NAME + ' отцепил браслет наручников от окружения и снова защёлкнул его на руке ' + SUSPECT_NAME);
+      addChat('me', '* ' + OFFICER_NAME + ' отцепил браслет наручников от окружения и прицепил его обратно на правую руку ' + SUSPECT_NAME);
     }
     return;
   }
   if (act === 'frisk_player') {
-    addChat('me', '* ' + OFFICER_NAME + ' надел тактические перчатки и начал обыск гражданина ' + SUSPECT_NAME);
+    addChat('me', '[Обыск] * ' + OFFICER_NAME + ' надел тактические перчатки и начал обыск гражданина ' + SUSPECT_NAME);
     openSearchMode('player');
     return;
   }
@@ -917,12 +925,24 @@ window.doFacAction = function(act) {
     openCarDetaineeModal();
     return;
   }
+  if (act === 'measure_tint') {
+    openMeasureTintModal();
+    return;
+  }
   if (act === 'remove_tint') {
     openTintModal();
+    return;
+  }
+  if (act === 'megaphone') {
+    openMegaphoneModal();
+    return;
+  }
+  if (act === 'pursuit') {
+    openPursuitModal();
   }
 };
 
-/* Окно посадки / высадки задержанного из служебного авто с автоматическим ремнём безопасности */
+/* Пункт 6: Посадка / Высадка задержанного БЕЗ жёлтых системных сообщений */
 function openCarDetaineeModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
@@ -958,8 +978,7 @@ window.putDetaineeInCar = function(idx) {
   IN_CAR_SUSPECTS.push(c);
   closeActModal();
   renderRadialMenu();
-  addChat('me', '* ' + OFFICER_NAME + ' открыл заднюю дверь служебного автомобиля, усадил ' + c.name + ' в салон, пристегнул ремнём безопасности и закрыл дверь');
-  addChat('sys', '[Транспорт МВД] Задержанный ' + c.name + ' [' + c.id + '] посажен в служебный автомобиль. Ремень безопасности пристёгнут автоматически.');
+  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, посадил ' + c.name + ' в салон, пристегнул ремнём безопасности и закрыл дверь');
 };
 
 window.takeDetaineeFromCar = function(idx) {
@@ -969,21 +988,57 @@ window.takeDetaineeFromCar = function(idx) {
   closeActModal();
   renderRadialMenu();
   addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, отстегнул ремень безопасности, вытащил ' + c.name + ' из салона и закрыл дверь');
-  addChat('sys', '[Транспорт МВД] Задержанный ' + c.name + ' [' + c.id + '] высажен из служебного автомобиля (ремень безопасности отстёгнут автоматически).');
 };
 
-/* Окно снятия тонировки на месте для ГИБДД (только лобовое и передние боковые стёкла) */
+/* Пункт 7 и 9: Замер тонировки (только если взят функциональный замерщик) */
+window.toggleTintMeter = function() {
+  HAS_TINT_METER = !HAS_TINT_METER;
+  var b = document.getElementById('btnTintMeter');
+  b.textContent = HAS_TINT_METER ? '📟 Замерщик тонировки: В руках' : '📟 Замерщик тонировки: Не взят';
+  b.className = 'trunk-toggle' + (HAS_TINT_METER ? '' : ' closed');
+};
+
+function openMeasureTintModal() {
+  if (!HAS_TINT_METER) {
+    addChat('err', '[Система] Для проведения замера светопропускаемости необходимо взять функциональный замерщик тонировки!');
+    return;
+  }
+  var back = document.getElementById('actModalBack');
+  var box = document.getElementById('actModalBox');
+  var glasses = [
+    { name: 'Замерить лобовое стекло',          res: 'Светопропускаемость: 15% (Норма: не менее 70% — Нарушение)' },
+    { name: 'Замерить переднее левое стекло',   res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' },
+    { name: 'Замерить переднее правое стекло',  res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' }
+  ];
+  box.innerHTML =
+    '<div class="act-m-title">📟 Замер светопропускаемости стёкол</div>' +
+    '<div class="act-m-sub">Выберите стекло автомобиля для замера прибором «Тоник»:</div>' +
+    glasses.map(function(g) {
+      return '<div class="act-opt" onclick="doMeasureGlass(\'' + g.name + '\',\'' + g.res + '\')">' +
+        '<div><b>' + g.name + '</b><span>Прибор замера тонировки активен</span></div>' +
+        '<span style="color:#60a5fa;font-weight:800;font-size:12px">Замерить →</span>' +
+      '</div>';
+    }).join('') +
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
+  back.style.display = 'flex';
+}
+
+window.doMeasureGlass = function(title, res) {
+  closeActModal();
+  addChat('me', '* ' + OFFICER_NAME + ' приложил датчик прибора замера светопропускаемости к стеклу автомобиля и провёл замер (' + res + ')');
+};
+
 function openTintModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
   var glasses = [
-    { k: 'front', name: 'Снять тонировку с лобового стекла',     sub: 'Светопропускаемость ниже нормы (допускается снятие на месте)' },
-    { k: 'left',  name: 'Снять тонировку с бокового левого стекла', sub: 'Переднее водительское стекло' },
-    { k: 'right', name: 'Снять тонировку с бокового правого стекла',sub: 'Переднее пассажирское стекло' }
+    { name: 'Снять тонировку с лобового стекла',        sub: 'Демонтаж плёнки с лобового стекла' },
+    { name: 'Снять тонировку с бокового левого стекла',  sub: 'Переднее водительское стекло' },
+    { name: 'Снять тонировку с бокового правого стекла', sub: 'Переднее пассажирское стекло' }
   ];
   box.innerHTML =
     '<div class="act-m-title">🪟 Снятие тонировки (ГИБДД)</div>' +
-    '<div class="act-m-sub">Снятию подлежит только тонировка лобового стекла и передних боковых стёкол, превышающая установленные нормы:</div>' +
+    '<div class="act-m-sub">Снятию подлежит только тонировка лобового стекла и передних боковых стёкол:</div>' +
     glasses.map(function(g) {
       return '<div class="act-opt" onclick="removeTintGlass(\'' + g.name + '\')">' +
         '<div><b>' + g.name + '</b><span>' + g.sub + '</span></div>' +
@@ -997,8 +1052,65 @@ function openTintModal() {
 window.removeTintGlass = function(actionName) {
   closeActModal();
   var glassPart = actionName.replace('Снять тонировку ', '');
-  addChat('me', '* ' + OFFICER_NAME + ' провёл контрольный замер светопропускаемости прибором, поддел край плёнки и начал снимать тонировку ' + glassPart);
-  addChat('sys', '[ГИБДД МВД] Выполнено действие «' + actionName + '». Тонировочная плёнка со стекла удалена.');
+  addChat('me', '* ' + OFFICER_NAME + ' поддел край плёнки и снял тонировку ' + glassPart);
+};
+
+/* Пункт 10: Модальное окно с 5 заготовленными фразами Мегафона */
+function openMegaphoneModal() {
+  var back = document.getElementById('actModalBack');
+  var box = document.getElementById('actModalBox');
+  box.innerHTML =
+    '<div class="act-m-title">📢 Служебный мегафон (5 быстрых фраз)</div>' +
+    '<div class="act-m-sub">Выберите заготовленное требование для передачи через громкоговоритель патрульного авто:</div>' +
+    MEGAPHONE_PHRASES.map(function(phr, idx) {
+      return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
+        '<div><b>Фраза №' + (idx + 1) + '</b><span>«' + phr + '»</span></div>' +
+        '<span style="color:#fde047;font-weight:800;font-size:12px">Сказать →</span>' +
+      '</div>';
+    }).join('') +
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
+  back.style.display = 'flex';
+}
+
+window.useMegaphonePhrase = function(idx) {
+  var phr = MEGAPHONE_PHRASES[idx];
+  if (!phr) return;
+  closeActModal();
+  addChat('mega', '[Мегафон] ' + OFFICER_NAME + ' зажал кнопку мегафона и сказал в него: ' + phr);
+};
+
+/* Пункт 17: Список игроков в пределах 100 метров для начала преследования */
+function openPursuitModal() {
+  var back = document.getElementById('actModalBack');
+  var box = document.getElementById('actModalBox');
+  box.innerHTML =
+    '<div class="act-m-title">🎯 Игроки в радиусе 100 метров (Преследование)</div>' +
+    '<div class="act-m-sub">Нажмите на игрока, чтобы начать за ним активное преследование (при выходе из игры даётся 5 минут на перезаход, иначе деморган на 6 часов):</div>' +
+    NEARBY_PLAYERS.map(function(p, idx) {
+      var details = [];
+      details.push('1. UID: <b style="color:#fff;display:inline">' + p.uid + '</b>');
+      details.push('2. Транспорт: <b style="color:#93c5fd;display:inline">' + (p.inCar ? ('В авто (' + p.make + ')') : 'Нет (Пешком)') + '</b>');
+      /* Пункт 17.3: Если игрок не в авто — пункта про номер быть не должно! */
+      if (p.inCar) {
+        details.push('3. Гос. номер: <b style="color:#fcd34d;display:inline">' + p.plate + '</b>');
+      }
+      details.push((p.inCar ? '4.' : '3.') + ' Статус: <b style="color:#fff;display:inline">' + p.role + '</b>');
+      details.push((p.inCar ? '5.' : '4.') + ' Дистанция: <b style="color:#34d399;display:inline">' + p.dist + ' м</b>');
+
+      return '<div class="act-opt" onclick="startPursuitOnPlayer(' + idx + ')">' +
+        '<div><b>Игрок ' + p.uid + ' (' + p.role + ' · ' + p.dist + ' м)</b><span>' + details.join(' · ') + '</span></div>' +
+        '<span style="color:#f87171;font-weight:800;font-size:12px;white-space:nowrap">Преследовать →</span>' +
+      '</div>';
+    }).join('') +
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
+  back.style.display = 'flex';
+}
+
+window.startPursuitOnPlayer = function(idx) {
+  var p = NEARBY_PLAYERS[idx];
+  if (!p) return;
+  closeActModal();
+  addChat('me', '[Преследование] * ' + OFFICER_NAME + ' начал активное преследование за игроком ' + p.uid + ' (' + (p.inCar ? (p.make + ', ' + p.plate + ', ' + p.role) : p.role) + ', дистанция: ' + p.dist + ' м)');
 };
 
 window.closeActModal = function() {
@@ -1012,7 +1124,7 @@ window.closeIdCard = function() {
 window.toggleTrunkLock = function() {
   TRUNK_OPEN = !TRUNK_OPEN;
   var b = document.getElementById('btnTrunkLock');
-  b.textContent = TRUNK_OPEN ? '🔓 Открыт' : '🔒 Закрыт';
+  b.textContent = TRUNK_OPEN ? '🔓 Багажник: Открыт' : '🔒 Багажник: Закрыт';
   b.className = 'trunk-toggle' + (TRUNK_OPEN ? '' : ' closed');
 };
 
@@ -1021,7 +1133,7 @@ window.tryOpenTrunkSearch = function() {
     addChat('err', '[Система] Багажник автомобиля закрыт! Обыск возможен только при открытом багажнике.');
     return;
   }
-  addChat('me', '* ' + OFFICER_NAME + ' начал осмотр багажника автомобиля');
+  addChat('me', '[Обыск] * ' + OFFICER_NAME + ' начал осмотр багажника автомобиля');
   openSearchMode('trunk');
 };
 
@@ -1136,6 +1248,7 @@ window.onSlotClick = function(ev, source, slotIdx) {
   pop.style.top = Math.min(window.innerHeight - 220, rect.top + 16) + 'px';
 };
 
+/* Пункт 5: Убрано жёлтое упоминание об обыске и камере вещдоков — префикс [Обыск] и [Камера вещдоков] идёт прямо перед самой отыгровкой */
 window.seizeActiveItem = function() {
   if (!activePopItem || !activePopItem.item) return;
   var src = activePopItem.source, sl = activePopItem.slot, it = activePopItem.item;
@@ -1150,8 +1263,7 @@ window.seizeActiveItem = function() {
   renderInventoryGrids();
 
   var whereTxt = (src === 'trunk') ? 'из багажника автомобиля' : ('у игрока ' + SUSPECT_NAME);
-  addChat('me', '* ' + OFFICER_NAME + ' изъял «' + it.name + '» (' + it.qty + ' шт.) ' + whereTxt + ' и упаковал в спецпакет для улик');
-  addChat('sys', '[Обыск] ' + OFFICER_NAME + ' изъял предмет «' + it.name + '» в количестве ' + it.qty + ' шт. ' + whereTxt);
+  addChat('me', '[Обыск] * ' + OFFICER_NAME + ' изъял предмет «' + it.name + '» в количестве ' + it.qty + ' шт. ' + whereTxt + ' и упаковал в спецпакет для улик');
 };
 
 window.handoverToDutyOfficer = function() {
@@ -1176,8 +1288,7 @@ window.handoverToDutyOfficer = function() {
     localStorage.setItem('mvd_seized_evidence_v1', JSON.stringify(saved.slice(0, 50)));
   } catch (e) {}
 
-  addChat('me', '* ' + OFFICER_NAME + ' передал опечатанные вещдоки (' + summaryStr + ') дежурному в камеру хранения улик');
-  addChat('sys', '[Камера вещдоков] ' + OFFICER_NAME + ' сдал в камеру хранения вещдоков: ' + summaryStr + '.');
+  addChat('me', '[Камера вещдоков] * ' + OFFICER_NAME + ' передал опечатанные вещдоки (' + summaryStr + ') дежурному в камеру хранения улик');
 
   SEIZED_BUFFER = [];
   renderInventoryGrids();
