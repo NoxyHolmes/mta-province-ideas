@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Динамические погоны МВД РФ · Полиция и Юстиция</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;user-select:none}
+:root{
+  --bg:#0a0d14;
+  --card:#131924;
+  --line:rgba(255,255,255,.09);
+  --txt:#f1f5f9;
+  --mut:#8c98ad;
+  --police:#ef4444;
+  --justice:#2563eb;
+}
+html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
+body{
+  background:
+    radial-gradient(1000px 520px at 15% 0%,rgba(239,68,68,.12),transparent 60%),
+    radial-gradient(1000px 520px at 85% 100%,rgba(37,99,235,.16),transparent 60%),
+    #0a0d14;
+  padding:26px 20px 60px;
+}
+.ep-wrap{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:24px;align-items:start}
+
+/* Левая карточка предпросмотра пары погон */
+.ep-stage{
+  background:linear-gradient(165deg,#172030,#0f1520);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:24px 20px;
+  position:sticky;
+  top:20px;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);
+  text-align:center;
+}
+.branch-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.br-btn{
+  padding:11px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--mut);
+  font-weight:800;
+  font-size:12.5px;
+  cursor:pointer;
+  transition:.18s;
+}
+.br-btn.on.police{background:rgba(220,38,38,.22);border-color:#ef4444;color:#fff;box-shadow:0 6px 20px rgba(220,38,38,.25)}
+.br-btn.on.justice{background:rgba(37,99,235,.26);border-color:#3b82f6;color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.28)}
+
+.pair-box{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:28px;
+  padding:22px 10px;
+  background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 70%);
+  border-radius:18px;
+  margin-bottom:16px;
+}
+.pair-box svg{
+  width:126px;
+  height:320px;
+  filter:drop-shadow(0 18px 28px rgba(0,0,0,.75));
+  transition:transform .22s;
+}
+.pair-box svg:hover{transform:translateY(-4px) scale(1.02)}
+
+.ep-rank-title{font-size:21px;font-weight:900;color:#fff;margin-bottom:4px}
+.ep-rank-cat{font-size:12px;color:#93c5fd;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.ep-specs{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;font-size:12.5px;line-height:1.6}
+.ep-specs div{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(255,255,255,.07);padding:4px 0}
+.ep-specs div:last-child{border-bottom:none}
+.ep-specs span{color:var(--mut)}
+.ep-specs b{color:#fff}
+
+.step-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.s-btn{padding:11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:#1e293b;color:#fff;font-weight:800;font-size:13px;cursor:pointer;transition:.15s}
+.s-btn:hover{border-color:#60a5fa;background:#2563eb}
+
+/* Правая панель всех 18 званий */
+.ep-list-panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
+.ep-h1{font-size:20px;font-weight:900;margin-bottom:4px}
+.ep-sub{font-size:12.5px;color:var(--mut);margin-bottom:18px;line-height:1.5}
+.cat-hdr{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;font-weight:800;margin:16px 0 8px}
+.ranks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px}
+.r-card{
+  padding:11px 13px;
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--line);
+  cursor:pointer;
+  transition:.15s;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.r-card:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.05)}
+.r-card.on{border-color:#60a5fa;background:rgba(59,130,246,.16)}
+.r-num{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#cbd5e1;flex:0 0 28px}
+.r-card.on .r-num{background:#2563eb;color:#fff}
+.r-nm{font-weight:800;font-size:12.5px;line-height:1.25}
+
+@media(max-width:960px){.ep-wrap{grid-template-columns:1fr}.ep-stage{position:static}}
+</style>
+</head>
+<body>
+
+<div class="ep-wrap">
+  <div class="ep-stage">
+    <div class="branch-switch">
+      <button class="br-btn police on" id="btnPolice" onclick="setBranch('police')">🛡️ Полиция (Красный кант)</button>
+      <button class="br-btn justice" id="btnJustice" onclick="setBranch('justice')">⚖️ Юстиция (Синий кант)</button>
+    </div>
+
+    <div class="pair-box" id="pairBox"></div>
+
+    <div class="ep-rank-title" id="uiRankTitle">Капитан полиции</div>
+    <div class="ep-rank-cat" id="uiRankCat">Средний начальствующий состав · 11 ранг</div>
+
+    <div class="ep-specs" id="uiSpecs"></div>
+
+    <div class="step-btns">
+      <button class="s-btn" onclick="stepRank(-1)">▼ Понизить звание</button>
+      <button class="s-btn" onclick="stepRank(1)">▲ Повысить звание</button>
+    </div>
+  </div>
+
+  <div class="ep-list-panel">
+    <div class="ep-h1">🎖️ Интерактивный стенд динамических погон МВД РФ</div>
+    <div class="ep-sub">Нажмите на любое специальное звание или переключите род службы («Полиция» / «Юстиция»), чтобы увидеть, как система автоматически перестраивает просветы, лычки, кант и звёзды на погонах сотрудника.</div>
+    <div id="ranksCatalog"></div>
+  </div>
+</div>
+
+<script>
+var BRANCH = 'police'; // 'police' (красный кант/просветы) или 'justice' (васильково-синий кант/просветы)
+var CUR_RANK = 11;     // По умолчанию: 11 (Капитан)
+
+var RANKS_DATA = [
+  { r: 1,  cat: 'Рядовой состав',                   base: 'Рядовой',            stripes: 0, bars: [],             stars: [] },
+  { r: 2,  cat: 'Младший начальствующий состав',    base: 'Младший сержант',    stripes: 0, bars: ['thin','thin'],stars: [] },
+  { r: 3,  cat: 'Младший начальствующий состав',    base: 'Сержант',            stripes: 0, bars: ['thin','thin','thin'], stars: [] },
+  { r: 4,  cat: 'Младший начальствующий состав',    base: 'Старший сержант',    stripes: 0, bars: ['wide'],       stars: [] },
+  { r: 5,  cat: 'Младший начальствующий состав',    base: 'Старшина',           stripes: 0, bars: ['vertical'],   stars: [] },
+  { r: 6,  cat: 'Младший начальствующий состав',    base: 'Прапорщик',          stripes: 0, bars: [],             stars: [{x:60,y:210,sz:11},{x:60,y:155,sz:11}] },
+  { r: 7,  cat: 'Младший начальствующий состав',    base: 'Старший прапорщик',  stripes: 0, bars: [],             stars: [{x:60,y:225,sz:11},{x:60,y:180,sz:11},{x:60,y:135,sz:11}] },
+  { r: 8,  cat: 'Средний начальствующий состав',    base: 'Младший лейтенант',  stripes: 1, bars: [],             stars: [{x:60,y:185,sz:11}] },
+  { r: 9,  cat: 'Средний начальствующий состав',    base: 'Лейтенант',          stripes: 1, bars: [],             stars: [{x:38,y:215,sz:11},{x:82,y:215,sz:11}] },
+  { r: 10, cat: 'Средний начальствующий состав',    base: 'Старший лейтенант',  stripes: 1, bars: [],             stars: [{x:38,y:225,sz:11},{x:82,y:225,sz:11},{x:60,y:170,sz:11}] },
+  { r: 11, cat: 'Средний начальствующий состав',    base: 'Капитан',            stripes: 1, bars: [],             stars: [{x:38,y:230,sz:11},{x:82,y:230,sz:11},{x:60,y:182,sz:11},{x:60,y:136,sz:11}] },
+  { r: 12, cat: 'Старший начальствующий состав',    base: 'Майор',              stripes: 2, bars: [],             stars: [{x:60,y:190,sz:16}] },
+  { r: 13, cat: 'Старший начальствующий состав',    base: 'Подполковник',       stripes: 2, bars: [],             stars: [{x:37,y:215,sz:16},{x:83,y:215,sz:16}] },
+  { r: 14, cat: 'Старший начальствующий состав',    base: 'Полковник',          stripes: 2, bars: [],             stars: [{x:37,y:225,sz:16},{x:83,y:225,sz:16},{x:60,y:160,sz:16}] },
+  { r: 15, cat: 'Высший начальствующий состав',     base: 'Генерал-майор',      stripes: 0, bars: [],             stars: [{x:60,y:190,sz:20}], isGen: true },
+  { r: 16, cat: 'Высший начальствующий состав',     base: 'Генерал-лейтенант',  stripes: 0, bars: [],             stars: [{x:60,y:225,sz:20},{x:60,y:155,sz:20}], isGen: true },
+  { r: 17, cat: 'Высший начальствующий состав',     base: 'Генерал-полковник',  stripes: 0, bars: [],             stars: [{x:60,y:238,sz:20},{x:60,y:184,sz:20},{x:60,y:130,sz:20}], isGen: true },
+  { r: 18, cat: 'Высший начальствующий состав',     base: 'Генерал',            stripes: 0, bars: [],             stars: [{x:60,y:205,sz:26,wreath:true}], isGen: true, isTopGen: true }
+];
+
+function fullRankName(d) {
+  if (d.r === 18) return BRANCH === 'police' ? 'Генерал полиции Российской Федерации' : 'Генерал юстиции Российской Федерации';
+  return d.base + (BRANCH === 'police' ? ' полиции' : ' юстиции');
+}
+
+function starPolygonPoints(cx, cy, rOut) {
+  var rIn = rOut * 0.42;
+  var pts = [];
+  for (var i = 0; i < 10; i++) {
+    var rad = (i * 36 - 90) * Math.PI / 180;
+    var r = (i % 2 === 0) ? rOut : rIn;
+    pts.push((cx + r * Math.cos(rad)).toFixed(1) + ',' + (cy + r * Math.sin(rad)).toFixed(1));
+  }
+  return pts.join(' ');
+}
+
+function buildEpauletteSvg(d) {
+  var trimCol = (BRANCH === 'police') ? '#dc2626' : '#2563eb';
+  var stripeCol = (BRANCH === 'police') ? '#ef4444' : '#3b82f6';
+  var bodyFill = d.isGen ? 'url(#genWave)' : 'url(#clothGrad)';
+
+  var svg = '<svg viewBox="0 0 120 300" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs>' +
+      '<linearGradient id="clothGrad" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#172336"/>' +
+        '<stop offset="50%" stop-color="#111a29"/>' +
+        '<stop offset="100%" stop-color="#0b121e"/>' +
+      '</linearGradient>' +
+      '<pattern id="genWave" width="12" height="12" patternUnits="userSpaceOnUse">' +
+        '<rect width="12" height="12" fill="#142033"/>' +
+        '<path d="M0 6 Q3 2 6 6 T12 6" fill="none" stroke="#1e304c" stroke-width="2"/>' +
+      '</pattern>' +
+      '<linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#fef08a"/>' +
+        '<stop offset="50%" stop-color="#eab308"/>' +
+        '<stop offset="100%" stop-color="#a16207"/>' +
+      '</linearGradient>' +
+    '</defs>';
+
+  /* Внешний кант погона (красный у Полиции / васильково-синий у Юстиции) */
+  svg += '<path d="M12 288 L16 48 L36 14 L84 14 L104 48 L108 288 Z" fill="' + trimCol + '"/>';
+  /* Основное поле погона (тёмно-синее сукно МВД) */
+  svg += '<path d="M17 284 L21 50 L39 19 L81 19 L99 50 L103 284 Z" fill="' + bodyFill + '" stroke="rgba(255,255,255,.08)" stroke-width="1"/>';
+
+  /* Продольные просветы (1 для мл. лейтенанта — капитана, 2 для майора — полковника) */
+  if (d.stripes === 1) {
+    svg += '<rect x="57.5" y="54" width="5" height="230" fill="' + stripeCol + '" opacity="0.95"/>';
+  } else if (d.stripes === 2) {
+    svg += '<rect x="35.5" y="54" width="5" height="230" fill="' + stripeCol + '" opacity="0.95"/>';
+    svg += '<rect x="79.5" y="54" width="5" height="230" fill="' + stripeCol + '" opacity="0.95"/>';
+  }
+
+  /* Сержантские и старшинские золотистые лычки */
+  if (d.bars.length) {
+    if (d.bars[0] === 'vertical') {
+      svg += '<rect x="52" y="62" width="16" height="222" fill="url(#goldGrad)" stroke="#713f12" stroke-width="1"/>';
+    } else if (d.bars[0] === 'wide') {
+      svg += '<rect x="19" y="195" width="82" height="22" fill="url(#goldGrad)" stroke="#713f12" stroke-width="1"/>';
+    } else {
+      d.bars.forEach(function(_, ix) {
+        var y = 225 - ix * 16;
+        svg += '<rect x="19" y="' + y + '" width="82" height="9" fill="url(#goldGrad)" stroke="#713f12" stroke-width="0.8"/>';
+      });
+    }
+  }
+
+  /* Золотая форменная пуговица сверху */
+  svg += '<circle cx="60" cy="36" r="10.5" fill="url(#goldGrad)" stroke="#78350f" stroke-width="1.5"/>';
+  svg += '<circle cx="60" cy="36" r="7" fill="none" stroke="#92400e" stroke-width="0.8"/>';
+
+  /* Эмблема/венок для Генерала полиции / юстиции (18 ранг) */
+  if (d.isTopGen) {
+    svg += '<circle cx="60" cy="112" r="19" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="5 2"/>';
+    svg += '<circle cx="60" cy="112" r="11" fill="url(#goldGrad)"/>';
+  }
+
+  /* Звёзды с гранёным блеском */
+  d.stars.forEach(function(st) {
+    if (st.wreath) {
+      svg += '<circle cx="' + st.x + '" cy="' + st.y + '" r="' + (st.sz + 7) + '" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="6 2"/>';
+    }
+    var pts = starPolygonPoints(st.x, st.y, st.sz);
+    svg += '<polygon points="' + pts + '" fill="url(#goldGrad)" stroke="#78350f" stroke-width="1.2"/>';
+    svg += '<circle cx="' + st.x + '" cy="' + st.y + '" r="2" fill="#fef9c3"/>';
+  });
+
+  svg += '</svg>';
+  return svg;
+}
+
+window.setBranch = function(b) {
+  BRANCH = b;
+  document.getElementById('btnPolice').classList.toggle('on', b === 'police');
+  document.getElementById('btnJustice').classList.toggle('on', b === 'justice');
+  renderStage();
+};
+
+window.selectRank = function(r) {
+  CUR_RANK = r;
+  renderStage();
+};
+
+window.stepRank = function(dir) {
+  var next = CUR_RANK + dir;
+  if (next < 1) next = 18;
+  if (next > 18) next = 1;
+  CUR_RANK = next;
+  renderStage();
+};
+
+function renderStage() {
+  var d = RANKS_DATA[CUR_RANK - 1];
+  var oneSvg = buildEpauletteSvg(d);
+  document.getElementById('pairBox').innerHTML = oneSvg + oneSvg;
+  document.getElementById('uiRankTitle').textContent = fullRankName(d);
+  document.getElementById('uiRankCat').textContent = d.cat + ' · ' + d.r + ' ранг';
+
+  var colorDesc = (BRANCH === 'police') ? 'Красный (Алый) — Полиция' : 'Синий (Васильковый) — Юстиция';
+  var stripeDesc = d.isGen ? 'Фигурное генеральское шитьё' : (d.stripes === 0 ? 'Без просветов' : (d.stripes === 1 ? '1 продольный просвет' : '2 продольных просвета'));
+  var starDesc = d.stars.length ? (d.stars.length + ' шт. (' + (d.isGen ? '22 мм' : (d.stripes === 2 ? '20 мм' : '13 мм')) + ')') : (d.bars.length ? 'Золотистые лычки' : 'Чистое поле');
+
+  document.getElementById('uiSpecs').innerHTML =
+    '<div><span>Род внутренней службы:</span><b>' + (BRANCH === 'police' ? 'Полиция (УМВД / ОГИБДД)' : 'Юстиция (Следствие)') + '</b></div>' +
+    '<div><span>Цвет канта и просветов:</span><b style="color:' + (BRANCH === 'police' ? '#f87171' : '#60a5fa') + '">' + colorDesc + '</b></div>' +
+    '<div><span>Просветы на поле погона:</span><b>' + stripeDesc + '</b></div>' +
+    '<div><span>Звёзды / нашивки:</span><b>' + starDesc + '</b></div>';
+
+  var cats = ['Рядовой состав', 'Младший начальствующий состав', 'Средний начальствующий состав', 'Старший начальствующий состав', 'Высший начальствующий состав'];
+  var html = '';
+  cats.forEach(function(cName) {
+    html += '<div class="cat-hdr">' + cName + '</div><div class="ranks-grid">';
+    RANKS_DATA.filter(function(x) { return x.cat === cName; }).forEach(function(item) {
+      var on = (item.r === CUR_RANK);
+      html += '<div class="r-card' + (on ? ' on' : '') + '" onclick="selectRank(' + item.r + ')">' +
+        '<div class="r-num">' + item.r + '</div>' +
+        '<div class="r-nm">' + fullRankName(item) + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('ranksCatalog').innerHTML = html;
+}
+
+renderStage();
+</script>
+</body>
+</html>
