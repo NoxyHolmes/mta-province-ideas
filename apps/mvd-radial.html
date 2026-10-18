@@ -47,7 +47,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   position:fixed;
   top:14px;
   left:18px;
-  width:620px;
+  width:640px;
   max-width:calc(100vw - 36px);
   z-index:500;
   pointer-events:none;
@@ -61,16 +61,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:9px 13px;
   box-shadow:0 12px 32px rgba(0,0,0,.55);
   pointer-events:auto;
-  max-height:175px;
+  max-height:185px;
   overflow-y:auto;
 }
 .chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:5px}
 .chat-line{font-size:12px;line-height:1.48;margin-bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
 .chat-line.me{color:#e879f9;font-weight:600}
-.chat-line.mega{color:#fde047;font-weight:800}
+.chat-line.mega-yellow{color:#fde047;font-weight:800}
+.chat-line.mega-red{color:#ff5c5c;font-weight:900}
+.chat-line.mega-cyan{color:#38bdf8;font-weight:900}
 .chat-line.err{color:#f87171;font-weight:700}
 
-/* Пункт 8: Убран крестик возле кнопки Сброс */
 #demoTopCtl{
   position:fixed;
   top:14px;
@@ -173,6 +174,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   fill:rgba(217,119,6,.92);
   stroke:#fef08a;
 }
+.r-sub-sector.stop-sec{
+  fill:rgba(127,29,29,.95);
+  stroke:#f87171;
+}
+.r-sub-sector.stop-sec:hover{
+  fill:#dc2626;
+  stroke:#fff;
+}
 
 .radial-center{
   position:relative;
@@ -199,7 +208,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .r-lbl .ic{font-size:16px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))}
 .r-lbl .nm{font-size:9.5px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.12}
 
-/* Модальные окна выбора (Посадка, Тонировка, Мегафон, Преследование 100м) */
 .act-modal-back{
   position:fixed;
   inset:0;
@@ -212,7 +220,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:16px;
 }
 .act-modal{
-  width:540px;
+  width:560px;
   max-width:96vw;
   background:#161b24;
   border:1px solid rgba(255,255,255,.14);
@@ -239,7 +247,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 }
 .act-opt:hover{border-color:#60a5fa;background:#263145}
 .act-opt b{font-size:13px;color:#fff;display:block}
-.act-opt span{font-size:11.5px;color:#94a3b8;line-height:1.4;display:block;margin-top:2px}
+.act-opt span{font-size:11.5px;color:#94a3b8;line-height:1.45;display:block;margin-top:3px}
 
 /* ================= СЛУЖЕБНОЕ УДОСТОВЕРЕНИЕ МВД РФ ================= */
 #idCardModal{
@@ -531,7 +539,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   </div>
 </div>
 
-<!-- Пункт 8: Оставлена только кнопка Сброс без крестика -->
 <div id="demoTopCtl">
   <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
 </div>
@@ -555,12 +562,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   </div>
 </div>
 
-<!-- Универсальное модальное окно для Посадки, Замера/Снятия тонировки, Мегафона и Преследования (100 м) -->
 <div class="act-modal-back" id="actModalBack" onclick="if(event.target===this)closeActModal()">
   <div class="act-modal" id="actModalBox"></div>
 </div>
 
-<!-- Реалистичное служебное удостоверение УМВД по Республике Провинция г. Приволжск -->
 <div id="idCardModal" onclick="if(event.target===this)closeIdCard()">
   <div class="mvd-id-wallet">
     <div class="id-page">
@@ -743,7 +748,6 @@ var SVG_ICONS = {
   sil_hands: '<svg viewBox="0 0 64 64" opacity=".2"><path d="M16 26c0-5 10-5 10 0v14H16zm22 0c0-5 10-5 10 0v14H38z" fill="#9ca3af"/></svg>'
 };
 
-/* Пункт 11: В отыгровках убрано упоминание звания — только имя и фамилия */
 var OFFICER_NAME = 'Евгений Холмс';
 var SUSPECT_NAME = 'Sergey_Vorovskoy';
 var TRUNK_OPEN = true;
@@ -753,28 +757,29 @@ var FAC_ARC_OPEN = false;
 var CUFFED = false;
 var ATTACHED_ENV = false;
 var IN_CAR_SUSPECTS = [];
+var ACTIVE_PURSUIT = null;
 
 var CUFFED_CANDIDATES = [
   { name: 'Sergey_Vorovskoy', id: 142, status: 'В наручниках' },
   { name: 'Maksim_Saraev',    id: 289, status: 'В наручниках' }
 ];
 
-/* Пункт 10: 5 заготовленных фраз мегафона */
+/* Пункт 5: 5 фраз мегафона с разделением цветов (1,2 — жёлтый; 4 — красный; 3,5 — ярко-бирюзовый) */
 var MEGAPHONE_PHRASES = [
-  'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!',
-  'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!',
-  'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!',
-  'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!',
-  'Граждане, соблюдайте спокойствие и освободите проезжую часть!'
+  { txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!', cls: 'mega-yellow', col: '#fde047' },
+  { txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!', cls: 'mega-yellow', col: '#fde047' },
+  { txt: 'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!', cls: 'mega-cyan', col: '#38bdf8' },
+  { txt: 'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!', cls: 'mega-red', col: '#ff5c5c' },
+  { txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!', cls: 'mega-cyan', col: '#38bdf8' }
 ];
 
-/* Пункт 17: Игроки в радиусе 100 метров для преследования */
+/* Пункты 2 и 4: Игроки в радиусе 100 метров с #UID [ID] и разделением пунктов авто / марки */
 var NEARBY_PLAYERS = [
-  { uid: '#У173ТТ4', inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Водитель',  dist: 18 },
-  { uid: '#К904МВ2', inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Пассажир',  dist: 18 },
-  { uid: '#А418ОР7', inCar: true,  make: 'Toyota Camry XV70', plate: 'Без номеров',role: 'Водитель',  dist: 46 },
-  { uid: '#С821НТ5', inCar: false, make: null,                plate: null,         role: 'Пешеход',   dist: 64 },
-  { uid: '#В309ХК1', inCar: true,  make: 'Lada Priora',       plate: 'Е824РС 52',  role: 'Водитель',  dist: 92 }
+  { uid: '#У173ТТ4', id: 36, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Водитель',  dist: 18 },
+  { uid: '#К904МВ2', id: 21, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Пассажир',  dist: 18 },
+  { uid: '#А418ОР7', id: 84, inCar: true,  make: 'Toyota Camry XV70', plate: 'Без номеров',role: 'Водитель',  dist: 46 },
+  { uid: '#С821НТ5', id: 19, inCar: false, make: null,                plate: null,         role: 'Пешеход',   dist: 64 },
+  { uid: '#В309ХК1', id: 52, inCar: true,  make: 'Lada Priora',       plate: 'Е824РС 52',  role: 'Водитель',  dist: 92 }
 ];
 
 var ROOT_SECTORS = [
@@ -849,7 +854,8 @@ function renderRadialMenu() {
       { id: 'measure_tint', ic: '📟', name: 'Замер тонировки' },
       { id: 'remove_tint',  ic: '🪟', name: 'Снять тонировку' },
       { id: 'megaphone',    ic: '📢', name: 'Мегафон' },
-      { id: 'pursuit',      ic: '🎯', name: 'Преследование (100м)' }
+      /* Пункт 1 и 3: Кнопка называется «Преследование», а после начала погони — «Прекратить» */
+      { id: 'pursuit',      ic: ACTIVE_PURSUIT ? '🛑' : '🎯', name: ACTIVE_PURSUIT ? 'Прекратить' : 'Преследование', isStop: !!ACTIVE_PURSUIT }
     );
 
     var arcStart = -132, arcSpan = 264;
@@ -860,7 +866,8 @@ function renderRadialMenu() {
       var sa2 = arcStart + (s + 1) * subStep - 1.0;
       var sp = document.createElementNS(ns, 'path');
       sp.setAttribute('d', sectorPath(cx, cy, 180, 272, sa1, sa2));
-      sp.setAttribute('class', 'r-sub-sector' + (sub.isAttach ? ' attach-sec' : ''));
+      var cls = 'r-sub-sector' + (sub.isAttach ? ' attach-sec' : '') + (sub.isStop ? ' stop-sec' : '');
+      sp.setAttribute('class', cls);
       sp.addEventListener('click', function() { doFacAction(sub.id); });
       svg.appendChild(sp);
 
@@ -876,7 +883,7 @@ function renderRadialMenu() {
   }
 
   document.getElementById('rcTitle').textContent = FAC_ARC_OPEN ? 'Фракционное' : 'Взаимодействие';
-  document.getElementById('rcSub').textContent = FAC_ARC_OPEN ? 'Выберите действие сверху' : 'Нажмите «Фракционное»';
+  document.getElementById('rcSub').textContent = FAC_ARC_OPEN ? (ACTIVE_PURSUIT ? ('Погоня: ' + ACTIVE_PURSUIT.uid + ' [' + ACTIVE_PURSUIT.id + ']') : 'Выберите действие сверху') : 'Нажмите «Фракционное»';
 }
 
 function toggleFacArc(force) {
@@ -901,7 +908,6 @@ window.doFacAction = function(act) {
     renderRadialMenu();
     return;
   }
-  /* Пункт 4: Отыгровка с указанием правой руки */
   if (act === 'attach_env') {
     ATTACHED_ENV = !ATTACHED_ENV;
     renderRadialMenu();
@@ -937,12 +943,16 @@ window.doFacAction = function(act) {
     openMegaphoneModal();
     return;
   }
+  /* Пункт 3: Если преследование уже активно — клик по кнопке «Прекратить» останавливает погоню */
   if (act === 'pursuit') {
-    openPursuitModal();
+    if (ACTIVE_PURSUIT) {
+      stopActivePursuit();
+    } else {
+      openPursuitModal();
+    }
   }
 };
 
-/* Пункт 6: Посадка / Высадка задержанного БЕЗ жёлтых системных сообщений */
 function openCarDetaineeModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
@@ -990,7 +1000,6 @@ window.takeDetaineeFromCar = function(idx) {
   addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, отстегнул ремень безопасности, вытащил ' + c.name + ' из салона и закрыл дверь');
 };
 
-/* Пункт 7 и 9: Замер тонировки (только если взят функциональный замерщик) */
 window.toggleTintMeter = function() {
   HAS_TINT_METER = !HAS_TINT_METER;
   var b = document.getElementById('btnTintMeter');
@@ -1055,17 +1064,17 @@ window.removeTintGlass = function(actionName) {
   addChat('me', '* ' + OFFICER_NAME + ' поддел край плёнки и снял тонировку ' + glassPart);
 };
 
-/* Пункт 10: Модальное окно с 5 заготовленными фразами Мегафона */
+/* Пункт 5: Мегафон — сначала отыгровка нажатия кнопки, а вторым текстом цветной мегафон */
 function openMegaphoneModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
   box.innerHTML =
     '<div class="act-m-title">📢 Служебный мегафон (5 быстрых фраз)</div>' +
-    '<div class="act-m-sub">Выберите заготовленное требование для передачи через громкоговоритель патрульного авто:</div>' +
+    '<div class="act-m-sub">Выберите требование (сначала отыгрывается нажатие кнопки, затем выводится цветной текст мегафона):</div>' +
     MEGAPHONE_PHRASES.map(function(phr, idx) {
       return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
-        '<div><b>Фраза №' + (idx + 1) + '</b><span>«' + phr + '»</span></div>' +
-        '<span style="color:#fde047;font-weight:800;font-size:12px">Сказать →</span>' +
+        '<div><b>Фраза №' + (idx + 1) + '</b><span style="color:' + phr.col + '">«' + phr.txt + '»</span></div>' +
+        '<span style="color:' + phr.col + ';font-weight:800;font-size:12px">Сказать →</span>' +
       '</div>';
     }).join('') +
     '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
@@ -1076,30 +1085,35 @@ window.useMegaphonePhrase = function(idx) {
   var phr = MEGAPHONE_PHRASES[idx];
   if (!phr) return;
   closeActModal();
-  addChat('mega', '[Мегафон] ' + OFFICER_NAME + ' зажал кнопку мегафона и сказал в него: ' + phr);
+  addChat('me', '* ' + OFFICER_NAME + ' зажал кнопку мегафона и сказал в него:');
+  addChat(phr.cls, '[Мегафон] ' + OFFICER_NAME + ': ' + phr.txt);
 };
 
-/* Пункт 17: Список игроков в пределах 100 метров для начала преследования */
+/* Пункты 2, 3 и 4: Преследование с #UID [ID], раздельными пунктами 2 (В авто) и 3 (Марка авто), без «(Пешком)» во 2 пункте */
 function openPursuitModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
   box.innerHTML =
-    '<div class="act-m-title">🎯 Игроки в радиусе 100 метров (Преследование)</div>' +
-    '<div class="act-m-sub">Нажмите на игрока, чтобы начать за ним активное преследование (при выходе из игры даётся 5 минут на перезаход, иначе деморган на 6 часов):</div>' +
+    '<div class="act-m-title">🎯 Преследование (Игроки в радиусе 100 метров)</div>' +
+    '<div class="act-m-sub">Нажмите на игрока, чтобы начать преследование:</div>' +
     NEARBY_PLAYERS.map(function(p, idx) {
       var details = [];
-      details.push('1. UID: <b style="color:#fff;display:inline">' + p.uid + '</b>');
-      details.push('2. Транспорт: <b style="color:#93c5fd;display:inline">' + (p.inCar ? ('В авто (' + p.make + ')') : 'Нет (Пешком)') + '</b>');
-      /* Пункт 17.3: Если игрок не в авто — пункта про номер быть не должно! */
+      details.push('1. Игрок: <b style="color:#fff;display:inline">' + p.uid + ' [' + p.id + ']</b>');
       if (p.inCar) {
-        details.push('3. Гос. номер: <b style="color:#fcd34d;display:inline">' + p.plate + '</b>');
+        details.push('2. В транспорте: <b style="color:#93c5fd;display:inline">В авто</b>');
+        details.push('3. Марка авто: <b style="color:#fff;display:inline">' + p.make + '</b>');
+        details.push('4. Гос. номер: <b style="color:#fcd34d;display:inline">' + p.plate + '</b>');
+        details.push('5. Статус: <b style="color:#fff;display:inline">' + p.role + '</b>');
+        details.push('6. Дистанция: <b style="color:#34d399;display:inline">' + p.dist + ' м</b>');
+      } else {
+        details.push('2. В транспорте: <b style="color:#94a3b8;display:inline">Нет</b>');
+        details.push('3. Статус: <b style="color:#fff;display:inline">' + p.role + '</b>');
+        details.push('4. Дистанция: <b style="color:#34d399;display:inline">' + p.dist + ' м</b>');
       }
-      details.push((p.inCar ? '4.' : '3.') + ' Статус: <b style="color:#fff;display:inline">' + p.role + '</b>');
-      details.push((p.inCar ? '5.' : '4.') + ' Дистанция: <b style="color:#34d399;display:inline">' + p.dist + ' м</b>');
 
       return '<div class="act-opt" onclick="startPursuitOnPlayer(' + idx + ')">' +
-        '<div><b>Игрок ' + p.uid + ' (' + p.role + ' · ' + p.dist + ' м)</b><span>' + details.join(' · ') + '</span></div>' +
-        '<span style="color:#f87171;font-weight:800;font-size:12px;white-space:nowrap">Преследовать →</span>' +
+        '<div><b>' + p.uid + ' [' + p.id + ']</b><span>' + details.join(' · ') + '</span></div>' +
+        '<span style="color:#f87171;font-weight:800;font-size:12px;white-space:nowrap">Начать →</span>' +
       '</div>';
     }).join('') +
     '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
@@ -1109,8 +1123,18 @@ function openPursuitModal() {
 window.startPursuitOnPlayer = function(idx) {
   var p = NEARBY_PLAYERS[idx];
   if (!p) return;
+  ACTIVE_PURSUIT = p;
   closeActModal();
-  addChat('me', '[Преследование] * ' + OFFICER_NAME + ' начал активное преследование за игроком ' + p.uid + ' (' + (p.inCar ? (p.make + ', ' + p.plate + ', ' + p.role) : p.role) + ', дистанция: ' + p.dist + ' м)');
+  renderRadialMenu();
+  addChat('me', '[Преследование] * ' + OFFICER_NAME + ' начал преследование за игроком ' + p.uid + ' [' + p.id + '] (' + (p.inCar ? ('В авто, ' + p.make + ', ' + p.plate + ', ' + p.role) : ('Транспорт: Нет, ' + p.role)) + ', дистанция: ' + p.dist + ' м)');
+};
+
+window.stopActivePursuit = function() {
+  if (!ACTIVE_PURSUIT) return;
+  var old = ACTIVE_PURSUIT;
+  ACTIVE_PURSUIT = null;
+  renderRadialMenu();
+  addChat('me', '[Преследование] * ' + OFFICER_NAME + ' прекратил преследование за игроком ' + old.uid + ' [' + old.id + ']');
 };
 
 window.closeActModal = function() {
@@ -1187,7 +1211,9 @@ function resetDemo() {
   BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
   TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
   SEIZED_BUFFER = [];
+  ACTIVE_PURSUIT = null;
   closePopover();
+  renderRadialMenu();
   renderInventoryGrids();
 }
 
@@ -1248,7 +1274,6 @@ window.onSlotClick = function(ev, source, slotIdx) {
   pop.style.top = Math.min(window.innerHeight - 220, rect.top + 16) + 'px';
 };
 
-/* Пункт 5: Убрано жёлтое упоминание об обыске и камере вещдоков — префикс [Обыск] и [Камера вещдоков] идёт прямо перед самой отыгровкой */
 window.seizeActiveItem = function() {
   if (!activePopItem || !activePopItem.item) return;
   var src = activePopItem.source, sl = activePopItem.slot, it = activePopItem.item;
