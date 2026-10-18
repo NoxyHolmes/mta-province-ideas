@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>МВД · Радиальное меню, обыск игрока и багажника</title>
+<title>МВД · Фракционное радиальное меню</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
 :root{
@@ -20,7 +20,6 @@
 }
 html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:13px}
 
-/* Игровая сцена */
 #gameScene{
   position:relative;
   width:100%;
@@ -44,7 +43,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   pointer-events:none;
 }
 
-/* Чат с РП-отыгровками и логом изъятия */
 #rpChat{
   position:fixed;
   top:14px;
@@ -63,17 +61,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:9px 13px;
   box-shadow:0 12px 32px rgba(0,0,0,.55);
   pointer-events:auto;
-  max-height:155px;
+  max-height:150px;
   overflow-y:auto;
 }
 .chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:5px}
 .chat-line{font-size:12px;line-height:1.45;margin-bottom:3px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
 .chat-line.me{color:#e879f9;font-weight:600}
-.chat-line.do{color:#c084fc;font-style:italic}
 .chat-line.sys{color:#fbbf24;font-weight:800;background:rgba(245,158,11,.12);border-left:2px solid #f59e0b;padding:2px 7px;border-radius:4px}
-.chat-line.info{color:#93c5fd}
 .chat-line.err{color:#f87171;font-weight:700}
 
+/* Пункт 15: Сверху оставлены только кнопка Сброс и крестик для выхода */
 #demoTopCtl{
   position:fixed;
   top:14px;
@@ -81,58 +78,61 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   z-index:520;
   display:flex;
   gap:8px;
-  flex-wrap:wrap;
+  align-items:center;
 }
 .d-btn{
   background:rgba(22,25,32,.92);
   border:1px solid rgba(255,255,255,.14);
   color:#fff;
-  padding:7px 13px;
-  border-radius:8px;
+  padding:8px 14px;
+  border-radius:10px;
   font-weight:800;
-  font-size:11.5px;
+  font-size:12px;
   cursor:pointer;
   transition:.18s;
 }
 .d-btn:hover{border-color:var(--acc)}
-.d-btn.active{background:#2563eb;border-color:#93c5fd}
-.d-btn.trunk-open{border-color:#10b981;color:#6ee7b7}
-.d-btn.trunk-closed{border-color:#ef4444;color:#fca5a5}
+.d-btn.close-x{
+  width:36px;
+  height:36px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(239,68,68,.18);
+  border-color:rgba(239,68,68,.45);
+  color:#fca5a5;
+  font-size:15px;
+}
+.d-btn.close-x:hover{background:#ef4444;color:#fff}
 
-/* Подсказка клавиши E возле открытого багажника */
 #trunkKeyHint{
   position:fixed;
-  bottom:34px;
+  bottom:28px;
   left:50%;
   transform:translateX(-50%);
   z-index:250;
   background:rgba(15,20,28,.92);
-  border:1px solid rgba(255,255,255,.16);
-  padding:10px 18px;
+  border:1px solid rgba(255,255,255,.14);
+  padding:9px 16px;
   border-radius:12px;
   display:flex;
   align-items:center;
   gap:10px;
   font-weight:700;
-  font-size:13px;
+  font-size:12.5px;
   box-shadow:0 14px 35px rgba(0,0,0,.65);
   cursor:pointer;
 }
-#trunkKeyHint kbd{
-  background:#2563eb;
-  color:#fff;
-  padding:3px 9px;
-  border-radius:6px;
-  font-weight:900;
-  font-family:inherit;
-  box-shadow:0 0 12px rgba(37,99,235,.6);
-}
+#trunkKeyHint kbd{background:#2563eb;color:#fff;padding:2px 8px;border-radius:5px;font-weight:900;font-family:inherit}
+.trunk-toggle{margin-left:8px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:1px solid #10b981;background:rgba(16,185,129,.15);color:#6ee7b7}
+.trunk-toggle.closed{border-color:#ef4444;background:rgba(239,68,68,.15);color:#fca5a5}
 
-/* Радиальное меню */
+/* Радиальное меню с внешним полукругом из 4 кнопок над ячейкой «Фракционное» */
 #radialWrap{
   position:relative;
-  width:420px;
-  height:420px;
+  width:560px;
+  height:560px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -141,12 +141,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .radial-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 22px 50px rgba(0,0,0,.75))}
 .r-sector{fill:rgba(20,23,28,.88);stroke:rgba(255,255,255,.08);stroke-width:1.5;cursor:pointer;transition:fill .18s}
 .r-sector:hover{fill:rgba(45,52,66,.95);stroke:rgba(96,165,250,.55)}
-.r-sector.fac-sec{fill:rgba(30,41,68,.92);stroke:rgba(96,165,250,.45)}
-.r-sector.fac-sec:hover{fill:rgba(37,99,235,.85);stroke:#93c5fd}
+.r-sector.fac-sec{fill:rgba(30,41,68,.92);stroke:rgba(96,165,250,.5)}
+.r-sector.fac-sec:hover,.r-sector.fac-sec.active{fill:rgba(37,99,235,.88);stroke:#93c5fd}
+
+/* Полукруг подменю (4 сектора дугой сверху над ячейкой «Фракционное») */
+.r-sub-sector{
+  fill:rgba(24,34,56,.95);
+  stroke:rgba(96,165,250,.5);
+  stroke-width:1.5;
+  cursor:pointer;
+  transition:fill .18s,transform .18s;
+}
+.r-sub-sector:hover{
+  fill:rgba(37,99,235,.92);
+  stroke:#ffffff;
+}
+
 .radial-center{
   position:absolute;
-  width:156px;
-  height:156px;
+  width:146px;
+  height:146px;
   border-radius:50%;
   background:radial-gradient(circle,#1c2026 0%,#121519 100%);
   border:2px solid rgba(148,163,184,.28);
@@ -159,48 +173,155 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:14px;
   cursor:pointer;
 }
-.rc-ic{font-size:26px;margin-bottom:4px}
-.rc-title{font-weight:800;font-size:13px;color:#fff}
-.rc-sub{font-size:10.5px;color:var(--mut);margin-top:4px}
+.rc-ic{font-size:25px;margin-bottom:4px}
+.rc-title{font-weight:800;font-size:12.5px;color:#fff}
+.rc-sub{font-size:10px;color:var(--mut);margin-top:3px}
 .r-labels{position:absolute;inset:0;pointer-events:none}
-.r-lbl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;width:95px}
-.r-lbl .ic{font-size:22px}
-.r-lbl .nm{font-size:11px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.9)}
+.r-lbl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;width:96px}
+.r-lbl .ic{font-size:20px}
+.r-lbl .nm{font-size:10.5px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.15}
 
-/* Всплывающие поверх окна функций при нажатии на «Фракционное» */
-#facSubWindows{
-  position:absolute;
-  inset:-35px;
-  pointer-events:none;
+/* ================= РЕАЛИСТИЧНОЕ СЛУЖЕБНОЕ УДОСТОВЕРЕНИЕ МВД РФ (Пункт 4) ================= */
+#idCardModal{
+  position:fixed;
+  inset:0;
+  z-index:600;
+  background:rgba(5,7,11,.82);
+  backdrop-filter:blur(10px);
   display:none;
-  z-index:140;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+  padding:20px;
+  animation:fadeIn .2s;
 }
-#facSubWindows.open{display:block}
-.fac-win-card{
+@keyframes fadeIn{from{opacity:0}}
+.mvd-id-wallet{
+  width:720px;
+  max-width:96vw;
+  background:linear-gradient(145deg,#5a121b,#3b0a10 50%,#4d0f17);
+  border:3px solid #781d27;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 35px 90px rgba(0,0,0,.85),inset 0 2px 4px rgba(255,255,255,.15);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  position:relative;
+}
+.mvd-id-wallet::after{
+  content:'';
   position:absolute;
-  pointer-events:auto;
-  width:190px;
-  background:linear-gradient(155deg,rgba(24,30,42,.96),rgba(15,19,28,.98));
-  backdrop-filter:blur(14px);
-  border:1px solid rgba(96,165,250,.45);
-  border-radius:14px;
-  padding:12px 14px;
-  box-shadow:0 18px 42px rgba(0,0,0,.75);
-  cursor:pointer;
-  transition:transform .18s,border-color .18s,background .18s;
-  animation:popW .2s ease;
+  top:10px;
+  bottom:10px;
+  left:50%;
+  width:4px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(255,255,255,.08),rgba(0,0,0,.65));
 }
-@keyframes popW{from{opacity:0;transform:scale(.9)}}
-.fac-win-card:hover{
-  transform:translateY(-3px) scale(1.03);
-  border-color:#60a5fa;
-  background:linear-gradient(155deg,rgba(37,99,235,.32),rgba(20,26,38,.98));
+.id-page{
+  background:
+    radial-gradient(circle at 80% 20%,rgba(59,130,246,.08),transparent 55%),
+    repeating-linear-gradient(45deg,rgba(180,195,215,.06) 0px,rgba(180,195,215,.06) 2px,transparent 2px,transparent 6px),
+    linear-gradient(135deg,#f8fafc,#e2e8f0);
+  border:1px solid #94a3b8;
+  border-radius:10px;
+  padding:16px 18px;
+  color:#0f172a;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 0 18px rgba(15,23,42,.12);
 }
-.fw-top{display:flex;align-items:center;gap:9px;font-weight:800;font-size:13px;color:#fff;margin-bottom:4px}
-.fw-ic{width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,.2);border:1px solid rgba(96,165,250,.4);display:flex;align-items:center;justify-content:center;font-size:16px}
-.fw-sub{font-size:11px;color:#94a3b8;line-height:1.35}
+.id-tri-bar{
+  height:6px;
+  background:linear-gradient(90deg,#ffffff 0%,#ffffff 33%,#1d4ed8 33%,#1d4ed8 66%,#dc2626 66%,#dc2626 100%);
+  border-radius:3px;
+  margin-bottom:10px;
+  border:1px solid rgba(0,0,0,.1);
+}
+.id-min-hdr{text-align:center;font-weight:900;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:#1e293b;line-height:1.3}
+.id-emblem{
+  width:58px;
+  height:58px;
+  margin:12px auto 8px;
+  border-radius:50%;
+  background:radial-gradient(circle,#fef08a,#ca8a04);
+  border:2px solid #854d0e;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+.id-big-code{text-align:center;font-weight:900;font-size:16px;letter-spacing:2px;color:#7f1d1d;margin-top:6px}
+.id-sub-dep{text-align:center;font-weight:800;font-size:11.5px;color:#334155;margin-top:4px}
+.id-valid{text-align:center;font-size:10px;color:#475569;margin-top:14px;font-weight:700}
 
-/* ================= ОКНО ИНВЕНТАРЯ И БАГАЖНИКА (СКРИНШОТ 7) ================= */
+.id-right-top{font-weight:900;font-size:11px;letter-spacing:.6px;color:#7f1d1d;text-transform:uppercase;border-bottom:1.5px solid #cbd5e1;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between}
+.id-body-row{display:flex;gap:14px;align-items:flex-start}
+.id-photo{
+  width:86px;
+  height:112px;
+  border-radius:6px;
+  background:linear-gradient(180deg,#cbd5e1,#94a3b8);
+  border:1.5px solid #475569;
+  flex:0 0 86px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  overflow:hidden;
+  position:relative;
+}
+.id-holo{
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:conic-gradient(from 45deg,#38bdf8,#a78bfa,#34d399,#facc15,#38bdf8);
+  opacity:.75;
+  border:1px solid #fff;
+}
+.id-fields{flex:1;font-size:11.5px;line-height:1.38}
+.id-f-lbl{font-size:9px;text-transform:uppercase;color:#64748b;font-weight:800;letter-spacing:.5px}
+.id-f-val{font-weight:900;font-size:13px;color:#0f172a;margin-bottom:6px}
+.id-stamp{
+  position:absolute;
+  right:14px;
+  bottom:10px;
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:2px dashed rgba(29,78,216,.55);
+  color:rgba(29,78,216,.65);
+  font-size:7.5px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  transform:rotate(-14deg);
+  pointer-events:none;
+}
+/* Кнопка закрытия ВНЕ самого удостоверения (Пункт 4) */
+.id-outside-close{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  border:1px solid #93c5fd;
+  color:#fff;
+  padding:11px 28px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:13.5px;
+  cursor:pointer;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+  transition:.18s;
+}
+.id-outside-close:hover{filter:brightness(1.12);transform:translateY(-1px)}
+
+/* ================= ИНВЕНТАРЬ ИГРОКА И ОТДЕЛЬНЫЙ БАГАЖНИК (Пункты 5, 6, 7) ================= */
 #invOverlay{
   position:fixed;
   inset:0;
@@ -212,21 +333,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   align-items:center;
   padding:42px 32px 20px;
 }
-.inv-container{width:100%;max-width:1280px}
+.inv-container{width:100%;max-width:980px}
+.inv-container.trunk-only{max-width:520px}
 
 .inv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
 .inv-h1{font-size:23px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#fff}
-.inv-player-row{display:flex;align-items:center;gap:120px;margin-top:4px;font-size:15px;color:#8e95a2;font-weight:600}
+.inv-player-row{display:flex;align-items:center;gap:60px;margin-top:4px;font-size:15px;color:#8e95a2;font-weight:600}
 .inv-esc{display:flex;align-items:center;gap:10px;color:#d1d5db;font-size:12.5px;font-weight:600;cursor:pointer}
 .inv-esc kbd{background:#27292e;border:1px solid rgba(255,255,255,.1);padding:5px 10px;border-radius:5px;font-family:inherit;font-weight:800;color:#fff}
 
-.inv-grid-layout{
+/* Режим обыска игрока: только Персонаж + Инвентарь/Рюкзак (без багажника) */
+.inv-grid-player{
   display:grid;
-  grid-template-columns:330px 430px 430px;
+  grid-template-columns:330px 440px;
   justify-content:space-between;
-  gap:26px;
+  gap:32px;
   align-items:start;
 }
+/* Режим обыска багажника: только Багажник автомобиля */
+#trunkOnlyView{display:none;width:100%}
 
 .inv-col-bar{
   height:42px;
@@ -258,7 +383,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .quick-head{font-size:12px;color:#9ca3af;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .quick-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 
-/* Все слоты одинаковые, БЕЗ красной подсветки нелегала */
 .islot{
   aspect-ratio:1/1;
   background:var(--slot);
@@ -285,7 +409,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .weight-bar b{color:#fff}
 
 .handover-box{
-  margin-top:14px;
+  margin-top:16px;
   background:#1c1f26;
   border:1px solid rgba(255,255,255,.08);
   border-radius:8px;
@@ -308,7 +432,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 }
 .handover-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* Тултип предмета (при клике) */
 #itemPopover{
   position:fixed;
   z-index:650;
@@ -335,11 +458,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   font-size:12px;
   cursor:pointer;
 }
-
-@media(max-width:1200px){
-  #invOverlay{overflow-y:auto;justify-content:flex-start}
-  .inv-grid-layout{grid-template-columns:1fr;max-width:450px;margin:0 auto}
-}
 </style>
 </head>
 <body>
@@ -347,72 +465,97 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 <div id="rpChat">
   <div class="chat-box" id="chatBox">
     <div class="chat-hdr">
-      <span>💬 Игровой чат (Отыгровки, обыск и сдача вещдоков дежурному)</span>
+      <span>💬 Игровой чат</span>
       <span style="color:#6ee7b7">● MTA:Province</span>
     </div>
     <div id="chatMessages">
-      <div class="chat-line info">[Подсказка] Нажмите на сектор «🛡️ Фракционное» в радиальном меню, либо нажмите клавишу «E» для осмотра открытого багажника.</div>
+      <div class="chat-line me">* Нажмите на сектор «Фракционное» в круговом меню, чтобы открыть полукруг действий сотрудника МВД.</div>
     </div>
   </div>
 </div>
 
+<!-- Пункт 15: Сверху только Сброс и крестик выхода -->
 <div id="demoTopCtl">
-  <button class="d-btn active" id="btnViewRadial" onclick="switchScene('radial')">🎡 Радиальное меню</button>
-  <button class="d-btn" id="btnViewPlayer" onclick="openSearchMode('player')">👤 Обыск игрока</button>
-  <button class="d-btn" id="btnViewTrunk" onclick="tryOpenTrunkSearch()">🚘 Обыск багажника (E)</button>
-  <button class="d-btn trunk-open" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Багажник: Открыт</button>
   <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
+  <button class="d-btn close-x" onclick="switchScene('radial')" title="Вернуться к радиальному меню">✕</button>
 </div>
 
 <div id="gameScene">
   <div class="road-bg"></div>
 
   <div id="radialWrap">
-    <svg class="radial-svg" viewBox="0 0 400 400" id="radialSvg"></svg>
+    <svg class="radial-svg" viewBox="0 0 560 560" id="radialSvg"></svg>
     <div class="r-labels" id="radialLabels"></div>
-    <div class="radial-center" id="radialCenter" onclick="toggleFacWindows(false)">
+    <div class="radial-center" id="radialCenter" onclick="toggleFacArc(false)">
       <div class="rc-ic" id="rcIcon">🎡</div>
       <div class="rc-title" id="rcTitle">Взаимодействие</div>
       <div class="rc-sub" id="rcSub">Нажмите «Фракционное»</div>
     </div>
-
-    <!-- Всплывающие поверх окна при нажатии на «Фракционное» -->
-    <div id="facSubWindows">
-      <div class="fac-win-card" style="top:-20px;left:-130px" onclick="doFacAction('idcard')">
-        <div class="fw-top"><span class="fw-ic">🪪</span><span>Удостоверение</span></div>
-        <div class="fw-sub">Показать служебное удостоверение гражданину</div>
-      </div>
-      <div class="fac-win-card" style="top:-20px;right:-130px" onclick="doFacAction('cuffs')">
-        <div class="fw-top"><span class="fw-ic">⛓️</span><span>Наручники</span></div>
-        <div class="fw-sub">Надеть или снять наручники с подозреваемого</div>
-      </div>
-      <div class="fac-win-card" style="bottom:-20px;left:-130px" onclick="doFacAction('frisk_player')">
-        <div class="fw-top"><span class="fw-ic">🔍</span><span>Обыск игрока</span></div>
-        <div class="fw-sub">Досмотреть карманы и рюкзак гражданина</div>
-      </div>
-      <div class="fac-win-card" style="bottom:-20px;right:-130px" onclick="doFacAction('frisk_trunk')">
-        <div class="fw-top"><span class="fw-ic">🚘</span><span>Обыск багажника</span></div>
-        <div class="fw-sub">Досмотр грузового отделения авто (если открыт)</div>
-      </div>
-    </div>
   </div>
 
-  <div id="trunkKeyHint" onclick="tryOpenTrunkSearch()">
-    <span>Возле автомобиля · Нажмите</span>
-    <kbd>E</kbd>
-    <span>чтобы осмотреть содержимое багажника</span>
+  <div id="trunkKeyHint">
+    <span onclick="tryOpenTrunkSearch()">Возле автомобиля · Нажмите <kbd>E</kbd> для осмотра багажника</span>
+    <span class="trunk-toggle" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Открыт</span>
   </div>
 </div>
 
-<!-- ИНТЕРФЕЙС ИНВЕНТАРЯ И БАГАЖНИКА (СКРИНШОТ 7) -->
+<!-- Пункт 4: Игровое служебное удостоверение МВД на имя Евгения Холмса + кнопка Закрыть снаружи -->
+<div id="idCardModal" onclick="if(event.target===this)closeIdCard()">
+  <div class="mvd-id-wallet">
+    <!-- Левая страница удостоверения -->
+    <div class="id-page">
+      <div class="id-tri-bar"></div>
+      <div class="id-min-hdr">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ<br>РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+      <div class="id-emblem">🦅</div>
+      <div class="id-big-code">МВД РОССИИ</div>
+      <div class="id-sub-dep">ГЛАВНОЕ УПРАВЛЕНИЕ МВД<br>ПО ПРОВИНЦИИ (УМВД г. Приволжск)</div>
+      <div class="id-valid">Служебное удостоверение является документом,<br>подтверждающим личность и полномочия сотрудника</div>
+    </div>
+    <!-- Правая страница удостоверения -->
+    <div class="id-page">
+      <div class="id-right-top">
+        <span>УДОСТОВЕРЕНИЕ</span>
+        <span>Серия МВ № 748291</span>
+      </div>
+      <div class="id-body-row">
+        <div class="id-photo">
+          <svg viewBox="0 0 80 100" style="width:100%;height:100%">
+            <rect width="80" height="100" fill="#cbd5e1"/>
+            <circle cx="40" cy="34" r="16" fill="#475569"/>
+            <path d="M12 98 C12 66, 68 66, 68 98 Z" fill="#1e3a8a"/>
+            <path d="M26 70 L40 88 L54 70" fill="#ffffff"/>
+            <path d="M38 74 L42 74 L41 92 L39 92 Z" fill="#1e293b"/>
+            <rect x="14" y="68" width="12" height="5" rx="1" fill="#eab308"/>
+            <rect x="54" y="68" width="12" height="5" rx="1" fill="#eab308"/>
+          </svg>
+          <div class="id-holo" title="Голограмма МВД"></div>
+        </div>
+        <div class="id-fields">
+          <div class="id-f-lbl">Фамилия, Имя</div>
+          <div class="id-f-val">ХОЛМС Евгений</div>
+          <div class="id-f-lbl">Специальное звание</div>
+          <div class="id-f-val" style="color:#1e3a8a">Капитан полиции</div>
+          <div class="id-f-lbl">Должность и подразделение</div>
+          <div class="id-f-val" style="font-size:12px">Оперуполномоченный ОУР · УМВД г. Приволжск</div>
+          <div class="id-f-lbl">Личный жетон / UID</div>
+          <div class="id-f-val" style="font-size:11.5px;margin-bottom:0">№ 004-748 · UID K8W4C6</div>
+        </div>
+      </div>
+      <div class="id-stamp">МВД РФ<br>УМВД<br>ПРИВОЛЖСК</div>
+    </div>
+  </div>
+  <button class="id-outside-close" onclick="closeIdCard()">Закрыть удостоверение</button>
+</div>
+
+<!-- ОКНО ОБЫСКА ИГРОКА ИЛИ БАГАЖНИКА АВТОМОБИЛЯ -->
 <div id="invOverlay">
-  <div class="inv-container">
+  <div class="inv-container" id="invContainer">
     <div class="inv-top">
       <div>
-        <div class="inv-h1">ИНВЕНТАРЬ</div>
-        <div class="inv-player-row">
-          <span id="invOwnerName">Evgeniy_Holmes</span>
-          <span id="invOwnerMoney">572 000 ₽</span>
+        <div class="inv-h1" id="invHeaderTitle">ИНВЕНТАРЬ</div>
+        <div class="inv-player-row" id="invHeaderSub">
+          <span>Sergey_Vorovskoy</span>
+          <span>25 110 ₽</span>
         </div>
       </div>
       <div class="inv-esc" onclick="switchScene('radial')">
@@ -421,8 +564,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
       </div>
     </div>
 
-    <div class="inv-grid-layout">
-      <!-- КОЛОНКА 1: ПЕРСОНАЖ -->
+    <!-- РЕЖИМ А: ТОЛЬКО ИНВЕНТАРЬ ИГРОКА (Пункт 5) -->
+    <div class="inv-grid-player" id="playerOnlyView">
       <div>
         <div class="inv-col-bar">
           <div class="bar-left"><span>👤</span><span>Персонаж</span></div>
@@ -438,21 +581,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 
           <div class="char-mid">
             <div class="ring-box">
-              <svg viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="34" fill="#181a20" stroke="#ef4444" stroke-width="5"/>
-              </svg>
+              <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#181a20" stroke="#ef4444" stroke-width="5"/></svg>
               <div class="ring-inner"><span style="color:#ef4444;font-size:18px">❤️</span><span>100%</span></div>
             </div>
             <div class="ring-box">
-              <svg viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="34" fill="#181a20" stroke="#d97706" stroke-width="5"/>
-              </svg>
+              <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#181a20" stroke="#d97706" stroke-width="5"/></svg>
               <div class="ring-inner"><span style="color:#f59e0b;font-size:18px">🍗</span><span>100%</span></div>
             </div>
             <div class="ring-box">
-              <svg viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="34" fill="#181a20" stroke="#2a2d35" stroke-width="5"/>
-              </svg>
+              <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#181a20" stroke="#2a2d35" stroke-width="5"/></svg>
               <div class="ring-inner" style="opacity:.35"><span style="font-size:18px">🦺</span></div>
             </div>
           </div>
@@ -478,14 +615,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
         </div>
       </div>
 
-      <!-- КОЛОНКА 2: ИНВЕНТАРЬ И РЮКЗАК -->
       <div>
         <div class="inv-col-bar">
           <div class="bar-left"><span>📦</span><span>Инвентарь</span></div>
           <div class="bar-tools">
             <button class="bar-tool">↓↑</button>
             <button class="bar-tool">⊞</button>
-            <button class="bar-tool">🗑</button>
           </div>
         </div>
         <div class="inv-slots-5" id="mainInvGrid"></div>
@@ -495,7 +630,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
           <div class="bar-tools">
             <button class="bar-tool">↓↑</button>
             <button class="bar-tool">⊞</button>
-            <button class="bar-tool">🗑</button>
           </div>
         </div>
         <div class="inv-slots-5" id="backpackGrid"></div>
@@ -503,31 +637,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
         <div class="weight-bar">
           <span>Общий вес</span>
           <div class="w-line"></div>
-          <b id="totalWeightTxt">18.92 кг</b>
+          <b id="totalWeightTxt">4.85 кг</b>
         </div>
       </div>
+    </div>
 
-      <!-- КОЛОНКА 3: ГРУЗОВОЕ ОТДЕЛЕНИЕ (БАГАЖНИК) И СДАЧА ВЕЩДОКОВ ДЕЖУРНОМУ -->
+    <!-- РЕЖИМ Б: ТОЛЬКО БАГАЖНИК АВТОМОБИЛЯ (Пункты 6 и 7) -->
+    <div id="trunkOnlyView">
+      <div class="inv-col-bar">
+        <div class="bar-left"><span>🚘</span><span>Багажник автомобиля</span></div>
+        <div class="bar-tools">
+          <button class="bar-tool">↓↑</button>
+          <button class="bar-tool">⊞</button>
+        </div>
+      </div>
+      <div class="inv-slots-5" id="trunkGrid"></div>
+    </div>
+
+    <!-- Общая нижняя панель сдачи изъятых нелегальных предметов дежурному в камеру вещдоков -->
+    <div class="handover-box">
       <div>
-        <div class="inv-col-bar">
-          <div class="bar-left"><span id="rightColIcon">🚘</span><span id="rightColTitle">Грузовое отделение</span></div>
-          <div class="bar-tools">
-            <button class="bar-tool">↓↑</button>
-            <button class="bar-tool">⊞</button>
-            <button class="bar-tool">🗑</button>
-          </div>
-        </div>
-        <div class="inv-slots-5" id="trunkOrSeizedGrid"></div>
-
-        <!-- Панель сдачи изъятых нелегальных предметов дежурному в камеру вещдоков -->
-        <div class="handover-box">
-          <div>
-            <div style="font-weight:800;font-size:12.5px;color:#fff">Камера хранения вещдоков МВД</div>
-            <div style="font-size:11px;color:#9ca3af;margin-top:2px" id="seizedInfoTxt">Изъято нелегальных предметов: 0 шт.</div>
-          </div>
-          <button class="handover-btn" id="btnHandover" onclick="handoverToDutyOfficer()" disabled>📦 Сдать дежурному</button>
-        </div>
+        <div style="font-weight:800;font-size:12.5px;color:#fff">Камера хранения вещдоков МВД</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:2px" id="seizedInfoTxt">Изъято нелегальных предметов: 0 шт.</div>
       </div>
+      <button class="handover-btn" id="btnHandover" onclick="handoverToDutyOfficer()" disabled>📦 Сдать изъятое дежурному</button>
     </div>
   </div>
 </div>
@@ -535,25 +668,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 <div id="itemPopover"></div>
 
 <script>
-/* ===================== ТОЧНЫЕ ИКОНКИ 1–6 ИЗ ВАШЕГО ЗАПРОСА ===================== */
 var SVG_ICONS = {
-  /* 1 — Иконка пистолета ТТ (вписанного в круг, как на картинке 1) */
   pistol1: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#d1d5db" opacity=".25"/><g transform="rotate(-22 32 32)"><path d="M12 22h36l2 3v5H28l-3 16h-9l3-16-5-2z" fill="#374151"/><path d="M14 23h32v3H14z" fill="#6b7280"/><rect x="17" y="30" width="6" height="12" rx="1" fill="#4b3621"/></g></svg>',
-  /* 2 — Иконка патронов (2 латунных патрона рядом, как на картинке 2) */
   ammo2: '<svg viewBox="0 0 64 64"><g transform="translate(15,10)"><path d="M4 16 C4 6, 12 6, 12 16 Z" fill="#b45309"/><rect x="3" y="16" width="10" height="26" rx="1" fill="#d97706"/><rect x="2" y="42" width="12" height="3" fill="#92400e"/></g><g transform="translate(33,10)"><path d="M4 16 C4 6, 12 6, 12 16 Z" fill="#b45309"/><rect x="3" y="16" width="10" height="26" rx="1" fill="#f59e0b"/><rect x="2" y="42" width="12" height="3" fill="#92400e"/></g></svg>',
-  /* 3 — Иконка таблеток / блистера медикаментов (как на картинке 3) */
   pills3: '<svg viewBox="0 0 64 64"><g transform="rotate(-28 32 32)"><rect x="16" y="10" width="32" height="44" rx="5" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><line x1="32" y1="12" x2="32" y2="52" stroke="#94a3b8" stroke-width="1"/><ellipse cx="24" cy="18" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="40" cy="18" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="24" cy="27" rx="4" ry="2.5" fill="#0284c7"/><ellipse cx="40" cy="27" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="24" cy="36" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="40" cy="36" rx="4" ry="2.5" fill="#0284c7"/><ellipse cx="24" cy="45" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="40" cy="45" rx="4" ry="2.5" fill="#38bdf8"/></g></svg>',
-  /* 4 — Иконка банки Пепси (синяя банка с красно-белым кругом, как на картинке 4) */
   pepsi4: '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="14" rx="13" ry="3.5" fill="#9ca3af"/><rect x="19" y="14" width="26" height="38" rx="4" fill="#1d4ed8"/><ellipse cx="32" cy="52" rx="13" ry="3.5" fill="#6b7280"/><circle cx="32" cy="31" r="8" fill="#ffffff"/><path d="M24 31 A8 8 0 0 1 40 29 L24 33 Z" fill="#ef4444"/><path d="M24 33 L40 31 A8 8 0 0 1 24 33 Z" fill="#1e3a8a"/></svg>',
-  /* 5 — Иконка охотничьего ножа (как на картинке 5 — легальный!) */
   knife5: '<svg viewBox="0 0 64 64"><g transform="rotate(-40 32 32)"><path d="M8 29 C18 27, 32 27, 40 30 L38 34 L8 34 Z" fill="#d1d5db"/><path d="M8 29 L38 30 L38 31.5 L8 31 Z" fill="#9ca3af"/><rect x="38" y="27" width="3" height="9" fill="#d97706"/><rect x="41" y="29" width="15" height="6" rx="2" fill="#78350f"/></g></svg>',
-  /* 6 — Иконка бутылки пива (зелёная бутылка с жёлтой этикеткой, как на картинке 6) */
   beer6: '<svg viewBox="0 0 64 64"><rect x="29" y="8" width="6" height="4" rx="1" fill="#d97706"/><path d="M29 12 L27 24 L23 29 L23 54 A3 3 0 0 0 26 56 L38 56 A3 3 0 0 0 41 54 L41 29 L37 24 L35 12 Z" fill="#15803d"/><ellipse cx="32" cy="18" rx="4" ry="2.5" fill="#facc15"/><rect x="24" y="34" width="16" height="11" rx="1" fill="#facc15"/><rect x="26" y="37" width="12" height="5" fill="#166534"/></svg>',
-  /* 7 — Номерная рамка для багажника (со скриншота 7) */
   frame_terra: '<svg viewBox="0 0 64 64"><g transform="rotate(-14 32 32)"><rect x="8" y="22" width="48" height="18" rx="2" fill="#9a4a2a" stroke="#5c2814" stroke-width="1.5"/><rect x="12" y="25" width="40" height="10" fill="#7c3a20"/></g></svg>',
   frame_blue: '<svg viewBox="0 0 64 64"><g transform="rotate(-14 32 32)"><rect x="8" y="22" width="48" height="18" rx="2" fill="#3b7a9e" stroke="#1e4963" stroke-width="1.5"/><rect x="12" y="25" width="40" height="10" fill="#2c5e7a"/></g></svg>',
   frame_black: '<svg viewBox="0 0 64 64"><g transform="rotate(-14 32 32)"><rect x="8" y="22" width="48" height="18" rx="2" fill="#1f242d" stroke="#374151" stroke-width="1.5"/><rect x="12" y="25" width="40" height="10" fill="#111318"/></g></svg>',
-  /* Экипировка персонажа со скриншота 7 */
   pink_ushanka: '<svg viewBox="0 0 64 64"><path d="M16 26 C16 14, 48 14, 48 26 L50 46 L43 46 L42 32 L22 32 L21 46 L14 46 Z" fill="#ec4899"/><rect x="22" y="20" width="20" height="11" rx="2" fill="#f472b6"/><circle cx="32" cy="25" r="2.5" fill="#facc15"/></svg>',
   suit: '<svg viewBox="0 0 64 64"><path d="M26 12h12l4 10v28H22V22z" fill="#f8fafc"/><path d="M30 16h4l1 18-3 4-3-4z" fill="#f472b6"/><path d="M16 14l10-2 4 22v18H14V22z" fill="#3b6998"/><path d="M48 14l-10-2-4 22v18h16V22z" fill="#3b6998"/></svg>',
   dark_bag: '<svg viewBox="0 0 64 64"><rect x="16" y="14" width="32" height="38" rx="8" fill="#181a20" stroke="#374151" stroke-width="1.5"/><circle cx="27" cy="28" r="2" fill="#ef4444"/><circle cx="37" cy="28" r="2" fill="#10b981"/><path d="M25 38h14" stroke="#60a5fa" stroke-width="2"/></svg>',
@@ -566,12 +690,14 @@ var SVG_ICONS = {
 var OFFICER_NAME = 'Капитан Евгений Холмс';
 var SUSPECT_NAME = 'Sergey_Vorovskoy';
 var TRUNK_OPEN = true;
-var SEARCH_MODE = 'player'; // 'player' или 'trunk'
+var SEARCH_MODE = 'player';
+var FAC_ARC_OPEN = false;
+var CUFFED = false;
 
-/* Секторы радиального меню (с иконкой «Фракционное») */
+/* Пункт 2: Ячейка «Фракционное» стоит сверху (индекс 0), чтобы прямо над ней раскрывался полукруг из 4 кнопок */
 var ROOT_SECTORS = [
-  { id: 'docs',    ic: '🪪', name: 'Документы' },
   { id: 'faction', ic: '🛡️', name: 'Фракционное', isFac: true },
+  { id: 'docs',    ic: '🪪', name: 'Документы' },
   { id: 'car',     ic: '🚕', name: 'Транспорт' },
   { id: 'trade',   ic: '🤝', name: 'Обмен' },
   { id: 'money',   ic: '💵', name: 'Передать деньги' },
@@ -596,112 +722,141 @@ function sectorPath(cx, cy, rIn, rOut, startAngle, endAngle) {
 function renderRadialMenu() {
   var svg = document.getElementById('radialSvg');
   var lbls = document.getElementById('radialLabels');
+  var cx = 280, cy = 280;
   var n = ROOT_SECTORS.length, step = 360 / n, gap = 2.2;
   var svgHtml = '', lblHtml = '';
 
+  /* Основной круг (радиус 82..172) */
   for (var i = 0; i < n; i++) {
     var it = ROOT_SECTORS[i];
     var a1 = i * step - step / 2 + gap / 2;
     var a2 = (i + 1) * step - step / 2 - gap / 2;
-    var d = sectorPath(200, 200, 86, 186, a1, a2);
-    var cls = 'r-sector' + (it.isFac ? ' fac-sec' : '');
+    var d = sectorPath(cx, cy, 82, 172, a1, a2);
+    var cls = 'r-sector' + (it.isFac ? (' fac-sec' + (FAC_ARC_OPEN ? ' active' : '')) : '');
     svgHtml += '<path class="' + cls + '" d="' + d + '" onclick="onSectorClick(\'' + it.id + '\')"></path>';
 
-    var pos = polarToCartesian(210, 210, 142, i * step);
+    var pos = polarToCartesian(cx, cy, 128, i * step);
     lblHtml += '<div class="r-lbl" style="left:' + pos.x + 'px;top:' + pos.y + 'px">' +
       '<span class="ic">' + it.ic + '</span>' +
       '<span class="nm">' + it.name + '</span>' +
     '</div>';
   }
+
+  /* Пункты 2, 3, 4, 5: Если нажато «Фракционное» — сверху ячейки появляется внешний полукруг из 4 кнопок */
+  if (FAC_ARC_OPEN) {
+    var subList = [
+      { id: 'idcard',      ic: '🪪', name: 'Удостоверение' },
+      { id: 'cuffs',       ic: '⛓️', name: CUFFED ? 'Снять наручники' : 'Надеть наручники' },
+      { id: 'frisk_player',ic: '🔍', name: 'Обыск' },
+      { id: 'frisk_trunk', ic: '🚘', name: 'Обыск багажника' }
+    ];
+    var arcStart = -88, arcSpan = 176;
+    var subStep = arcSpan / subList.length;
+    for (var s = 0; s < subList.length; s++) {
+      var sub = subList[s];
+      var sa1 = arcStart + s * subStep + 1.2;
+      var sa2 = arcStart + (s + 1) * subStep - 1.2;
+      var sd = sectorPath(cx, cy, 182, 262, sa1, sa2);
+      svgHtml += '<path class="r-sub-sector" d="' + sd + '" onclick="doFacAction(\'' + sub.id + '\')"></path>';
+
+      var smid = (sa1 + sa2) / 2;
+      var spos = polarToCartesian(cx, cy, 222, smid);
+      lblHtml += '<div class="r-lbl" style="left:' + spos.x + 'px;top:' + spos.y + 'px">' +
+        '<span class="ic">' + sub.ic + '</span>' +
+        '<span class="nm">' + sub.name + '</span>' +
+      '</div>';
+    }
+  }
+
   svg.innerHTML = svgHtml;
   lbls.innerHTML = lblHtml;
 }
 
-function toggleFacWindows(show) {
-  var w = document.getElementById('facSubWindows');
-  if (!w) return;
-  if (typeof show === 'boolean') w.classList.toggle('open', show);
-  else w.classList.toggle('open');
+function toggleFacArc(force) {
+  FAC_ARC_OPEN = (typeof force === 'boolean') ? force : !FAC_ARC_OPEN;
+  renderRadialMenu();
 }
 
+/* Пункт 1: Если нажали на кнопку без функции — в чате ничего не пишется */
 window.onSectorClick = function(id) {
   if (id === 'faction') {
-    toggleFacWindows();
-    addChat('info', '[Радиальное меню] Открыты окна категории «Фракционное»: Удостоверение, Наручники, Обыск игрока и Обыск багажника.');
-    return;
+    toggleFacArc();
   }
-  addChat('info', '[Радиальное меню] Нажмите на сектор «🛡️ Фракционное», чтобы открыть служебные функции МВД.');
 };
 
 window.doFacAction = function(act) {
+  /* Пункт 4: Удостоверение — в чат ничего не пишется, просто открывается удостоверение */
   if (act === 'idcard') {
-    addChat('me', '* ' + OFFICER_NAME + ' достал из нагрудного кармана служебное удостоверение МВД и предъявил его в развёрнутом виде');
+    document.getElementById('idCardModal').style.display = 'flex';
     return;
   }
+  /* Пункт 3: Надеть наручники -> тут же меняется на Снять наручники, в чат ничего не пишется */
   if (act === 'cuffs') {
-    addChat('me', '* ' + OFFICER_NAME + ' снял наручники с тактического пояса и защёлкнул их на запястьях ' + SUSPECT_NAME);
+    CUFFED = !CUFFED;
+    renderRadialMenu();
     return;
   }
+  /* Пункт 5: Обыск -> открывает только инвентарь игрока */
   if (act === 'frisk_player') {
-    addChat('me', '* ' + OFFICER_NAME + ' надел тактические перчатки и начал обыск личных вещей гражданина ' + SUSPECT_NAME);
+    addChat('me', '* ' + OFFICER_NAME + ' надел тактические перчатки и начал обыск гражданина ' + SUSPECT_NAME);
     openSearchMode('player');
     return;
   }
+  /* Пункт 6: Обыск багажника */
   if (act === 'frisk_trunk') {
     tryOpenTrunkSearch();
   }
 };
 
-/* Переключатель открытого / закрытого багажника */
+window.closeIdCard = function() {
+  document.getElementById('idCardModal').style.display = 'none';
+};
+
 window.toggleTrunkLock = function() {
   TRUNK_OPEN = !TRUNK_OPEN;
   var b = document.getElementById('btnTrunkLock');
-  b.textContent = TRUNK_OPEN ? '🔓 Багажник: Открыт' : '🔒 Багажник: Закрыт';
-  b.className = 'd-btn ' + (TRUNK_OPEN ? 'trunk-open' : 'trunk-closed');
-  addChat('info', '[Автомобиль] Статус багажника изменён: ' + (TRUNK_OPEN ? 'ОТКРЫТ (доступен осмотр по клавише E).' : 'ЗАКРЫТ (обыск невозможен, пока багажник не открыт).'));
+  b.textContent = TRUNK_OPEN ? '🔓 Открыт' : '🔒 Закрыт';
+  b.className = 'trunk-toggle' + (TRUNK_OPEN ? '' : ' closed');
 };
 
+/* Пункт 6: Отыгровка без слов «подошёл к открытому багажнику автомобиля» — просто «начал осмотр багажника автомобиля» */
 window.tryOpenTrunkSearch = function() {
   if (!TRUNK_OPEN) {
-    addChat('err', '[Ошибка] Невозможно обыскать багажник автомобиля — багажник закрыт! Сначала откройте багажник.');
+    addChat('err', '[Система] Багажник автомобиля закрыт! Обыск возможен только при открытом багажнике.');
     return;
   }
-  addChat('me', '* ' + OFFICER_NAME + ' подошёл к открытому багажнику автомобиля и начал осмотр грузового отделения');
+  addChat('me', '* ' + OFFICER_NAME + ' начал осмотр багажника автомобиля');
   openSearchMode('trunk');
 };
 
-/* ===================== ПРЕДМЕТЫ (1–6: Пистолет, Патроны, Таблетки, Пепси, Нож, Пиво) =====================
-   Нож считается ЛЕГАЛЬНЫМ! Только пистолет и патроны имеют illegal: true.
-   Никакой визуальной подсветки на слотах нет. */
 var INITIAL_MAIN_ITEMS = [
   { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',         cat: 'Напиток',         qty: 2,  w: 0.33, desc: 'Прохладительный безалкогольный напиток 0.33 л.', illegal: false },
   { slot: 1,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',    cat: 'Медикаменты',     qty: 3,  w: 0.10, desc: 'Блистер обезболивающих таблеток.', illegal: false },
   { slot: 2,  svg: 'pistol1', name: 'Пистолет ТТ',               cat: 'Оружие',          qty: 1,  w: 0.85, desc: 'Самозарядный пистолет калибра 7.62×25 мм.', illegal: true },
-  { slot: 4,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож. Разрешён к ношению, нелегалом не является.', illegal: false },
+  { slot: 4,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож. Нелегальным предметом не считается.', illegal: false },
   { slot: 6,  svg: 'beer6',   name: 'Бутылка пива',              cat: 'Напиток',         qty: 2,  w: 0.50, desc: 'Светлое пенное в стеклянной бутылке.', illegal: false },
   { slot: 8,  svg: 'ammo2',   name: 'Патроны 7.62×25 мм',        cat: 'Боеприпасы',      qty: 36, w: 0.40, desc: 'Боевые пистолетные патроны.', illegal: true }
 ];
 
 var INITIAL_BP_ITEMS = [
   { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',         cat: 'Напиток',         qty: 1,  w: 0.33, desc: 'Прохладительный напиток.', illegal: false },
-  { slot: 2,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Бытовой туристический нож (легальный).', illegal: false },
+  { slot: 2,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож.', illegal: false },
   { slot: 4,  svg: 'ammo2',   name: 'Патроны 9×19 мм',           cat: 'Боеприпасы',      qty: 60, w: 0.65, desc: 'Пачка боевых патронов.', illegal: true },
   { slot: 6,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',    cat: 'Медикаменты',     qty: 2,  w: 0.10, desc: 'Упаковка медицинских таблеток.', illegal: false },
   { slot: 8,  svg: 'beer6',   name: 'Бутылка пива',              cat: 'Напиток',         qty: 1,  w: 0.50, desc: 'Стеклянная бутылка 0.5 л.', illegal: false }
 ];
 
-/* Содержимое багажника (Грузовое отделение со скриншота 7: номерные рамки + спрятанный пистолет и патроны) */
 var INITIAL_TRUNK_ITEMS = [
   { slot: 0,  svg: 'frame_terra', name: 'Цветная «Терракотовый»', cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
   { slot: 1,  svg: 'frame_terra', name: 'Цветная «Терракотовый»', cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
   { slot: 2,  svg: 'frame_blue',  name: 'Цветная «Лазурный»',     cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 3,  svg: 'pistol1',     name: 'Пистолет ТТ',            cat: 'Оружие',         qty: 1,  w: 0.85, desc: 'Спрятанный в багажнике боевой пистолет.', illegal: true },
+  { slot: 3,  svg: 'pistol1',     name: 'Пистолет ТТ',            cat: 'Оружие',         qty: 1,  w: 0.85, desc: 'Боевой пистолет в багажнике.', illegal: true },
   { slot: 4,  svg: 'frame_blue',  name: 'Цветная «Голубой»',      cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 5,  svg: 'ammo2',       name: 'Патроны 7.62×25 мм',     cat: 'Боеприпасы',     qty: 48, w: 0.50, desc: 'Россыпь боевых патронов в нише багажника.', illegal: true },
-  { slot: 6,  svg: 'knife5',      name: 'Охотничий нож',          cat: 'Инструмент',     qty: 1,  w: 0.35, desc: 'Походный нож в чехле (легальный предмет).', illegal: false },
+  { slot: 5,  svg: 'ammo2',       name: 'Патроны 7.62×25 мм',     cat: 'Боеприпасы',     qty: 48, w: 0.50, desc: 'Боевые патроны в нише багажника.', illegal: true },
+  { slot: 6,  svg: 'knife5',      name: 'Охотничий нож',          cat: 'Инструмент',     qty: 1,  w: 0.35, desc: 'Походный нож в чехле.', illegal: false },
   { slot: 7,  svg: 'beer6',       name: 'Бутылка пива',           cat: 'Напиток',        qty: 4,  w: 2.00, desc: 'Упаковка напитка в багажнике.', illegal: false },
   { slot: 10, svg: 'frame_black', name: 'Рамка «Классика»',       cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 11, svg: 'pills3',      name: 'Таблетки (Медикаменты)', cat: 'Медикаменты',    qty: 2,  w: 0.10, desc: 'Дорожная аптечка в багажнике.', illegal: false }
+  { slot: 11, svg: 'pills3',      name: 'Таблетки (Медикаменты)', cat: 'Медикаменты',    qty: 2,  w: 0.10, desc: 'Дорожная аптечка.', illegal: false }
 ];
 
 var MAIN_ITEMS = [], BP_ITEMS = [], TRUNK_ITEMS = [], SEIZED_BUFFER = [];
@@ -726,7 +881,6 @@ function resetDemo() {
   SEIZED_BUFFER = [];
   closePopover();
   renderInventoryGrids();
-  addChat('info', '[Система] Содержимое инвентаря и багажника восстановлено.');
 }
 
 function findInArr(arr, slot) {
@@ -735,31 +889,22 @@ function findInArr(arr, slot) {
 }
 
 function renderInventoryGrids() {
-  /* Основной инвентарь 5x3 (15 слотов) */
   var mHtml = '';
   for (var i = 0; i < 15; i++) mHtml += slotHtml('main', i, findInArr(MAIN_ITEMS, i));
   document.getElementById('mainInvGrid').innerHTML = mHtml;
 
-  /* Рюкзак 5x2 (10 слотов) */
   var bHtml = '';
   for (var j = 0; j < 10; j++) bHtml += slotHtml('bp', j, findInArr(BP_ITEMS, j));
   document.getElementById('backpackGrid').innerHTML = bHtml;
 
-  /* Правая колонка: Грузовое отделение (Багажник 5x4 = 20 слотов) */
-  document.getElementById('rightColIcon').textContent = (SEARCH_MODE === 'trunk') ? '🚘' : '🔍';
-  document.getElementById('rightColTitle').textContent = (SEARCH_MODE === 'trunk') ? 'Грузовое отделение (Багажник авто)' : 'Грузовое отделение / Окружение';
-
   var tHtml = '';
-  for (var k = 0; k < 20; k++) {
-    tHtml += slotHtml('trunk', k, findInArr(TRUNK_ITEMS, k));
-  }
-  document.getElementById('trunkOrSeizedGrid').innerHTML = tHtml;
+  for (var k = 0; k < 20; k++) tHtml += slotHtml('trunk', k, findInArr(TRUNK_ITEMS, k));
+  document.getElementById('trunkGrid').innerHTML = tHtml;
 
-  document.getElementById('seizedInfoTxt').textContent = 'Изъято для сдачи дежурному: ' + SEIZED_BUFFER.length + ' поз.';
+  document.getElementById('seizedInfoTxt').textContent = 'Изъято нелегальных предметов: ' + SEIZED_BUFFER.length + ' поз.';
   document.getElementById('btnHandover').disabled = (SEIZED_BUFFER.length === 0);
 }
 
-/* Слоты рендерятся БЕЗ какой-либо подсветки нелегальности */
 function slotHtml(source, slotIdx, it) {
   if (!it) return '<div class="islot"></div>';
   var qty = (it.qty && it.qty > 1) ? '<span class="s-qty">x' + it.qty + '</span>' : '';
@@ -778,8 +923,6 @@ window.onSlotClick = function(ev, source, slotIdx) {
   var pop = document.getElementById('itemPopover');
   activePopItem = { source: source, slot: slotIdx, item: it };
 
-  /* Только если предмет действительно нелегальный (пистолет / патроны) — показываем кнопку «Изъять».
-     На ноже, пепси, пиве, таблетках и рамках никакой надписи и кнопки нет! */
   var btnHtml = it.illegal
     ? '<button class="ip-seize-btn" onclick="seizeActiveItem()">Изъять (' + it.qty + ' шт.)</button>'
     : '';
@@ -811,17 +954,15 @@ window.seizeActiveItem = function() {
   renderInventoryGrids();
 
   var whereTxt = (src === 'trunk') ? 'из багажника автомобиля' : ('у игрока ' + SUSPECT_NAME);
-  addChat('me', '* ' + OFFICER_NAME + ' изъял «' + it.name + '» (' + it.qty + ' шт.) ' + whereTxt + ' и убрал в спецпакет для улик');
+  addChat('me', '* ' + OFFICER_NAME + ' изъял «' + it.name + '» (' + it.qty + ' шт.) ' + whereTxt + ' и упаковал в спецпакет для улик');
   addChat('sys', '[Обыск] ' + OFFICER_NAME + ' изъял предмет «' + it.name + '» в количестве ' + it.qty + ' шт. ' + whereTxt);
 };
 
-/* Сдача изъятых вещей дежурному в камеру хранения вещдоков (с записью в личную карточку и Логи МВД) */
 window.handoverToDutyOfficer = function() {
   if (!SEIZED_BUFFER.length) return;
   var summaryList = SEIZED_BUFFER.map(function(x) { return x.name + ' ×' + x.qty; });
   var summaryStr = summaryList.join(', ');
 
-  /* Сохраняем запись в localStorage, чтобы планшет МВД (mvd-phone.html) показал это в личной карточке и в Логах */
   try {
     var saved = JSON.parse(localStorage.getItem('mvd_seized_evidence_v1') || '[]');
     var now = new Date();
@@ -832,15 +973,15 @@ window.handoverToDutyOfficer = function() {
       actor: 'Холмс Евгений',
       actorUid: 'K8W4C6',
       fac: 'hq',
-      items: SEIZED_BUFFER.map(function(x) { return { n: x.name + ' (в камеру вещдоков)', q: x.qty }; }),
+      items: SEIZED_BUFFER.map(function(x) { return { n: x.name + ' (камера вещдоков)', q: x.qty }; }),
       rawItems: summaryList.map(function(s) { return s + ' (сдано в камеру вещдоков)'; }),
       note: 'сдано дежурному в камеру хранения вещдоков МВД'
     });
     localStorage.setItem('mvd_seized_evidence_v1', JSON.stringify(saved.slice(0, 50)));
   } catch (e) {}
 
-  addChat('me', '* ' + OFFICER_NAME + ' передал опечатанные пакеты с изъятыми уликами (' + summaryStr + ') дежурному офицеру МВД');
-  addChat('sys', '[Камера вещдоков] ' + OFFICER_NAME + ' сдал в камеру хранения вещдоков: ' + summaryStr + '. Запись внесена в личную карточку и Логи МВД.');
+  addChat('me', '* ' + OFFICER_NAME + ' передал опечатанные вещдоки (' + summaryStr + ') дежурному в камеру хранения улик');
+  addChat('sys', '[Камера вещдоков] ' + OFFICER_NAME + ' сдал в камеру хранения вещдоков: ' + summaryStr + '.');
 
   SEIZED_BUFFER = [];
   renderInventoryGrids();
@@ -866,28 +1007,40 @@ function addChat(cls, txt) {
   wrap.scrollTop = wrap.scrollHeight;
 }
 
+/* Пункты 5 и 6: В режиме 'player' показывается ТОЛЬКО инвентарь игрока; в режиме 'trunk' — ТОЛЬКО багажник автомобиля */
 window.openSearchMode = function(mode) {
   SEARCH_MODE = mode;
+  var cont = document.getElementById('invContainer');
+  var pView = document.getElementById('playerOnlyView');
+  var tView = document.getElementById('trunkOnlyView');
+  var hTitle = document.getElementById('invHeaderTitle');
+  var hSub = document.getElementById('invHeaderSub');
+
+  if (mode === 'trunk') {
+    cont.classList.add('trunk-only');
+    pView.style.display = 'none';
+    tView.style.display = 'block';
+    hTitle.textContent = 'БАГАЖНИК АВТОМОБИЛЯ';
+    hSub.innerHTML = '<span>Досмотр грузового отделения ТС</span>';
+  } else {
+    cont.classList.remove('trunk-only');
+    pView.style.display = 'grid';
+    tView.style.display = 'none';
+    hTitle.textContent = 'ИНВЕНТАРЬ';
+    hSub.innerHTML = '<span>' + SUSPECT_NAME + '</span><span>25 110 ₽</span>';
+  }
   document.getElementById('invOverlay').style.display = 'flex';
-  document.getElementById('btnViewRadial').classList.remove('active');
-  document.getElementById('btnViewPlayer').classList.toggle('active', mode === 'player');
-  document.getElementById('btnViewTrunk').classList.toggle('active', mode === 'trunk');
   renderInventoryGrids();
 };
 
 window.switchScene = function(sc) {
   closePopover();
+  closeIdCard();
   if (sc === 'radial') {
     document.getElementById('invOverlay').style.display = 'none';
-    document.getElementById('btnViewRadial').classList.add('active');
-    document.getElementById('btnViewPlayer').classList.remove('active');
-    document.getElementById('btnViewTrunk').classList.remove('active');
-  } else {
-    openSearchMode('player');
   }
 };
 
-/* Нажатие клавиши E открывает осмотр багажника (если он открыт), ESC — закрывает */
 document.addEventListener('keydown', function(ev) {
   if (ev.key === 'Escape') {
     switchScene('radial');
