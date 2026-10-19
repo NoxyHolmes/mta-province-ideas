@@ -36,7 +36,6 @@ body{
 }
 .sec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#94a3b8;font-weight:800;text-align:left;margin-bottom:7px}
 
-/* Главные кнопки переключения: ПОЛИЦИЯ / АРМИЯ */
 .main-cat-bar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .mc-btn{
   padding:13px 16px;
@@ -181,17 +180,17 @@ body{
     </div>
   </div>
 
-  <!-- Правая колонка: Кнопки ПОЛИЦИЯ / АРМИЯ, отделы и таблица погон -->
+  <!-- Правая колонка: Кнопки Полиция / Армия, отделы и таблица погон -->
   <div class="ep-list-panel">
     <div class="ep-h1">🎖️ Интерактивный стенд динамических погон</div>
     <div class="ep-sub">
-      Переключайтесь между блоками <b>«Полиция»</b> (Повседневные УМВД и ОГИБДД, Юстиция, Чёрная форма ОМОН/Спецназ/СОБР и Парадная форма) и <b>«Армия»</b> (Сухопутные войска, ВКС и ВДВ, ВМФ и Береговые войска, Росгвардия — повседневные, парадные и полевые).
+      Переключайтесь между блоками <b>«Полиция»</b> (Повседневные и Парадные погоны для УМВД, ОГИБДД, ОМОН/Спецназ/СОБР и Юстиции) и <b>«Армия»</b> (Сухопутные войска, ВКС и ВДВ, ВМФ и Береговые войска, Росгвардия).
     </div>
 
     <div class="sec-lbl">1. Выберите блок ведомств</div>
     <div class="main-cat-bar">
-      <button class="mc-btn pol on" id="btnGroupPolice" onclick="setMainGroup('police')">🛡️ ПОЛИЦИЯ (МВД / ГИБДД / ОМОН)</button>
-      <button class="mc-btn arm" id="btnGroupArmy" onclick="setMainGroup('army')">🎖️ АРМИЯ (ВС РФ / Подразделения)</button>
+      <button class="mc-btn pol on" id="btnGroupPolice" onclick="setMainGroup('police')">🛡️ Полиция</button>
+      <button class="mc-btn arm" id="btnGroupArmy" onclick="setMainGroup('army')">🎖️ Армия</button>
     </div>
 
     <div class="sec-lbl">2. Выберите подразделение</div>
@@ -204,7 +203,7 @@ body{
 <script>
 var MAIN_GROUP = 'police';     // 'police' или 'army'
 var CUR_DEPT = 'umvd';
-var UNIFORM_TYPE = 'everyday'; // 'everyday', 'black', 'parade', 'field'
+var UNIFORM_TYPE = 'everyday'; // 'everyday', 'parade', 'field'
 var CUR_RANK_IDX = 11;
 
 var DEPTS = {
@@ -451,10 +450,9 @@ function renderAuthenticEmblem(dept, item, isField) {
 }
 
 function buildExactEpauletteSvg(item, dept) {
-  /* У Полиции нет полевой формы */
   var isField  = (MAIN_GROUP === 'army' && UNIFORM_TYPE === 'field');
   var isParade = (UNIFORM_TYPE === 'parade');
-  var isBlack  = (UNIFORM_TYPE === 'black') || (dept.cloth === 'black' && UNIFORM_TYPE === 'everyday');
+  var isBlack  = (dept.cloth === 'black' && UNIFORM_TYPE === 'everyday');
 
   var trimCol   = isField ? '#3b4732' : dept.trim;
   var stripeCol = isField ? '#333e2b' : dept.stripe;
@@ -619,7 +617,6 @@ window.setMainGroup = function(grp) {
     if (UNIFORM_TYPE === 'field') UNIFORM_TYPE = 'everyday';
   } else {
     CUR_DEPT = 'army_ground';
-    if (UNIFORM_TYPE === 'black') UNIFORM_TYPE = 'everyday';
   }
   CUR_RANK_IDX = 10;
   renderAll();
@@ -627,8 +624,6 @@ window.setMainGroup = function(grp) {
 
 window.setDept = function(dKey) {
   CUR_DEPT = dKey;
-  if (dKey === 'omon') UNIFORM_TYPE = 'black';
-  else if (MAIN_GROUP === 'police' && UNIFORM_TYPE === 'black') UNIFORM_TYPE = 'everyday';
   var list = getRanksList(CUR_DEPT);
   if (CUR_RANK_IDX >= list.length) CUR_RANK_IDX = list.length - 1;
   renderAll();
@@ -656,13 +651,12 @@ function renderAll() {
   if (CUR_RANK_IDX >= list.length) CUR_RANK_IDX = list.length - 1;
   var cur = list[CUR_RANK_IDX];
 
-  /* Кнопки типов формы: у Полиции НЕТ полевой формы, у Армии — Повседневная, Парадная и Полевая */
+  /* В блоке Полиция в вариантах одежды оставлены ТОЛЬКО Повседневные и Парадные */
   var pillsHtml = '';
   if (MAIN_GROUP === 'police') {
     var polModes = [
-      ['everyday', '👔 Повседневные (УМВД / ОГИБДД)'],
-      ['black',    '🦅 ОМОН / Спецназ / СОБР (Чёрные)'],
-      ['parade',   '🏳️ Парадные (Белая рубашка)']
+      ['everyday', '👔 Повседневные'],
+      ['parade',   '🏳️ Парадные']
     ];
     pillsHtml = polModes.map(function(m) {
       return '<button class="m-pill' + (UNIFORM_TYPE === m[0] ? ' on' : '') + '" onclick="setUniformType(\'' + m[0] + '\')">' + m[1] + '</button>';
@@ -679,7 +673,6 @@ function renderAll() {
   }
   document.getElementById('uniformPills').innerHTML = pillsHtml;
 
-  /* Вкладки подразделений внутри выбранной группы (Полиция или Армия) */
   document.getElementById('deptTabs').innerHTML = Object.keys(DEPTS).filter(function(k) {
     return DEPTS[k].group === MAIN_GROUP;
   }).map(function(k) {
@@ -700,15 +693,14 @@ function renderAll() {
   document.getElementById('uiRankCat').textContent = cur.cat;
 
   var uLabels = {
-    everyday: 'Повседневная форма',
+    everyday: dept.cloth === 'black' ? 'Повседневная чёрная спецформа (ОМОН / СОБР)' : 'Повседневная форма',
     parade: MAIN_GROUP === 'police' ? 'Парадная белая рубашка' : 'Парадный золотой галун',
-    black: 'Чёрная спецформа (ОМОН / Спецназ / СОБР)',
     field: 'Полевая форма (Камуфляж «Цифра» ЕМР)'
   };
 
   document.getElementById('uiSpecs').innerHTML =
     '<div><span>Подразделение:</span><b>' + dept.name + '</b></div>' +
-    '<div><span>Тип исполнения:</span><b>' + (uLabels[UNIFORM_TYPE] || 'Повседневная') + '</b></div>' +
+    '<div><span>Тип исполнения:</span><b>' + (uLabels[UNIFORM_TYPE] || 'Повседневная форма') + '</b></div>' +
     '<div><span>Верхний срез погона:</span><b>' + (dept.shape === 'rounded' ? 'Полукруглый (Образец 2015 г.)' : 'Скошенный трапециевидный (ВС РФ)') + '</b></div>' +
     '<div><span>Звание:</span><b style="color:#fcd34d">' + fullTitle + '</b></div>';
 
