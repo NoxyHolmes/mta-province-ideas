@@ -22,11 +22,14 @@ h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .cnt{font-size:12px;background:#22304a;border:1px solid #32456a;color:#a9c7ef;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px}
 .ph-sub{color:var(--mut);font-size:12.5px;margin-top:5px}
 .ph-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:2px}
+/* Жёсткое скрытие кнопок владельца для обычных пользователей */
+.owner-only{display:none!important}
+body.is-owner .owner-only{display:inline-flex!important}
 .tabs{display:flex;gap:5px;background:#141a23;border:1px solid var(--line);border-radius:13px;padding:5px}
 .tab{padding:9px 18px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--mut);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
 .tab:hover{color:var(--txt)}
 .tab.on{color:#fff;background:linear-gradient(90deg,rgba(77,163,255,.26),rgba(77,163,255,.07));border-color:rgba(77,163,255,.4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.btn{background:linear-gradient(145deg,#3684e6,#2868c9);border:1px solid #3a6cb4;color:#fff;padding:9px 15px;border-radius:10px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:all .18s;box-shadow:0 4px 14px rgba(40,100,190,.25)}
+.btn{background:linear-gradient(145deg,#3684e6,#2868c9);border:1px solid #3a6cb4;color:#fff;padding:9px 15px;border-radius:10px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:all .18s;box-shadow:0 4px 14px rgba(40,100,190,.25);align-items:center;justify-content:center}
 .btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .btn:active{transform:translateY(0) scale(.98)}
 .btn.big{padding:12px 20px;font-size:13px}
@@ -52,7 +55,6 @@ h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.14)}
 .sel option{background:#141a23}
 textarea.inp{resize:vertical}
-/* Ровно 5 карточек в ряд на широком экране */
 .vgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:14px}
 .vgrid.grouped{display:block}
 .vcard{background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);animation:cardIn .4s both}
@@ -104,13 +106,6 @@ textarea.inp{resize:vertical}
 .clsbtn{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(145deg,#1c2432,#181e28);color:var(--txt);font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;text-align:left}
 .clsbtn:hover{border-color:var(--cc,var(--acc));transform:translateX(3px)}
 .clsbtn.on{border-color:var(--cc,var(--acc));background:var(--ccb,rgba(77,163,255,.14));box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.vcard.sk{pointer-events:none;cursor:default}
-.vcard.sk::before{display:none}
-.skph{aspect-ratio:16/10;background:#161c26;position:relative;overflow:hidden}
-.skph::after,.skb::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.05) 50%,transparent 75%);transform:translateX(-100%);animation:skmove 1.4s infinite}
-@keyframes skmove{to{transform:translateX(100%)}}
-.skb{height:11px;border-radius:6px;background:#161c26;margin:10px 14px 0;position:relative;overflow:hidden}
-.skb:last-child{margin-bottom:14px}
 #lb{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:14px;cursor:zoom-out;opacity:0;transition:opacity .28s ease;pointer-events:none}
 #lb::before{content:'';position:absolute;inset:0;background:rgba(4,7,11,.88);backdrop-filter:blur(9px);opacity:0;transition:opacity .28s ease}
 #lb.show{opacity:1;pointer-events:auto}
@@ -242,12 +237,12 @@ window.addEventListener('error',function(ev){
       <div class="ph-sub" id="hSub"></div>
     </div>
     <div class="ph-actions">
-      <button class="btn ghost slim" id="depsBtn" style="display:none" onclick="openDepsManager()" title="Управление разделами и классами">⚙️ Разделы</button>
+      <button class="btn ghost slim owner-only" id="depsBtn" onclick="openDepsManager()" title="Управление разделами и классами">⚙️ Разделы</button>
       <div class="tabs">
         <button class="tab on" data-kind="cars" onclick="setKind('cars')">🚔 Автопарк</button>
         <button class="tab" data-kind="form" onclick="setKind('form')">🎽 Форма</button>
       </div>
-      <button class="btn big" id="addBtn" style="display:none" onclick="openAdd()">＋ Добавить машину</button>
+      <button class="btn big owner-only" id="addBtn" onclick="openAdd()">＋ Добавить машину</button>
     </div>
   </div>
 
@@ -460,28 +455,38 @@ var CATS={
 };
 function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].k===cat){return a[i].n}}return a[0].n}
 
-/* ===================== ДАННЫЕ И АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ ВЛАДЕЛЬЦА ===================== */
-var LOCAL_K='mvd_garage_local', CACHE_K='mvd_garage_cache', KEY_K='mvd_garage_admin_key', MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
+/* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА С ГЛАВНОГО САЙТА ===================== */
+var LOCAL_K='mvd_garage_local', CACHE_K='mvd_garage_cache', MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
 var ITEMS=[], localRev=0, pendingRev=null, needSeed=false;
 var ADMIN_KEY='';
 var adminMode=false;
 var booted=false;
 
-/* Автоматическая проверка входа владельца через общую систему сайта (без кнопки входа во вкладке) */
+/* Удаляем старый автономный ключ гаража, чтобы он не включал режим владельца сам по себе */
+try{LS.remove('mvd_garage_admin_key')}catch(e){}
+
 function syncGlobalOwnerAuth(){
+ var isAdm=false;
  var tok='';
  try{
-  tok=LS.get(MAIN_KEY_K)||LS.get(KEY_K)||'';
-  if(!tok&&window.parent&&window.parent!==window&&window.parent.localStorage){
-   tok=window.parent.localStorage.getItem(MAIN_KEY_K)||window.parent.localStorage.getItem(KEY_K)||'';
+  if(window.parent&&window.parent!==window){
+   if(typeof window.parent.adminMode==='boolean'){
+    isAdm=window.parent.adminMode;
+   }
+   if(window.parent.localStorage){
+    tok=window.parent.localStorage.getItem(MAIN_KEY_K)||'';
+   }
+  }
+  if(!tok){
+   tok=LS.get(MAIN_KEY_K)||'';
   }
  }catch(e){}
  ADMIN_KEY=String(tok||'').trim();
- var parentAdm=false;
- try{
-  if(window.parent&&window.parent!==window&&window.parent.adminMode){parentAdm=true}
- }catch(e){}
- adminMode=!!(ADMIN_KEY.length>3||parentAdm||!REPO);
+ if(!isAdm && ADMIN_KEY.length>5){
+  isAdm=true;
+ }
+ adminMode=!!isAdm;
+ document.body.classList.toggle('is-owner',adminMode);
 }
 syncGlobalOwnerAuth();
 window.addEventListener('storage',function(){
@@ -493,7 +498,7 @@ setInterval(function(){
  var prev=adminMode;
  syncGlobalOwnerAuth();
  if(prev!==adminMode){render()}
-},1500);
+},800);
 
 function seed(){return [
  {id:'c1', kind:'cars',cat:'main', dep:'uvd',  cls:'standard',name:'Lada Vesta',                desc:'Патрульный автомобиль ППС · базовая комплектация', speed:'178', photo:''},
@@ -799,13 +804,8 @@ function initRemote(){
  }).catch(function(){});
 }
 
-/* ===================== РЕЖИМ ВЛАДЕЛЬЦА (БЕЗ КНОПКИ ВХОДА) ===================== */
 function renderTop(){
  syncGlobalOwnerAuth();
- var db=$('#depsBtn');
- if(db){db.style.display=adminMode?'':'none'}
- var ab=$('#addBtn');
- if(ab){ab.style.display=adminMode?'':'none'}
 }
 
 /* ===================== МЕНЕДЖЕР РАЗДЕЛОВ ===================== */
@@ -813,6 +813,7 @@ var DEP_PALETTE=['#4da3ff','#56ccff','#ff5c5c','#2fd97a','#ff9a3d','#818cf8','#e
 var currentClassDepK=null;
 
 function openDepsManager(){
+ syncGlobalOwnerAuth();
  if(!adminMode){return}
  renderDepsModal();
 }
