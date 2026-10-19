@@ -1,110 +1,253 @@
-var ITEMS = [], localRev = 0, pendingRev = null, needSeed = false, booted = false;
-var knownRev = 0;
-var state = { fac: 'all', q: '' };
-var dirtyIds = {}, deletedIds = {};
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Статистика персонажа · MTA Province</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0e14;
+  --card:#141a24;
+  --line:rgba(255,255,255,.08);
+  --txt:#f1f5f9;
+  --mut:#8b96a8;
+  --acc:#4da3ff;
+  --green:#2fd97a;
+  --red:#ff5c5c;
+  --gold:#f7c948;
+}
+html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
+body{
+  background:
+    radial-gradient(900px 500px at 15% 0%,rgba(77,163,255,.12),transparent 60%),
+    radial-gradient(900px 500px at 85% 100%,rgba(47,217,122,.1),transparent 60%),
+    #0b0e14;
+  padding:28px 20px 60px;
+}
+.st-wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.st-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 22px}
+.st-user{display:flex;align-items:center;gap:14px}
+.st-ava{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:19px;color:#fff}
+.st-name{font-size:20px;font-weight:900}
+.st-uid{font-size:12.5px;color:var(--mut);margin-top:3px}
 
-function markDirty(id) { dirtyIds[id] = 1; if (deletedIds[id]) delete deletedIds[id]; }
-function markDeleted(id) { deletedIds[id] = 1; if (dirtyIds[id]) delete dirtyIds[id]; }
-
-function toArr(x) {
-  if (!x) return null;
-  if (Array.isArray(x)) return x;
-  var ks = Object.keys(x).sort(function(a, b) { return a - b; }), arr = [];
-  for (var i = 0; i < ks.length; i++) arr[+ks[i]] = x[ks[i]];
-  return arr;
+.st-status-btn{
+  padding:9px 16px;
+  border-radius:11px;
+  font-weight:800;
+  font-size:12.5px;
+  cursor:pointer;
+  border:1px solid rgba(47,217,122,.4);
+  background:rgba(47,217,122,.14);
+  color:#6ee7b7;
+  transition:.18s;
+}
+.st-status-btn.logout{
+  border-color:rgba(255,92,92,.45);
+  background:rgba(255,92,92,.14);
+  color:#fca5a5;
 }
 
-function normItems(a) {
-  if (!a) return a;
-  var defSeeds = seed();
-  var seedMap = {};
-  defSeeds.forEach(function(s) { seedMap[s.id] = s; });
+.st-grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.st-panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.st-h2{font-size:16px;font-weight:900;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.st-sub{font-size:12px;color:var(--mut);margin-bottom:16px}
 
-  for (var i = 0; i < a.length; i++) {
-    if (!a[i]) continue;
-    if (!a[i].images) a[i].images = [];
-    if (!a[i].videos) a[i].videos = [];
-    if (typeof a[i].title !== 'string') a[i].title = '';
-    /* Обновляем тексты и заголовки системных карточек, сохраняя прикреплённые владельцем фото и видео */
-    if (seedMap[a[i].id]) {
-      a[i].title = seedMap[a[i].id].title;
-      a[i].text = seedMap[a[i].id].text;
-      a[i].appUrl = seedMap[a[i].id].appUrl;
-      a[i].fac = seedMap[a[i].id].fac;
-    }
+.info-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:13.5px}
+.info-row:last-child{border-bottom:none}
+.info-row span{color:var(--mut)}
+.info-row b{color:#fff}
+
+.timer-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.t-card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:13px;padding:13px;text-align:center}
+.t-card .v{font-size:18px;font-weight:900;color:#60a5fa;font-family:monospace}
+.t-card .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin-top:5px;font-weight:800}
+
+.per-tabs{display:flex;gap:8px;margin-bottom:14px}
+.p-tab{padding:7px 14px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--mut);font-weight:800;font-size:12px;cursor:pointer}
+.p-tab.on{background:rgba(77,163,255,.2);border-color:var(--acc);color:#fff}
+
+.fin-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.f-box{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:13px;padding:14px}
+.f-box .fl{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);font-weight:800}
+.f-box .fv{font-size:19px;font-weight:900;margin-top:4px}
+
+@media(max-width:860px){.st-grid2,.timer-cards,.fin-summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="st-wrap">
+  <div class="st-head">
+    <div class="st-user">
+      <div class="st-ava">ЕХ</div>
+      <div>
+        <div class="st-name">Евгений Холмс [123] <span style="font-size:13px;color:#60a5fa;font-weight:700">#K8W4C6</span></div>
+        <div class="st-uid">Работа: Завод ЖБК · УМВД по Республике Провинция (г. Приволжск) · Счёт №748291</div>
+      </div>
+    </div>
+    <button class="st-status-btn" id="btnOnlineToggle" onclick="toggleLogoutState()">🟢 На сервере (Таймер онлайна идёт)</button>
+  </div>
+
+  <div class="st-grid2">
+    <!-- Левая панель: Основная статистика персонажа -->
+    <div class="st-panel">
+      <div class="st-h2">👤 Основная информация о персонаже</div>
+      <div class="st-sub">Общие данные аккаунта, работа и текущее имущество</div>
+      <div class="info-row"><span>Имя и Фамилия:</span><b>Евгений Холмс</b></div>
+      <div class="info-row"><span>Уникальный UID:</span><b>#K8W4C6</b></div>
+      <div class="info-row"><span>Уровень (Стаж):</span><b>28 уровень (112 / 120 EXP)</b></div>
+      <div class="info-row"><span>Работа:</span><b style="color:#fcd34d">Завод ЖБК</b></div>
+      <div class="info-row"><span>Организация и подразделение:</span><b>УМВД г. Приволжск (ОУР)</b></div>
+      <div class="info-row"><span>Звание и должность:</span><b>Капитан · Оперуполномоченный</b></div>
+      <div class="info-row"><span>Банковский счёт (№ 748291):</span><b style="color:var(--green)">4 850 000 ₽</b></div>
+      <div class="info-row"><span>Наличные средства:</span><b style="color:var(--gold)">320 000 ₽</b></div>
+      <div class="info-row"><span>Недвижимость:</span><b>Квартира (г. Приволжск), Частный дом (г. Мирный)</b></div>
+    </div>
+
+    <!-- Правая панель: Счётчик общего онлайна на сервере -->
+    <div class="st-panel">
+      <div class="st-h2">⏱️ Счётчик чистого времени в игре (Онлайн)</div>
+      <div class="st-sub" id="timerHint">Таймер запущен при входе на сервер. При переходе в логаут отсчёт автоматически останавливается.</div>
+
+      <div class="timer-cards">
+        <div class="t-card">
+          <div class="v" id="tSession">02ч 14м 08с</div>
+          <div class="l">Текущая сессия</div>
+        </div>
+        <div class="t-card">
+          <div class="v" id="tToday">05ч 42м 08с</div>
+          <div class="l">Онлайн за сегодня</div>
+        </div>
+        <div class="t-card">
+          <div class="v" id="tMonth">132ч 18м 08с</div>
+          <div class="l">Онлайн за месяц</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;background:rgba(77,163,255,.08);border:1px solid rgba(77,163,255,.3);border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#93c5fd;font-weight:800">Общее время в игре (За всё время)</div>
+          <div style="font-size:12px;color:var(--mut);margin-top:2px">Чистый наигранный онлайн с момента регистрации</div>
+        </div>
+        <div style="font-size:24px;font-weight:900;color:#fff;font-family:monospace" id="tTotal">1 842ч 35м 08с</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Нижняя панель: Статистика доходов и расходов (День / Месяц / Всё время) -->
+  <div class="st-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px">
+      <div>
+        <div class="st-h2">💰 Статистика доходов и расходов</div>
+        <div class="st-sub" style="margin-bottom:0">Детализация заработка на работах (Завод ЖБК, Лесоруб, Строитель, Машинист трамвая) и переводов с игроками</div>
+      </div>
+      <div class="per-tabs">
+        <button class="p-tab on" id="pt_day" onclick="setFinPeriod('day')">За сегодня (День)</button>
+        <button class="p-tab" id="pt_month" onclick="setFinPeriod('month')">За месяц</button>
+        <button class="p-tab" id="pt_all" onclick="setFinPeriod('all')">За всё время</button>
+      </div>
+    </div>
+
+    <div class="fin-summary" id="finSummary"></div>
+    <div id="finBreakdown"></div>
+  </div>
+</div>
+
+<script>
+var IS_ONLINE = true;
+var secSession = 2 * 3600 + 14 * 60 + 8;
+var secToday   = 5 * 3600 + 42 * 60 + 8;
+var secMonth   = 132 * 3600 + 18 * 60 + 8;
+var secTotal   = 1842 * 3600 + 35 * 60 + 8;
+
+function fmtSec(s) {
+  var h = Math.floor(s / 3600);
+  var m = Math.floor((s % 3600) / 60);
+  var sc = s % 60;
+  return h.toLocaleString('ru-RU') + 'ч ' + String(m).padStart(2, '0') + 'м ' + String(sc).padStart(2, '0') + 'с';
+}
+
+function updateTimers() {
+  if (!IS_ONLINE) return;
+  secSession++; secToday++; secMonth++; secTotal++;
+  document.getElementById('tSession').textContent = fmtSec(secSession);
+  document.getElementById('tToday').textContent   = fmtSec(secToday);
+  document.getElementById('tMonth').textContent   = fmtSec(secMonth);
+  document.getElementById('tTotal').textContent   = fmtSec(secTotal);
+}
+setInterval(updateTimers, 1000);
+
+window.toggleLogoutState = function() {
+  IS_ONLINE = !IS_ONLINE;
+  var b = document.getElementById('btnOnlineToggle');
+  var h = document.getElementById('timerHint');
+  if (IS_ONLINE) {
+    b.className = 'st-status-btn';
+    b.textContent = '🟢 На сервере (Таймер онлайна идёт)';
+    h.textContent = 'Таймер запущен при входе на сервер. При переходе в логаут отсчёт автоматически останавливается.';
+  } else {
+    b.className = 'st-status-btn logout';
+    b.textContent = '🔴 В логауте (Отсчёт времени остановлен)';
+    h.textContent = 'Игрок вышел с сервера (в логауте) — счётчик чистого онлайна поставлен на паузу.';
   }
-  var hasS0 = a.some(function(x) { return x && x.id === 's0'; });
-  if (!hasS0 && seedMap['s0']) {
-    a.unshift(seedMap['s0']);
+};
+
+/* За сегодня доход только на работе Завод ЖБК; за месяц и всё время — ЖБК, Лесоруб, Строитель, Машинист трамвая + получено/отдано игрокам */
+var FIN_DATA = {
+  day: {
+    inc: 185000,
+    exp: 50000,
+    rows: [
+      ['Заработок на работе: Завод ЖБК (за сегодня)', '+185 000 ₽', 'green'],
+      ['Передано денег другим игрокам (наличные и переводы)', '−50 000 ₽', 'red']
+    ]
+  },
+  month: {
+    inc: 3940000,
+    exp: 1680000,
+    rows: [
+      ['Заработок на работе: Завод ЖБК', '+1 420 000 ₽', 'green'],
+      ['Заработок на работе: Машинист трамвая', '+860 000 ₽', 'green'],
+      ['Заработок на работе: Строитель', '+640 000 ₽', 'green'],
+      ['Заработок на работе: Лесоруб', '+410 000 ₽', 'green'],
+      ['Получено денег от других игроков (переводы и передача)', '+610 000 ₽', 'green'],
+      ['Передано денег другим игрокам (отдано лично и по счёту)', '−1 180 000 ₽', 'red'],
+      ['Оплата ЖКХ, штрафов и обслуживание транспорта', '−500 000 ₽', 'red']
+    ]
+  },
+  all: {
+    inc: 48950000,
+    exp: 41200000,
+    rows: [
+      ['Заработок на работе: Завод ЖБК (за всё время)', '+14 800 000 ₽', 'green'],
+      ['Заработок на работе: Машинист трамвая (за всё время)', '+11 250 000 ₽', 'green'],
+      ['Заработок на работе: Строитель (за всё время)', '+8 400 000 ₽', 'green'],
+      ['Заработок на работе: Лесоруб (за всё время)', '+5 900 000 ₽', 'green'],
+      ['Получено денег от других игроков (за всё время)', '+8 600 000 ₽', 'green'],
+      ['Передано денег другим игрокам (отдано за всё время)', '−12 450 000 ₽', 'red'],
+      ['Покупка недвижимости, автомобилей, оплата ЖКХ и услуг', '−28 750 000 ₽', 'red']
+    ]
   }
-  defSeeds.forEach(function(sd) {
-    if (sd.id === 's0') return;
-    var exists = a.some(function(x) { return x && x.id === sd.id; });
-    if (!exists) a.push(sd);
+};
+
+window.setFinPeriod = function(p) {
+  ['day', 'month', 'all'].forEach(function(k) {
+    document.getElementById('pt_' + k).classList.toggle('on', k === p);
   });
-  return a;
-}
+  var d = FIN_DATA[p];
+  var net = d.inc - d.exp;
+  document.getElementById('finSummary').innerHTML =
+    '<div class="f-box"><div class="fl">Доходы</div><div class="fv" style="color:var(--green)">+' + d.inc.toLocaleString('ru-RU') + ' ₽</div></div>' +
+    '<div class="f-box"><div class="fl">Расходы</div><div class="fv" style="color:var(--red)">−' + d.exp.toLocaleString('ru-RU') + ' ₽</div></div>' +
+    '<div class="f-box"><div class="fl">Чистый итог</div><div class="fv" style="color:#60a5fa">' + (net >= 0 ? '+' : '−') + Math.abs(net).toLocaleString('ru-RU') + ' ₽</div></div>';
 
-function itemTitle(it) {
-  if (it.title && String(it.title).trim()) return String(it.title).trim();
-  var t = String(it.text || '').trim();
-  if (!t) return '';
-  var i = t.indexOf('\n');
-  return (i >= 0 ? t.substring(0, i) : t).trim();
-}
+  document.getElementById('finBreakdown').innerHTML = d.rows.map(function(r) {
+    return '<div class="info-row"><span>' + r[0] + '</span><b style="color:var(--' + r[2] + ')">' + r[1] + '</b></div>';
+  }).join('');
+};
 
-function itemBody(it) {
-  if (it.title && String(it.title).trim()) return String(it.text || '');
-  var t = String(it.text || '').trim();
-  var i = t.indexOf('\n');
-  if (i >= 0) return t.substring(i + 1).trim();
-  return '';
-}
-
-function loadLocal() {
-  try {
-    var d = JSON.parse(LS.get(LOCAL_K) || 'null');
-    if (d && d.items) {
-      var a = toArr(d.items);
-      if (a && a.length) return normItems(a);
-    }
-  } catch (e) {}
-  return seed();
-}
-
-function saveLocal(items) {
-  try { LS.set(LOCAL_K, JSON.stringify({ items: items })); }
-  catch (e) { toast('Хранилище переполнено', true); }
-}
-
-function cacheItems() {
-  try { LS.set(CACHE_K, JSON.stringify({ rev: localRev, items: ITEMS })); } catch (e) {}
-}
-
-function loadCache() {
-  try {
-    var c = JSON.parse(LS.get(CACHE_K) || 'null');
-    if (c) {
-      var a = toArr(c.items);
-      if (a && a.length) return { rev: (typeof c.rev === 'number' ? c.rev : 0), items: normItems(a) };
-    }
-  } catch (e) {}
-  return null;
-}
-
-function byId(id) {
-  for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].id === id) return ITEMS[i];
-  return null;
-}
-
-function itemsByFac(k) {
-  if (k === 'all') return ITEMS.slice();
-  var o = [];
-  for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].fac === k) o.push(ITEMS[i]);
-  return o;
-}
-
-function countItems(k) {
-  if (k === 'all') return ITEMS.length;
-  return itemsByFac(k).length;
-}
+setFinPeriod('day');
+</script>
+</body>
+</html>
