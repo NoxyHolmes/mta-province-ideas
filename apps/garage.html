@@ -2,720 +2,562 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Госструктуры · Автопарк и форма</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Автопарк и форма фракций · MTA Province</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#07090e;
-  --bg2:#0d121b;
-  --card:rgba(20,27,40,.84);
+  --bg:#080b11;
+  --card:#121824;
   --line:rgba(255,255,255,.08);
-  --txt:#f2f6fc;
+  --txt:#f1f5f9;
   --mut:#8c98ad;
   --acc:#4da3ff;
   --green:#2fd97a;
   --yellow:#f7c948;
   --red:#ff5c5c;
+  --purple:#a78bfa;
 }
-html,body{color-scheme:dark;background:#07090e;color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
+html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
 body{
   background:
-    radial-gradient(1200px 540px at 8% -10%,rgba(56,128,255,.16),transparent 60%),
-    radial-gradient(950px 520px at 95% 0%,rgba(167,139,250,.13),transparent 55%),
-    #07090e;
+    radial-gradient(1100px 520px at 10% -10%,rgba(77,163,255,.14),transparent 60%),
+    radial-gradient(1000px 500px at 90% 110%,rgba(167,139,250,.12),transparent 60%),
+    #080b11;
+  padding:22px 20px 60px;
 }
-::-webkit-scrollbar{width:8px;height:8px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#263144;border-radius:8px}
-::-webkit-scrollbar-thumb:hover{background:#38465e}
-#errbox{display:none;position:fixed;left:12px;top:12px;z-index:990;background:#3a1414;border:1px solid #a34444;color:#ffb3b3;padding:12px 16px;border-radius:10px;font:12px/1.5 monospace;max-width:85%;white-space:pre-wrap}
-button{touch-action:manipulation;font-family:inherit}
+.g-wrap{max-width:1380px;margin:0 auto}
 
-#topbar{
-  height:62px;
+/* Шапка без повторного входа GitHub */
+.g-top{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:0 22px;
-  border-bottom:1px solid var(--line);
-  background:rgba(10,13,20,.86);
-  position:sticky;
-  top:0;
-  z-index:50;
-  backdrop-filter:blur(16px);
-  box-shadow:0 8px 30px rgba(0,0,0,.45);
-  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:14px;
+  background:rgba(18,24,36,.88);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px 22px;
+  margin-bottom:18px;
+  box-shadow:0 16px 40px rgba(0,0,0,.45);
 }
-.tb-left{display:flex;align-items:center;gap:12px;min-width:0}
-.logo-ic{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid rgba(147,197,253,.4);box-shadow:0 6px 18px rgba(37,99,235,.32);flex:0 0 36px}
-.tb-title{font-weight:900;letter-spacing:1.4px;font-size:13px;background:linear-gradient(90deg,#ffffff,#a5c4ff);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tb-right{display:flex;align-items:center;gap:10px}
-.sync{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--mut);white-space:nowrap;background:rgba(255,255,255,.03);padding:5px 11px;border-radius:9px;border:1px solid var(--line)}
-.sync i{width:8px;height:8px;border-radius:50%;background:#55606f;transition:.3s}
-.sync.ok i{background:var(--green);box-shadow:0 0 8px rgba(47,217,122,.6)}
-.sync.busy i{background:var(--yellow);box-shadow:0 0 8px rgba(247,201,72,.4)}
-.sync.err i{background:var(--red);box-shadow:0 0 8px rgba(255,92,92,.4)}
-.adbadge{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:10px;border:1px solid rgba(47,217,122,.4);background:rgba(47,217,122,.12);color:#7ce6a8;font-size:11.5px;font-weight:800;white-space:nowrap}
+.g-brand{display:flex;align-items:center;gap:14px}
+.g-ic{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 22px rgba(59,130,246,.35)}
+.g-title{font-size:20px;font-weight:900}
+.g-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
 
-#content{padding:24px;max-width:1460px;width:100%;margin:0 auto;animation:fade .3s}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}}
-.ph{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:8px}
-h1{font-size:25px;font-weight:900;letter-spacing:-.4px}
-.cnt{font-size:12px;background:#1e293b;border:1px solid rgba(77,163,255,.4);color:#93c5fd;padding:2px 10px;border-radius:20px;vertical-align:middle;margin-left:8px;font-weight:800}
-.ph-sub{color:var(--mut);font-size:13px;margin-top:5px}
-.ph-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-
-.info-banner{
-  background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(139,92,246,.08));
-  border:1px solid rgba(96,165,250,.28);
-  border-radius:16px;
-  padding:14px 18px;
-  margin:12px 0 16px;
-  font-size:12.5px;
-  line-height:1.55;
-  color:#dbeafe;
+.type-switch{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.t-btn{
+  padding:10px 18px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--mut);
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+  transition:.18s;
 }
-.info-banner b{color:#fff}
+.t-btn:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.t-btn.on{background:linear-gradient(135deg,#2563eb,#4f46e5);border-color:#93c5fd;color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.32)}
 
-.tabs{display:flex;gap:5px;background:#0b0f17;border:1px solid var(--line);border-radius:13px;padding:5px}
-.tab{padding:9px 18px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--mut);font-weight:800;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
-.tab:hover{color:var(--txt)}
-.tab.on{color:#fff;background:linear-gradient(135deg,rgba(59,130,246,.32),rgba(99,102,241,.18));border-color:rgba(96,165,250,.45);box-shadow:0 4px 14px rgba(37,99,235,.22)}
+.add-btn{
+  padding:10px 18px;
+  border-radius:12px;
+  border:1px solid rgba(47,217,122,.45);
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+  transition:.18s;
+  box-shadow:0 6px 18px rgba(16,185,129,.28);
+}
+.add-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 
-.btn{background:linear-gradient(135deg,#3b82f6,#2563eb);border:1px solid rgba(147,197,253,.35);color:#fff;padding:9px 16px;border-radius:11px;font-weight:800;font-size:12.5px;cursor:pointer;transition:all .18s;box-shadow:0 6px 18px rgba(37,99,235,.28)}
-.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.btn.big{padding:11px 20px;font-size:13px}
-.btn.ghost{background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--txt);box-shadow:none}
-.btn.ghost:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}
-.btn.slim{padding:7px 13px;font-size:11.5px}
-.btn.warn{background:linear-gradient(135deg,#dc2626,#991b1b);border-color:rgba(252,165,165,.3)}
+/* Фильтры фракций */
+.fac-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.f-chip{
+  padding:8px 14px;
+  border-radius:11px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--mut);
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  transition:.16s;
+}
+.f-chip:hover{border-color:rgba(255,255,255,.22);color:#fff}
+.f-chip.on{background:rgba(77,163,255,.2);border-color:var(--acc);color:#fff}
 
-.cats{display:flex;gap:10px;margin:14px 0 12px;flex-wrap:wrap}
-.cat{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(155deg,rgba(24,32,48,.85),rgba(16,22,33,.9));font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;color:var(--mut)}
-.cat:hover{border-color:rgba(255,255,255,.2);color:var(--txt);transform:translateY(-1px)}
-.cat.on{border-color:rgba(77,163,255,.55);background:linear-gradient(90deg,rgba(59,130,246,.22),rgba(59,130,246,.06));color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.22)}
-.cat-ic{font-size:15px}
-.cn{margin-left:4px;background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:10px;font-size:10.5px;color:#cbd5e1;font-style:normal;font-weight:800}
+.search-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.inp,.sel{background:#0f141e;border:1px solid rgba(255,255,255,.12);color:var(--txt);padding:10px 14px;border-radius:12px;font-size:13.5px;font-family:inherit;outline:none;width:100%}
+.inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.15)}
 
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 10px}
-.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--mut);font-size:12.5px;font-weight:700;cursor:pointer;user-select:none;transition:all .18s}
-.chip:hover{border-color:var(--cc,var(--acc));color:var(--txt)}
-.chip.on{border-color:var(--cc,var(--acc));color:#fff;background:var(--ccb,rgba(77,163,255,.18));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.dot{width:7px;height:7px;border-radius:50%;flex:0 0 7px;box-shadow:0 0 8px 1px var(--cc,transparent)}
-
-.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 4px}
-.inp,.sel{background:#0b0f17;border:1px solid rgba(255,255,255,.12);color:var(--txt);padding:10px 14px;border-radius:11px;font-size:13.5px;font-family:inherit;outline:none;transition:.18s}
-.inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.16)}
-.sel option{background:#121824}
-textarea.inp{resize:vertical}
-
-.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:16px;margin-top:14px}
-.vgrid.grouped{display:block}
-.vcard{
-  background:linear-gradient(155deg,rgba(24,32,48,.88),rgba(15,20,31,.94));
+/* Сетка карточек авто и формы */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px}
+.item-card{
+  background:linear-gradient(160deg,#161e2e,#101622);
   border:1px solid var(--line);
   border-radius:18px;
   overflow:hidden;
-  position:relative;
-  transition:all .22s cubic-bezier(.2,.8,.2,1);
-  box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05);
-  animation:cardIn .38s both;
   display:flex;
   flex-direction:column;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  position:relative;
 }
-@keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
-.vcard:hover{border-color:rgba(255,255,255,.22);transform:translateY(-4px);box-shadow:0 16px 36px rgba(0,0,0,.48)}
-.vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc,#4da3ff);z-index:3}
-.vcard.dragging{opacity:.4;transform:scale(.97)}
+.item-card:hover{transform:translateY(-3px);border-color:rgba(147,197,253,.4);box-shadow:0 16px 38px rgba(0,0,0,.5)}
 
-.vph{position:relative;aspect-ratio:16/10;background:#0b0f17;cursor:pointer;overflow:hidden}
-.vph.empty{background:#090d14}
-.vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;animation:fadeIn .4s}
-@keyframes fadeIn{from{opacity:0}}
-.vph.drag{outline:2px dashed var(--dc,var(--acc));outline-offset:-5px}
-.vph-empty{position:absolute;inset:10px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#64748b;transition:all .2s;text-align:center;padding:6px}
-.vph-empty .pe-ic{font-size:26px;opacity:.75}
-.vph-empty b{color:#94a3b8;font-size:12px;font-weight:700}
-.vph-empty span{font-size:10px}
-.vph:hover .vph-empty{border-color:rgba(77,163,255,.5);color:var(--acc)}
-.vph-empty.plain{border-style:solid;border-color:rgba(255,255,255,.05);cursor:default}
-
-.vdep{position:absolute;left:9px;top:11px;padding:3px 9px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:.5px;border:1px solid;background:rgba(10,14,22,.78);backdrop-filter:blur(6px);pointer-events:none}
-.vph-tools{position:absolute;top:11px;right:8px;display:flex;gap:6px;opacity:0;transition:opacity .2s;z-index:4}
-.vcard:hover .vph-tools{opacity:1}
-@media(hover:none){.vph-tools{opacity:1}.vcard:hover{transform:none}}
-.vtool{width:28px;height:28px;border-radius:9px;background:rgba(10,14,22,.88);border:1px solid var(--line);color:#c9d3e3;cursor:pointer;font-size:12px;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.vtool:hover{border-color:var(--acc);color:#fff}
-.vtool.vtool-del:hover{border-color:var(--red);color:#ffb3b3}
-
-.vbody{padding:13px 15px 15px;display:flex;flex-direction:column;flex:1}
-.vname{font-weight:800;font-size:14px;line-height:1.35;min-height:18px;border-radius:6px;padding:1px 3px;margin-left:-3px;color:#fff}
-.vdesc{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.5;min-height:17px;border-radius:6px;padding:1px 3px;margin-left:-3px;flex:1}
-.vsp{display:flex;align-items:baseline;gap:6px;margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.08)}
-.vsp .l{color:#64748b;text-transform:uppercase;letter-spacing:1.1px;font-weight:800;font-size:9.5px}
-.vsp b{margin-left:auto;font-size:14.5px;font-weight:900;color:var(--dc,#6cc0ff);min-width:14px;text-align:right;border-radius:6px;padding:1px 3px}
-.vsp i{font-style:normal;color:var(--mut);font-size:10.5px;font-weight:700}
-
-[contenteditable]{outline:none}
-[contenteditable]:focus{background:#0b0f17;box-shadow:0 0 0 3px rgba(77,163,255,.16)}
-[contenteditable]:empty::before{content:attr(data-ph);color:#4a5462}
-.empty{padding:32px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:14px;margin-top:10px}
-
-.gsec{margin:0 0 24px;border-radius:16px;padding:12px;transition:background .2s,outline-color .2s;outline:2px dashed transparent;outline-offset:2px;background:rgba(255,255,255,.012);border:1px solid rgba(255,255,255,.04)}
-.gsec.dragover{outline-color:var(--gc,#4da3ff);background:rgba(77,163,255,.06)}
-.ghead{display:flex;align-items:center;gap:10px;font-size:11.5px;letter-spacing:1.8px;text-transform:uppercase;font-weight:900;margin-bottom:12px}
-.ghead .gd{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
-.ghead .gname{white-space:nowrap}
-.ghead .gline{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent)}
-.ghint{font-size:10.5px;color:#64748b;font-weight:600;letter-spacing:.3px;text-transform:none;white-space:nowrap}
-.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:16px}
-.gempty{min-height:64px;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(255,255,255,.08);border-radius:12px;color:#64748b;font-size:12px}
-
-.clsgrid{display:flex;flex-direction:column;gap:8px}
-.clsbtn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--txt);font-size:13.5px;font-weight:700;cursor:pointer;transition:all .18s;text-align:left}
-.clsbtn:hover{border-color:var(--cc,var(--acc));transform:translateX(3px)}
-.clsbtn.on{border-color:var(--cc,var(--acc));background:var(--ccb,rgba(77,163,255,.16))}
-
-#lb{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:14px;cursor:zoom-out;opacity:0;transition:opacity .28s ease;pointer-events:none}
-#lb::before{content:'';position:absolute;inset:0;background:rgba(4,7,11,.9);backdrop-filter:blur(10px);opacity:0;transition:opacity .28s ease}
-#lb.show{opacity:1;pointer-events:auto}
-#lb.show::before{opacity:1}
-#lb img{position:relative;max-width:min(1600px,96vw);max-height:91vh;border-radius:14px;border:1px solid rgba(255,255,255,.15);box-shadow:0 30px 90px rgba(0,0,0,.75);transform:scale(.88) translateY(12px);opacity:0;transition:transform .34s cubic-bezier(.22,.9,.3,1),opacity .22s ease;cursor:zoom-out}
-#lb.zoom img{transform:none;opacity:1}
-.lb-cap{position:absolute;top:20px;left:24px;font-weight:800;font-size:14px;color:#e9edf4;background:rgba(14,17,22,.82);border:1px solid var(--line);padding:9px 15px;border-radius:12px;backdrop-filter:blur(6px);max-width:70vw}
-.lb-cap span{display:block;font-weight:600;font-size:11px;color:var(--mut);margin-top:3px}
-.lbdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
-
-.back{position:fixed;inset:0;background:rgba(4,7,11,.78);backdrop-filter:blur(8px);z-index:400;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px;animation:fadeIn .2s}
-#croot .back{z-index:420}
-@keyframes up{from{transform:translateY(24px);opacity:0}}
-.modal{width:100%;max-width:820px;background:#121824;border:1px solid rgba(255,255,255,.12);border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.65);animation:up .3s;overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 70px)}
-.modal.smw{max-width:430px}
-.m-head{flex:0 0 auto;padding:22px 24px 16px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,rgba(77,163,255,.08),transparent)}
-.m-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mut);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:13px}
-.mh-nm{font-size:19px;font-weight:800;padding-right:36px}
-.mh-sub{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.5;padding-right:36px}
-.m-body{flex:1 1 auto;overflow-y:auto;min-height:100px;padding:18px 24px}
-.m-foot{flex:0 0 auto;padding:13px 24px;border-top:1px solid var(--line);background:#0e131d;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
-.flab{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);font-weight:800;margin:0 0 6px}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.formgrid .full{grid-column:1/-1}
-.aph{aspect-ratio:16/8;border:1px dashed rgba(255,255,255,.18);border-radius:12px;background:#0b0f17;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative}
-.aph-in{display:flex;flex-direction:column;align-items:center;gap:5px;color:#64748b;text-align:center;padding:6px}
-.aph-in .aph-ic{font-size:26px;opacity:.75}
-.aph-in b{color:#94a3b8;font-size:12.5px}
-.aph-in span{font-size:10.5px}
-.aph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.hint{font-size:11.5px;color:var(--mut);line-height:1.6;margin-top:10px;background:#0b0f17;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-
-.deplist-head{font-size:10px;text-transform:uppercase;letter-spacing:1.6px;color:var(--mut);font-weight:800;margin:14px 0 6px}
-.deprow{display:flex;align-items:center;gap:8px;padding:5px 0}
-.deprow .ddot{width:10px;height:10px;flex:0 0 10px;border-radius:50%}
-.deprow .dep-name{flex:1;min-width:0;padding:8px 10px;font-size:13px}
-.deprow .dep-color{width:34px;height:34px;flex:0 0 34px;padding:2px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:#0b0f17}
-.deprow .dep-del{width:34px;height:34px;flex:0 0 34px;padding:0;font-size:13px;display:flex;align-items:center;justify-content:center}
-.deprow .dep-cls-btn{flex:0 0 auto;padding:8px 10px;font-size:11.5px;white-space:nowrap}
-.newdep{border-top:1px dashed var(--line);padding-top:14px;margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.newdep .inp{flex:1 1 160px;min-width:0}
-
-#troot{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:700;display:flex;flex-direction:column;gap:8px}
-.toast{background:#161f30;border:1px solid rgba(77,163,255,.4);border-left:4px solid var(--acc);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:up .3s;max-width:360px;transition:.35s}
-.toast.warn{border-left-color:var(--red)}
-.toast.out{opacity:0;transform:translateY(8px)}
-
-@media(max-width:760px){
-  #content{padding:14px 12px 40px}
-  .ph{flex-direction:column;gap:12px}
-  .ph-actions{width:100%;display:grid;grid-template-columns:1fr;gap:10px}
-  .vgrid,.ggrid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .formgrid{grid-template-columns:1fr}
+.ic-media{
+  width:100%;
+  aspect-ratio:16/10;
+  background:radial-gradient(circle at 50% 40%,#1e293b,#0f172a);
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  cursor:pointer;
 }
+.item-card.skin-card .ic-media{aspect-ratio:4/4}
+.ic-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.item-card:hover .ic-media img{transform:scale(1.04)}
+.ic-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#64748b;font-size:12px;font-weight:700}
+.ic-placeholder i{font-style:normal;font-size:38px}
+
+.ic-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
+.ic-tag{padding:4px 9px;border-radius:8px;font-size:10.5px;font-weight:800;backdrop-filter:blur(8px);background:rgba(10,14,22,.82);border:1px solid rgba(255,255,255,.14);color:#e2e8f0}
+.ic-tag.mp{background:rgba(167,139,250,.25);border-color:rgba(167,139,250,.55);color:#ddd6fe}
+
+.ic-body{padding:15px 16px;flex:1;display:flex;flex-direction:column;gap:8px}
+.ic-title{font-weight:900;font-size:15.5px;color:#fff;line-height:1.3}
+.ic-meta{font-size:12px;color:var(--mut);line-height:1.45}
+.ic-meta b{color:#cbd5e1}
+
+.ic-admin-bar{
+  display:flex;
+  gap:6px;
+  padding:10px 16px 14px;
+  border-top:1px dashed rgba(255,255,255,.07);
+}
+.adm-btn{
+  flex:1;
+  padding:7px 10px;
+  border-radius:9px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:#cbd5e1;
+  font-size:11.5px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.15s;
+}
+.adm-btn:hover{border-color:var(--acc);color:#fff;background:rgba(77,163,255,.15)}
+.adm-btn.del:hover{border-color:var(--red);color:#fca5a5;background:rgba(255,92,92,.15)}
+
+/* Модальное окно добавления / редактирования с загрузкой фото */
+.m-back{position:fixed;inset:0;z-index:500;background:rgba(4,7,12,.82);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+.m-box{width:540px;max-width:96vw;background:#131926;border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.75);max-height:90vh;overflow-y:auto}
+.m-title{font-size:18px;font-weight:900;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.m-close{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--mut);width:32px;height:32px;border-radius:9px;cursor:pointer;font-weight:800}
+.flab{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin:12px 0 6px}
+
+.photo-drop{
+  border:2px dashed rgba(96,165,250,.45);
+  background:rgba(37,99,235,.07);
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+  cursor:pointer;
+  transition:.18s;
+}
+.photo-drop:hover{border-color:#60a5fa;background:rgba(37,99,235,.14)}
+.photo-preview{width:100%;max-height:210px;object-fit:contain;border-radius:10px;margin-top:10px;display:none;border:1px solid var(--line);background:#090d14}
+
+#lb{position:fixed;inset:0;z-index:700;background:rgba(4,7,12,.9);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb img{max-width:92vw;max-height:88vh;border-radius:14px;border:1px solid rgba(255,255,255,.15)}
+
+#troot{position:fixed;right:20px;bottom:20px;z-index:800;display:flex;flex-direction:column;gap:8px}
+.toast{background:#182234;border:1px solid rgba(77,163,255,.45);border-left:4px solid var(--acc);padding:12px 16px;border-radius:12px;font-weight:700;font-size:13px;box-shadow:0 12px 32px rgba(0,0,0,.55)}
 </style>
 </head>
 <body>
-<div id="errbox"></div>
-<script>
-window.addEventListener('error',function(ev){
- if(!(ev instanceof ErrorEvent)||!ev.message){return}
- var b=document.getElementById('errbox');
- if(b){b.style.display='block';b.textContent='Ошибка: '+ev.message;}
-},true);
-</script>
 
-<header id="topbar">
-  <div class="tb-left">
-    <div class="logo-ic" id="logoIc">🚔</div>
-    <div class="tb-title" id="tbTitle">ГОССТРУКТУРЫ · АВТОПАРК</div>
-  </div>
-  <div class="tb-right">
-    <div class="sync" id="sync"><i></i><span id="syncTxt">Локально</span></div>
-    <div id="adminZone"></div>
-  </div>
-</header>
-
-<main id="content">
-  <div class="ph">
-    <div>
-      <h1><span id="hTitle">Автопарк</span><span class="cnt" id="cnt">0</span></h1>
-      <div class="ph-sub" id="hSub"></div>
-    </div>
-    <div class="ph-actions">
-      <div class="tabs">
-        <button class="tab on" data-kind="cars" onclick="setKind('cars')">🚔 Автопарк</button>
-        <button class="tab" data-kind="form" onclick="setKind('form')">🎽 Форма и скины</button>
+<div class="g-wrap">
+  <div class="g-top">
+    <div class="g-brand">
+      <div class="g-ic">🚔</div>
+      <div>
+        <div class="g-title">Обновлённый автопарк и форма фракций</div>
+        <div class="g-sub">Каталог служебного транспорта, городской привязки и форменной одежды (включая МП-панель)</div>
       </div>
-      <button class="btn big" id="addBtn" onclick="openAdd()">＋ Добавить машину</button>
+    </div>
+
+    <div class="type-switch">
+      <button class="t-btn on" id="tabCars" onclick="setKind('car')">🚔 Автопарк (<span id="cntCars">0</span>)</button>
+      <button class="t-btn" id="tabSkins" onclick="setKind('skin')">👮 Форма и скины (<span id="cntSkins">0</span>)</button>
+      <button class="add-btn" id="btnAdd" onclick="openEditModal(null)">＋ Добавить в каталог</button>
     </div>
   </div>
 
-  <div class="info-banner" id="infoBanner">
-    💡 <b>Рекомендация по комплектации фракций и МП-панели:</b> в каталоге собраны варианты транспорта и скинов на выбор — добавлять все сразу не требуется. Для <b>УМВД и ОГИБДД</b> достаточно выбрать по <b>12 основных машин + 3 уникальные</b> для каждого города; для <b>ЦГБ / ОКБ — 4 основные + 2 уникальные</b> на город. Для вкладки <b>«Мероприятия» (ФСБ, СК, Прокуратура, МЧС, ФСО)</b> можно выбрать по <b>2–3 автомобиля и 2–3 вида скинов</b> каждой структуры и залить их в <b>МП-панель</b> для разнообразия РП-ситуаций.
+  <div class="fac-chips" id="facChips"></div>
+
+  <div class="search-row">
+    <input class="inp" id="qInp" style="max-width:420px" placeholder="🔎 Поиск по названию модели, подразделению или городу..." oninput="renderGrid()">
   </div>
 
-  <div class="cats" id="cats"></div>
-  <div class="chips" id="chips"></div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</div>
 
-  <div class="ctl">
-    <input class="inp" id="q" style="max-width:420px" placeholder="🔍 Поиск по названию или описанию…">
+<!-- Модальное окно добавления / редактирования с безотказной загрузкой фото -->
+<div class="m-back" id="editBack" onclick="if(event.target===this)closeEditModal()">
+  <div class="m-box">
+    <div class="m-title">
+      <span id="mTitleTxt">Добавить в каталог</span>
+      <button class="m-close" onclick="closeEditModal()">✕</button>
+    </div>
+
+    <label class="flab">Категория *</label>
+    <select class="sel" id="fKind" onchange="toggleSpeedField()">
+      <option value="car">🚔 Служебный автомобиль</option>
+      <option value="skin">👮 Форменная одежда / Скин</option>
+    </select>
+
+    <label class="flab">Фракция / Ведомство *</label>
+    <select class="sel" id="fFac"></select>
+
+    <label class="flab">Название модели авто или комплекта формы *</label>
+    <input class="inp" id="fTitle" placeholder="Например: Skoda Octavia ДПС / Повседневная форма ППС">
+
+    <label class="flab">Подразделение / Город / Назначение</label>
+    <input class="inp" id="fSub" placeholder="Например: ОГИБДД г. Приволжск (Базовый автопарк)">
+
+    <div id="speedFieldWrap">
+      <label class="flab">Максимальная скорость и привод (только для авто)</label>
+      <input class="inp" id="fSpeed" placeholder="Например: 245 км/ч · Полный привод">
+    </div>
+
+    <label class="flab">Доступ с ранга</label>
+    <input class="inp" id="fRank" placeholder="Например: С 4 ранга (Старший сержант)">
+
+    <label class="flab">Фотография (Загрузите файл с компьютера или вставьте ссылку)</label>
+    <div class="photo-drop" onclick="document.getElementById('fFileInp').click()">
+      <div style="font-weight:800;color:#93c5fd;font-size:13px">📷 Нажмите здесь, чтобы выбрать фото с компьютера</div>
+      <div style="font-size:11.5px;color:var(--mut);margin-top:4px">Поддерживаются PNG, JPG, WEBP — изображение автоматически оптимизируется без ошибок</div>
+      <input type="file" id="fFileInp" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
+      <img id="fPreview" class="photo-preview" alt="Предпросмотр">
+    </div>
+    <input class="inp" id="fImgUrl" style="margin-top:8px" placeholder="Или вставьте прямую ссылку на картинку (https://...)" oninput="handleUrlPreview(this.value)">
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+      <button class="t-btn" onclick="closeEditModal()">Отмена</button>
+      <button class="add-btn" onclick="saveCatalogItem()">💾 Сохранить</button>
+    </div>
   </div>
+</div>
 
-  <div class="vgrid" id="vgrid"></div>
-  <div class="empty" id="vempty" style="display:none"></div>
-</main>
-
-<input type="file" id="fileInp" accept="image/*" style="display:none">
-<div id="lb"><div class="lb-cap" id="lbCap"></div><img id="lbImg" alt=""></div>
-<div id="mroot"></div>
-<div id="croot"></div>
+<div id="lb" onclick="this.style.display='none'"><img id="lbImg" src="" alt=""></div>
 <div id="troot"></div>
 
 <script>
-var REPO=(function(){
- var h=location.hostname,p=location.pathname;
- if(!/\.github\.io$/.test(h)){return null}
- var owner=h.replace(/\.github\.io$/,'');
- var seg=p.split('/').filter(Boolean);
- return owner+'/'+(seg.length?seg[0]:(owner+'.github.io'));
-})();
-var BRANCH='main';
+var STORAGE_KEY = 'mta_garage_catalog_v5';
+var CUR_KIND = 'car';
+var CUR_FAC = 'all';
+var EDIT_ID = null;
+var CURRENT_IMG_DATA = '';
 
-var LS=(function(){
- var mem={},ok=false;
- try{var t='__ls_test__';window.localStorage.setItem(t,'1');window.localStorage.removeItem(t);ok=true}catch(e){ok=false}
- return {
-  get:function(k){if(ok){try{return window.localStorage.getItem(k)}catch(e){}}return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null},
-  set:function(k,v){v=String(v);if(ok){try{window.localStorage.setItem(k,v);return}catch(e){}}mem[k]=v},
-  remove:function(k){if(ok){try{window.localStorage.removeItem(k);return}catch(e){}}delete mem[k]}
- };
-})();
-
-function $(s){return document.querySelector(s)}
-function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
-function hex2rgba(h,a){
- var r=parseInt(h.substring(1,3),16),g=parseInt(h.substring(3,5),16),b=parseInt(h.substring(5,7),16);
- return 'rgba('+r+','+g+','+b+','+a+')';
-}
-function toast(msg,warn){
- var t=document.createElement('div');
- t.className='toast'+(warn?' warn':'');
- t.textContent=msg;
- $('#troot').appendChild(t);
- setTimeout(function(){t.classList.add('out')},3400);
- setTimeout(function(){t.remove()},3900);
-}
-function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
-function b64d(s){return decodeURIComponent(escape(atob(s)))}
-
-function fetchT(url,opts,ms){
- var ctl=null,to=null;
- try{if(typeof AbortController!=='undefined'){ctl=new AbortController()}}catch(e){ctl=null}
- var o={};
- if(opts){for(var k in opts){if(Object.prototype.hasOwnProperty.call(opts,k)){o[k]=opts[k]}}}
- if(ctl){o.signal=ctl.signal;to=setTimeout(function(){try{ctl.abort()}catch(e){}},ms||8000)}
- return fetch(url,o).then(function(r){if(to){clearTimeout(to)}return r},function(e){if(to){clearTimeout(to)}throw e});
-}
-
-function defaultClasses(){
- return [
-  {k:'premium', n:'Премиум / Руководство', c:'#f7c948'},
-  {k:'high',    n:'Оперативный / Высший',  c:'#c084fc'},
-  {k:'standard',n:'Стандарт (Основной)',   c:'#4da3ff'},
-  {k:'budget',  n:'Бюджет / Патруль',      c:'#8b95a7'},
-  {k:'special', n:'Спецтранспорт / Уник.', c:'#ff9a3d'}
- ];
-}
-function defaultClassesFor(cat){return cat==='event'?[]:defaultClasses()}
-function cloneClasses(src){
- var out=[];if(!src||!src.length){return out}
- for(var i=0;i<src.length;i++){var c=src[i];if(!c||!c.k)continue;out.push({k:String(c.k),n:String(c.n||c.s||'—'),c:String(c.c||'#4da3ff')})}
- return out;
-}
-var DEFAULT_DEPS=[
- {k:'uvd',  s:'УМВД',        n:'УМВД (12 осн. + 3 уник.)',    c:'#4da3ff', cat:'main'},
- {k:'gibdd',s:'ОГИБДД',      n:'ОГИБДД (12 осн. + 3 уник.)',  c:'#56ccff', cat:'main'},
- {k:'cgb',  s:'ЦГБ/ОКБ',     n:'ЦГБ/ОКБ (4 осн. + 2 уник.)',  c:'#ff5c5c', cat:'main'},
- {k:'vs',   s:'ВС РФ',       n:'ВС РФ',                       c:'#2fd97a', cat:'main'},
- {k:'rzd',  s:'РЖД',         n:'РЖД',                         c:'#ff9a3d', cat:'main'},
- {k:'fsb',  s:'ФСБ',         n:'ФСБ (МП-панель)',             c:'#818cf8', cat:'event'},
- {k:'sk',   s:'СК',          n:'Следственный комитет (МП)',   c:'#e05c82', cat:'event'},
- {k:'prok', s:'Прокуратура', n:'Прокуратура (МП)',            c:'#f7c948', cat:'event'},
- {k:'mchs', s:'МЧС',         n:'МЧС (МП)',                    c:'#ff8a52', cat:'event'},
- {k:'fso',  s:'ФСО',         n:'ФСО (МП)',                    c:'#c084fc', cat:'event'}
+var FAC_LIST = [
+  { k: 'all',  n: 'Все ведомства',          ic: '📋' },
+  { k: 'umvd', n: 'УМВД (Полиция / ОМОН)',  ic: '🛡️' },
+  { k: 'gibdd',n: 'ОГИБДД (ДПС)',           ic: '🚓' },
+  { k: 'mz',   n: 'Минздрав (ЦГБ / ОКБ)',   ic: '🏥' },
+  { k: 'mo',   n: 'Минобороны (ВС РФ)',     ic: '🎖️' },
+  { k: 'mp',   n: 'МП-панель (ФСБ / СК / МЧС / ФСО)', ic: '🚨' }
 ];
-function cloneDeps(src){
- var out=[];if(!src||!src.length){return out}
- for(var i=0;i<src.length;i++){
-  var d=src[i];if(!d||!d.k)continue;
-  var cat=(d.cat==='event')?'event':'main';
-  var classes=(d.classes&&Array.isArray(d.classes))?cloneClasses(d.classes):defaultClassesFor(cat);
-  out.push({k:String(d.k),s:String(d.s||d.n||'—'),n:String(d.n||d.s||'—'),c:String(d.c||'#4da3ff'),cat:cat,classes:classes});
- }
- return out;
-}
-var DEPS=cloneDeps(DEFAULT_DEPS);
-function findDep(k){for(var i=0;i<DEPS.length;i++){if(DEPS[i].k===k)return DEPS[i]}return null}
-function dep(k){var d=findDep(k);return d||{k:k||'_',s:'—',n:'Раздел удалён',c:'#6b7280',cat:'main',classes:[]}}
-function classesOfDep(depKey){var d=findDep(depKey);return (d&&d.classes)?d.classes:[]}
-function classNameOf(depKey,clsKey){var cl=classesOfDep(depKey);for(var i=0;i<cl.length;i++){if(cl[i].k===clsKey)return cl[i].n}return '—'}
-function clsOf(it){
- if(!it)return null;
- var cl=classesOfDep(it.dep);if(!cl.length)return null;
- for(var i=0;i<cl.length;i++){if(cl[i].k===it.cls)return it.cls}
- return cl[0].k;
-}
-function isGrouped(){
- if(state.kind!=='cars'||state.dep==='all')return false;
- var d=findDep(state.dep);
- return !!(d&&d.classes&&d.classes.length);
+
+var DEFAULT_ITEMS = [
+  /* Автопарк УМВД */
+  { id: 'c1', kind: 'car', fac: 'umvd', title: 'Lada Vesta ППС', sub: 'УМВД · Базовый патрульный автомобиль', speed: '195 км/ч · Передний привод', rank: 'Со 2 ранга (Мл. сержант)', img: '' },
+  { id: 'c2', kind: 'car', fac: 'umvd', title: 'УАЗ Патриот ППС', sub: 'УМВД · Патрульный внедорожник', speed: '175 км/ч · Полный привод', rank: 'С 3 ранга (Сержант)', img: '' },
+  { id: 'c3', kind: 'car', fac: 'umvd', title: 'Skoda Octavia УМВД', sub: 'УМВД г. Приволжск · Оперативно-служебный', speed: '230 км/ч · Передний привод', rank: 'С 6 ранга (Прапорщик)', img: '' },
+  { id: 'c4', kind: 'car', fac: 'umvd', title: 'Toyota Camry XV70 (ОУР)', sub: 'УМВД · Оперативный транспорт уголовного розыска', speed: '245 км/ч · Передний привод', rank: 'С 9 ранга (Лейтенант)', img: '' },
+  { id: 'c5', kind: 'car', fac: 'umvd', title: 'КамАЗ-4350 «Выстрел» / Автозак ОМОН', sub: 'УМВД · Спецтранспорт ОМОН для спецопераций', speed: '140 км/ч · Полный привод', rank: 'Со спецдопуска ОМОН', img: '' },
+
+  /* Автопарк ОГИБДД */
+  { id: 'c6', kind: 'car', fac: 'gibdd', title: 'Lada Vesta Sport ДПС', sub: 'ОГИБДД · Базовый экипаж дорожно-патрульной службы', speed: '215 км/ч · Передний привод', rank: 'Со 2 ранга (Мл. сержант)', img: '' },
+  { id: 'c7', kind: 'car', fac: 'gibdd', title: 'Skoda Octavia A8 ДПС', sub: 'ОГИБДД · Скоростной трассовый патруль', speed: '240 км/ч · Полный привод', rank: 'С 5 ранга (Старшина)', img: '' },
+  { id: 'c8', kind: 'car', fac: 'gibdd', title: 'BMW M5 F90 Спецбат ДПС', sub: 'ОГИБДД г. Приволжск · Уникальный перехватчик спецбатальона', speed: '305 км/ч · Полный привод', rank: 'С 11 ранга (Капитан)', img: '' },
+  { id: 'c9', kind: 'car', fac: 'gibdd', title: 'Mercedes-Benz E63 AMG ДПС', sub: 'ОГИБДД г. Невский · Скоростной перехватчик сопровождения', speed: '300 км/ч · Полный привод', rank: 'С 12 ранга (Майор)', img: '' },
+
+  /* Автопарк Минздрава */
+  { id: 'c10', kind: 'car', fac: 'mz', title: 'ГАЗель Next СМП (Класс B)', sub: 'ЦГБ / ОКБ · Базовый автомобиль скорой медицинской помощи', speed: '165 км/ч · Задний привод', rank: 'Со 2 ранга', img: '' },
+  { id: 'c11', kind: 'car', fac: 'mz', title: 'Ford Transit Реанимация (Класс C)', sub: 'ЦГБ г. Приволжск · Реанимобиль экстренной бригады', speed: '185 км/ч · Полный привод', rank: 'С 6 ранга (Фельдшер)', img: '' },
+
+  /* Автопарк МП-панели */
+  { id: 'c12', kind: 'car', fac: 'mp', title: 'Mercedes-Benz V300d (ЦСН ФСБ)', sub: 'МП-панель · Спецтранспорт ФСБ для глобальных мероприятий', speed: '220 км/ч · Полный привод', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
+  { id: 'c13', kind: 'car', fac: 'mp', title: 'Aurus Senat (ФСО России)', sub: 'МП-панель · Автомобиль правительственного кортежа', speed: '250 км/ч · Полный привод', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
+  { id: 'c14', kind: 'car', fac: 'mp', title: 'Ford Transit (Следственный комитет РФ)', sub: 'МП-панель · Передвижная криминалистическая лаборатория СК', speed: '180 км/ч · Полный привод', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
+
+  /* Форма и скины (БЕЗ скорости!) */
+  { id: 's1', kind: 'skin', fac: 'umvd', title: 'Повседневная форма ППС (Образец 2015 г.)', sub: 'УМВД · Тёмно-синий китель с динамическими погонами полиции', rank: '1–7 ранг (Рядовой — Ст. прапорщик)', img: '' },
+  { id: 's2', kind: 'skin', fac: 'umvd', title: 'Тактическая чёрная форма ОМОН «Зубр»', sub: 'УМВД · Боевая экипировка со шлемом, разгрузкой и чёрными погонами', rank: 'Бойцы отряда ОМОН / СОБР', img: '' },
+  { id: 's3', kind: 'skin', fac: 'umvd', title: 'Офицерский китель Юстиции (Следственный отдел)', sub: 'УМВД · Форма следователя с васильковыми синими погонами', rank: '8–14 ранг (Мл. лейтенант — Полковник)', img: '' },
+  { id: 's4', kind: 'skin', fac: 'gibdd', title: 'Постовая форма инспектора ДПС со светоотражающим жилетом', sub: 'ОГИБДД · Специальная экипировка дорожно-патрульной службы', rank: '1–11 ранг ОГИБДД', img: '' },
+  { id: 's5', kind: 'skin', fac: 'gibdd', title: 'Парадная форма офицера ГИБДД (Белая рубашка)', sub: 'ОГИБДД · Белая рубашка с парадными погонами', rank: '8–14 ранг ОГИБДД', img: '' },
+  { id: 's6', kind: 'skin', fac: 'mp', title: 'Штурмовой комплект ЦСН ФСБ «Альфа» (Мультикам)', sub: 'МП-панель · Тактический скин спецназа ФСБ для спецопераций', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
+  { id: 's7', kind: 'skin', fac: 'mp', title: 'Китель следователя СК РФ / Прокуратуры', sub: 'МП-панель · Официальная форма для следственных РП-ситуаций', rank: 'МП-панель (Для РП-мероприятий)', img: '' }
+];
+
+var CATALOG = [];
+
+function loadCatalog() {
+  try {
+    var raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (Array.isArray(raw) && raw.length) {
+      CATALOG = raw;
+      return;
+    }
+  } catch (e) {}
+  CATALOG = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
 }
 
-var CATS={
- cars:[
-  {k:'main', ic:'🏛️', n:'Основной автопарк фракций'},
-  {k:'event',ic:'🎪', n:'Автопарк для мероприятий (МП-панель)'}
- ],
- form:[
-  {k:'main', ic:'🏛️', n:'Основная форма фракций'},
-  {k:'event',ic:'🎪', n:'Скины для мероприятий (МП-панель)'}
- ]
-};
-function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].k===cat)return a[i].n}return a[0].n}
-
-var LOCAL_K='mvd_garage_local_v2', CACHE_K='mvd_garage_cache_v2', KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending_v2';
-var ITEMS=[], localRev=0, pendingRev=null, needSeed=false;
-var ADMIN_KEY=LS.get(KEY_K)||LS.get('mvd_garage_admin_key')||'';
-var adminMode=false, booted=false;
-
-function seed(){return [
- {id:'c1', kind:'cars',cat:'main', dep:'uvd',  cls:'standard',name:'Lada Vesta',                desc:'Патрульный автомобиль ППС · базовая комплектация', speed:'178', photo:''},
- {id:'c2', kind:'cars',cat:'main', dep:'uvd',  cls:'high',    name:'УАЗ Патриот',               desc:'Автомобиль дежурной части и руководства УМВД',    speed:'140', photo:''},
- {id:'c3', kind:'cars',cat:'main', dep:'uvd',  cls:'special', name:'ГАЗель Next',               desc:'Спецтранспорт для перевозки группы задержания',    speed:'120', photo:''},
- {id:'c4', kind:'cars',cat:'main', dep:'gibdd',cls:'budget',  name:'Lada Priora',               desc:'Патрульный автомобиль ДПС · с СГУ',                speed:'183', photo:''},
- {id:'c5', kind:'cars',cat:'main', dep:'gibdd',cls:'standard',name:'Kia Rio',                   desc:'Автомобиль дорожно-патрульной службы',             speed:'180', photo:''},
- {id:'c6', kind:'cars',cat:'main', dep:'gibdd',cls:'high',    name:'Skoda Octavia',             desc:'Скоростной оперативный автомобиль ДПС',            speed:'190', photo:''},
- {id:'c7', kind:'cars',cat:'main', dep:'cgb',  cls:'special', name:'ГАЗель Next · Реанимобиль', desc:'Класс C · оборудование интенсивной терапии',       speed:'120', photo:''},
- {id:'c8', kind:'cars',cat:'main', dep:'cgb',  cls:'standard',name:'Ford Transit · Скорая',     desc:'Санитарный автомобиль выездной бригады ЦГБ/ОКБ',   speed:'140', photo:''},
- {id:'c9', kind:'cars',cat:'main', dep:'vs',   cls:'special', name:'УАЗ Хантер',                desc:'Патрульный автомобиль военной комендатуры',        speed:'120', photo:''},
- {id:'c10',kind:'cars',cat:'main', dep:'vs',   cls:'special', name:'КАМАЗ-43118',               desc:'Армейский грузовой автомобиль обеспечения',        speed:'90',  photo:''},
- {id:'c11',kind:'cars',cat:'main', dep:'rzd',  cls:'special', name:'УАЗ Патриот РЖД',           desc:'Машина сопровождения и охраны объектов РЖД',       speed:'140', photo:''},
- {id:'c12',kind:'cars',cat:'main', dep:'rzd',  cls:'standard',name:'Ford Transit РЖД',          desc:'Аварийно-восстановительный транспорт депо',        speed:'135', photo:''},
- {id:'c13',kind:'cars',cat:'event',dep:'fsb',  name:'Toyota Camry XV70',         desc:'Служебный автомобиль оперативной группы ФСБ (МП)', speed:'210', photo:''},
- {id:'c14',kind:'cars',cat:'event',dep:'fsb',  name:'Mercedes-Benz V300d',       desc:'Спецмикроавтобус ЦСН ФСБ для спецопераций',        speed:'195', photo:''},
- {id:'c15',kind:'cars',cat:'event',dep:'sk',   name:'Hyundai Solaris СК',        desc:'Автомобиль следственно-оперативной группы',        speed:'185', photo:''},
- {id:'c16',kind:'cars',cat:'event',dep:'prok', name:'Toyota Camry Прокуратура',  desc:'Ведомственный транспорт прокуратуры',              speed:'210', photo:''},
- {id:'c17',kind:'cars',cat:'event',dep:'mchs', name:'УАЗ Патриот МЧС',           desc:'Автомобиль оперативного штаба МЧС',                speed:'140', photo:''},
- {id:'c18',kind:'cars',cat:'event',dep:'mchs', name:'КАМАЗ · АЦ-40',             desc:'Пожарная автоцистерна для ликвидации ЧС',          speed:'100', photo:''},
- {id:'c19',kind:'cars',cat:'event',dep:'fso',  name:'BMW 760Li xDrive',          desc:'Автомобиль сопровождения правительственного кортежа',speed:'250',photo:''},
- {id:'c20',kind:'cars',cat:'event',dep:'fso',  name:'Aurus Senat',               desc:'Парадный представительский лимузин ФСО',           speed:'250', photo:''},
- {id:'f1', kind:'form',cat:'main', dep:'uvd',  name:'Летняя повседневная форма', desc:'Светло-серая рубашка, тёмные брюки, галстук МВД',  photo:''},
- {id:'f2', kind:'form',cat:'main', dep:'uvd',  name:'Зимняя повседневная форма', desc:'Тёмно-серое пальто, кашне, форменная фуражка',     photo:''},
- {id:'f3', kind:'form',cat:'main', dep:'gibdd',name:'Форма инспектора ДПС',      desc:'Китель со светоотражающими элементами, жезл',      photo:''},
- {id:'f4', kind:'form',cat:'main', dep:'cgb',  name:'Медицинская форма врача',   desc:'Белый халат или хирургический костюм, бейдж ЦГБ',  photo:''},
- {id:'f5', kind:'form',cat:'main', dep:'cgb',  name:'Форма бригады СМП',         desc:'Светоотражающий комбинезон скорой помощи',         photo:''},
- {id:'f6', kind:'form',cat:'main', dep:'vs',   name:'Полевая форма ВКПО',        desc:'Тактический камуфляж, берцы, разгрузочный жилет',  photo:''},
- {id:'f7', kind:'form',cat:'main', dep:'vs',   name:'Парадная офицерская форма', desc:'Парадный китель, ремень, фуражка ВС РФ',           photo:''},
- {id:'f8', kind:'form',cat:'main', dep:'rzd',  name:'Форменная одежда машиниста',desc:'Тёмно-синий китель РЖД, фуражка с кокардой',       photo:''},
- {id:'f9', kind:'form',cat:'event',dep:'fsb',  name:'Боевая экипировка ЦСН ФСБ', desc:'Штурмовой комплект, балаклава, бронешлем (МП)',    photo:''},
- {id:'f10',kind:'form',cat:'event',dep:'sk',   name:'Форма следователя СК РФ',   desc:'Синий китель Следственного комитета с погонами',   photo:''},
- {id:'f11',kind:'form',cat:'event',dep:'prok', name:'Мундир прокурора',          desc:'Синий китель с золотыми погонами и петлицами',     photo:''},
- {id:'f12',kind:'form',cat:'event',dep:'mchs', name:'Боевая одежда пожарного',   desc:'Термостойкая боёвка МЧС, каска и дыхательный аппарат',photo:''},
- {id:'f13',kind:'form',cat:'event',dep:'fso',  name:'Костюм сотрудника ФСО',     desc:'Строгий чёрный костюм, значок ФСО, радиогарнитура',photo:''}
-];}
-
-function toArr(x){
- if(!x)return null;if(Array.isArray(x))return x;
- var ks=Object.keys(x).sort(function(a,b){return a-b}),arr=[];
- for(var i=0;i<ks.length;i++){arr[+ks[i]]=x[ks[i]]}
- return arr;
-}
-function loadLocal(){
- var d=null;try{d=JSON.parse(LS.get(LOCAL_K)||'null')}catch(e){}
- if(d){
-  if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
-  if(d.items&&toArr(d.items)){return toArr(d.items)}
- }
- return seed();
-}
-function saveLocal(items){try{LS.set(LOCAL_K,JSON.stringify({items:items,deps:DEPS}))}catch(e){toast('Хранилище переполнено',true)}}
-function cacheItems(){try{LS.set(CACHE_K,JSON.stringify({rev:localRev,items:ITEMS,deps:DEPS}))}catch(e){}}
-function loadCache(){
- try{
-  var c=JSON.parse(LS.get(CACHE_K)||'null');
-  if(c){var a=toArr(c.items);if(a&&a.length)return {rev:(typeof c.rev==='number'?c.rev:0),items:a,deps:(c.deps&&Array.isArray(c.deps)&&c.deps.length)?c.deps:null}}
- }catch(e){}
- return null;
-}
-function byId(id){for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].id===id)return ITEMS[i]}return null}
-function countItems(kind,cat,dp){
- var n=0;for(var i=0;i<ITEMS.length;i++){var it=ITEMS[i];if(it.kind===kind&&it.cat===cat&&(dp===null||it.dep===dp))n++}return n;
-}
-function countDepUsage(depKey){var n=0;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].dep===depKey)n++}return n}
-function countClassUsage(depKey,clsKey){var n=0;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].dep===depKey&&ITEMS[i].cls===clsKey)n++}return n}
-
-var NET_TO_READ=8000, NET_TO_WRITE=20000;
-function setSync(cls,txt){var s=$('#sync');if(s)s.className='sync '+(cls||'');if(txt){var e=$('#syncTxt');if(e)e.textContent=txt}}
-function rawUrl(file,br){return 'https://raw.githubusercontent.com/'+REPO+'/'+(br||BRANCH)+'/'+file+'?v='+Date.now()}
-function rawGet(file,br){
- return fetchT(rawUrl(file,br),{cache:'no-store'},NET_TO_READ).then(function(r){
-  if(r.status===404){var e=new Error('404');e.nf=true;throw e}
-  if(!r.ok)throw new Error(r.status);
-  return r.text();
- });
-}
-function ghHeaders(){return {Authorization:'token '+ADMIN_KEY,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
-function ghReq(method,path,body){
- return fetchT('https://api.github.com/repos/'+REPO+'/'+path,{method:method,headers:ghHeaders(),body:body?JSON.stringify(body):undefined},NET_TO_WRITE).then(function(r){
-  if(!r.ok)throw r.status;return r.status===204?null:r.json();
- });
-}
-function checkToken(tok){
- return fetchT('https://api.github.com/user',{headers:{Authorization:'token '+tok}},NET_TO_READ)
-  .then(function(r){if(!r.ok)throw r.status;return fetchT('https://api.github.com/repos/'+REPO,{headers:{Authorization:'token '+tok}},NET_TO_READ)})
-  .then(function(r){if(!r.ok)throw r.status;return r.json()})
-  .then(function(j){return !j.permissions||!!j.permissions.push});
-}
-
-var pushTimer=null, pushInFlight=false, dataDirty=false;
-var lastCommitSha=null, lastTreeSha=null;
-function commit(){
- if(!REPO){saveLocal(ITEMS);return}
- if(!adminMode)return;
- dataDirty=true;LS.set(PENDING_K,String(Date.now()));cacheItems();
- if(pushInFlight||pushTimer)return;
- pushTimer=setTimeout(doPush,100);
-}
-function doPush(){
- pushTimer=null;
- if(!adminMode||!REPO||pushInFlight||!dataDirty)return;
- var rev=(typeof localRev==='number'?localRev:0)+1;
- var snapshot=JSON.stringify({rev:rev,items:ITEMS,deps:DEPS});
- dataDirty=false;pushInFlight=true;setSync('busy','Сохранение…');
- var dataSha=null;
- ghReq('POST','git/blobs',{content:b64e(snapshot),encoding:'base64'}).then(function(b){
-  dataSha=b.sha;
-  return ghReq('POST','git/blobs',{content:b64e(rev+':'+b.sha),encoding:'base64'});
- }).then(function(bRev){
-  var tree=[{path:'garage_data.json',mode:'100644',type:'blob',sha:dataSha},{path:'garage_rev.txt',mode:'100644',type:'blob',sha:bRev.sha}];
-  var base=(lastCommitSha&&lastTreeSha)?Promise.resolve({c:lastCommitSha,t:lastTreeSha}):ghReq('GET','git/refs/heads/'+BRANCH).then(function(ref){return ghReq('GET','git/commits/'+ref.object.sha).then(function(cm){return {c:ref.object.sha,t:cm.tree.sha}})});
-  return base.then(function(b){
-   return ghReq('POST','git/trees',{base_tree:b.t,tree:tree}).then(function(nt){
-    return ghReq('POST','git/commits',{message:'garage sync: '+rev,tree:nt.sha,parents:[b.c]}).then(function(nc){
-     return ghReq('PATCH','git/refs/heads/'+BRANCH,{sha:nc.sha}).then(function(){lastCommitSha=nc.sha;lastTreeSha=nt.sha});
-    });
-   });
-  });
- }).then(function(){
-  pushInFlight=false;localRev=rev;cacheItems();LS.remove(PENDING_K);setSync('ok','GitHub');
-  if(dataDirty)pushTimer=setTimeout(doPush,150);
- }).catch(function(){
-  pushInFlight=false;dataDirty=true;lastCommitSha=null;lastTreeSha=null;setSync('err','Ошибка');
- });
-}
-
-function initRemote(){
- var cache=loadCache();
- if(cache&&cache.items&&cache.items.length){
-  ITEMS=cache.items;if(cache.deps&&cache.deps.length)DEPS=cloneDeps(cache.deps);localRev=cache.rev;
- }else{
-  ITEMS=loadLocal();
- }
- booted=true;render();
- if(!REPO){setSync('','Локально');return}
- rawGet('garage_data.json').then(function(d){
-  var j=JSON.parse(d);var items=toArr(j&&j.items);
-  if(items&&items.length){ITEMS=items;if(j.deps&&j.deps.length)DEPS=cloneDeps(j.deps);localRev=j.rev||1;cacheItems();render()}
-  setSync('ok','GitHub');
- }).catch(function(){setSync('ok','GitHub')});
-}
-
-function renderTop(){
- var z=$('#adminZone');if(!z)return;
- z.innerHTML=adminMode
-  ?'<button class="btn ghost slim" onclick="openDepsManager()">⚙️ Разделы</button><span class="adbadge">✏️ Редактор</span><button class="btn ghost slim" onclick="logout()">Выйти</button>'
-  :'<button class="btn ghost slim" onclick="askAdmin()">🔒 Вход</button>';
-}
-function askAdmin(){
- if(!REPO){adminMode=true;render();toast('Демо-режим: изменения сохраняются в браузере');return}
- $('#mroot').innerHTML='<div class="back" onclick="if(event.target===this)closeM()"><div class="modal smw"><div class="m-head"><div class="mh-nm" style="font-size:16px">🔒 Вход владельца</div><button class="m-close" onclick="closeM()">✕</button></div><div class="m-body"><label class="flab">Токен доступа (ghp_...)</label><input class="inp" id="fKey" type="password" style="width:100%" placeholder="ghp_..."></div><div class="m-foot"><button class="btn ghost" onclick="closeM()">Отмена</button><button class="btn" onclick="tryLogin()">Войти</button></div></div></div>';
-}
-function tryLogin(){
- var tok=($('#fKey')||{}).value.trim();if(!tok)return;
- checkToken(tok).then(function(ok){if(!ok){toast('Нет прав записи',true);return}ADMIN_KEY=tok;LS.set(KEY_K,tok);adminMode=true;closeM();render();toast('Вход выполнен')}).catch(function(){toast('Ошибка токена',true)});
-}
-function logout(){ADMIN_KEY='';adminMode=false;LS.remove(KEY_K);render()}
-
-var state={kind:'cars',cat:'main',dep:'all',cls:'all',q:''};
-var dragId=null;
-
-function setKind(k){
- if(state.kind===k)return;
- state.kind=k;state.dep='all';state.cls='all';state.q='';
- var qi=$('#q');if(qi)qi.value='';
- qsa('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-kind')===k)});
- render();
-}
-function setCat(k){state.cat=k;state.dep='all';state.cls='all';render()}
-function setDep(k){state.dep=k;state.cls='all';render()}
-function setCls(k){state.cls=k;render()}
-
-function renderCats(){
- var box=$('#cats');if(!box)return;
- var arr=CATS[state.kind],h='';
- for(var i=0;i<arr.length;i++){
-  var c=arr[i];
-  h+='<button class="cat'+(state.cat===c.k?' on':'')+'" onclick="setCat(\''+c.k+'\')"><span class="cat-ic">'+c.ic+'</span>'+esc(c.n)+' <i class="cn">'+countItems(state.kind,c.k,null)+'</i></button>';
- }
- box.innerHTML=h;
-}
-function chipBtn(act,val,label,color,on,cnt){
- return '<button class="chip'+(on?' on':'')+'" style="--cc:'+color+';--ccb:'+hex2rgba(color,.18)+'" onclick="'+act+'(\''+esc(val)+'\')"><span class="dot"></span>'+esc(label)+(typeof cnt==='number'?' <i class="cn">'+cnt+'</i>':'')+'</button>';
-}
-function renderChips(){
- var box=$('#chips');if(!box)return;
- var h='';
- if(isGrouped()){
-  h+='<button class="chip" onclick="setDep(\'all\')">← Все разделы</button>';
-  h+=chipBtn('setCls','all','Все классы','#8b95a7',state.cls==='all',countItems(state.kind,state.cat,state.dep));
-  var cl=classesOfDep(state.dep);
-  for(var i=0;i<cl.length;i++){var c=cl[i];h+=chipBtn('setCls',c.k,c.n,c.c,state.cls===c.k,countClassUsage(state.dep,c.k))}
- }else{
-  h+=chipBtn('setDep','all','Все ведомства','#8b95a7',state.dep==='all',countItems(state.kind,state.cat,null));
-  for(var j=0;j<DEPS.length;j++){var d=DEPS[j];if(d.cat!==state.cat)continue;h+=chipBtn('setDep',d.k,d.n,d.c,state.dep===d.k,countItems(state.kind,state.cat,d.k))}
- }
- box.innerHTML=h;
-}
-function visibleItems(){
- var q=(state.q||'').toLowerCase(),out=[];
- for(var i=0;i<ITEMS.length;i++){
-  var it=ITEMS[i];
-  if(it.kind!==state.kind||it.cat!==state.cat)continue;
-  if(state.dep!=='all'&&it.dep!==state.dep)continue;
-  if(state.cls!=='all'&&clsOf(it)!==state.cls)continue;
-  if(q&&((it.name||'')+' '+(it.desc||'')).toLowerCase().indexOf(q)<0)continue;
-  out.push(it);
- }
- return out;
-}
-function cardColor(it){
- if(it.cls){var cl=classesOfDep(it.dep);for(var i=0;i<cl.length;i++){if(cl[i].k===it.cls)return cl[i].c}}
- return dep(it.dep).c;
-}
-
-/* Исправленная карточка: скорость отображается ТОЛЬКО у автомобилей (it.kind === 'cars') */
-function cardHtml(it){
- var d=dep(it.dep),dc=cardColor(it),tools='';
- if(adminMode){
-  tools='<div class="vph-tools"><button class="vtool" title="Редактировать" onclick="event.stopPropagation();openEdit(\''+it.id+'\')">✏️</button><button class="vtool vtool-del" title="Удалить" onclick="event.stopPropagation();delItem(\''+it.id+'\')">🗑</button></div>';
- }
- var ph;
- if(it.photo){
-  ph='<img src="'+it.photo+'" alt="" onclick="event.stopPropagation();openLb(\''+it.id+'\')">';
- }else if(adminMode){
-  ph='<div class="vph-empty" onclick="event.stopPropagation();pickPhotoFor(\''+it.id+'\')"><div class="pe-ic">📷</div><b>Добавить фото</b><span>клик или перетащите</span></div>';
- }else{
-  ph='<div class="vph-empty plain"><div class="pe-ic">'+(it.kind==='cars'?'🚔':'🎽')+'</div><b>'+(it.kind==='cars'?'Фото ТС':'Превью скина')+'</b></div>';
- }
- var ed=adminMode?' contenteditable="true"':'';
- var bottomLine = (it.kind==='cars')
-  ? '<div class="vsp"><span class="l">Макс. скорость</span><b'+ed+' data-ph="—" data-f="speed">'+esc(it.speed||'—')+'</b><i>км/ч</i></div>'
-  : '<div class="vsp"><span class="l">Назначение</span><b style="font-size:11.5px;color:#cbd5e1">'+(it.cat==='event'?'МП-панель · Спецкомплект':'Форменный комплект')+'</b></div>';
-
- return '<div class="vcard" data-id="'+it.id+'" style="--dc:'+dc+'">'+
-  '<div class="vph'+(it.photo?'':' empty')+'">'+
-   '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(d.s)+'</span>'+
-   tools+ph+
-  '</div>'+
-  '<div class="vbody">'+
-   '<div class="vname"'+ed+' data-ph="Название" data-f="name">'+esc(it.name||'')+'</div>'+
-   '<div class="vdesc"'+ed+' data-ph="Описание" data-f="desc">'+esc(it.desc||'')+'</div>'+
-   bottomLine+
-  '</div>'+
- '</div>';
-}
-
-function renderGrid(){
- var grid=$('#vgrid'),emp=$('#vempty');if(!grid)return;
- var items=visibleItems(),grouped=isGrouped()&&state.cls==='all';
- if(grouped){
-  grid.className='vgrid grouped';
-  var cl=classesOfDep(state.dep),h='';
-  for(var i=0;i<cl.length;i++){
-   var c=cl[i],grp=[];
-   for(var j=0;j<items.length;j++){if(clsOf(items[j])===c.k)grp.push(items[j])}
-   h+='<div class="gsec" data-cls="'+esc(c.k)+'" style="--gc:'+c.c+'">'+
-    '<div class="ghead"><span class="gd" style="background:'+c.c+';box-shadow:0 0 8px 1px '+hex2rgba(c.c,.45)+'"></span><span class="gname">'+esc(c.n)+'</span><i class="cn">'+grp.length+'</i><span class="gline"></span></div>'+
-    '<div class="ggrid">'+(grp.length?grp.map(cardHtml).join(''):'<div class="gempty">В этом классе пока пусто</div>')+'</div></div>';
+function saveCatalog() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(CATALOG));
+  } catch (e) {
+    toast('Память браузера заполнена — удалите старые тяжёлые фото', true);
   }
-  grid.innerHTML=h;
- }else{
-  grid.className='vgrid';
-  grid.innerHTML=items.map(cardHtml).join('');
- }
- var c=$('#cnt');if(c)c.textContent=items.length;
- if(emp){emp.style.display=items.length?'none':'block';emp.textContent=state.q?'Ничего не найдено':'В этой категории пока нет записей'}
 }
 
-function render(){
- renderTop();renderCats();renderChips();renderGrid();
- var isCars=(state.kind==='cars');
- $('#logoIc').textContent=isCars?'🚔':'🎽';
- $('#tbTitle').textContent=isCars?'ГОССТРУКТУРЫ · АВТОПАРК':'ГОССТРУКТУРЫ · ФОРМА И СКИНЫ';
- $('#hTitle').textContent=isCars?'Автопарк':'Форма и скины';
- $('#hSub').textContent=catName(state.kind,state.cat)+(state.dep!=='all'?' · '+dep(state.dep).n:'');
- $('#addBtn').textContent=isCars?'＋ Добавить машину':'＋ Добавить форму';
+function toast(msg) {
+  var d = document.createElement('div');
+  d.className = 'toast';
+  d.textContent = msg;
+  document.getElementById('troot').appendChild(d);
+  setTimeout(function() { d.remove(); }, 3200);
 }
 
-var editingId=null,editPhoto='',formCls=null,photoCb=null;
-function closeM(){var m=$('#mroot');if(m)m.innerHTML='';editingId=null;photoCb=null}
-function closeC(){var c=$('#croot');if(c)c.innerHTML=''}
-function openAdd(){if(!adminMode){if(!REPO){adminMode=true;renderTop()}else{askAdmin();return}}openForm(null)}
-function openEdit(id){if(!adminMode)return;var it=byId(id);if(it)openForm(it)}
-function openForm(it){
- editingId=it?it.id:null;editPhoto=it?(it.photo||''):'';formCls=(it&&it.cls)?it.cls:null;
- var isCars=(state.kind==='cars'),selDep=it?it.dep:(state.dep!=='all'?state.dep:null),depOpts='';
- for(var i=0;i<DEPS.length;i++){var d=DEPS[i];if(d.cat!==state.cat)continue;depOpts+='<option value="'+esc(d.k)+'"'+((selDep&&selDep===d.k)||(!selDep&&!depOpts)?' selected':'')+'>'+esc(d.n)+'</option>'}
- $('#mroot').innerHTML='<div class="back" onclick="if(event.target===this)closeM()"><div class="modal"><div class="m-head"><div class="mh-nm">'+(it?'✏️ Редактирование':'＋ '+(isCars?'Новая машина':'Новая форма'))+'</div><button class="m-close" onclick="closeM()">✕</button></div><div class="m-body"><div class="formgrid"><div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?it.name:'')+'"></div><div class="full"><label class="flab">Описание</label><textarea class="inp" id="fDesc" rows="2" style="width:100%">'+esc(it?it.desc:'')+'</textarea></div><div><label class="flab">Ведомство</label><select class="sel" id="fDep" style="width:100%">'+depOpts+'</select></div>'+(isCars?'<div><label class="flab">Скорость, км/ч</label><input class="inp" id="fSpeed" style="width:100%" value="'+esc(it?it.speed:'')+'"></div>':'')+'</div></div><div class="m-foot"><button class="btn ghost" onclick="closeM()">Отмена</button><button class="btn" onclick="saveForm()">Сохранить</button></div></div></div>';
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
-function saveForm(){
- var name=($('#fName')?$('#fName').value:'').trim();if(!name){toast('Введите название',true);return}
- var depK=$('#fDep')?$('#fDep').value:'';
- var it=editingId?byId(editingId):null;
- if(!it){it={id:'i'+Date.now().toString(36),kind:state.kind,cat:state.cat,dep:depK,cls:'standard',name:'',desc:'',speed:'',photo:''};ITEMS.push(it)}
- it.name=name;it.desc=($('#fDesc')?$('#fDesc').value:'').trim();it.dep=depK;it.speed=($('#fSpeed')?$('#fSpeed').value:'').trim();
- closeM();commit();render();toast('Сохранено');
-}
-function delItem(id){if(!adminMode||!confirm('Удалить запись?'))return;ITEMS=ITEMS.filter(function(x){return x.id!==id});commit();render()}
-function openLb(id){var it=byId(id);if(!it||!it.photo)return;var lb=$('#lb'),img=$('#lbImg');img.src=it.photo;lb.classList.add('show','zoom')}
-function closeLb(){var lb=$('#lb');if(lb)lb.classList.remove('zoom','show')}
 
-(function(){
- renderTop();
- var qi=$('#q');if(qi)qi.addEventListener('input',function(){state.q=this.value;renderGrid()});
- var lb=$('#lb');if(lb)lb.addEventListener('click',closeLb);
- initRemote();
-})();
+function facNameByKey(k) {
+  for (var i = 0; i < FAC_LIST.length; i++) if (FAC_LIST[i].k === k) return FAC_LIST[i].n;
+  return 'Ведомство';
+}
+
+window.setKind = function(k) {
+  CUR_KIND = k;
+  document.getElementById('tabCars').classList.toggle('on', k === 'car');
+  document.getElementById('tabSkins').classList.toggle('on', k === 'skin');
+  renderGrid();
+};
+
+window.setFacFilter = function(f) {
+  CUR_FAC = f;
+  renderFacChips();
+  renderGrid();
+};
+
+function renderFacChips() {
+  document.getElementById('facChips').innerHTML = FAC_LIST.map(function(f) {
+    return '<div class="f-chip' + (CUR_FAC === f.k ? ' on' : '') + '" onclick="setFacFilter(\'' + f.k + '\')">' + f.ic + ' ' + esc(f.n) + '</div>';
+  }).join('');
+}
+
+function renderGrid() {
+  var carsTotal = CATALOG.filter(function(x) { return x.kind === 'car'; }).length;
+  var skinsTotal = CATALOG.filter(function(x) { return x.kind === 'skin'; }).length;
+  document.getElementById('cntCars').textContent = carsTotal;
+  document.getElementById('cntSkins').textContent = skinsTotal;
+
+  var q = (document.getElementById('qInp').value || '').trim().toLowerCase();
+  var list = CATALOG.filter(function(it) {
+    if (it.kind !== CUR_KIND) return false;
+    if (CUR_FAC !== 'all' && it.fac !== CUR_FAC) return false;
+    if (q && ((it.title || '') + ' ' + (it.sub || '') + ' ' + (it.rank || '')).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+
+  if (!list.length) {
+    document.getElementById('cardsGrid').innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:16px">В этой категории пока нет элементов — нажмите «＋ Добавить в каталог»</div>';
+    return;
+  }
+
+  document.getElementById('cardsGrid').innerHTML = list.map(function(it) {
+    var isSkin = (it.kind === 'skin');
+    var mediaHtml = it.img
+      ? '<img src="' + esc(it.img) + '" alt="' + esc(it.title) + '" onclick="openLightbox(\'' + esc(it.img) + '\')">'
+      : '<div class="ic-placeholder" onclick="openEditModal(\'' + esc(it.id) + '\')"><i>' + (isSkin ? '👮' : '🚔') + '</i><span>Нажмите, чтобы загрузить фото</span></div>';
+
+    return '<div class="item-card' + (isSkin ? ' skin-card' : '') + '">' +
+      '<div class="ic-media">' +
+        '<div class="ic-badges">' +
+          '<span class="ic-tag' + (it.fac === 'mp' ? ' mp' : '') + '">' + esc(facNameByKey(it.fac)) + '</span>' +
+          (!isSkin && it.speed ? '<span class="ic-tag">⚡ ' + esc(it.speed) + '</span>' : '') +
+        '</div>' +
+        mediaHtml +
+      '</div>' +
+      '<div class="ic-body">' +
+        '<div class="ic-title">' + esc(it.title) + '</div>' +
+        (it.sub ? '<div class="ic-meta">' + esc(it.sub) + '</div>' : '') +
+        (it.rank ? '<div class="ic-meta">Доступ: <b>' + esc(it.rank) + '</b></div>' : '') +
+      '</div>' +
+      '<div class="ic-admin-bar">' +
+        '<button class="adm-btn" onclick="openEditModal(\'' + esc(it.id) + '\')">📷 Фото / Изменить</button>' +
+        '<button class="adm-btn del" onclick="deleteCatalogItem(\'' + esc(it.id) + '\')">🗑 Удалить</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.openLightbox = function(url) {
+  if (!url) return;
+  document.getElementById('lbImg').src = url;
+  document.getElementById('lb').style.display = 'flex';
+};
+
+window.toggleSpeedField = function() {
+  var k = document.getElementById('fKind').value;
+  document.getElementById('speedFieldWrap').style.display = (k === 'car') ? 'block' : 'none';
+};
+
+window.openEditModal = function(id) {
+  EDIT_ID = id || null;
+  var facSel = document.getElementById('fFac');
+  facSel.innerHTML = FAC_LIST.filter(function(f) { return f.k !== 'all'; }).map(function(f) {
+    return '<option value="' + f.k + '">' + f.ic + ' ' + esc(f.n) + '</option>';
+  }).join('');
+
+  var prev = document.getElementById('fPreview');
+  document.getElementById('fFileInp').value = '';
+
+  if (EDIT_ID) {
+    var it = CATALOG.filter(function(x) { return x.id === EDIT_ID; })[0];
+    if (!it) return;
+    document.getElementById('mTitleTxt').textContent = 'Редактировать карточку';
+    document.getElementById('fKind').value = it.kind;
+    document.getElementById('fFac').value = it.fac;
+    document.getElementById('fTitle').value = it.title || '';
+    document.getElementById('fSub').value = it.sub || '';
+    document.getElementById('fSpeed').value = it.speed || '';
+    document.getElementById('fRank').value = it.rank || '';
+    CURRENT_IMG_DATA = it.img || '';
+    document.getElementById('fImgUrl').value = (CURRENT_IMG_DATA.indexOf('data:') === 0) ? '' : CURRENT_IMG_DATA;
+    if (CURRENT_IMG_DATA) {
+      prev.src = CURRENT_IMG_DATA;
+      prev.style.display = 'block';
+    } else {
+      prev.style.display = 'none';
+    }
+  } else {
+    document.getElementById('mTitleTxt').textContent = 'Добавить в каталог';
+    document.getElementById('fKind').value = CUR_KIND;
+    document.getElementById('fFac').value = (CUR_FAC !== 'all') ? CUR_FAC : 'umvd';
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fSub').value = '';
+    document.getElementById('fSpeed').value = '';
+    document.getElementById('fRank').value = '';
+    document.getElementById('fImgUrl').value = '';
+    CURRENT_IMG_DATA = '';
+    prev.style.display = 'none';
+  }
+  toggleSpeedField();
+  document.getElementById('editBack').style.display = 'flex';
+};
+
+window.closeEditModal = function() {
+  document.getElementById('editBack').style.display = 'none';
+};
+
+/* Мгновенное сжатие фото на Canvas — работает всегда без ошибок размера или сети */
+window.handlePhotoFile = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var maxW = 900, maxH = 650;
+      var w = img.width, h = img.height;
+      if (w > maxW || h > maxH) {
+        var r = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * r);
+        h = Math.round(h * r);
+      }
+      var cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      var ctx = cv.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      CURRENT_IMG_DATA = cv.toDataURL('image/jpeg', 0.84);
+      var prev = document.getElementById('fPreview');
+      prev.src = CURRENT_IMG_DATA;
+      prev.style.display = 'block';
+      toast('✓ Фотография успешно загружена');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.handleUrlPreview = function(url) {
+  var u = (url || '').trim();
+  if (!u) return;
+  CURRENT_IMG_DATA = u;
+  var prev = document.getElementById('fPreview');
+  prev.src = u;
+  prev.style.display = 'block';
+};
+
+window.saveCatalogItem = function() {
+  var kind = document.getElementById('fKind').value;
+  var fac = document.getElementById('fFac').value;
+  var title = (document.getElementById('fTitle').value || '').trim();
+  var sub = (document.getElementById('fSub').value || '').trim();
+  var speed = (kind === 'car') ? (document.getElementById('fSpeed').value || '').trim() : '';
+  var rank = (document.getElementById('fRank').value || '').trim();
+
+  if (!title) {
+    toast('Введите название модели или формы');
+    return;
+  }
+
+  if (EDIT_ID) {
+    CATALOG.forEach(function(x) {
+      if (x.id === EDIT_ID) {
+        x.kind = kind; x.fac = fac; x.title = title; x.sub = sub;
+        x.speed = speed; x.rank = rank; x.img = CURRENT_IMG_DATA;
+      }
+    });
+    toast('✓ Карточка обновлена');
+  } else {
+    CATALOG.unshift({
+      id: 'item_' + Date.now(),
+      kind: kind, fac: fac, title: title, sub: sub,
+      speed: speed, rank: rank, img: CURRENT_IMG_DATA
+    });
+    CUR_KIND = kind;
+    toast('✓ Добавлено в каталог');
+  }
+
+  saveCatalog();
+  closeEditModal();
+  setKind(CUR_KIND);
+};
+
+window.deleteCatalogItem = function(id) {
+  CATALOG = CATALOG.filter(function(x) { return x.id !== id; });
+  saveCatalog();
+  renderGrid();
+  toast('Карточка удалена');
+};
+
+loadCatalog();
+renderFacChips();
+renderGrid();
 </script>
 </body>
 </html>
