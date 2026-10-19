@@ -17,7 +17,6 @@
   --green:#2fd97a;
   --yellow:#f7c948;
   --red:#ff5c5c;
-  --purple:#a78bfa;
 }
 html,body{color-scheme:dark;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
 body{background:radial-gradient(1100px 520px at 8% -10%,rgba(45,100,170,.16),transparent 60%),radial-gradient(900px 520px at 115% 115%,rgba(130,90,220,.1),transparent 55%),#0e1116}
@@ -27,7 +26,6 @@ body{background:radial-gradient(1100px 520px at 8% -10%,rgba(45,100,170,.16),tra
 ::-webkit-scrollbar-thumb:hover{background:#3a4656}
 button{font-family:inherit;cursor:pointer}
 
-/* Верхняя шапка (чистая, без кнопок входа) */
 #topbar{
   height:58px;
   display:flex;
@@ -50,79 +48,75 @@ button{font-family:inherit;cursor:pointer}
 }
 .tb-title{font-weight:800;letter-spacing:1.2px;font-size:13.5px;background:linear-gradient(90deg,#eaf2ff,#a9c7ef);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-/* Основной контейнер во всю ширину */
 .g-wrap{max-width:1640px;margin:0 auto;padding:22px 24px 60px}
 
+/* Шапка со скроргами и кнопками из вашего скриншота */
 .g-top{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-start;
   flex-wrap:wrap;
-  gap:14px;
-  background:rgba(18,24,36,.88);
-  backdrop-filter:blur(14px);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:18px 22px;
-  margin-bottom:18px;
-  box-shadow:0 16px 40px rgba(0,0,0,.45);
+  gap:16px;
+  margin-bottom:16px;
 }
-.g-brand{display:flex;align-items:center;gap:14px}
-.g-ic{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 22px rgba(59,130,246,.35)}
-.g-title{font-size:20px;font-weight:900}
-.g-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.g-title-block h1{font-size:24px;font-weight:900;display:flex;align-items:center;gap:10px}
+.g-title-block h1 .badge-cnt{background:#1f293d;border:1px solid #334568;padding:2px 10px;border-radius:20px;font-size:13px;color:#93c5fd}
+.g-title-block p{color:var(--mut);font-size:13px;margin-top:4px}
 
-.type-switch{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.g-top-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* Переключатели режимов (Основной / МП) */
+.section-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.s-tab{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:14px;
+  border:1px solid var(--line);background:rgba(25,31,40,.8);
+  color:var(--mut);font-weight:800;font-size:13px;cursor:pointer;transition:.18s;
+}
+.s-tab:hover{border-color:#3a4656;color:#fff}
+.s-tab.on{background:rgba(30,41,59,.95);border-color:#3b82f6;color:#fff;box-shadow:0 6px 20px rgba(59,130,246,.25)}
+.s-tab .st-cnt{background:#111827;padding:1px 7px;border-radius:10px;font-size:11px;color:#93c5fd}
+
+/* Кнопки Автопарк / Форма и Добавить машину */
 .t-btn{
-  padding:10px 18px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.03);
-  color:var(--mut);
-  font-weight:800;
-  font-size:13px;
-  cursor:pointer;
-  transition:.18s;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 16px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(25,31,40,.9);
+  color:var(--mut);font-weight:800;font-size:13px;cursor:pointer;transition:.18s;
 }
 .t-btn:hover{border-color:rgba(255,255,255,.2);color:#fff}
-.t-btn.on{background:linear-gradient(135deg,#2563eb,#4f46e5);border-color:#93c5fd;color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.32)}
+.t-btn.on{background:rgba(30,41,59,.95);border-color:#60a5fa;color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.2)}
 
 .add-btn{
-  padding:10px 18px;
-  border-radius:12px;
-  border:1px solid rgba(47,217,122,.45);
-  background:linear-gradient(135deg,#10b981,#059669);
-  color:#fff;
-  font-weight:800;
-  font-size:13px;
-  cursor:pointer;
-  transition:.18s;
-  box-shadow:0 6px 18px rgba(16,185,129,.28);
+  padding:10px 18px;border-radius:12px;
+  border:1px solid rgba(59,130,246,.5);
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;font-weight:800;font-size:13px;cursor:pointer;transition:.18s;
+  box-shadow:0 6px 20px rgba(37,99,235,.35);
 }
 .add-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 
-/* Верхняя панель фракций (вместо бокового меню) */
+/* Панель фильтров фракций */
 .fac-bar{
   background:rgba(18,24,36,.82);
   border:1px solid var(--line);
   border-radius:18px;
-  padding:14px 18px;
+  padding:12px 16px;
   margin-bottom:16px;
   display:flex;
-  flex-direction:column;
-  gap:10px;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
 }
-.fac-bar-sec{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mut);font-weight:800}
-.fac-chips{display:flex;flex-wrap:wrap;gap:8px}
 .f-chip{
   display:inline-flex;align-items:center;gap:7px;
-  padding:8px 14px;border-radius:11px;
+  padding:8px 13px;border-radius:11px;
   border:1px solid var(--line);background:var(--card);
   color:var(--mut);font-size:12px;font-weight:800;cursor:pointer;transition:.15s;
 }
 .f-chip:hover{border-color:#3a4656;color:var(--txt)}
 .f-chip.on{background:rgba(77,163,255,.18);border-color:var(--acc);color:#fff;box-shadow:0 4px 14px rgba(77,163,255,.2)}
-.f-chip .fc-cnt{background:#232e3d;border:1px solid #32405a;padding:1px 7px;border-radius:10px;font-size:10.5px;color:#aeb9cc}
+.f-chip .fc-cnt{background:#111827;border:1px solid #1f293d;padding:1px 7px;border-radius:10px;font-size:10.5px;color:#93c5fd}
 
 .search-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .inp,.sel,textarea.inp{
@@ -180,7 +174,7 @@ body.adm .vtools{display:flex}
 
 .empty{grid-column:1/-1;padding:40px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:16px}
 
-/* Модальное окно добавления и редактирования */
+/* Модальное окно */
 .back{position:fixed;inset:0;background:rgba(4,7,11,.78);backdrop-filter:blur(7px);z-index:400;display:none;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px}
 .modal{width:100%;max-width:540px;background:#161c25;border:1px solid #2b3442;border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column}
 .m-head{padding:18px 22px 14px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,rgba(77,163,255,.08),transparent)}
@@ -212,85 +206,88 @@ body.adm .vtools{display:flex}
     <div class="logo-ic">🚔</div>
     <div class="tb-title">АВТОПАРК И ФОРМА ФРАКЦИЙ</div>
   </div>
-  <div class="tb-right">
-    <span class="adbadge" id="ownerBadge" style="display:none">✏️ Режим владельца</span>
-  </div>
+  <div class="tb-right"></div>
 </header>
 
 <div class="g-wrap">
+  <!-- Шапка со счетчиком и кнопками из скриншота -->
   <div class="g-top">
-    <div class="g-brand">
-      <div class="g-ic">🚔</div>
-      <div>
-        <div class="g-title">Обновлённый автопарк и форма фракций</div>
-        <div class="g-sub">Каталог служебного транспорта и форменной одежды (включая МП-панель)</div>
-      </div>
+    <div class="g-title-block">
+      <h1>Автопарк <span class="badge-cnt" id="totalCount">0</span></h1>
+      <p id="subTitleText">Основной автопарк фракции</p>
     </div>
-
-    <div class="type-switch">
-      <button class="t-btn on" id="tabCars" onclick="setMode('car')">🚔 Автопарк (<span id="cntCars">0</span>)</button>
-      <button class="t-btn" id="tabSkins" onclick="setMode('skin')">👮 Форма и скины (<span id="cntSkins">0</span>)</button>
-      <button class="add-btn" id="btnAddMain" style="display:none" onclick="openModal(null)">＋ Добавить в каталог</button>
+    <div class="g-top-right">
+      <button class="t-btn on" id="btnModeCar" onclick="setCatalogType('car')">🚗 Автопарк</button>
+      <button class="t-btn" id="btnModeSkin" onclick="setCatalogType('skin')">👔 Форма</button>
+      <button class="add-btn" id="btnAddMain" style="display:none" onclick="openModal(null)">+ Добавить машину</button>
     </div>
   </div>
 
-  <!-- Панель фракций сверху (5 штук в ряд) -->
-  <div class="fac-bar">
-    <div class="fac-bar-sec">Государственные организации</div>
-    <div class="fac-chips" id="govChips"></div>
-    <div class="fac-bar-sec" style="margin-top:6px">Транспорт и скины для МП</div>
-    <div class="fac-chips" id="mpChips"></div>
+  <!-- Переключатели Основной / МП (мероприятия) -->
+  <div class="section-tabs">
+    <button class="s-tab on" id="secGov" onclick="setSection('gov')">🏛️ Основной автопарк фракции <span class="st-cnt" id="cntGov">0</span></button>
+    <button class="s-tab" id="secMp" onclick="setSection('mp')">🎪 Автопарк для мероприятий <span class="st-cnt" id="cntMp">0</span></button>
   </div>
+
+  <!-- Панель чипсов фракций -->
+  <div class="fac-bar" id="facBar"></div>
 
   <div class="search-row">
-    <input class="inp" id="qInp" style="max-width:420px" placeholder="🔎 Поиск по названию или описанию..." oninput="renderGrid()">
+    <input class="inp" id="qInp" style="max-width:420px" placeholder="🔎 Поиск по названию..." oninput="renderGrid()">
   </div>
 
   <div class="cards-grid" id="cardsGrid"></div>
 </div>
 
-<!-- Модальное окно добавления / редактирования -->
+<!-- Модальное окно -->
 <div class="back" id="mBack" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="m-head">
       <button class="m-close" onclick="closeModal()">✕</button>
-      <div class="mh-nm" id="mTitle">Добавить в каталог</div>
+      <div class="mh-nm" id="mTitle">Добавить машину</div>
     </div>
     <div class="m-body">
       <div class="form2">
         <div>
           <label class="flab">Категория *</label>
           <select class="sel" id="fKind" onchange="syncModalFields()">
-            <option value="car">🚔 Служебный автомобиль</option>
-            <option value="skin">👮 Форменная одежда / Скин</option>
+            <option value="car">🚗 Автопарк</option>
+            <option value="skin">👔 Форма</option>
           </select>
         </div>
         <div>
-          <label class="flab">Фракция / Ведомство *</label>
-          <select class="sel" id="fFac"></select>
+          <label class="flab">Раздел *</label>
+          <select class="sel" id="fSection">
+            <option value="gov">Основной автопарк фракции</option>
+            <option value="mp">Автопарк для мероприятий</option>
+          </select>
         </div>
       </div>
 
       <div>
-        <label class="flab">Название модели или формы *</label>
-        <input class="inp" id="fTitle" placeholder="Например: Skoda Octavia ДПС / Повседневная форма ППС">
+        <label class="flab">Ведомство / Фракция *</label>
+        <select class="sel" id="fFac"></select>
+      </div>
+
+      <div>
+        <label class="flab">Название модели / формы *</label>
+        <input class="inp" id="fTitle" placeholder="Например: Skoda Octavia ДПС">
       </div>
 
       <div id="speedFieldWrap">
-        <label class="flab">Максимальная скорость и привод (только для авто)</label>
-        <input class="inp" id="fSpeed" placeholder="Например: 245 км/ч · Полный привод">
+        <label class="flab">Максимальная скорость</label>
+        <input class="inp" id="fSpeed" placeholder="Например: 240 км/ч">
       </div>
 
       <div>
-        <label class="flab">Описание / ранг доступа / подразделение</label>
-        <input class="inp" id="fDesc" placeholder="Например: С 4 ранга (Старший сержант)">
+        <label class="flab">Описание / ранг доступа</label>
+        <input class="inp" id="fDesc" placeholder="Например: Спецбатальон ДПС · С 6 ранга">
       </div>
 
       <div>
-        <label class="flab">Фотография (Выберите файл с ПК или вставьте ссылку)</label>
+        <label class="flab">Фотография</label>
         <div class="up-zone" onclick="document.getElementById('fFileInp').click()">
           <div style="font-weight:800;color:#7cc4ff;font-size:12.5px">📷 Загрузить фото с компьютера</div>
-          <div style="font-size:11px;color:var(--mut);margin-top:3px">Изображение сжимается автоматически и сохраняется мгновенно без ошибок</div>
           <input type="file" id="fFileInp" accept="image/*" style="display:none" onchange="onFilePicked(this)">
           <img id="fPrev" class="up-prev" alt="Превью">
         </div>
@@ -299,7 +296,7 @@ body.adm .vtools{display:flex}
     </div>
     <div class="m-foot">
       <button class="btn ghost" onclick="closeModal()">Отмена</button>
-      <button class="btn" onclick="saveCatalogItem()">💾 Сохранить</button>
+      <button class="btn" onclick="saveCatalogItem()">Сохранить</button>
     </div>
   </div>
 </div>
@@ -308,8 +305,9 @@ body.adm .vtools{display:flex}
 <div id="troot"></div>
 
 <script>
-var STORAGE_KEY = 'mta_garage_catalog_v7';
-var CUR_KIND = 'car';
+var STORAGE_KEY = 'mta_garage_catalog_v8';
+var CATALOG_TYPE = 'car'; // 'car' или 'skin'
+var SECTION = 'gov';      // 'gov' или 'mp'
 var CUR_FAC = 'all';
 var EDIT_ID = null;
 var TEMP_IMG = '';
@@ -321,56 +319,46 @@ function checkOwnerAuth() {
     isOwner = !!(k && String(k).trim().length > 5);
   } catch (e) { isOwner = false; }
   document.body.classList.toggle('adm', isOwner);
-  var ob = document.getElementById('ownerBadge');
-  if (ob) ob.style.display = isOwner ? 'inline-flex' : 'none';
   var ab = document.getElementById('btnAddMain');
   if (ab) ab.style.display = isOwner ? 'inline-block' : 'none';
 }
 window.addEventListener('storage', checkOwnerAuth);
 
 var FACS_GOV = [
-  { k: 'all',   n: 'Все организации', ic: '📋' },
-  { k: 'uvd',   n: 'УМВД (Полиция)',   ic: '🛡️' },
-  { k: 'gibdd', n: 'ОГИБДД (ДПС)',     ic: '🚓' },
-  { k: 'mz',    n: 'Минздрав (МЗ)',    ic: '🏥' },
-  { k: 'mo',    n: 'Минобороны (МО)',  ic: '🎖️' },
-  { k: 'rzd',   n: 'Минтранс (РЖД)',   ic: '🚂' }
+  { k: 'all',   n: 'Все разделы', ic: '⚪' },
+  { k: 'uvd',   n: 'УМВД',        ic: '🔵' },
+  { k: 'gibdd', n: 'ОГИБДД',      ic: '🔵' },
+  { k: 'mz',    n: 'ЦГБ/ОКБ',     ic: '🔴' },
+  { k: 'mo',    n: 'ВС РФ',       ic: '🟢' },
+  { k: 'rzd',   n: 'РЖД',         ic: '🟠' }
 ];
 
 var FACS_MP = [
-  { k: 'fsb',   n: 'ФСБ',              ic: '🦅' },
-  { k: 'sk',    n: 'Следственный комитет', ic: '⚖️' },
-  { k: 'proc',  n: 'Прокуратура',      ic: '🏛️' },
-  { k: 'mchs',  n: 'МЧС России',       ic: '🚒' },
-  { k: 'fso',   n: 'ФСО России',       ic: '🕶️' }
+  { k: 'all',   n: 'Все разделы', ic: '⚪' },
+  { k: 'fsb',   n: 'ФСБ',         ic: '🦅' },
+  { k: 'sk',    n: 'СК РФ',       ic: '⚖️' },
+  { k: 'mchs',  n: 'МЧС',         ic: '🚒' },
+  { k: 'fso',   n: 'ФСО',         ic: '🕶️' }
 ];
 
-var ALL_FACS = FACS_GOV.concat(FACS_MP);
-
 function facNameByKey(k) {
-  for (var i = 0; i < ALL_FACS.length; i++) if (ALL_FACS[i].k === k) return ALL_FACS[i].n;
-  return 'Ведомство';
+  var all = FACS_GOV.concat(FACS_MP);
+  for (var i = 0; i < all.length; i++) if (all[i].k === k) return all[i].n;
+  return 'Фракция';
 }
 
 var DEFAULT_ITEMS = [
-  { id: 'c1', kind: 'car', fac: 'uvd', title: 'Lada Vesta ППС', desc: 'УМВД · Патрульный автомобиль', speed: '195 км/ч', img: '' },
-  { id: 'c2', kind: 'car', fac: 'uvd', title: 'УАЗ Патриот ППС', desc: 'УМВД · Внедорожник дежурной части', speed: '175 км/ч', img: '' },
-  { id: 'c3', kind: 'car', fac: 'uvd', title: 'Skoda Octavia УМВД', desc: 'УМВД г. Приволжск · Оперативный седан', speed: '230 км/ч', img: '' },
-  { id: 'c4', kind: 'car', fac: 'uvd', title: 'Toyota Camry XV70 (ОУР)', desc: 'УМВД · Транспорт уголовного розыска', speed: '245 км/ч', img: '' },
-  { id: 'c5', kind: 'car', fac: 'gibdd', title: 'Lada Vesta Sport ДПС', desc: 'ОГИБДД · Базовый экипаж ДПС', speed: '215 км/ч', img: '' },
-  { id: 'c6', kind: 'car', fac: 'gibdd', title: 'Skoda Octavia A8 ДПС', desc: 'ОГИБДД · Скоростной трассовый патруль', speed: '240 км/ч', img: '' },
-  { id: 'c7', kind: 'car', fac: 'gibdd', title: 'BMW M5 F90 Спецбат ДПС', desc: 'ОГИБДД г. Приволжск · Перехватчик', speed: '305 км/ч', img: '' },
-  { id: 'c8', kind: 'car', fac: 'mz', title: 'ГАЗель Next СМП', desc: 'ЦГБ / ОКБ · Скорая медицинская помощь', speed: '165 км/ч', img: '' },
-  { id: 'c9', kind: 'car', fac: 'mz', title: 'Ford Transit Реанимация', desc: 'ЦГБ г. Приволжск · Реанимобиль', speed: '185 км/ч', img: '' },
-  { id: 'c10', kind: 'car', fac: 'fsb', title: 'Mercedes-Benz V300d ЦСН ФСБ', desc: 'МП-панель · Спецтранспорт для мероприятий', speed: '220 км/ч', img: '' },
-  { id: 'c11', kind: 'car', fac: 'fso', title: 'Aurus Senat ФСО России', desc: 'МП-панель · Правительственный кортеж', speed: '250 км/ч', img: '' },
+  { id: 'c1', kind: 'car', section: 'gov', fac: 'uvd', title: 'Lada Vesta ППС', desc: 'УМВД · Патрульный автомобиль', speed: '195 км/ч', img: '' },
+  { id: 'c2', kind: 'car', section: 'gov', fac: 'uvd', title: 'УАЗ Патриот ППС', desc: 'УМВД · Внедорожник дежурной части', speed: '175 км/ч', img: '' },
+  { id: 'c3', kind: 'car', section: 'gov', fac: 'gibdd', title: 'Lada Vesta Sport ДПС', desc: 'ОГИБДД · Базовый экипаж ДПС', speed: '215 км/ч', img: '' },
+  { id: 'c4', kind: 'car', section: 'gov', fac: 'gibdd', title: 'BMW M5 F90 ДПС', desc: 'ОГИБДД г. Приволжск · Перехватчик', speed: '305 км/ч', img: '' },
+  { id: 'c5', kind: 'car', section: 'gov', fac: 'mz', title: 'ГАЗель Next СМП', desc: 'ЦГБ / ОКБ · Скорая медицинская помощь', speed: '165 км/ч', img: '' },
+  { id: 'c6', kind: 'car', section: 'mp',  fac: 'fsb', title: 'Mercedes-Benz V300d ЦСН ФСБ', desc: 'Автопарк для мероприятий · ФСБ', speed: '220 км/ч', img: '' },
+  { id: 'c7', kind: 'car', fac: 'mp',  facName: 'ФСО', title: 'Aurus Senat ФСО России', desc: 'Автопарк для мероприятий · ФСО', speed: '250 км/ч', img: '' },
 
-  { id: 's1', kind: 'skin', fac: 'uvd', title: 'Повседневная форма ППС (2015 г.)', desc: 'УМВД · Тёмно-синий китель с погонами', speed: '', img: '' },
-  { id: 's2', kind: 'skin', fac: 'uvd', title: 'Боевая форма ОМОН / СОБР', desc: 'УМВД · Тактическая экипировка', speed: '', img: '' },
-  { id: 's3', kind: 'skin', fac: 'uvd', title: 'Китель следователя Юстиции', desc: 'УМВД · Форма со следственными погонами', speed: '', img: '' },
-  { id: 's4', kind: 'skin', fac: 'gibdd', title: 'Форма инспектора ДПС с жилетом', desc: 'ОГИБДД · Светоотражающая экипировка', speed: '', img: '' },
-  { id: 's5', kind: 'skin', fac: 'gibdd', title: 'Парадная белая рубашка ГИБДД', desc: 'ОГИБДД · Парадно-выходная форма', speed: '', img: '' },
-  { id: 's6', kind: 'skin', fac: 'fsb', title: 'Штурмовой скин ЦСН ФСБ (Мультикам)', desc: 'МП-панель · Спецназ для спецзадач', speed: '', img: '' }
+  { id: 's1', kind: 'skin', section: 'gov', fac: 'uvd', title: 'Повседневная форма ППС', desc: 'УМВД · Тёмно-синий китель', speed: '', img: '' },
+  { id: 's2', kind: 'skin', section: 'gov', fac: 'gibdd', title: 'Форма инспектора ДПС', desc: 'ОГИБДД · Экипировка ДПС', speed: '', img: '' },
+  { id: 's3', kind: 'skin', section: 'mp',  fac: 'fsb', title: 'Штурмовой скин ЦСН ФСБ', desc: 'Мероприятия · Спецназ ФСБ', speed: '', img: '' }
 ];
 
 var CATALOG = [];
@@ -395,10 +383,20 @@ function toast(msg) {
   setTimeout(function() { t.remove(); }, 3000);
 }
 
-window.setMode = function(m) {
-  CUR_KIND = m;
-  document.getElementById('tabCars').classList.toggle('on', m === 'car');
-  document.getElementById('tabSkins').classList.toggle('on', m === 'skin');
+window.setCatalogType = function(type) {
+  CATALOG_TYPE = type;
+  document.getElementById('btnModeCar').classList.toggle('on', type === 'car');
+  document.getElementById('btnModeSkin').classList.toggle('on', type === 'skin');
+  renderGrid();
+};
+
+window.setSection = function(sec) {
+  SECTION = sec;
+  CUR_FAC = 'all';
+  document.getElementById('secGov').classList.toggle('on', sec === 'gov');
+  document.getElementById('secMp').classList.toggle('on', sec === 'mp');
+  document.getElementById('subTitleText').textContent = (sec === 'gov') ? 'Основной автопарк фракции' : 'Автопарк для мероприятий';
+  renderFacBar();
   renderGrid();
 };
 
@@ -409,43 +407,52 @@ window.setFac = function(k) {
 };
 
 function renderFacBar() {
-  function makeChips(arr) {
-    return arr.map(function(f) {
-      var cnt = DATA.filter(function(x) { return x.kind === CUR_KIND && (f.k === 'all' || x.fac === f.k); }).length;
-      return '<div class="f-chip' + (CUR_FAC === f.k ? ' on' : '') + '" onclick="setFac(\'' + f.k + '\')">' +
-        f.ic + ' ' + esc(f.n) + (f.k !== 'all' ? ' <span class="fc-cnt">' + cnt + '</span>' : '') +
-      '</div>';
-    }).join('');
-  }
-  document.getElementById('govChips').innerHTML = makeChips(FACS_GOV);
-  document.getElementById('mpChips').innerHTML = makeChips(FACS_MP);
+  var list = (SECTION === 'gov') ? FACS_GOV : FACS_MP;
+  document.getElementById('facBar').innerHTML = list.map(function(f) {
+    var cnt = CATALOG.filter(function(x) {
+      if (x.section !== SECTION || x.kind !== CATALOG_TYPE) return false;
+      if (f.k !== 'all' && x.fac !== f.k) return false;
+      return true;
+    }).length;
+    return '<div class="f-chip' + (CUR_FAC === f.k ? ' on' : '') + '" onclick="setFac(\'' + f.k + '\')">' +
+      '<span>' + f.ic + '</span><span>' + esc(f.n) + '</span>' +
+      (f.k !== 'all' ? '<span class="fc-cnt">' + cnt + '</span>' : '') +
+    '</div>';
+  }).join('');
 }
 
 function renderGrid() {
   checkOwnerAuth();
-  var carsCnt = DATA.filter(function(x) { return x.kind === 'car'; }).length;
-  var skinsCnt = DATA.filter(function(x) { return x.kind === 'skin'; }).length;
-  document.getElementById('cntCars').textContent = carsCnt;
-  document.getElementById('cntSkins').textContent = skinsCnt;
+  var totalAll = CATALOG.filter(function(x) {
+    if (x.section !== SECTION || x.kind !== CATALOG_TYPE) return false;
+    return true;
+  }).length;
+
+  var govCnt = CATALOG.filter(function(x) { return x.section === 'gov'; }).length;
+  var mpCnt = CATALOG.filter(function(x) { return x.section === 'mp'; }).length;
+
+  document.getElementById('totalCount').textContent = totalAll;
+  document.getElementById('cntGov').textContent = govCnt;
+  document.getElementById('cntMp').textContent = mpCnt;
 
   var q = (document.getElementById('qInp').value || '').trim().toLowerCase();
-  var list = DATA.filter(function(x) {
-    if (x.kind !== CUR_KIND) return false;
+  var list = CATALOG.filter(function(x) {
+    if (x.section !== SECTION || x.kind !== CATALOG_TYPE) return false;
     if (CUR_FAC !== 'all' && x.fac !== CUR_FAC) return false;
-    if (q && ((x.name || '') + ' ' + (x.desc || '')).toLowerCase().indexOf(q) < 0) return false;
+    if (q && ((x.title || '') + ' ' + (x.desc || '')).toLowerCase().indexOf(q) < 0) return false;
     return true;
   });
 
   if (!list.length) {
-    document.getElementById('cardsGrid').innerHTML = '<div class="empty">В этой категории пока нет элементов</div>';
+    document.getElementById('cardsGrid').innerHTML = '<div class="empty">В этом разделе пока нет элементов</div>';
     return;
   }
 
   document.getElementById('cardsGrid').innerHTML = list.map(function(it) {
-    var isSkin = (it.kind === 'skin');
+    var isSkin = (CATALOG_TYPE === 'skin');
     var fName = facNameByKey(it.fac);
     var imgBlock = it.img
-      ? '<img src="' + esc(it.img) + '" alt="' + esc(it.name) + '" onclick="openLb(\'' + esc(it.img) + '\')">'
+      ? '<img src="' + esc(it.img) + '" alt="' + esc(it.title) + '" onclick="openLb(\'' + esc(it.img) + '\')">'
       : '<div class="vph" onclick="if(isOwner)openModal(\'' + esc(it.id) + '\')"><span>' + (isSkin ? '👔' : '🚓') + '</span><div>' + (isOwner ? 'Нажмите для фото' : 'Нет фото') + '</div></div>';
 
     return '<div class="vcard' + (isSkin ? ' skin' : '') + '">' +
@@ -457,7 +464,7 @@ function renderGrid() {
         imgBlock +
       '</div>' +
       '<div class="vbody">' +
-        '<div class="vtitle">' + esc(it.name) + '</div>' +
+        '<div class="vtitle">' + esc(it.title) + '</div>' +
         (it.desc ? '<div class="vsub">' + esc(it.desc) + '</div>' : '') +
       '</div>' +
       '<div class="vtools">' +
@@ -483,7 +490,8 @@ window.openModal = function(id) {
   if (!isOwner) return;
   EDIT_ID = id || null;
   var facSel = document.getElementById('fFac');
-  facSel.innerHTML = ALL_FACS.map(function(f) {
+  var allFacs = FACS_GOV.slice(1).concat(FACS_MP);
+  facSel.innerHTML = allFacs.map(function(f) {
     return '<option value="' + f.k + '">' + f.ic + ' ' + esc(f.n) + '</option>';
   }).join('');
 
@@ -491,12 +499,13 @@ window.openModal = function(id) {
   document.getElementById('fFileInp').value = '';
 
   if (EDIT_ID) {
-    var it = DATA.filter(function(x) { return x.id === EDIT_ID; })[0];
+    var it = CATALOG.filter(function(x) { return x.id === EDIT_ID; })[0];
     if (!it) return;
     document.getElementById('mTitle').textContent = 'Редактировать карточку';
     document.getElementById('fKind').value = it.kind;
+    document.getElementById('fSection').value = it.section || 'gov';
     document.getElementById('fFac').value = it.fac;
-    document.getElementById('fTitle').value = it.name || '';
+    document.getElementById('fTitle').value = it.title || '';
     document.getElementById('fSpeed').value = it.speed || '';
     document.getElementById('fDesc').value = it.desc || '';
     TEMP_IMG = it.img || '';
@@ -504,8 +513,9 @@ window.openModal = function(id) {
     if (TEMP_IMG) { prev.src = TEMP_IMG; prev.style.display = 'block'; }
     else { prev.style.display = 'none'; }
   } else {
-    document.getElementById('mTitle').textContent = (CUR_KIND === 'car') ? 'Добавить транспорт' : 'Добавить форму (скин)';
-    document.getElementById('fKind').value = CUR_KIND;
+    document.getElementById('mTitle').textContent = (CATALOG_TYPE === 'car') ? '+ Добавить машину' : 'Добавить форму';
+    document.getElementById('fKind').value = CATALOG_TYPE;
+    document.getElementById('fSection').value = SECTION;
     document.getElementById('fFac').value = (CUR_FAC !== 'all') ? CUR_FAC : 'uvd';
     document.getElementById('fTitle').value = '';
     document.getElementById('fSpeed').value = '';
@@ -559,40 +569,41 @@ window.onUrlInput = function(val) {
 
 window.saveCatalogItem = function() {
   var kind = document.getElementById('fKind').value;
+  var section = document.getElementById('fSection').value;
   var fac  = document.getElementById('fFac').value;
-  var name = (document.getElementById('fTitle').value || '').trim();
+  var title = (document.getElementById('fTitle').value || '').trim();
   var speed = (kind === 'car') ? (document.getElementById('fSpeed').value || '').trim() : '';
   var desc = (document.getElementById('fDesc').value || '').trim();
 
-  if (!name) { toast('Введите название'); return; }
+  if (!title) { toast('Введите название'); return; }
 
   if (EDIT_ID) {
-    DATA.forEach(function(x) {
+    CATALOG.forEach(function(x) {
       if (x.id === EDIT_ID) {
-        x.kind = kind; x.fac = fac; x.name = name;
+        x.kind = kind; x.section = section; x.fac = fac; x.title = title;
         x.speed = speed; x.desc = desc; x.img = TEMP_IMG;
       }
     });
     toast('✓ Изменения сохранены');
   } else {
-    DATA.unshift({
+    CATALOG.unshift({
       id: 'g_' + Date.now(),
-      kind: kind, fac: fac, name: name,
+      kind: kind, section: section, fac: fac, title: title,
       speed: speed, desc: desc, img: TEMP_IMG
     });
-    CUR_KIND = kind;
+    SECTION = section;
+    CATALOG_TYPE = kind;
     toast('✓ Карточка добавлена');
   }
   saveData();
   closeModal();
-  setMode(CUR_KIND);
-  renderFacBar();
-  renderGrid();
+  setSection(SECTION);
+  setCatalogType(CATALOG_TYPE);
 };
 
 window.delItem = function(id) {
   if (!isOwner) return;
-  DATA = DATA.filter(function(x) { return x.id !== id; });
+  CATALOG = CATALOG.filter(function(x) { return x.id !== id; });
   saveData();
   renderFacBar();
   renderGrid();
