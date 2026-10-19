@@ -3,258 +3,310 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Автопарк и форма фракций · MTA Province</title>
+<title>Автопарк и форма фракций</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080b11;
-  --card:#121824;
-  --line:rgba(255,255,255,.08);
-  --txt:#f1f5f9;
-  --mut:#8c98ad;
+  --bg:#0e1116;
+  --bg2:#131820;
+  --card:#191f28;
+  --line:#27303d;
+  --txt:#e9edf4;
+  --mut:#8b95a7;
   --acc:#4da3ff;
   --green:#2fd97a;
   --yellow:#f7c948;
   --red:#ff5c5c;
   --purple:#a78bfa;
 }
-html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
-body{
-  background:
-    radial-gradient(1100px 520px at 10% -10%,rgba(77,163,255,.14),transparent 60%),
-    radial-gradient(1000px 500px at 90% 110%,rgba(167,139,250,.12),transparent 60%),
-    #080b11;
-  padding:22px 20px 60px;
-}
-.g-wrap{max-width:1380px;margin:0 auto}
+html,body{color-scheme:dark;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
+body{background:radial-gradient(1100px 520px at 8% -10%,rgba(45,100,170,.16),transparent 60%),radial-gradient(900px 520px at 115% 115%,rgba(130,90,220,.1),transparent 55%),#0e1116}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#2a3342;border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:#3a4656}
+button{font-family:inherit;cursor:pointer}
 
-/* Шапка без повторного входа GitHub */
-.g-top{
+/* Верхняя шапка (без кнопки повторного входа) */
+#topbar{
+  height:58px;
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:14px;
-  background:rgba(18,24,36,.88);
-  backdrop-filter:blur(14px);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:18px 22px;
-  margin-bottom:18px;
-  box-shadow:0 16px 40px rgba(0,0,0,.45);
+  padding:0 22px;
+  border-bottom:1px solid var(--line);
+  background:rgba(14,17,22,.92);
+  position:sticky;
+  top:0;
+  z-index:50;
+  backdrop-filter:blur(10px);
 }
-.g-brand{display:flex;align-items:center;gap:14px}
-.g-ic{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 22px rgba(59,130,246,.35)}
-.g-title{font-size:20px;font-weight:900}
-.g-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
-
-.type-switch{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.t-btn{
-  padding:10px 18px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.03);
-  color:var(--mut);
-  font-weight:800;
-  font-size:13px;
-  cursor:pointer;
-  transition:.18s;
+.tb-left{display:flex;align-items:center;gap:12px}
+.logo-ic{
+  width:36px;height:36px;border-radius:11px;
+  background:linear-gradient(135deg,#2b5876,#4e4376);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:1px solid #3d557f;
 }
-.t-btn:hover{border-color:rgba(255,255,255,.2);color:#fff}
-.t-btn.on{background:linear-gradient(135deg,#2563eb,#4f46e5);border-color:#93c5fd;color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.32)}
+.tb-title{font-weight:800;letter-spacing:1.2px;font-size:13.5px;background:linear-gradient(90deg,#eaf2ff,#a9c7ef);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tb-right{display:flex;align-items:center;gap:10px}
+.adbadge{display:none;align-items:center;gap:6px;padding:6px 12px;border-radius:9px;border:1px solid #2aa562;background:rgba(47,217,122,.13);color:#7ce6a8;font-size:11.5px;font-weight:800}
+body.adm .adbadge{display:inline-flex}
 
-.add-btn{
-  padding:10px 18px;
-  border-radius:12px;
-  border:1px solid rgba(47,217,122,.45);
-  background:linear-gradient(135deg,#10b981,#059669);
+/* Классический макет с боковой панелью */
+#layout{display:flex;min-height:calc(100vh - 58px);max-width:1540px;margin:0 auto;width:100%}
+#sidebar{
+  width:265px;flex:0 0 265px;
+  background:var(--bg2);
+  border-right:1px solid var(--line);
+  padding:16px 12px;
+  position:sticky;top:58px;
+  height:calc(100vh - 58px);
+  overflow-y:auto;
+}
+.sb-group{margin-bottom:12px}
+.sb-ghdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px;border-radius:9px;
+  font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--mut);font-weight:800;cursor:pointer;user-select:none;
+}
+.sb-ghdr:hover{color:var(--txt);background:#1a212b}
+.sb-gitems{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.sb-group.collapsed .sb-gitems{display:none}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:10px;
+  color:var(--mut);cursor:pointer;font-weight:600;font-size:13px;
+  border:1px solid transparent;transition:.15s;
+}
+.sb-item:hover{color:var(--txt);background:#1a212b}
+.sb-item.on{
   color:#fff;
-  font-weight:800;
-  font-size:13px;
-  cursor:pointer;
-  transition:.18s;
-  box-shadow:0 6px 18px rgba(16,185,129,.28);
+  background:linear-gradient(90deg,rgba(77,163,255,.18),rgba(77,163,255,.03));
+  border-color:rgba(77,163,255,.32);
 }
-.add-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.sb-item .sb-c{margin-left:auto;background:#232e3d;border:1px solid #32405a;padding:1px 8px;border-radius:10px;font-size:11px;color:#aeb9cc;font-weight:700}
 
-/* Фильтры фракций */
-.fac-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.f-chip{
-  padding:8px 14px;
-  border-radius:11px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--mut);
-  font-weight:800;
-  font-size:12px;
-  cursor:pointer;
-  transition:.16s;
+/* Основная область */
+#content{flex:1;padding:22px 26px 60px;min-width:0}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:16px}
+h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
+.cnt{font-size:12px;background:#22304a;border:1px solid #32456a;color:#a9c7ef;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px;font-weight:800}
+.ph-sub{color:var(--mut);font-size:12.5px;margin-top:4px}
+
+/* Переключатель вкладок: Автопарк / Форма (скины) */
+.mode-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.mtab{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 16px;border-radius:11px;
+  border:1px solid var(--line);background:var(--card);
+  color:var(--mut);font-size:13px;font-weight:800;cursor:pointer;transition:.15s;
 }
-.f-chip:hover{border-color:rgba(255,255,255,.22);color:#fff}
-.f-chip.on{background:rgba(77,163,255,.2);border-color:var(--acc);color:#fff}
+.mtab:hover{border-color:#3a4656;color:var(--txt)}
+.mtab.on{background:rgba(77,163,255,.16);border-color:var(--acc);color:#fff}
 
-.search-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-.inp,.sel{background:#0f141e;border:1px solid rgba(255,255,255,.12);color:var(--txt);padding:10px 14px;border-radius:12px;font-size:13.5px;font-family:inherit;outline:none;width:100%}
-.inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.15)}
-
-/* Сетка карточек авто и формы */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px}
-.item-card{
-  background:linear-gradient(160deg,#161e2e,#101622);
-  border:1px solid var(--line);
-  border-radius:18px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  transition:transform .2s,border-color .2s,box-shadow .2s;
-  position:relative;
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 13px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);
+  color:var(--mut);font-size:12px;font-weight:700;cursor:pointer;transition:.15s;
 }
-.item-card:hover{transform:translateY(-3px);border-color:rgba(147,197,253,.4);box-shadow:0 16px 38px rgba(0,0,0,.5)}
+.chip:hover{border-color:#3a4656;color:var(--txt)}
+.chip.on{border-color:var(--acc);color:#fff;background:rgba(77,163,255,.16)}
 
-.ic-media{
-  width:100%;
-  aspect-ratio:16/10;
-  background:radial-gradient(circle at 50% 40%,#1e293b,#0f172a);
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  cursor:pointer;
+.ctl{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.inp,.sel,textarea.inp{
+  background:#141a23;border:1px solid var(--line);color:var(--txt);
+  padding:9px 13px;border-radius:10px;font-size:13.5px;font-family:inherit;outline:none;width:100%;
 }
-.item-card.skin-card .ic-media{aspect-ratio:4/4}
-.ic-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
-.item-card:hover .ic-media img{transform:scale(1.04)}
-.ic-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#64748b;font-size:12px;font-weight:700}
-.ic-placeholder i{font-style:normal;font-size:38px}
+.inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.14)}
 
-.ic-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
-.ic-tag{padding:4px 9px;border-radius:8px;font-size:10.5px;font-weight:800;backdrop-filter:blur(8px);background:rgba(10,14,22,.82);border:1px solid rgba(255,255,255,.14);color:#e2e8f0}
-.ic-tag.mp{background:rgba(167,139,250,.25);border-color:rgba(167,139,250,.55);color:#ddd6fe}
-
-.ic-body{padding:15px 16px;flex:1;display:flex;flex-direction:column;gap:8px}
-.ic-title{font-weight:900;font-size:15.5px;color:#fff;line-height:1.3}
-.ic-meta{font-size:12px;color:var(--mut);line-height:1.45}
-.ic-meta b{color:#cbd5e1}
-
-.ic-admin-bar{
-  display:flex;
-  gap:6px;
-  padding:10px 16px 14px;
-  border-top:1px dashed rgba(255,255,255,.07);
+.btn{
+  background:linear-gradient(145deg,#3684e6,#2868c9);
+  border:1px solid #3a6cb4;color:#fff;
+  padding:9px 16px;border-radius:10px;font-weight:700;font-size:12.5px;
+  transition:.15s;box-shadow:0 4px 14px rgba(40,100,190,.25);
 }
-.adm-btn{
-  flex:1;
-  padding:7px 10px;
-  border-radius:9px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  color:#cbd5e1;
-  font-size:11.5px;
-  font-weight:800;
-  cursor:pointer;
-  transition:.15s;
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);box-shadow:none}
+.btn.warn{background:linear-gradient(145deg,#a03c3c,#7c2a2a);border-color:#a34444}
+
+/* Сетка карточек в прежнем классическом стиле */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(275px,1fr));gap:14px}
+.vcard{
+  background:linear-gradient(145deg,#1c2432,#181e28);
+  border:1px solid var(--line);border-radius:15px;
+  overflow:hidden;display:flex;flex-direction:column;
+  position:relative;transition:transform .16s,border-color .16s,box-shadow .16s;
 }
-.adm-btn:hover{border-color:var(--acc);color:#fff;background:rgba(77,163,255,.15)}
-.adm-btn.del:hover{border-color:var(--red);color:#fca5a5;background:rgba(255,92,92,.15)}
-
-/* Модальное окно добавления / редактирования с загрузкой фото */
-.m-back{position:fixed;inset:0;z-index:500;background:rgba(4,7,12,.82);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
-.m-box{width:540px;max-width:96vw;background:#131926;border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.75);max-height:90vh;overflow-y:auto}
-.m-title{font-size:18px;font-weight:900;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
-.m-close{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--mut);width:32px;height:32px;border-radius:9px;cursor:pointer;font-weight:800}
-.flab{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin:12px 0 6px}
-
-.photo-drop{
-  border:2px dashed rgba(96,165,250,.45);
-  background:rgba(37,99,235,.07);
-  border-radius:14px;
-  padding:16px;
-  text-align:center;
-  cursor:pointer;
-  transition:.18s;
+.vcard:hover{transform:translateY(-2px);border-color:#3a4757;box-shadow:0 12px 30px rgba(0,0,0,.38)}
+.vimg{
+  width:100%;aspect-ratio:16/10;background:#121720;
+  position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;border-bottom:1px solid var(--line);
 }
-.photo-drop:hover{border-color:#60a5fa;background:rgba(37,99,235,.14)}
-.photo-preview{width:100%;max-height:210px;object-fit:contain;border-radius:10px;margin-top:10px;display:none;border:1px solid var(--line);background:#090d14}
+.vcard.skin .vimg{aspect-ratio:4/4}
+.vimg img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:transform .22s}
+.vcard:hover .vimg img{transform:scale(1.03)}
+.vph{display:flex;flex-direction:column;align-items:center;gap:5px;color:#5b6678;font-size:12px;font-weight:700}
+.vph span{font-size:34px}
 
-#lb{position:fixed;inset:0;z-index:700;background:rgba(4,7,12,.9);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
-#lb img{max-width:92vw;max-height:88vh;border-radius:14px;border:1px solid rgba(255,255,255,.15)}
+.vbadges{position:absolute;top:9px;left:9px;right:9px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
+.vtag{
+  padding:3px 9px;border-radius:8px;font-size:10.5px;font-weight:800;
+  background:rgba(14,17,22,.86);border:1px solid rgba(255,255,255,.12);color:#cfe0f5;
+}
+.vtag.speed{color:#ffd98a;border-color:rgba(247,201,72,.4)}
+.vtag.city{color:#6cc0ff;border-color:rgba(77,163,255,.4)}
 
-#troot{position:fixed;right:20px;bottom:20px;z-index:800;display:flex;flex-direction:column;gap:8px}
-.toast{background:#182234;border:1px solid rgba(77,163,255,.45);border-left:4px solid var(--acc);padding:12px 16px;border-radius:12px;font-weight:700;font-size:13px;box-shadow:0 12px 32px rgba(0,0,0,.55)}
+.vbody{padding:13px 15px;flex:1;display:flex;flex-direction:column;gap:6px}
+.vtitle{font-weight:800;font-size:15px;color:#fff;line-height:1.3}
+.vsub{font-size:12px;color:var(--mut);line-height:1.45}
+
+.vtools{
+  display:none;gap:6px;padding:9px 15px 13px;border-top:1px dashed #232b37;
+}
+body.adm .vtools{display:flex}
+.vbtn{
+  flex:1;padding:6px 10px;border-radius:8px;background:#141a23;border:1px solid var(--line);
+  color:#c9d3e3;font-size:11.5px;font-weight:700;transition:.15s;
+}
+.vbtn:hover{border-color:var(--acc);color:#fff}
+.vbtn.del:hover{border-color:var(--red);color:#ffb3b3}
+
+.empty{padding:34px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:14px;margin-top:8px}
+
+/* Модальное окно добавления и редактирования */
+.back{position:fixed;inset:0;background:rgba(4,7,11,.78);backdrop-filter:blur(7px);z-index:400;display:none;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px}
+.modal{width:100%;max-width:560px;background:#161c25;border:1px solid #2b3442;border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column}
+.m-head{padding:18px 22px 14px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,rgba(77,163,255,.08),transparent)}
+.m-close{position:absolute;top:13px;right:14px;background:#1d2531;border:1px solid var(--line);color:var(--mut);width:30px;height:30px;border-radius:8px}
+.mh-nm{font-size:17px;font-weight:800}
+.m-body{padding:16px 22px;display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow-y:auto}
+.m-foot{padding:12px 22px;border-top:1px solid var(--line);background:#141a24;display:flex;justify-content:flex-end;gap:10px}
+.flab{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:3px;display:block}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.up-zone{
+  border:1.5px dashed #3a5072;background:rgba(77,163,255,.06);
+  border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:.15s;
+}
+.up-zone:hover{border-color:var(--acc);background:rgba(77,163,255,.12)}
+.up-prev{width:100%;max-height:190px;object-fit:contain;border-radius:9px;margin-top:9px;display:none;border:1px solid var(--line);background:#0c1017}
+
+#lb{position:fixed;inset:0;z-index:600;background:rgba(4,7,11,.9);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb img{max-width:92vw;max-height:88vh;border-radius:14px;border:1px solid var(--line)}
+
+#troot{position:fixed;right:18px;bottom:18px;z-index:700;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1c2531;border:1px solid #32435c;border-left:3px solid var(--acc);padding:11px 15px;border-radius:11px;font-size:12.5px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+
+@media(max-width:860px){#sidebar{display:none}#layout{display:block}#content{padding:16px 12px 80px}.form2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<div class="g-wrap">
-  <div class="g-top">
-    <div class="g-brand">
-      <div class="g-ic">🚔</div>
+<header id="topbar">
+  <div class="tb-left">
+    <div class="logo-ic">🚔</div>
+    <div class="tb-title">АВТОПАРК И ФОРМА ФРАКЦИЙ</div>
+  </div>
+  <div class="tb-right">
+    <span class="adbadge">✏️ Режим владельца</span>
+  </div>
+</header>
+
+<div id="layout">
+  <aside id="sidebar"></aside>
+  <main id="content">
+    <div class="ph">
       <div>
-        <div class="g-title">Обновлённый автопарк и форма фракций</div>
-        <div class="g-sub">Каталог служебного транспорта, городской привязки и форменной одежды (включая МП-панель)</div>
+        <h1><span id="hTitle">Все фракции</span><span class="cnt" id="hCnt">0</span></h1>
+        <div class="ph-sub" id="hSub">Каталог служебного транспорта и форменной одежды подразделений</div>
+      </div>
+      <div id="addBtnWrap" style="display:none">
+        <button class="btn" id="btnAddMain" onclick="openModal(null)">＋ Добавить транспорт</button>
       </div>
     </div>
 
-    <div class="type-switch">
-      <button class="t-btn on" id="tabCars" onclick="setKind('car')">🚔 Автопарк (<span id="cntCars">0</span>)</button>
-      <button class="t-btn" id="tabSkins" onclick="setKind('skin')">👮 Форма и скины (<span id="cntSkins">0</span>)</button>
-      <button class="add-btn" id="btnAdd" onclick="openEditModal(null)">＋ Добавить в каталог</button>
+    <div class="mode-tabs">
+      <div class="mtab on" id="tabCar" onclick="setMode('car')">🚗 Автопарк (<span id="cntCar">0</span>)</div>
+      <div class="mtab" id="tabSkin" onclick="setMode('skin')">👔 Форма / скины (<span id="cntSkin">0</span>)</div>
     </div>
-  </div>
 
-  <div class="fac-chips" id="facChips"></div>
+    <div class="chips" id="cityChips"></div>
 
-  <div class="search-row">
-    <input class="inp" id="qInp" style="max-width:420px" placeholder="🔎 Поиск по названию модели, подразделению или городу..." oninput="renderGrid()">
-  </div>
+    <div class="ctl">
+      <input class="inp" id="qInp" style="max-width:380px" placeholder="🔎 Поиск по названию или описанию..." oninput="renderItems()">
+    </div>
 
-  <div class="cards-grid" id="cardsGrid"></div>
+    <div id="items"></div>
+  </main>
 </div>
 
-<!-- Модальное окно добавления / редактирования с безотказной загрузкой фото -->
-<div class="m-back" id="editBack" onclick="if(event.target===this)closeEditModal()">
-  <div class="m-box">
-    <div class="m-title">
-      <span id="mTitleTxt">Добавить в каталог</span>
-      <button class="m-close" onclick="closeEditModal()">✕</button>
+<!-- Модальное окно добавления / редактирования -->
+<div class="back" id="mBack" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="m-head">
+      <button class="m-close" onclick="closeModal()">✕</button>
+      <div class="mh-nm" id="mTitle">Добавить в каталог</div>
     </div>
+    <div class="m-body">
+      <div class="form2">
+        <div>
+          <label class="flab">Раздел *</label>
+          <select class="sel" id="fKind" onchange="syncModalFields()">
+            <option value="car">🚗 Автопарк (Транспорт)</option>
+            <option value="skin">👔 Форма (Скин)</option>
+          </select>
+        </div>
+        <div>
+          <label class="flab">Фракция / Структура *</label>
+          <select class="sel" id="fFac"></select>
+        </div>
+      </div>
 
-    <label class="flab">Категория *</label>
-    <select class="sel" id="fKind" onchange="toggleSpeedField()">
-      <option value="car">🚔 Служебный автомобиль</option>
-      <option value="skin">👮 Форменная одежда / Скин</option>
-    </select>
+      <div>
+        <label class="flab">Название модели или формы *</label>
+        <input class="inp" id="fName" placeholder="Например: Skoda Octavia ДПС / Повседневная форма ППС">
+      </div>
 
-    <label class="flab">Фракция / Ведомство *</label>
-    <select class="sel" id="fFac"></select>
+      <div class="form2">
+        <div>
+          <label class="flab">Привязка к городу</label>
+          <select class="sel" id="fCity">
+            <option value="all">Общий (Все города)</option>
+            <option value="priv">г. Приволжск</option>
+            <option value="mir">г. Мирный</option>
+            <option value="nev">г. Невский</option>
+          </select>
+        </div>
+        <div id="speedWrap">
+          <label class="flab">Макс. скорость (км/ч)</label>
+          <input class="inp" id="fSpeed" placeholder="Например: 240 км/ч">
+        </div>
+      </div>
 
-    <label class="flab">Название модели авто или комплекта формы *</label>
-    <input class="inp" id="fTitle" placeholder="Например: Skoda Octavia ДПС / Повседневная форма ППС">
+      <div>
+        <label class="flab">Описание / ранг доступа / подразделение</label>
+        <input class="inp" id="fDesc" placeholder="Например: Спецбатальон ДПС · Доступно с 6 ранга">
+      </div>
 
-    <label class="flab">Подразделение / Город / Назначение</label>
-    <input class="inp" id="fSub" placeholder="Например: ОГИБДД г. Приволжск (Базовый автопарк)">
-
-    <div id="speedFieldWrap">
-      <label class="flab">Максимальная скорость и привод (только для авто)</label>
-      <input class="inp" id="fSpeed" placeholder="Например: 245 км/ч · Полный привод">
+      <div>
+        <label class="flab">Фотография (Выберите файл с ПК или вставьте ссылку)</label>
+        <div class="up-zone" onclick="document.getElementById('fFile').click()">
+          <div style="font-weight:800;font-size:12.5px;color:#7cc4ff">📷 Загрузить фото с компьютера</div>
+          <div style="font-size:11px;color:var(--mut);margin-top:3px">Файл сжимается автоматически и сохраняется мгновенно без ошибок</div>
+          <input type="file" id="fFile" accept="image/*" style="display:none" onchange="onFilePicked(this)">
+          <img id="fPrev" class="up-prev" alt="Превью">
+        </div>
+        <input class="inp" id="fUrl" style="margin-top:7px" placeholder="Или прямая ссылка на фото (https://...)" oninput="onUrlInput(this.value)">
+      </div>
     </div>
-
-    <label class="flab">Доступ с ранга</label>
-    <input class="inp" id="fRank" placeholder="Например: С 4 ранга (Старший сержант)">
-
-    <label class="flab">Фотография (Загрузите файл с компьютера или вставьте ссылку)</label>
-    <div class="photo-drop" onclick="document.getElementById('fFileInp').click()">
-      <div style="font-weight:800;color:#93c5fd;font-size:13px">📷 Нажмите здесь, чтобы выбрать фото с компьютера</div>
-      <div style="font-size:11.5px;color:var(--mut);margin-top:4px">Поддерживаются PNG, JPG, WEBP — изображение автоматически оптимизируется без ошибок</div>
-      <input type="file" id="fFileInp" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
-      <img id="fPreview" class="photo-preview" alt="Предпросмотр">
-    </div>
-    <input class="inp" id="fImgUrl" style="margin-top:8px" placeholder="Или вставьте прямую ссылку на картинку (https://...)" oninput="handleUrlPreview(this.value)">
-
-    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
-      <button class="t-btn" onclick="closeEditModal()">Отмена</button>
-      <button class="add-btn" onclick="saveCatalogItem()">💾 Сохранить</button>
+    <div class="m-foot">
+      <button class="btn ghost" onclick="closeModal()">Отмена</button>
+      <button class="btn" onclick="saveItem()">💾 Сохранить</button>
     </div>
   </div>
 </div>
@@ -263,301 +315,370 @@ body{
 <div id="troot"></div>
 
 <script>
-var STORAGE_KEY = 'mta_garage_catalog_v5';
-var CUR_KIND = 'car';
-var CUR_FAC = 'all';
-var EDIT_ID = null;
-var CURRENT_IMG_DATA = '';
-
-var FAC_LIST = [
-  { k: 'all',  n: 'Все ведомства',          ic: '📋' },
-  { k: 'umvd', n: 'УМВД (Полиция / ОМОН)',  ic: '🛡️' },
-  { k: 'gibdd',n: 'ОГИБДД (ДПС)',           ic: '🚓' },
-  { k: 'mz',   n: 'Минздрав (ЦГБ / ОКБ)',   ic: '🏥' },
-  { k: 'mo',   n: 'Минобороны (ВС РФ)',     ic: '🎖️' },
-  { k: 'mp',   n: 'МП-панель (ФСБ / СК / МЧС / ФСО)', ic: '🚨' }
-];
-
-var DEFAULT_ITEMS = [
-  /* Автопарк УМВД */
-  { id: 'c1', kind: 'car', fac: 'umvd', title: 'Lada Vesta ППС', sub: 'УМВД · Базовый патрульный автомобиль', speed: '195 км/ч · Передний привод', rank: 'Со 2 ранга (Мл. сержант)', img: '' },
-  { id: 'c2', kind: 'car', fac: 'umvd', title: 'УАЗ Патриот ППС', sub: 'УМВД · Патрульный внедорожник', speed: '175 км/ч · Полный привод', rank: 'С 3 ранга (Сержант)', img: '' },
-  { id: 'c3', kind: 'car', fac: 'umvd', title: 'Skoda Octavia УМВД', sub: 'УМВД г. Приволжск · Оперативно-служебный', speed: '230 км/ч · Передний привод', rank: 'С 6 ранга (Прапорщик)', img: '' },
-  { id: 'c4', kind: 'car', fac: 'umvd', title: 'Toyota Camry XV70 (ОУР)', sub: 'УМВД · Оперативный транспорт уголовного розыска', speed: '245 км/ч · Передний привод', rank: 'С 9 ранга (Лейтенант)', img: '' },
-  { id: 'c5', kind: 'car', fac: 'umvd', title: 'КамАЗ-4350 «Выстрел» / Автозак ОМОН', sub: 'УМВД · Спецтранспорт ОМОН для спецопераций', speed: '140 км/ч · Полный привод', rank: 'Со спецдопуска ОМОН', img: '' },
-
-  /* Автопарк ОГИБДД */
-  { id: 'c6', kind: 'car', fac: 'gibdd', title: 'Lada Vesta Sport ДПС', sub: 'ОГИБДД · Базовый экипаж дорожно-патрульной службы', speed: '215 км/ч · Передний привод', rank: 'Со 2 ранга (Мл. сержант)', img: '' },
-  { id: 'c7', kind: 'car', fac: 'gibdd', title: 'Skoda Octavia A8 ДПС', sub: 'ОГИБДД · Скоростной трассовый патруль', speed: '240 км/ч · Полный привод', rank: 'С 5 ранга (Старшина)', img: '' },
-  { id: 'c8', kind: 'car', fac: 'gibdd', title: 'BMW M5 F90 Спецбат ДПС', sub: 'ОГИБДД г. Приволжск · Уникальный перехватчик спецбатальона', speed: '305 км/ч · Полный привод', rank: 'С 11 ранга (Капитан)', img: '' },
-  { id: 'c9', kind: 'car', fac: 'gibdd', title: 'Mercedes-Benz E63 AMG ДПС', sub: 'ОГИБДД г. Невский · Скоростной перехватчик сопровождения', speed: '300 км/ч · Полный привод', rank: 'С 12 ранга (Майор)', img: '' },
-
-  /* Автопарк Минздрава */
-  { id: 'c10', kind: 'car', fac: 'mz', title: 'ГАЗель Next СМП (Класс B)', sub: 'ЦГБ / ОКБ · Базовый автомобиль скорой медицинской помощи', speed: '165 км/ч · Задний привод', rank: 'Со 2 ранга', img: '' },
-  { id: 'c11', kind: 'car', fac: 'mz', title: 'Ford Transit Реанимация (Класс C)', sub: 'ЦГБ г. Приволжск · Реанимобиль экстренной бригады', speed: '185 км/ч · Полный привод', rank: 'С 6 ранга (Фельдшер)', img: '' },
-
-  /* Автопарк МП-панели */
-  { id: 'c12', kind: 'car', fac: 'mp', title: 'Mercedes-Benz V300d (ЦСН ФСБ)', sub: 'МП-панель · Спецтранспорт ФСБ для глобальных мероприятий', speed: '220 км/ч · Полный привод', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
-  { id: 'c13', kind: 'car', fac: 'mp', title: 'Aurus Senat (ФСО России)', sub: 'МП-панель · Автомобиль правительственного кортежа', speed: '250 км/ч · Полный привод', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
-  { id: 'c14', kind: 'car', fac: 'mp', title: 'Ford Transit (Следственный комитет РФ)', sub: 'МП-панель · Передвижная криминалистическая лаборатория СК', speed: '180 км/ч · Полный привод', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
-
-  /* Форма и скины (БЕЗ скорости!) */
-  { id: 's1', kind: 'skin', fac: 'umvd', title: 'Повседневная форма ППС (Образец 2015 г.)', sub: 'УМВД · Тёмно-синий китель с динамическими погонами полиции', rank: '1–7 ранг (Рядовой — Ст. прапорщик)', img: '' },
-  { id: 's2', kind: 'skin', fac: 'umvd', title: 'Тактическая чёрная форма ОМОН «Зубр»', sub: 'УМВД · Боевая экипировка со шлемом, разгрузкой и чёрными погонами', rank: 'Бойцы отряда ОМОН / СОБР', img: '' },
-  { id: 's3', kind: 'skin', fac: 'umvd', title: 'Офицерский китель Юстиции (Следственный отдел)', sub: 'УМВД · Форма следователя с васильковыми синими погонами', rank: '8–14 ранг (Мл. лейтенант — Полковник)', img: '' },
-  { id: 's4', kind: 'skin', fac: 'gibdd', title: 'Постовая форма инспектора ДПС со светоотражающим жилетом', sub: 'ОГИБДД · Специальная экипировка дорожно-патрульной службы', rank: '1–11 ранг ОГИБДД', img: '' },
-  { id: 's5', kind: 'skin', fac: 'gibdd', title: 'Парадная форма офицера ГИБДД (Белая рубашка)', sub: 'ОГИБДД · Белая рубашка с парадными погонами', rank: '8–14 ранг ОГИБДД', img: '' },
-  { id: 's6', kind: 'skin', fac: 'mp', title: 'Штурмовой комплект ЦСН ФСБ «Альфа» (Мультикам)', sub: 'МП-панель · Тактический скин спецназа ФСБ для спецопераций', rank: 'МП-панель (Для РП-мероприятий)', img: '' },
-  { id: 's7', kind: 'skin', fac: 'mp', title: 'Китель следователя СК РФ / Прокуратуры', sub: 'МП-панель · Официальная форма для следственных РП-ситуаций', rank: 'МП-панель (Для РП-мероприятий)', img: '' }
-];
-
-var CATALOG = [];
-
-function loadCatalog() {
+var STORE_K = 'garage_classic_data_v6';
+/* Автоматическое определение входа владельца с главного сайта (без повторной кнопки Вход) */
+var isOwner = false;
+function checkOwnerAuth() {
   try {
-    var raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if (Array.isArray(raw) && raw.length) {
-      CATALOG = raw;
-      return;
-    }
+    var k = localStorage.getItem('idea_admin_key');
+    isOwner = !!(k && String(k).trim().length > 5);
+  } catch (e) { isOwner = false; }
+  document.body.classList.toggle('adm', isOwner);
+  var ab = document.getElementById('addBtnWrap');
+  if (ab) ab.style.display = isOwner ? '' : 'none';
+}
+window.addEventListener('storage', checkOwnerAuth);
+
+var GROUPS = [
+  { id: 'gov', name: 'Государственные организации' },
+  { id: 'mp',  name: 'Транспорт и скины для МП' }
+];
+
+var FACS = [
+  { k: 'all',   n: 'Все фракции',      ic: '📋', g: 'gov' },
+  { k: 'uvd',   n: 'УМВД (Полиция)',   ic: '🛡️', g: 'gov' },
+  { k: 'gibdd', n: 'ОГИБДД (ДПС)',     ic: '🚓', g: 'gov' },
+  { k: 'mo',    n: 'Минобороны (Армия)',ic: '🎖️', g: 'gov' },
+  { k: 'mz',    n: 'Минздрав (МЗ)',    ic: '🏥', g: 'gov' },
+  { k: 'rzd',   n: 'Минтранс (РЖД)',   ic: '🚂', g: 'gov' },
+  { k: 'fsb',   n: 'ФСБ',              ic: '🦅', g: 'mp' },
+  { k: 'sk',    n: 'Следственный комитет', ic: '⚖️', g: 'mp' },
+  { k: 'proc',  n: 'Прокуратура',      ic: '🏛️', g: 'mp' },
+  { k: 'mchs',  n: 'МЧС России',       ic: '🚒', g: 'mp' },
+  { k: 'fso',   n: 'ФСО России',       ic: '🕶️', g: 'mp' }
+];
+
+var CITIES = [
+  ['all',  'Все города'],
+  ['priv', 'г. Приволжск'],
+  ['mir',  'г. Мирный'],
+  ['nev',  'г. Невский']
+];
+
+var SEED_DATA = [
+  /* УМВД — Автопарк */
+  { id: 'u1', kind: 'car', fac: 'uvd', city: 'all',  name: 'Lada Vesta ППС',         speed: '195 км/ч', desc: 'Базовый патрульный автомобиль ППСМ', img: '' },
+  { id: 'u2', kind: 'car', fac: 'uvd', city: 'all',  name: 'УАЗ Патриот ППС',        speed: '175 км/ч', desc: 'Патрульный вседорожник дежурной части', img: '' },
+  { id: 'u3', kind: 'car', fac: 'uvd', city: 'priv', name: 'Skoda Octavia УМВД',     speed: '230 км/ч', desc: 'Оперативно-служебный седан УМВД г. Приволжск', img: '' },
+  { id: 'u4', kind: 'car', fac: 'uvd', city: 'mir',  name: 'Toyota Camry XV70 ОУР',  speed: '245 км/ч', desc: 'Оперативный транспорт уголовного розыска', img: '' },
+  { id: 'u5', kind: 'car', fac: 'uvd', city: 'nev',  name: 'КамАЗ Автозак ОМОН',     speed: '140 км/ч', desc: 'Спецтранспорт ОМОН для выездов на спецоперации', img: '' },
+
+  /* ОГИБДД — Автопарк */
+  { id: 'g1', kind: 'car', fac: 'gibdd', city: 'all',  name: 'Lada Vesta Sport ДПС', speed: '215 км/ч', desc: 'Базовый экипаж дорожно-патрульной службы', img: '' },
+  { id: 'g2', kind: 'car', fac: 'gibdd', city: 'all',  name: 'Skoda Octavia A8 ДПС', speed: '240 км/ч', desc: 'Скоростной патрульный автомобиль ДПС', img: '' },
+  { id: 'g3', kind: 'car', fac: 'gibdd', city: 'priv', name: 'BMW M5 F90 ДПС',       speed: '305 км/ч', desc: 'Перехватчик спецбатальона ОГИБДД г. Приволжск', img: '' },
+  { id: 'g4', kind: 'car', fac: 'gibdd', city: 'nev',  name: 'Mercedes-Benz E63 ДПС',speed: '300 км/ч', desc: 'Скоростной экипаж сопровождения г. Невский', img: '' },
+
+  /* Минздрав — Автопарк */
+  { id: 'm1', kind: 'car', fac: 'mz', city: 'all',  name: 'ГАЗель Next СМП',         speed: '165 км/ч', desc: 'Автомобиль скорой медицинской помощи (Класс B)', img: '' },
+  { id: 'm2', kind: 'car', fac: 'mz', city: 'priv', name: 'Ford Transit Реанимация', speed: '185 км/ч', desc: 'Реанимобиль экстренной бригады ЦГБ г. Приволжск', img: '' },
+
+  /* МП-панель — Автопарк */
+  { id: 'mp1', kind: 'car', fac: 'fsb',  city: 'all', name: 'Mercedes-Benz V300d ЦСН ФСБ', speed: '220 км/ч', desc: 'Оперативный микроавтобус ФСБ для глобальных МП', img: '' },
+  { id: 'mp2', kind: 'car', fac: 'fso',  city: 'all', name: 'Aurus Senat ФСО',             speed: '250 км/ч', desc: 'Правительственный лимузин сопровождения кортежей', img: '' },
+  { id: 'mp3', kind: 'car', fac: 'sk',   city: 'all', name: 'Ford Transit СК России',      speed: '180 км/ч', desc: 'Передвижная криминалистическая лаборатория СК', img: '' },
+  { id: 'mp4', kind: 'car', fac: 'mchs', city: 'all', name: 'КамАЗ АЦ-40 Пожарная',        speed: '135 км/ч', desc: 'Пожарно-спасательная автоцистерна МЧС', img: '' },
+
+  /* Форма (скины) — без скорости! */
+  { id: 's1', kind: 'skin', fac: 'uvd',   city: 'all', name: 'Повседневная форма ППС (2015 г.)', speed: '', desc: 'Тёмно-синяя форма сотрудника полиции с погонами', img: '' },
+  { id: 's2', kind: 'skin', fac: 'uvd',   city: 'all', name: 'Боевая форма ОМОН / СОБР (Чёрная)', speed: '', desc: 'Тактический комплект со шлемом и чёрными погонами', img: '' },
+  { id: 's3', kind: 'skin', fac: 'uvd',   city: 'all', name: 'Китель следователя Юстиции',       speed: '', desc: 'Форма следственного отдела с синими погонами', img: '' },
+  { id: 's4', kind: 'skin', fac: 'gibdd', city: 'all', name: 'Форма инспектора ДПС с жилетом',   speed: '', desc: 'Светоотражающий жилет и экипировка ОГИБДД', img: '' },
+  { id: 's5', kind: 'skin', fac: 'gibdd', city: 'all', name: 'Парадная белая рубашка ГИБДД',     speed: '', desc: 'Парадно-выходная форма офицерского состава', img: '' },
+  { id: 's6', kind: 'skin', fac: 'fsb',   city: 'all', name: 'Штурмовой скин ЦСН ФСБ',           speed: '', desc: 'Тактическая экипировка спецназа ФСБ для МП', img: '' },
+  { id: 's7', kind: 'skin', fac: 'sk',    city: 'all', name: 'Форма следователя СК России',      speed: '', desc: 'Официальный китель Следственного комитета для МП', img: '' }
+];
+
+var DATA = [];
+var state = { fac: 'all', mode: 'car', city: 'all', q: '' };
+var collapsedGroups = {};
+var editingId = null;
+var tempImgData = '';
+
+function loadData() {
+  try {
+    var d = JSON.parse(localStorage.getItem(STORE_K) || 'null');
+    if (Array.isArray(d) && d.length) { DATA = d; return; }
   } catch (e) {}
-  CATALOG = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+  DATA = JSON.parse(JSON.stringify(SEED_DATA));
 }
 
-function saveCatalog() {
+function saveData() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(CATALOG));
+    localStorage.setItem(STORE_K, JSON.stringify(DATA));
   } catch (e) {
-    toast('Память браузера заполнена — удалите старые тяжёлые фото', true);
+    toast('Память переполнена — уменьшите количество тяжёлых фото');
   }
-}
-
-function toast(msg) {
-  var d = document.createElement('div');
-  d.className = 'toast';
-  d.textContent = msg;
-  document.getElementById('troot').appendChild(d);
-  setTimeout(function() { d.remove(); }, 3200);
 }
 
 function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
 
-function facNameByKey(k) {
-  for (var i = 0; i < FAC_LIST.length; i++) if (FAC_LIST[i].k === k) return FAC_LIST[i].n;
-  return 'Ведомство';
+function toast(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.getElementById('troot').appendChild(t);
+  setTimeout(function() { t.remove(); }, 3000);
 }
 
-window.setKind = function(k) {
-  CUR_KIND = k;
-  document.getElementById('tabCars').classList.toggle('on', k === 'car');
-  document.getElementById('tabSkins').classList.toggle('on', k === 'skin');
-  renderGrid();
+function facObj(k) {
+  for (var i = 0; i < FACS.length; i++) if (FACS[i].k === k) return FACS[i];
+  return FACS[0];
+}
+
+function cityLabel(c) {
+  for (var i = 0; i < CITIES.length; i++) if (CITIES[i][0] === c) return CITIES[i][1];
+  return 'Все города';
+}
+
+function countByFacAndMode(facKey, mode) {
+  return DATA.filter(function(x) {
+    if (mode && x.kind !== mode) return false;
+    if (facKey !== 'all' && x.fac !== facKey) return false;
+    return true;
+  }).length;
+}
+
+window.toggleGroup = function(gid) {
+  collapsedGroups[gid] = !collapsedGroups[gid];
+  renderSidebar();
 };
 
-window.setFacFilter = function(f) {
-  CUR_FAC = f;
-  renderFacChips();
-  renderGrid();
+window.selectFac = function(k) {
+  state.fac = k;
+  renderAll();
 };
 
-function renderFacChips() {
-  document.getElementById('facChips').innerHTML = FAC_LIST.map(function(f) {
-    return '<div class="f-chip' + (CUR_FAC === f.k ? ' on' : '') + '" onclick="setFacFilter(\'' + f.k + '\')">' + f.ic + ' ' + esc(f.n) + '</div>';
+window.setMode = function(m) {
+  state.mode = m;
+  document.getElementById('tabCar').classList.toggle('on', m === 'car');
+  document.getElementById('tabSkin').classList.toggle('on', m === 'skin');
+  var btnAdd = document.getElementById('btnAddMain');
+  if (btnAdd) btnAdd.textContent = (m === 'car') ? '＋ Добавить транспорт' : '＋ Добавить форму';
+  renderAll();
+};
+
+window.setCity = function(c) {
+  state.city = c;
+  renderAll();
+};
+
+function renderSidebar() {
+  var h = '';
+  GROUPS.forEach(function(g) {
+    var col = !!collapsedGroups[g.id];
+    h += '<div class="sb-group' + (col ? ' collapsed' : '') + '">' +
+      '<div class="sb-ghdr" onclick="toggleGroup(\'' + g.id + '\')"><span>' + esc(g.name) + '</span><span>' + (col ? '▸' : '▾') + '</span></div>' +
+      '<div class="sb-gitems">';
+    FACS.filter(function(f) { return f.g === g.id; }).forEach(function(f) {
+      var cnt = countByFacAndMode(f.k, state.mode);
+      h += '<div class="sb-item' + (state.fac === f.k ? ' on' : '') + '" onclick="selectFac(\'' + f.k + '\')">' +
+        '<span>' + f.ic + '</span><span>' + esc(f.n) + '</span>' +
+        (cnt ? '<span class="sb-c">' + cnt + '</span>' : '') +
+      '</div>';
+    });
+    h += '</div></div>';
+  });
+  document.getElementById('sidebar').innerHTML = h;
+}
+
+function renderCityChips() {
+  document.getElementById('cityChips').innerHTML = CITIES.map(function(c) {
+    return '<div class="chip' + (state.city === c[0] ? ' on' : '') + '" onclick="setCity(\'' + c[0] + '\')">' + esc(c[1]) + '</div>';
   }).join('');
 }
 
-function renderGrid() {
-  var carsTotal = CATALOG.filter(function(x) { return x.kind === 'car'; }).length;
-  var skinsTotal = CATALOG.filter(function(x) { return x.kind === 'skin'; }).length;
-  document.getElementById('cntCars').textContent = carsTotal;
-  document.getElementById('cntSkins').textContent = skinsTotal;
-
+function renderItems() {
   var q = (document.getElementById('qInp').value || '').trim().toLowerCase();
-  var list = CATALOG.filter(function(it) {
-    if (it.kind !== CUR_KIND) return false;
-    if (CUR_FAC !== 'all' && it.fac !== CUR_FAC) return false;
-    if (q && ((it.title || '') + ' ' + (it.sub || '') + ' ' + (it.rank || '')).toLowerCase().indexOf(q) < 0) return false;
+  var list = DATA.filter(function(x) {
+    if (x.kind !== state.mode) return false;
+    if (state.fac !== 'all' && x.fac !== state.fac) return false;
+    if (state.city !== 'all' && x.city !== state.city && x.city !== 'all') return false;
+    if (q && ((x.name || '') + ' ' + (x.desc || '')).toLowerCase().indexOf(q) < 0) return false;
     return true;
   });
 
+  document.getElementById('hTitle').textContent = facObj(state.fac).n;
+  document.getElementById('hCnt').textContent = list.length;
+  document.getElementById('cntCar').textContent = countByFacAndMode(state.fac, 'car');
+  document.getElementById('cntSkin').textContent = countByFacAndMode(state.fac, 'skin');
+
   if (!list.length) {
-    document.getElementById('cardsGrid').innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:16px">В этой категории пока нет элементов — нажмите «＋ Добавить в каталог»</div>';
+    document.getElementById('items').innerHTML = '<div class="empty">В этом разделе пока пусто</div>';
     return;
   }
 
-  document.getElementById('cardsGrid').innerHTML = list.map(function(it) {
+  document.getElementById('items').innerHTML = '<div class="vgrid">' + list.map(function(it) {
     var isSkin = (it.kind === 'skin');
-    var mediaHtml = it.img
-      ? '<img src="' + esc(it.img) + '" alt="' + esc(it.title) + '" onclick="openLightbox(\'' + esc(it.img) + '\')">'
-      : '<div class="ic-placeholder" onclick="openEditModal(\'' + esc(it.id) + '\')"><i>' + (isSkin ? '👮' : '🚔') + '</i><span>Нажмите, чтобы загрузить фото</span></div>';
+    var fInfo = facObj(it.fac);
+    var imgBlock = it.img
+      ? '<img src="' + esc(it.img) + '" alt="' + esc(it.name) + '" onclick="openLb(\'' + esc(it.img) + '\')">'
+      : '<div class="vph" onclick="if(isOwner)openModal(\'' + esc(it.id) + '\')"><span>' + (isSkin ? '👔' : '🚓') + '</span><div>' + (isOwner ? 'Нажмите, чтобы добавить фото' : 'Фото не прикреплено') + '</div></div>';
 
-    return '<div class="item-card' + (isSkin ? ' skin-card' : '') + '">' +
-      '<div class="ic-media">' +
-        '<div class="ic-badges">' +
-          '<span class="ic-tag' + (it.fac === 'mp' ? ' mp' : '') + '">' + esc(facNameByKey(it.fac)) + '</span>' +
-          (!isSkin && it.speed ? '<span class="ic-tag">⚡ ' + esc(it.speed) + '</span>' : '') +
+    return '<div class="vcard' + (isSkin ? ' skin' : '') + '">' +
+      '<div class="vimg">' +
+        '<div class="vbadges">' +
+          '<span class="vtag">' + fInfo.ic + ' ' + esc(fInfo.n) + '</span>' +
+          /* У скинов скорость не отображается */
+          (!isSkin && it.speed ? '<span class="vtag speed">⚡ ' + esc(it.speed) + '</span>' : '') +
+          (it.city && it.city !== 'all' ? '<span class="vtag city">📍 ' + esc(cityLabel(it.city)) + '</span>' : '') +
         '</div>' +
-        mediaHtml +
+        imgBlock +
       '</div>' +
-      '<div class="ic-body">' +
-        '<div class="ic-title">' + esc(it.title) + '</div>' +
-        (it.sub ? '<div class="ic-meta">' + esc(it.sub) + '</div>' : '') +
-        (it.rank ? '<div class="ic-meta">Доступ: <b>' + esc(it.rank) + '</b></div>' : '') +
+      '<div class="vbody">' +
+        '<div class="vtitle">' + esc(it.name) + '</div>' +
+        (it.desc ? '<div class="vsub">' + esc(it.desc) + '</div>' : '') +
       '</div>' +
-      '<div class="ic-admin-bar">' +
-        '<button class="adm-btn" onclick="openEditModal(\'' + esc(it.id) + '\')">📷 Фото / Изменить</button>' +
-        '<button class="adm-btn del" onclick="deleteCatalogItem(\'' + esc(it.id) + '\')">🗑 Удалить</button>' +
+      '<div class="vtools">' +
+        '<button class="vbtn" onclick="openModal(\'' + esc(it.id) + '\')">✏️ Изменить / Фото</button>' +
+        '<button class="vbtn del" onclick="delItem(\'' + esc(it.id) + '\')">✕ Удалить</button>' +
       '</div>' +
     '</div>';
-  }).join('');
+  }).join('') + '</div>';
 }
 
-window.openLightbox = function(url) {
+function renderAll() {
+  checkOwnerAuth();
+  renderSidebar();
+  renderCityChips();
+  renderItems();
+}
+
+window.openLb = function(url) {
   if (!url) return;
   document.getElementById('lbImg').src = url;
   document.getElementById('lb').style.display = 'flex';
 };
 
-window.toggleSpeedField = function() {
+window.syncModalFields = function() {
   var k = document.getElementById('fKind').value;
-  document.getElementById('speedFieldWrap').style.display = (k === 'car') ? 'block' : 'none';
+  document.getElementById('speedWrap').style.display = (k === 'car') ? '' : 'none';
 };
 
-window.openEditModal = function(id) {
-  EDIT_ID = id || null;
-  var facSel = document.getElementById('fFac');
-  facSel.innerHTML = FAC_LIST.filter(function(f) { return f.k !== 'all'; }).map(function(f) {
+window.openModal = function(id) {
+  if (!isOwner) return;
+  editingId = id || null;
+  document.getElementById('fFac').innerHTML = FACS.filter(function(f) { return f.k !== 'all'; }).map(function(f) {
     return '<option value="' + f.k + '">' + f.ic + ' ' + esc(f.n) + '</option>';
   }).join('');
 
-  var prev = document.getElementById('fPreview');
-  document.getElementById('fFileInp').value = '';
+  var prev = document.getElementById('fPrev');
+  document.getElementById('fFile').value = '';
 
-  if (EDIT_ID) {
-    var it = CATALOG.filter(function(x) { return x.id === EDIT_ID; })[0];
+  if (editingId) {
+    var it = DATA.filter(function(x) { return x.id === editingId; })[0];
     if (!it) return;
-    document.getElementById('mTitleTxt').textContent = 'Редактировать карточку';
+    document.getElementById('mTitle').textContent = 'Редактировать карточку';
     document.getElementById('fKind').value = it.kind;
     document.getElementById('fFac').value = it.fac;
-    document.getElementById('fTitle').value = it.title || '';
-    document.getElementById('fSub').value = it.sub || '';
+    document.getElementById('fName').value = it.name || '';
+    document.getElementById('fCity').value = it.city || 'all';
     document.getElementById('fSpeed').value = it.speed || '';
-    document.getElementById('fRank').value = it.rank || '';
-    CURRENT_IMG_DATA = it.img || '';
-    document.getElementById('fImgUrl').value = (CURRENT_IMG_DATA.indexOf('data:') === 0) ? '' : CURRENT_IMG_DATA;
-    if (CURRENT_IMG_DATA) {
-      prev.src = CURRENT_IMG_DATA;
-      prev.style.display = 'block';
-    } else {
-      prev.style.display = 'none';
-    }
+    document.getElementById('fDesc').value = it.desc || '';
+    tempImgData = it.img || '';
+    document.getElementById('fUrl').value = (tempImgData.indexOf('data:') === 0) ? '' : tempImgData;
+    if (tempImgData) { prev.src = tempImgData; prev.style.display = 'block'; }
+    else { prev.style.display = 'none'; }
   } else {
-    document.getElementById('mTitleTxt').textContent = 'Добавить в каталог';
-    document.getElementById('fKind').value = CUR_KIND;
-    document.getElementById('fFac').value = (CUR_FAC !== 'all') ? CUR_FAC : 'umvd';
-    document.getElementById('fTitle').value = '';
-    document.getElementById('fSub').value = '';
+    document.getElementById('mTitle').textContent = (state.mode === 'car') ? 'Добавить транспорт' : 'Добавить форму (скин)';
+    document.getElementById('fKind').value = state.mode;
+    document.getElementById('fFac').value = (state.fac !== 'all') ? state.fac : 'uvd';
+    document.getElementById('fName').value = '';
+    document.getElementById('fCity').value = state.city;
     document.getElementById('fSpeed').value = '';
-    document.getElementById('fRank').value = '';
-    document.getElementById('fImgUrl').value = '';
-    CURRENT_IMG_DATA = '';
+    document.getElementById('fDesc').value = '';
+    document.getElementById('fUrl').value = '';
+    tempImgData = '';
     prev.style.display = 'none';
   }
-  toggleSpeedField();
-  document.getElementById('editBack').style.display = 'flex';
+  syncModalFields();
+  document.getElementById('mBack').style.display = 'flex';
 };
 
-window.closeEditModal = function() {
-  document.getElementById('editBack').style.display = 'none';
+window.closeModal = function() {
+  document.getElementById('mBack').style.display = 'none';
 };
 
-/* Мгновенное сжатие фото на Canvas — работает всегда без ошибок размера или сети */
-window.handlePhotoFile = function(input) {
+/* Мгновенное чтение и сжатие фото без ошибок */
+window.onFilePicked = function(input) {
   var file = input.files && input.files[0];
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function(ev) {
     var img = new Image();
     img.onload = function() {
-      var maxW = 900, maxH = 650;
-      var w = img.width, h = img.height;
+      var maxW = 900, maxH = 650, w = img.width, h = img.height;
       if (w > maxW || h > maxH) {
         var r = Math.min(maxW / w, maxH / h);
-        w = Math.round(w * r);
-        h = Math.round(h * r);
+        w = Math.round(w * r); h = Math.round(h * r);
       }
       var cv = document.createElement('canvas');
       cv.width = w; cv.height = h;
-      var ctx = cv.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      CURRENT_IMG_DATA = cv.toDataURL('image/jpeg', 0.84);
-      var prev = document.getElementById('fPreview');
-      prev.src = CURRENT_IMG_DATA;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      tempImgData = cv.toDataURL('image/jpeg', 0.85);
+      var prev = document.getElementById('fPrev');
+      prev.src = tempImgData;
       prev.style.display = 'block';
-      toast('✓ Фотография успешно загружена');
+      toast('✓ Фото готово к сохранению');
     };
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 };
 
-window.handleUrlPreview = function(url) {
-  var u = (url || '').trim();
+window.onUrlInput = function(val) {
+  var u = (val || '').trim();
   if (!u) return;
-  CURRENT_IMG_DATA = u;
-  var prev = document.getElementById('fPreview');
+  tempImgData = u;
+  var prev = document.getElementById('fPrev');
   prev.src = u;
   prev.style.display = 'block';
 };
 
-window.saveCatalogItem = function() {
+window.saveItem = function() {
   var kind = document.getElementById('fKind').value;
-  var fac = document.getElementById('fFac').value;
-  var title = (document.getElementById('fTitle').value || '').trim();
-  var sub = (document.getElementById('fSub').value || '').trim();
+  var fac  = document.getElementById('fFac').value;
+  var name = (document.getElementById('fName').value || '').trim();
+  var city = document.getElementById('fCity').value;
   var speed = (kind === 'car') ? (document.getElementById('fSpeed').value || '').trim() : '';
-  var rank = (document.getElementById('fRank').value || '').trim();
+  var desc = (document.getElementById('fDesc').value || '').trim();
 
-  if (!title) {
-    toast('Введите название модели или формы');
-    return;
-  }
+  if (!name) { toast('Укажите название'); return; }
 
-  if (EDIT_ID) {
-    CATALOG.forEach(function(x) {
-      if (x.id === EDIT_ID) {
-        x.kind = kind; x.fac = fac; x.title = title; x.sub = sub;
-        x.speed = speed; x.rank = rank; x.img = CURRENT_IMG_DATA;
+  if (editingId) {
+    DATA.forEach(function(x) {
+      if (x.id === editingId) {
+        x.kind = kind; x.fac = fac; x.name = name; x.city = city;
+        x.speed = speed; x.desc = desc; x.img = tempImgData;
       }
     });
-    toast('✓ Карточка обновлена');
+    toast('✓ Изменения сохранены');
   } else {
-    CATALOG.unshift({
-      id: 'item_' + Date.now(),
-      kind: kind, fac: fac, title: title, sub: sub,
-      speed: speed, rank: rank, img: CURRENT_IMG_DATA
+    DATA.unshift({
+      id: 'g_' + Date.now(),
+      kind: kind, fac: fac, name: name, city: city,
+      speed: speed, desc: desc, img: tempImgData
     });
-    CUR_KIND = kind;
-    toast('✓ Добавлено в каталог');
+    state.mode = kind;
+    toast('✓ Карточка добавлена');
   }
-
-  saveCatalog();
-  closeEditModal();
-  setKind(CUR_KIND);
+  saveData();
+  closeModal();
+  setMode(state.mode);
 };
 
-window.deleteCatalogItem = function(id) {
-  CATALOG = CATALOG.filter(function(x) { return x.id !== id; });
-  saveCatalog();
-  renderGrid();
+window.delItem = function(id) {
+  if (!isOwner) return;
+  DATA = DATA.filter(function(x) { return x.id !== id; });
+  saveData();
+  renderAll();
   toast('Карточка удалена');
 };
 
-loadCatalog();
-renderFacChips();
-renderGrid();
+loadData();
+renderAll();
 </script>
 </body>
 </html>
