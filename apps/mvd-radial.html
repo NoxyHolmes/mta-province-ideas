@@ -764,7 +764,6 @@ var CUFFED_CANDIDATES = [
   { name: 'Maksim_Saraev',    id: 289, status: 'В наручниках' }
 ];
 
-/* Пункт 5: 5 фраз мегафона с разделением цветов (1,2 — жёлтый; 4 — красный; 3,5 — ярко-бирюзовый) */
 var MEGAPHONE_PHRASES = [
   { txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!', cls: 'mega-yellow', col: '#fde047' },
   { txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!', cls: 'mega-yellow', col: '#fde047' },
@@ -773,7 +772,6 @@ var MEGAPHONE_PHRASES = [
   { txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!', cls: 'mega-cyan', col: '#38bdf8' }
 ];
 
-/* Пункты 2 и 4: Игроки в радиусе 100 метров с #UID [ID] и разделением пунктов авто / марки */
 var NEARBY_PLAYERS = [
   { uid: '#У173ТТ4', id: 36, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Водитель',  dist: 18 },
   { uid: '#К904МВ2', id: 21, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Пассажир',  dist: 18 },
@@ -854,7 +852,6 @@ function renderRadialMenu() {
       { id: 'measure_tint', ic: '📟', name: 'Замер тонировки' },
       { id: 'remove_tint',  ic: '🪟', name: 'Снять тонировку' },
       { id: 'megaphone',    ic: '📢', name: 'Мегафон' },
-      /* Пункт 1 и 3: Кнопка называется «Преследование», а после начала погони — «Прекратить» */
       { id: 'pursuit',      ic: ACTIVE_PURSUIT ? '🛑' : '🎯', name: ACTIVE_PURSUIT ? 'Прекратить' : 'Преследование', isStop: !!ACTIVE_PURSUIT }
     );
 
@@ -943,7 +940,6 @@ window.doFacAction = function(act) {
     openMegaphoneModal();
     return;
   }
-  /* Пункт 3: Если преследование уже активно — клик по кнопке «Прекратить» останавливает погоню */
   if (act === 'pursuit') {
     if (ACTIVE_PURSUIT) {
       stopActivePursuit();
@@ -1064,17 +1060,104 @@ window.removeTintGlass = function(actionName) {
   addChat('me', '* ' + OFFICER_NAME + ' поддел край плёнки и снял тонировку ' + glassPart);
 };
 
-/* Пункт 5: Мегафон — сначала отыгровка нажатия кнопки, а вторым текстом цветной мегафон */
+/* ============ ЗВУКОВОЙ ДВИЖОК ПОЛИЦЕЙСКОГО МЕГАФОНА (СГУ + ОЗВУЧКА) ============ */
+var megaAudioCtx = null;
+var megaNoiseNode = null;
+
+function getMegaAudioCtx() {
+  if (!megaAudioCtx) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) megaAudioCtx = new AC();
+  }
+  if (megaAudioCtx && megaAudioCtx.state === 'suspended') {
+    megaAudioCtx.resume();
+  }
+  return megaAudioCtx;
+}
+
+function playMegaClick(isStart) {
+  try {
+    var ctx = getMegaAudioCtx();
+    if (!ctx) return;
+    var now = ctx.currentTime;
+
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    if (isStart) {
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(1150, now + 0.06);
+      osc.frequency.setValueAtTime(1850, now + 0.065);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.13);
+    } else {
+      osc.frequency.setValueAtTime(980, now);
+      osc.frequency.exponentialRampToValueAtTime(240, now + 0.09);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+    }
+
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1350;
+    filter.Q.value = 2.5;
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.14);
+  } catch (e) {}
+}
+
+function startMegaStatic() {
+  stopMegaStatic();
+  try {
+    var ctx = getMegaAudioCtx();
+    if (!ctx) return;
+    var bufSize = ctx.sampleRate * 2;
+    var buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < bufSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.18;
+    }
+    var noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    noise.loop = true;
+
+    var bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 1450;
+    bandpass.Q.value = 3.2;
+
+    var gain = ctx.createGain();
+    gain.gain.value = 0.055;
+
+    noise.connect(bandpass);
+    bandpass.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start();
+    megaNoiseNode = noise;
+  } catch (e) {}
+}
+
+function stopMegaStatic() {
+  if (megaNoiseNode) {
+    try { megaNoiseNode.stop(); megaNoiseNode.disconnect(); } catch (e) {}
+    megaNoiseNode = null;
+  }
+}
+
 function openMegaphoneModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
   box.innerHTML =
-    '<div class="act-m-title">📢 Служебный мегафон (5 быстрых фраз)</div>' +
-    '<div class="act-m-sub">Выберите требование (сначала отыгрывается нажатие кнопки, затем выводится цветной текст мегафона):</div>' +
+    '<div class="act-m-title">📢 Служебный мегафон (Озвучка СГУ + Чат)</div>' +
+    '<div class="act-m-sub">При выборе фразы она озвучивается голосом с радиоэффектом реального полицейского мегафона и дублируется в чат:</div>' +
     MEGAPHONE_PHRASES.map(function(phr, idx) {
       return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
-        '<div><b>Фраза №' + (idx + 1) + '</b><span style="color:' + phr.col + '">«' + phr.txt + '»</span></div>' +
-        '<span style="color:' + phr.col + ';font-weight:800;font-size:12px">Сказать →</span>' +
+        '<div><b>🔊 Фраза №' + (idx + 1) + '</b><span style="color:' + phr.col + '">«' + phr.txt + '»</span></div>' +
+        '<span style="color:' + phr.col + ';font-weight:800;font-size:12px">Озвучить →</span>' +
       '</div>';
     }).join('') +
     '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
@@ -1085,12 +1168,55 @@ window.useMegaphonePhrase = function(idx) {
   var phr = MEGAPHONE_PHRASES[idx];
   if (!phr) return;
   closeActModal();
+
   addChat('me', '* ' + OFFICER_NAME + ' зажал кнопку мегафона и сказал в него:');
   addChat(phr.cls, '[Мегафон] ' + OFFICER_NAME + ': ' + phr.txt);
-  addChat('me', '* ' + OFFICER_NAME + ' отпустил кнопку мегафона');
+
+  playMegaClick(true);
+  startMegaStatic();
+
+  var finished = false;
+  function finishMegaphone() {
+    if (finished) return;
+    finished = true;
+    stopMegaStatic();
+    playMegaClick(false);
+    addChat('me', '* ' + OFFICER_NAME + ' отпустил кнопку мегафона');
+  }
+
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(phr.txt);
+      u.lang = 'ru-RU';
+      u.rate = 1.04;
+      u.pitch = 0.88;
+      u.volume = 1.0;
+
+      var voices = window.speechSynthesis.getVoices() || [];
+      var ruVoice = null;
+      for (var i = 0; i < voices.length; i++) {
+        if (/ru/i.test(voices[i].lang)) {
+          ruVoice = voices[i];
+          if (/male|pavel|dmitry|yuri|maxim|google/i.test(voices[i].name)) break;
+        }
+      }
+      if (ruVoice) u.voice = ruVoice;
+
+      u.onend = finishMegaphone;
+      u.onerror = finishMegaphone;
+      setTimeout(function() {
+        window.speechSynthesis.speak(u);
+      }, 110);
+
+      setTimeout(finishMegaphone, 6500);
+      return;
+    } catch (e) {}
+  }
+
+  setTimeout(finishMegaphone, 1600);
 };
 
-/* Пункты 2, 3 и 4: Преследование с #UID [ID], раздельными пунктами 2 (В авто) и 3 (Марка авто), без «(Пешком)» во 2 пункте */
 function openPursuitModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
@@ -1213,6 +1339,7 @@ function resetDemo() {
   TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
   SEIZED_BUFFER = [];
   ACTIVE_PURSUIT = null;
+  stopMegaStatic();
   closePopover();
   renderRadialMenu();
   renderInventoryGrids();
@@ -1383,6 +1510,12 @@ document.addEventListener('keydown', function(ev) {
     tryOpenTrunkSearch();
   }
 });
+
+/* Предзагрузка русских голосов браузера */
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+}
 
 initEquipmentIcons();
 MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
