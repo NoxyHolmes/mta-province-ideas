@@ -193,17 +193,26 @@ window.triggerQuickMediaUpload = function(itemId) {
   inp.click();
 };
 
-window.removeQuickMedia = function(itemId, kind, idx) {
+window.removeQuickMedia = function(ev, itemId, kind, idx) {
+  if (ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+  }
   if (!adminMode) return;
   var it = byId(itemId);
   if (!it) return;
-  if (kind === 'img' && it.images) it.images.splice(idx, 1);
-  if (kind === 'vid' && it.videos) it.videos.splice(idx, 1);
+  if (kind === 'img' && Array.isArray(it.images)) {
+    it.images.splice(idx, 1);
+  } else if (kind === 'vid' && Array.isArray(it.videos)) {
+    it.videos.splice(idx, 1);
+  }
   openedSpoilers[it.id] = true;
   if (typeof markDirty === 'function') markDirty(it.id);
+  if (typeof saveLocal === 'function') saveLocal(ITEMS);
+  if (typeof cacheItems === 'function') cacheItems();
   if (typeof commit === 'function') commit();
   render();
-  toast('Файл удалён');
+  toast('✓ Прикреплённый файл удалён');
 };
 
 function renderMediaBlockHtml(it) {
@@ -217,9 +226,11 @@ function renderMediaBlockHtml(it) {
     if (imgs.length) {
       h += '<div class="sug-images">';
       imgs.forEach(function(url, ix) {
-        h += '<div class="sug-media-item">' +
+        h += '<div class="sug-media-item" style="display:flex;flex-direction:column;gap:6px">' +
           '<img src="' + esc(url) + '" alt="Фото ' + (ix + 1) + '" onclick="openLb(\'' + esc(url) + '\')">' +
-          (adminMode ? '<button type="button" class="media-del-btn" title="Удалить фото" onclick="removeQuickMedia(\'' + esc(it.id) + '\',\'img\',' + ix + ')">✕</button>' : '') +
+          (adminMode
+            ? '<button type="button" class="btn warn slim" style="width:100%;padding:6px 10px;font-size:11.5px" onclick="removeQuickMedia(event,\'' + esc(it.id) + '\',\'img\',' + ix + ')">🗑 Удалить фото</button>'
+            : '') +
         '</div>';
       });
       h += '</div>';
@@ -227,9 +238,11 @@ function renderMediaBlockHtml(it) {
     if (vids.length) {
       h += '<div class="sug-videos">';
       vids.forEach(function(url, vx) {
-        h += '<div class="sug-media-item">' +
+        h += '<div class="sug-media-item" style="display:flex;flex-direction:column;gap:6px">' +
           '<video src="' + esc(url) + '" controls preload="metadata"></video>' +
-          (adminMode ? '<button type="button" class="media-del-btn" title="Удалить видео" onclick="removeQuickMedia(\'' + esc(it.id) + '\',\'vid\',' + vx + ')">✕</button>' : '') +
+          (adminMode
+            ? '<button type="button" class="btn warn slim" style="align-self:flex-start;padding:6px 14px;font-size:11.5px" onclick="removeQuickMedia(event,\'' + esc(it.id) + '\',\'vid\',' + vx + ')">🗑 Удалить видео</button>'
+            : '') +
         '</div>';
       });
       h += '</div>';
