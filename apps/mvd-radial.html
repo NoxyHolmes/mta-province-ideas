@@ -47,7 +47,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   position:fixed;
   top:14px;
   left:18px;
-  width:650px;
+  width:640px;
   max-width:calc(100vw - 36px);
   z-index:500;
   pointer-events:none;
@@ -61,7 +61,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:9px 13px;
   box-shadow:0 12px 32px rgba(0,0,0,.55);
   pointer-events:auto;
-  max-height:190px;
+  max-height:185px;
   overflow-y:auto;
 }
 .chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:5px}
@@ -220,7 +220,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:16px;
 }
 .act-modal{
-  width:580px;
+  width:560px;
   max-width:96vw;
   background:#161b24;
   border:1px solid rgba(255,255,255,.14);
@@ -541,6 +541,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 
 <div id="demoTopCtl">
   <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
+  <button class="d-btn" onclick="playMegaClick(true);setTimeout(function(){playMegaClick(false)},300)">🔊 Тест щелчка</button>
 </div>
 
 <div id="gameScene">
@@ -764,12 +765,42 @@ var CUFFED_CANDIDATES = [
   { name: 'Maksim_Saraev',    id: 289, status: 'В наручниках' }
 ];
 
+/* 
+   Фразы мегафона:
+   - txt: чистый текст для отображения в игровом чате и в меню
+   - tts: текст с расставленными ударениями (\u0301) и фонетическими паузами для правильного произношения
+*/
 var MEGAPHONE_PHRASES = [
-  { txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!', cls: 'mega-yellow', col: '#fde047' },
-  { txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!', cls: 'mega-yellow', col: '#fde047' },
-  { txt: 'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!', cls: 'mega-cyan', col: '#38bdf8' },
-  { txt: 'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!', cls: 'mega-red', col: '#ff5c5c' },
-  { txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!', cls: 'mega-cyan', col: '#38bdf8' }
+  {
+    txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!',
+    tts: 'Впереди́ иду́щий автомоби́ль, прижима́емся к обо́чине, и глу́шим дви́гатель!',
+    cls: 'mega-yellow',
+    col: '#fde047'
+  },
+  {
+    txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!',
+    tts: 'Води́тель! Неме́дленно останови́те тра́нспортное сре́дство, и остава́йтесь на свои́х места́х!',
+    cls: 'mega-yellow',
+    col: '#fde047'
+  },
+  {
+    txt: 'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!',
+    tts: 'Уступи́те доро́гу патру́льному автомоби́лю с включёнными спе́ц-сигна́лами!',
+    cls: 'mega-cyan',
+    col: '#38bdf8'
+  },
+  {
+    txt: 'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!',
+    tts: 'В слу́чае неподчине́ния зако́нному тре́бованию поли́ции, мы откро́ем ого́нь по колёсам!',
+    cls: 'mega-red',
+    col: '#ff5c5c'
+  },
+  {
+    txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!',
+    tts: 'Гра́ждане! Соблюда́йте споко́йствие, и освободи́те прое́зжую часть!',
+    cls: 'mega-cyan',
+    col: '#38bdf8'
+  }
 ];
 
 var NEARBY_PLAYERS = [
@@ -1011,9 +1042,9 @@ function openMeasureTintModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
   var glasses = [
-    { name: 'Замерить лобовое стекло',          res: 'Светопропускаемость: 15% (Норма: не менее 70% — Нарушение)' },
-    { name: 'Замерить переднее левое стекло',   res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' },
-    { name: 'Замерить переднее правое стекло',  res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' }
+    { name: 'Замерить лобовое стекло',           res: 'Светопропускаемость: 15% (Норма: не менее 70% — Нарушение)' },
+    { name: 'Замерить переднее левое стекло',    res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' },
+    { name: 'Замерить переднее правое стекло',   res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' }
   ];
   box.innerHTML =
     '<div class="act-m-title">📟 Замер светопропускаемости стёкол</div>' +
@@ -1060,16 +1091,18 @@ window.removeTintGlass = function(actionName) {
   addChat('me', '* ' + OFFICER_NAME + ' поддел край плёнки и снял тонировку ' + glassPart);
 };
 
-/* =========================================================================
-   АВТОМАТИЧЕСКАЯ ОЗВУЧКА ПОЛИЦЕЙСКОГО МЕГАФОНА СГУ (РАБОТАЕТ СРАЗУ ПО КЛИКУ)
-   1. Нажатие тангенты (глухой механический щелчок реле без писка)
-   2. Попытка загрузить поток живого мужского голоса (Maxim / Filipp / Dmitry)
-      и пропустить его через жёсткий фильтр колокола СГУ (Web Audio API)
-   3. Если браузер блокирует внешний аудиопоток — мгновенно включается
-      локальная озвучка с синхронным модулятором хрипа рупора СГУ!
-   ========================================================================= */
+/* =====================================================================
+   ЗВУКОВОЙ ДВИЖОК ПОЛИЦЕЙСКОГО МЕГАФОНА — ВЕРСИЯ 4 (С ПРАВИЛЬНЫМИ УДАРЕНИЯМИ)
+   - Полная поддержка орфоэпических ударений (\u0301) в русском языке
+   - Приоритетный выбор нейронных мужских голосов (Dmitry Neural / Pavel / Maxim)
+   - Чистая акустическая имитация рупора СГУ без «жевания» слов
+   - Реалистичный механический щелчок тангенты рации/мегафона (PTT)
+   ===================================================================== */
+
 var megaAudioCtx = null;
-var activeHornMask = null;
+var megaNoiseNode = null;
+var megaEndTimer = null;
+var cachedRussianVoice = null;
 
 function getMegaAudioCtx() {
   if (!megaAudioCtx) {
@@ -1082,301 +1115,225 @@ function getMegaAudioCtx() {
   return megaAudioCtx;
 }
 
-function makeHardHornCurve(drive) {
-  var k = drive || 110;
-  var n = 44100, curve = new Float32Array(n);
-  for (var i = 0; i < n; i++) {
-    var x = (i * 2) / n - 1;
-    var y = ((1 + k) * x) / (1 + k * Math.abs(x));
-    curve[i] = Math.tanh(y * 2.5);
+/* Подбор лучшего мужского русского голоса (с приоритетом Natural/Neural) */
+function selectBestRussianVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  var voices = window.speechSynthesis.getVoices() || [];
+  var ruVoices = voices.filter(function(v) {
+    return /ru(-|_|$)/i.test(v.lang) || /russian|русский/i.test(v.name);
+  });
+  if (!ruVoices.length) return null;
+
+  var priorityPatterns = [
+    /dmitry.*online.*natural/i,
+    /dmitry/i,
+    /pavel/i,
+    /maxim/i,
+    /yuri/i,
+    /google.*русский/i,
+    /natural/i,
+    /online/i
+  ];
+
+  for (var p = 0; p < priorityPatterns.length; p++) {
+    for (var i = 0; i < ruVoices.length; i++) {
+      if (priorityPatterns[p].test(ruVoices[i].name)) {
+        return ruVoices[i];
+      }
+    }
   }
-  return curve;
+  return ruVoices[0];
 }
 
-/* Глухой механический щелчок пластикового переключателя тангенты + эфирный хвост рации */
-function playMechanicalTangentaClick(isPress) {
+/* 1. МЕХАНИЧЕСКИЙ ЩЕЛЧОК ТАНГЕНТЫ МЕГАФОНА (PTT) */
+function playMegaClick(isStart) {
   try {
     var ctx = getMegaAudioCtx();
     if (!ctx) return;
-    var sr = ctx.sampleRate;
-    var dur = isPress ? 0.05 : 0.13;
-    var buf = ctx.createBuffer(1, Math.floor(sr * dur), sr);
-    var d = buf.getChannelData(0);
+    var now = ctx.currentTime;
 
-    var hit1 = 0;
-    var hit2 = Math.floor(sr * 0.013);
-    for (var i = 0; i < d.length; i++) {
-      var v = 0;
-      if (i >= hit1 && i < hit1 + sr * 0.007) {
-        var t1 = (i - hit1) / (sr * 0.007);
-        v += Math.sin(t1 * Math.PI * 5) * Math.exp(-t1 * 8) * 0.95;
-      }
-      if (i >= hit2 && i < hit2 + sr * 0.011) {
-        var t2 = (i - hit2) / (sr * 0.011);
-        v += ((Math.random() * 2 - 1) * 0.55 + Math.sin(t2 * Math.PI * 4) * 0.45) * Math.exp(-t2 * 9) * 0.85;
-      }
-      if (!isPress && i > hit2) {
-        var sqEnv = Math.exp(-(i - hit2) / (sr * 0.032));
-        v += (Math.random() * 2 - 1) * sqEnv * 0.45;
-      }
-      d[i] = v;
+    var noiseBufSize = Math.floor(ctx.sampleRate * 0.045);
+    var noiseBuf = ctx.createBuffer(1, noiseBufSize, ctx.sampleRate);
+    var nData = noiseBuf.getChannelData(0);
+    for (var i = 0; i < noiseBufSize; i++) {
+      var decay = Math.exp(-i / (ctx.sampleRate * 0.0035));
+      nData[i] = (Math.random() * 2 - 1) * decay;
     }
 
-    var src = ctx.createBufferSource();
-    src.buffer = buf;
+    var noiseSrc = ctx.createBufferSource();
+    noiseSrc.buffer = noiseBuf;
 
-    var lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = isPress ? 720 : 1200;
+    var clickFilter = ctx.createBiquadFilter();
+    clickFilter.type = 'bandpass';
+    clickFilter.frequency.value = isStart ? 2400 : 1600;
+    clickFilter.Q.value = 1.4;
 
-    var gain = ctx.createGain();
-    gain.gain.value = 1.15;
+    var noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0, now);
+    noiseGain.gain.linearRampToValueAtTime(isStart ? 0.55 : 0.42, now + 0.001);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
 
-    src.connect(lp);
-    lp.connect(gain);
-    gain.connect(ctx.destination);
-    src.start();
+    noiseSrc.connect(clickFilter);
+    clickFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noiseSrc.start(now);
+    noiseSrc.stop(now + 0.045);
+
+    // Низкочастотный глухой удар кнопки корпуса
+    var thunkOsc = ctx.createOscillator();
+    thunkOsc.type = 'triangle';
+    thunkOsc.frequency.setValueAtTime(isStart ? 175 : 130, now);
+    thunkOsc.frequency.exponentialRampToValueAtTime(55, now + 0.04);
+
+    var thunkGain = ctx.createGain();
+    thunkGain.gain.setValueAtTime(0, now);
+    thunkGain.gain.linearRampToValueAtTime(isStart ? 0.45 : 0.32, now + 0.002);
+    thunkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+    thunkOsc.connect(thunkGain);
+    thunkGain.connect(ctx.destination);
+    thunkOsc.start(now);
+    thunkOsc.stop(now + 0.05);
   } catch (e) {}
 }
 
-/* Слоговый модулятор хрипа рупора СГУ — накладывает поверх голоса резонансное дребезжание мембраны матюгальника */
-function startHornResonanceMask(textLen) {
-  stopHornResonanceMask();
+/* 2. ФОНОВЫЙ РАДИО-ШУМ И РЕЗОНАНС РУПОРА ВО ВРЕМЯ ПЕРЕДАЧИ */
+function startMegaStatic() {
+  stopMegaStatic();
   try {
     var ctx = getMegaAudioCtx();
     if (!ctx) return;
 
-    /* 1. Узкополосный шум рации + дребезжание рупора */
-    var sr = ctx.sampleRate;
-    var buf = ctx.createBuffer(1, sr * 2, sr);
+    var bufSize = ctx.sampleRate * 2;
+    var buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
     var data = buf.getChannelData(0);
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < bufSize; i++) {
       data[i] = (Math.random() * 2 - 1);
     }
     var noise = ctx.createBufferSource();
     noise.buffer = buf;
     noise.loop = true;
 
-    /* 2. Низкочастотный гул перегруженной мембраны СГУ (135 Гц + гармоники) */
-    var buzz = ctx.createOscillator();
-    buzz.type = 'sawtooth';
-    buzz.frequency.value = 132;
+    var bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 1850;
+    bandpass.Q.value = 1.6;
 
-    var buzzGain = ctx.createGain();
-    buzzGain.gain.value = 0.045;
+    var gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.028, ctx.currentTime + 0.04);
 
-    var noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.085;
-
-    /* Жёсткий полосовой фильтр колокола СГУ (750–2150 Гц) */
-    var hp = ctx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 720;
-
-    var peak = ctx.createBiquadFilter();
-    peak.type = 'peaking';
-    peak.frequency.value = 1420;
-    peak.Q.value = 3.0;
-    peak.gain.value = 13.5;
-
-    var lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 2250;
-
-    var shaper = ctx.createWaveShaper();
-    shaper.curve = makeHardHornCurve(95);
-
-    /* Модуляция громкости хрипа в такт произносимым словам */
-    var modGain = ctx.createGain();
-    modGain.gain.value = 0.75;
-
-    var timer = setInterval(function() {
-      if (!megaAudioCtx) return;
-      var syll = 0.35 + Math.random() * 0.65;
-      modGain.gain.setTargetAtTime(syll, ctx.currentTime, 0.04);
-      buzz.frequency.setTargetAtTime(118 + Math.random() * 38, ctx.currentTime, 0.05);
-    }, 95);
-
-    noise.connect(noiseGain);
-    buzz.connect(buzzGain);
-
-    noiseGain.connect(hp);
-    buzzGain.connect(hp);
-    hp.connect(peak);
-    peak.connect(shaper);
-    shaper.connect(lp);
-    lp.connect(modGain);
-    modGain.connect(ctx.destination);
-
+    noise.connect(bandpass);
+    bandpass.connect(gain);
+    gain.connect(ctx.destination);
     noise.start();
-    buzz.start();
-
-    activeHornMask = { noise: noise, buzz: buzz, timer: timer };
+    megaNoiseNode = noise;
   } catch (e) {}
 }
 
-function stopHornResonanceMask() {
-  if (activeHornMask) {
-    clearInterval(activeHornMask.timer);
-    try { activeHornMask.noise.stop(); activeHornMask.noise.disconnect(); } catch (e) {}
-    try { activeHornMask.buzz.stop(); activeHornMask.buzz.disconnect(); } catch (e) {}
-    activeHornMask = null;
+function stopMegaStatic() {
+  if (megaNoiseNode) {
+    try {
+      megaNoiseNode.stop();
+      megaNoiseNode.disconnect();
+    } catch (e) {}
+    megaNoiseNode = null;
   }
 }
 
-/* Пропускание decoded AudioBuffer (живого голоса) через 100% настоящий DSP-тракт рупора СГУ */
-function playBufferThroughPoliceHorn(audioBuffer, onEnd) {
-  try {
-    var ctx = getMegaAudioCtx();
-    var src = ctx.createBufferSource();
-    src.buffer = audioBuffer;
-    src.playbackRate.value = 1.02;
-
-    var hp = ctx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 680;
-
-    var peak1 = ctx.createBiquadFilter();
-    peak1.type = 'peaking';
-    peak1.frequency.value = 1380;
-    peak1.Q.value = 2.4;
-    peak1.gain.value = 14.5;
-
-    var shaper = ctx.createWaveShaper();
-    shaper.curve = makeHardHornCurve(120);
-    shaper.oversample = '2x';
-
-    var lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 2350;
-
-    /* Уличное эхо от зданий (115 мс) */
-    var delay = ctx.createDelay();
-    delay.delayTime.value = 0.115;
-    var delayGain = ctx.createGain();
-    delayGain.gain.value = 0.28;
-
-    var master = ctx.createGain();
-    master.gain.value = 1.25;
-
-    src.connect(hp);
-    hp.connect(peak1);
-    peak1.connect(shaper);
-    shaper.connect(lp);
-
-    lp.connect(master);
-    lp.connect(delay);
-    delay.connect(delayGain);
-    delayGain.connect(master);
-
-    master.connect(ctx.destination);
-
-    startHornResonanceMask();
-    src.onended = function() {
-      stopHornResonanceMask();
-      if (onEnd) onEnd();
-    };
-    src.start(0);
-  } catch (e) {
-    stopHornResonanceMask();
-    if (onEnd) onEnd();
+/* 3. ОЗВУЧКА ФРАЗЫ С УДАРЕНИЯМИ И ТЕМБРОМ МЕГАФОНА */
+function playMegaphoneVoice(phraseIdx, onEnded) {
+  var phr = MEGAPHONE_PHRASES[phraseIdx];
+  if (!phr) {
+    if (onEnded) onEnded();
+    return;
   }
+
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+
+      // Используем специально размеченную строку с ударениями (phr.tts)
+      var utter = new SpeechSynthesisUtterance(phr.tts || phr.txt);
+      utter.lang = 'ru-RU';
+
+      if (!cachedRussianVoice) {
+        cachedRussianVoice = selectBestRussianVoice();
+      }
+      if (cachedRussianVoice) {
+        utter.voice = cachedRussianVoice;
+      }
+
+      // Командирская чёткая подача
+      utter.rate = 1.02;
+      utter.pitch = 0.92;
+      utter.volume = 1.0;
+
+      utter.onend = function() {
+        if (onEnded) onEnded();
+      };
+      utter.onerror = function() {
+        if (onEnded) onEnded();
+      };
+
+      window.speechSynthesis.speak(utter);
+      return;
+    } catch (e) {
+      console.warn('SpeechSynthesis error:', e);
+    }
+  }
+
+  if (onEnded) setTimeout(onEnded, 1500);
 }
 
-function pickBestRussianMaleVoice() {
-  if (!('speechSynthesis' in window)) return null;
-  var voices = window.speechSynthesis.getVoices() || [];
-  var ruVoices = voices.filter(function(v) { return /ru/i.test(v.lang) || /russian|русский/i.test(v.name); });
-  if (!ruVoices.length) return null;
-
-  for (var i = 0; i < ruVoices.length; i++) {
-    if (/dmitry.*natural|pavel.*natural|yuri.*enhanced/i.test(ruVoices[i].name)) return ruVoices[i];
-  }
-  for (var j = 0; j < ruVoices.length; j++) {
-    if (/dmitry|дмитрий|pavel|павел|yuri|юрий|maxim|максим|male/i.test(ruVoices[j].name)) return ruVoices[j];
-  }
-  return ruVoices[0];
-}
-
+/* 4. МОДАЛЬНОЕ ОКНО МЕГАФОНА */
 function openMegaphoneModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
   box.innerHTML =
-    '<div class="act-m-title">📢 Служебный мегафон (СГУ)</div>' +
-    '<div class="act-m-sub">Нажмите на любую фразу — она сразу озвучится через фильтр полицейского громкоговорителя и продублируется в чат:</div>' +
+    '<div class="act-m-title">📢 Служебный мегафон (Озвучка СГУ + Чат)</div>' +
+    '<div class="act-m-sub">Все слова размечены правильными орфоэпическими ударениями. При выборе фразы она озвучивается и дублируется в чат:</div>' +
     MEGAPHONE_PHRASES.map(function(phr, idx) {
       return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
         '<div><b>🔊 Фраза №' + (idx + 1) + '</b><span style="color:' + phr.col + '">«' + phr.txt + '»</span></div>' +
-        '<span style="color:' + phr.col + ';font-weight:800;font-size:12px">Сказать →</span>' +
+        '<span style="color:' + phr.col + ';font-weight:800;font-size:12px">Озвучить →</span>' +
       '</div>';
     }).join('') +
     '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
   back.style.display = 'flex';
 }
 
-/* Автоматическая озвучка при клике на любую из 5 фраз */
+/* 5. ГЛАВНАЯ ФУНКЦИЯ ВОСПРОИЗВЕДЕНИЯ ФРАЗЫ */
 window.useMegaphonePhrase = function(idx) {
   var phr = MEGAPHONE_PHRASES[idx];
   if (!phr) return;
   closeActModal();
 
-  /* 1. Первая отыгровка + строка мегафона в чат + глухой щелчок тангенты */
-  addChat('me', '* ' + OFFICER_NAME + ' зажал кнопку мегафона и сказал в него:');
+  addChat('me', '* ' + OFFICER_NAME + ' зажал тангенту СГУ и сказал в мегафон:');
   addChat(phr.cls, '[Мегафон] ' + OFFICER_NAME + ': ' + phr.txt);
 
-  playMechanicalTangentaClick(true);
+  // 1. Щелчок нажатия кнопки PTT
+  playMegaClick(true);
+
+  // 2. Запускаем эфирный фон мегафона
+  setTimeout(startMegaStatic, 30);
 
   var finished = false;
   function finishMegaphone() {
     if (finished) return;
     finished = true;
-    stopHornResonanceMask();
-    playMechanicalTangentaClick(false);
-    addChat('me', '* ' + OFFICER_NAME + ' отпустил кнопку мегафона');
+    stopMegaStatic();
+    playMegaClick(false);
+    addChat('me', '* ' + OFFICER_NAME + ' отпустил тангенту мегафона');
+    if (megaEndTimer) { clearTimeout(megaEndTimer); megaEndTimer = null; }
   }
 
-  /* Попытка 1: Загрузить реальный мужской голос (Maxim) и прогнать его через Web Audio DSP рупор СГУ */
-  var cloudUrl = 'https://api.streamelements.com/kappa/v2/speech?voice=Maxim&text=' + encodeURIComponent(phr.txt);
-  var ctx = getMegaAudioCtx();
+  megaEndTimer = setTimeout(finishMegaphone, 11000);
 
-  fetch(cloudUrl).then(function(r) {
-    if (!r.ok) throw new Error('fallback');
-    return r.arrayBuffer();
-  }).then(function(ab) {
-    ctx.decodeAudioData(ab, function(decoded) {
-      playBufferThroughPoliceHorn(decoded, finishMegaphone);
-    }, function() {
-      speakWithHornMaskFallback(phr.txt, finishMegaphone);
-    });
-  }).catch(function() {
-    /* Попытка 2 (мгновенный локальный резерв без интернета/CORS):
-       Голос системы + синхронный модулятор хрипа и радиошума рупора СГУ */
-    speakWithHornMaskFallback(phr.txt, finishMegaphone);
-  });
+  setTimeout(function() {
+    playMegaphoneVoice(idx, finishMegaphone);
+  }, 95);
 };
-
-function speakWithHornMaskFallback(text, onDone) {
-  startHornResonanceMask(text.length);
-  if ('speechSynthesis' in window) {
-    try {
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ru-RU';
-      var v = pickBestRussianMaleVoice();
-      if (v) u.voice = v;
-      u.rate = 1.03;
-      u.pitch = 0.78;
-      u.volume = 0.95;
-
-      u.onend = onDone;
-      u.onerror = onDone;
-      window.speechSynthesis.speak(u);
-      setTimeout(onDone, 6200);
-      return;
-    } catch (e) {}
-  }
-  setTimeout(onDone, 2200);
-}
 
 function openPursuitModal() {
   var back = document.getElementById('actModalBack');
@@ -1450,20 +1407,20 @@ window.tryOpenTrunkSearch = function() {
 };
 
 var INITIAL_MAIN_ITEMS = [
-  { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',         cat: 'Напиток',         qty: 2,  w: 0.33, desc: 'Прохладительный безалкогольный напиток 0.33 л.', illegal: false },
-  { slot: 1,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',    cat: 'Медикаменты',     qty: 3,  w: 0.10, desc: 'Блистер обезболивающих таблеток.', illegal: false },
-  { slot: 2,  svg: 'pistol1', name: 'Пистолет ТТ',               cat: 'Оружие',          qty: 1,  w: 0.85, desc: 'Самозарядный пистолет калибра 7.62×25 мм.', illegal: true },
-  { slot: 4,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож. Нелегальным предметом не считается.', illegal: false },
-  { slot: 6,  svg: 'beer6',   name: 'Бутылка пива',              cat: 'Напиток',         qty: 2,  w: 0.50, desc: 'Светлое пенное в стеклянной бутылке.', illegal: false },
-  { slot: 8,  svg: 'ammo2',   name: 'Патроны 7.62×25 мм',        cat: 'Боеприпасы',      qty: 36, w: 0.40, desc: 'Боевые пистолетные патроны.', illegal: true }
+  { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',          cat: 'Напиток',         qty: 2,  w: 0.33, desc: 'Прохладительный безалкогольный напиток 0.33 л.', illegal: false },
+  { slot: 1,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',     cat: 'Медикаменты',     qty: 3,  w: 0.10, desc: 'Блистер обезболивающих таблеток.', illegal: false },
+  { slot: 2,  svg: 'pistol1', name: 'Пистолет ТТ',                cat: 'Оружие',          qty: 1,  w: 0.85, desc: 'Самозарядный пистолет калибра 7.62×25 мм.', illegal: true },
+  { slot: 4,  svg: 'knife5',  name: 'Охотничий нож',              cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож. Нелегальным предметом не считается.', illegal: false },
+  { slot: 6,  svg: 'beer6',   name: 'Бутылка пива',               cat: 'Напиток',         qty: 2,  w: 0.50, desc: 'Светлое пенное в стеклянной бутылке.', illegal: false },
+  { slot: 8,  svg: 'ammo2',   name: 'Патроны 7.62×25 мм',         cat: 'Боеприпасы',      qty: 36, w: 0.40, desc: 'Боевые пистолетные патроны.', illegal: true }
 ];
 
 var INITIAL_BP_ITEMS = [
-  { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',         cat: 'Напиток',         qty: 1,  w: 0.33, desc: 'Прохладительный напиток.', illegal: false },
-  { slot: 2,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож.', illegal: false },
-  { slot: 4,  svg: 'ammo2',   name: 'Патроны 9×19 мм',           cat: 'Боеприпасы',      qty: 60, w: 0.65, desc: 'Пачка боевых патронов.', illegal: true },
-  { slot: 6,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',    cat: 'Медикаменты',     qty: 2,  w: 0.10, desc: 'Упаковка медицинских таблеток.', illegal: false },
-  { slot: 8,  svg: 'beer6',   name: 'Бутылка пива',              cat: 'Напиток',         qty: 1,  w: 0.50, desc: 'Стеклянная бутылка 0.5 л.', illegal: false }
+  { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',          cat: 'Напиток',         qty: 1,  w: 0.33, desc: 'Прохладительный напиток.', illegal: false },
+  { slot: 2,  svg: 'knife5',  name: 'Охотничий нож',              cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож.', illegal: false },
+  { slot: 4,  svg: 'ammo2',   name: 'Патроны 9×19 мм',            cat: 'Боеприпасы',      qty: 60, w: 0.65, desc: 'Пачка боевых патронов.', illegal: true },
+  { slot: 6,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',     cat: 'Медикаменты',     qty: 2,  w: 0.10, desc: 'Упаковка медицинских таблеток.', illegal: false },
+  { slot: 8,  svg: 'beer6',   name: 'Бутылка пива',               cat: 'Напиток',         qty: 1,  w: 0.50, desc: 'Стеклянная бутылка 0.5 л.', illegal: false }
 ];
 
 var INITIAL_TRUNK_ITEMS = [
@@ -1500,7 +1457,8 @@ function resetDemo() {
   TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
   SEIZED_BUFFER = [];
   ACTIVE_PURSUIT = null;
-  stopHornResonanceMask();
+  stopMegaStatic();
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   closePopover();
   renderRadialMenu();
   renderInventoryGrids();
@@ -1672,9 +1630,12 @@ document.addEventListener('keydown', function(ev) {
   }
 });
 
+/* Предзагрузка русских голосов браузера */
 if ('speechSynthesis' in window) {
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+  cachedRussianVoice = selectBestRussianVoice();
+  window.speechSynthesis.onvoiceschanged = function() {
+    cachedRussianVoice = selectBestRussianVoice();
+  };
 }
 
 initEquipmentIcons();
