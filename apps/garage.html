@@ -22,7 +22,7 @@ h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .cnt{font-size:12px;background:#22304a;border:1px solid #32456a;color:#a9c7ef;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px}
 .ph-sub{color:var(--mut);font-size:12.5px;margin-top:5px}
 .ph-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:2px}
-/* Жёсткое скрытие кнопок владельца для обычных пользователей */
+/* Строгое скрытие кнопок владельца по умолчанию */
 .owner-only{display:none!important}
 body.is-owner .owner-only{display:inline-flex!important}
 .tabs{display:flex;gap:5px;background:#141a23;border:1px solid var(--line);border-radius:13px;padding:5px}
@@ -237,12 +237,12 @@ window.addEventListener('error',function(ev){
       <div class="ph-sub" id="hSub"></div>
     </div>
     <div class="ph-actions">
-      <button class="btn ghost slim owner-only" id="depsBtn" onclick="openDepsManager()" title="Управление разделами и классами">⚙️ Разделы</button>
+      <button class="btn ghost slim owner-only" id="depsBtn" style="display:none" onclick="openDepsManager()" title="Управление разделами и классами">⚙️ Разделы</button>
       <div class="tabs">
         <button class="tab on" data-kind="cars" onclick="setKind('cars')">🚔 Автопарк</button>
         <button class="tab" data-kind="form" onclick="setKind('form')">🎽 Форма</button>
       </div>
-      <button class="btn big owner-only" id="addBtn" onclick="openAdd()">＋ Добавить машину</button>
+      <button class="btn big owner-only" id="addBtn" style="display:none" onclick="openAdd()">＋ Добавить машину</button>
     </div>
   </div>
 
@@ -300,9 +300,15 @@ var LS=(function(){
  };
 })();
 
-/* ===================== УТИЛИТЫ ===================== */
+/* ===================== УТИЛИТЫ И ОЧИСТКА ТЕКСТА (12 осн + 3 уникал) ===================== */
 function $(s){return document.querySelector(s)}
 function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function stripQuotaText(str){
+ return String(str||'')
+  .replace(/\s*\(\s*\d+\s*осн[^)]*уникал[^)]*\)/gi,'')
+  .replace(/\s*·?\s*\d+\s*осн[^·,\n]*уникал[^·,\n]*/gi,'')
+  .trim();
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
 function hex2rgba(h,a){
  var r=parseInt(h.substring(1,3),16);
@@ -361,7 +367,7 @@ function cloneClasses(src){
   if(!c||!c.k){continue}
   out.push({
    k:String(c.k),
-   n:String(c.n||c.s||'—'),
+   n:stripQuotaText(c.n||c.s||'—'),
    c:String(c.c||'#4da3ff')
   });
  }
@@ -392,10 +398,12 @@ function cloneDeps(src){
   }else{
    classes=defaultClassesFor(cat);
   }
+  var cleanN=stripQuotaText(d.n||d.s||'—');
+  var cleanS=stripQuotaText(d.s||d.n||'—');
   out.push({
    k:String(d.k),
-   s:String(d.s||d.n||'—'),
-   n:String(d.n||d.s||'—'),
+   s:cleanS||cleanN||'—',
+   n:cleanN||cleanS||'—',
    c:String(d.c||'#4da3ff'),
    cat:cat,
    classes:classes
@@ -455,38 +463,43 @@ var CATS={
 };
 function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].k===cat){return a[i].n}}return a[0].n}
 
-/* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА С ГЛАВНОГО САЙТА ===================== */
+/* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА ===================== */
 var LOCAL_K='mvd_garage_local', CACHE_K='mvd_garage_cache', MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
 var ITEMS=[], localRev=0, pendingRev=null, needSeed=false;
 var ADMIN_KEY='';
 var adminMode=false;
 var booted=false;
 
-/* Удаляем старый автономный ключ гаража, чтобы он не включал режим владельца сам по себе */
+/* Полностью удаляем старый автономный ключ гаража */
 try{LS.remove('mvd_garage_admin_key')}catch(e){}
 
 function syncGlobalOwnerAuth(){
  var isAdm=false;
  var tok='';
  try{
-  if(window.parent&&window.parent!==window){
-   if(typeof window.parent.adminMode==='boolean'){
-    isAdm=window.parent.adminMode;
-   }
-   if(window.parent.localStorage){
+  /* 1. Если открыто внутри главного сайта — доверяем только живому флагу window.parent.adminMode */
+  if(window.parent&&window.parent!==window&&typeof window.parent.adminMode==='boolean'){
+   isAdm=!!window.parent.adminMode;
+   if(isAdm&&window.parent.localStorage){
     tok=window.parent.localStorage.getItem(MAIN_KEY_K)||'';
    }
-  }
-  if(!tok){
+  }else{
+   /* 2. Если открыто напрямую в отдельной вкладке — проверяем валидный GitHub токен главного сайта */
    tok=LS.get(MAIN_KEY_K)||'';
+   if(/^(ghp_|github_pat_)[A-Za-z0-9_]{10,}/.test(String(tok||'').trim())){
+    isAdm=true;
+   }
   }
  }catch(e){}
- ADMIN_KEY=String(tok||'').trim();
- if(!isAdm && ADMIN_KEY.length>5){
-  isAdm=true;
- }
+
+ ADMIN_KEY=isAdm?String(tok||'').trim():'';
  adminMode=!!isAdm;
  document.body.classList.toggle('is-owner',adminMode);
+
+ var db=$('#depsBtn');
+ if(db){db.style.display=adminMode?'inline-flex':'none'}
+ var ab=$('#addBtn');
+ if(ab){ab.style.display=adminMode?'inline-flex':'none'}
 }
 syncGlobalOwnerAuth();
 window.addEventListener('storage',function(){
@@ -498,7 +511,7 @@ setInterval(function(){
  var prev=adminMode;
  syncGlobalOwnerAuth();
  if(prev!==adminMode){render()}
-},800);
+},500);
 
 function seed(){return [
  {id:'c1', kind:'cars',cat:'main', dep:'uvd',  cls:'standard',name:'Lada Vesta',                desc:'Патрульный автомобиль ППС · базовая комплектация', speed:'178', photo:''},
@@ -536,6 +549,16 @@ function seed(){return [
  {id:'f13',kind:'form',cat:'event',dep:'fso',  name:'Форма ФСО',                 desc:'Чёрный костюм, значок ФСО, проводная гарнитура',   photo:''}
 ];}
 
+function sanitizeItemsList(arr){
+ if(!arr||!arr.length)return arr;
+ for(var i=0;i<arr.length;i++){
+  if(!arr[i])continue;
+  arr[i].name=stripQuotaText(arr[i].name||'');
+  arr[i].desc=stripQuotaText(arr[i].desc||'');
+ }
+ return arr;
+}
+
 function toArr(x){
  if(!x){return null}
  if(Array.isArray(x)){return x}
@@ -554,7 +577,7 @@ function loadLocal(){
  try{ d=JSON.parse(LS.get(LOCAL_K)||'null') }catch(e){}
  if(d&&isGaragePayload(d)){
   if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
-  return toArr(d.items);
+  return sanitizeItemsList(toArr(d.items));
  }
  return seed();
 }
@@ -572,7 +595,7 @@ function loadCache(){
    if(a&&a.length){
     return {
      rev:(typeof c.rev==='number'?c.rev:0),
-     items:a,
+     items:sanitizeItemsList(a),
      deps:(c.deps&&Array.isArray(c.deps)&&c.deps.length)?c.deps:null
     };
    }
@@ -741,7 +764,7 @@ function pullData(rv){
   var j=null;
   try{j=JSON.parse(d)}catch(e){}
   if(!isGaragePayload(j)){throw new Error('bad')}
-  var items=toArr(j.items);
+  var items=sanitizeItemsList(toArr(j.items));
   return {
    rev:(typeof j.rev==='number')?Math.max(j.rev,rv.rev):rv.rev,
    items:items,
@@ -754,7 +777,7 @@ function pullData(rv){
     if(!isGaragePayload(j)){throw new Error('bad')}
     return {
      rev:rv.rev,
-     items:toArr(j.items)||[],
+     items:sanitizeItemsList(toArr(j.items)||[]),
      deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?j.deps:null
     };
    });
@@ -764,14 +787,14 @@ function pullData(rv){
    if(!isGaragePayload(j)){throw new Error('bad')}
    return {
     rev:(typeof j.rev==='number'?j.rev:rv.rev),
-    items:toArr(j.items)||[],
+    items:sanitizeItemsList(toArr(j.items)||[]),
     deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?j.deps:null
    };
   });
  });
 }
 function applyData(rev,items,deps){
- ITEMS=items;
+ ITEMS=sanitizeItemsList(items);
  if(deps&&Array.isArray(deps)&&deps.length){DEPS=cloneDeps(deps)}
  localRev=rev;
  cacheItems();
@@ -856,7 +879,7 @@ function renderDepsModal(){
   el.addEventListener('blur',function(){
    var d=findDep(el.getAttribute('data-depk'));
    if(!d){return}
-   var v=el.textContent.replace(/\s+/g,' ').trim();
+   var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
    if(!v||v===d.n){return}
    d.n=v;
    d.s=v.length>14?v.slice(0,13)+'…':v;
@@ -867,7 +890,7 @@ function renderDepsModal(){
  });
 }
 function addDep(){
- var nm=$('#ndName')?$('#ndName').value.trim():'';
+ var nm=stripQuotaText($('#ndName')?$('#ndName').value.trim():'');
  if(!nm){toast('Введите название раздела',true);return}
  var cat=($('#ndCat')&&$('#ndCat').value==='event')?'event':'main';
  var k='d'+Date.now().toString(36)+Math.floor(Math.random()*100);
@@ -939,7 +962,7 @@ function openClassesManager(depK){
  qsa('.dep-name',root).forEach(function(el){
   el.addEventListener('blur',function(){
    var ck=el.getAttribute('data-clsk');
-   var v=el.textContent.replace(/\s+/g,' ').trim();
+   var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
    if(!v){return}
    for(var i=0;i<d.classes.length;i++){
     if(d.classes[i].k===ck){
@@ -954,7 +977,7 @@ function openClassesManager(depK){
 function addClass(depK){
  var d=findDep(depK);
  if(!d){return}
- var nm=$('#ncName')?$('#ncName').value.trim():'';
+ var nm=stripQuotaText($('#ncName')?$('#ncName').value.trim():'');
  if(!nm){toast('Введите название класса',true);return}
  var col=$('#ncColor')?$('#ncColor').value:'#4da3ff';
  d.classes.push({k:'k'+Date.now().toString(36)+Math.floor(Math.random()*100),n:nm,c:col});
@@ -1023,7 +1046,7 @@ function renderCats(){
 }
 function chipBtn(act,val,label,color,on,cnt){
  return '<button class="chip'+(on?' on':'')+'" style="--cc:'+color+';--ccb:'+hex2rgba(color,.18)+'" onclick="'+act+'(\''+esc(val)+'\')">'+
-  '<span class="dot"></span>'+esc(label)+(typeof cnt==='number'?' <i class="cn">'+cnt+'</i>':'')+'</button>';
+  '<span class="dot"></span>'+esc(stripQuotaText(label))+(typeof cnt==='number'?' <i class="cn">'+cnt+'</i>':'')+'</button>';
 }
 function renderChips(){
  var box=$('#chips');
@@ -1096,12 +1119,12 @@ function cardHtml(it){
   :'';
  return '<div class="vcard" data-id="'+it.id+'" style="--dc:'+dc+'">'+
   '<div class="vph'+(it.photo?'':' empty')+'">'+
-   '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(d.s)+'</span>'+
+   '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(stripQuotaText(d.s))+'</span>'+
    tools+ph+
   '</div>'+
   '<div class="vbody">'+
-   '<div class="vname"'+ed+' data-ph="Название" data-f="name">'+esc(it.name||'')+'</div>'+
-   '<div class="vdesc"'+ed+' data-ph="Описание" data-f="desc">'+esc(it.desc||'')+'</div>'+
+   '<div class="vname"'+ed+' data-ph="Название" data-f="name">'+esc(stripQuotaText(it.name||''))+'</div>'+
+   '<div class="vdesc"'+ed+' data-ph="Описание" data-f="desc">'+esc(stripQuotaText(it.desc||''))+'</div>'+
    speedRow+
   '</div>'+
  '</div>';
@@ -1151,14 +1174,14 @@ function render(){
  var t=$('#hTitle');
  if(t){ t.textContent=(state.kind==='cars'?'Автопарк':'Форма') }
  var s=$('#hSub');
- if(s){ s.textContent=catName(state.kind,state.cat)+(state.dep!=='all'?' · '+dep(state.dep).n:'') }
+ if(s){ s.textContent=catName(state.kind,state.cat)+(state.dep!=='all'?' · '+stripQuotaText(dep(state.dep).n):'') }
  var ab=$('#addBtn');
  if(ab){ ab.textContent=(state.kind==='cars'?'＋ Добавить машину':'＋ Добавить форму') }
 }
 function bindEdit(el,it,field){
  if(!el){return}
  el.addEventListener('blur',function(){
-  var v=el.textContent.replace(/\s+/g,' ').trim();
+  var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
   if((it[field]||'')===v){return}
   it[field]=v;
   commit();
@@ -1338,7 +1361,7 @@ function renderAph(){
 }
 function clearPhoto(){ editPhoto=''; renderAph() }
 function saveForm(){
- var name=($('#fName')?$('#fName').value:'').trim();
+ var name=stripQuotaText(($('#fName')?$('#fName').value:'').trim());
  if(!name){toast('Введите название',true);return}
  var depK=$('#fDep')?$('#fDep').value:'';
  if(!depK){toast('Выберите раздел',true);return}
@@ -1350,7 +1373,7 @@ function saveForm(){
   ITEMS.push(it);
  }
  it.name=name;
- it.desc=($('#fDesc')?$('#fDesc').value:'').trim();
+ it.desc=stripQuotaText(($('#fDesc')?$('#fDesc').value:'').trim());
  it.dep=depK;
  it.cls=(state.kind==='cars')?(formCls||''):'';
  it.speed=($('#fSpeed')?$('#fSpeed').value:'').trim();
