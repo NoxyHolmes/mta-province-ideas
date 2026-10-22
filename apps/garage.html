@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>МВД · Автопарк и форма</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-user-drag:none}
 :root{--bg:#0e1116;--bg2:#131820;--card:#191f28;--line:#27303d;--txt:#e9edf4;--mut:#8b95a7;--acc:#4da3ff;--green:#2fd97a;--yellow:#f7c948;--red:#ff5c5c}
 html{color-scheme:dark}
 body{background:radial-gradient(1100px 520px at 8% -10%,rgba(45,100,170,.17),transparent 60%),radial-gradient(900px 520px at 115% 115%,rgba(130,90,220,.11),transparent 55%),#0e1116;color:var(--txt);font-family:Inter,system-ui,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
@@ -57,16 +57,14 @@ body.is-owner .owner-only{display:inline-flex!important}
 textarea.inp{resize:vertical}
 .vgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:14px}
 .vgrid.grouped{display:block}
-.vcard{background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);animation:cardIn .4s both}
+.vcard{background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);animation:cardIn .4s both;user-select:none}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
 .vcard:hover{border-color:#3a4757;transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
 .vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc,#4da3ff);z-index:3}
-.vcard.dragging{opacity:.4;transform:scale(.97)}
 .vph{position:relative;aspect-ratio:16/10;background:#141a23;cursor:pointer;overflow:hidden}
 .vph.empty{background:#12161e}
-.vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;animation:fadeIn .4s}
+.vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;animation:fadeIn .4s;-webkit-user-drag:none;user-select:none}
 @keyframes fadeIn{from{opacity:0}}
-.vph.drag{outline:2px dashed var(--dc,var(--acc));outline-offset:-5px}
 .vph-empty{position:absolute;inset:10px;border:1px dashed #2c3644;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#5b6675;transition:all .2s;text-align:center;padding:6px}
 .vph-empty .pe-ic{font-size:25px;opacity:.7}
 .vph-empty b{color:#8b95a7;font-size:12px;font-weight:700}
@@ -89,17 +87,15 @@ textarea.inp{resize:vertical}
 .vsp .l{color:#5b6675;text-transform:uppercase;letter-spacing:1.1px;font-weight:800;font-size:9px}
 .vsp b{margin-left:auto;font-size:14px;font-weight:800;color:var(--dc,#6cc0ff);min-width:14px;text-align:right;border-radius:6px;padding:1px 3px}
 .vsp i{font-style:normal;color:var(--mut);font-size:10px;font-weight:700}
-[contenteditable]{outline:none}
+[contenteditable]{outline:none;user-select:text}
 [contenteditable]:focus{background:#141a23;box-shadow:0 0 0 3px rgba(77,163,255,.14)}
 [contenteditable]:empty::before{content:attr(data-ph);color:#4a5462}
 .empty{padding:26px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:12px;margin-top:10px}
-.gsec{margin:0 0 24px;border-radius:14px;padding:10px;transition:background .2s,outline-color .2s;outline:2px dashed transparent;outline-offset:2px}
-.gsec.dragover{outline-color:var(--gc,#4da3ff);background:rgba(77,163,255,.05)}
+.gsec{margin:0 0 24px;border-radius:14px;padding:10px}
 .ghead{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800;margin-bottom:11px}
 .ghead .gd{width:8px;height:8px;border-radius:50%;flex:0 0 8px}
 .ghead .gname{white-space:nowrap}
 .ghead .gline{flex:1;height:1px;background:linear-gradient(90deg,#27303d,transparent)}
-.ghint{font-size:10px;color:#5b6675;font-weight:600;letter-spacing:.5px;text-transform:none;white-space:nowrap}
 .ggrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
 .gempty{min-height:64px;display:flex;align-items:center;justify-content:center;border:1px dashed #232b37;border-radius:12px;color:#5b6675;font-size:12px}
 .clsgrid{display:flex;flex-direction:column;gap:8px}
@@ -132,12 +128,11 @@ textarea.inp{resize:vertical}
 .formgrid .full{grid-column:1/-1}
 .aph{aspect-ratio:16/8;border:1px dashed #2c3644;border-radius:12px;background:#141a23;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;overflow:hidden;position:relative}
 .aph:hover{border-color:rgba(77,163,255,.55)}
-.aph.drag{border-color:var(--acc);background:#16202c}
 .aph-in{display:flex;flex-direction:column;align-items:center;gap:5px;color:#5b6675;text-align:center;padding:6px}
 .aph-in .aph-ic{font-size:26px;opacity:.75}
 .aph-in b{color:#8b95a7;font-size:12.5px}
 .aph-in span{font-size:10.5px}
-.aph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.aph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;-webkit-user-drag:none}
 .hint{font-size:11.5px;color:var(--mut);line-height:1.6;margin-top:10px;background:#141a23;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 
 .deplist-head{font-size:10px;text-transform:uppercase;letter-spacing:1.6px;color:var(--mut);font-weight:800;margin:14px 0 6px}
@@ -179,7 +174,6 @@ h1{font-size:20px}
 .vgrid,.ggrid{grid-template-columns:repeat(2,1fr);gap:10px}
 .gsec{padding:6px;margin-bottom:16px}
 .ghead{gap:7px;font-size:10px}
-.ghint{display:none}
 .vcard{border-radius:14px}
 .vph{aspect-ratio:16/11}
 .vph-empty{inset:8px}
@@ -258,7 +252,7 @@ window.addEventListener('error',function(ev){
 </main>
 
 <input type="file" id="fileInp" accept="image/*" style="display:none">
-<div id="lb"><div class="lb-cap" id="lbCap"></div><img id="lbImg" alt=""></div>
+<div id="lb"><div class="lb-cap" id="lbCap"></div><img id="lbImg" alt="" draggable="false"></div>
 <div id="mroot"></div>
 <div id="croot"></div>
 <div id="troot"></div>
@@ -300,16 +294,43 @@ var LS=(function(){
  };
 })();
 
-/* ===================== УТИЛИТЫ И ПОЛНАЯ ОЧИСТКА "(12 осн. + 3 уник.)" ===================== */
+/* ===================== УТИЛИТЫ И СОРТИРОВКА ПО АЛФАВИТУ (РУС -> АНГЛ) ===================== */
 function $(s){return document.querySelector(s)}
 function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
 function stripQuotaText(str){
  return String(str||'')
   .replace(/\s*\([^)]*(?:осн|уник|баз)[^)]*\)/gi,'')
-  .replace(/\s*\[[^\]]*(?:осн|уник|баз)[^\]]*\]/gi,'')
+  .replace(/\s*\[[^\]]*(?:осн|уник|уникал|баз)[^\]]*\]/gi,'')
   .replace(/\s*·?\s*\d+\s*осн\.?\s*\+\s*\d+\s*уник\.?[а-я]*/gi,'')
   .trim();
 }
+
+/* Определение языковой группы по первой букве названия:
+   0 — Русский алфавит (А–Я, Ё)
+   1 — Английский алфавит (A–Z)
+   2 — Цифры и прочие символы */
+function alphaGroup(name){
+ var s=stripQuotaText(name||'').replace(/^[^a-zA-Zа-яА-ЯёЁ0-9]+/,'').trim();
+ if(!s)return 2;
+ var ch=s.charAt(0);
+ if(/[а-яА-ЯёЁ]/.test(ch))return 0;
+ if(/[a-zA-Z]/.test(ch))return 1;
+ return 2;
+}
+
+/* Строгая сортировка карточек: сначала русский алфавит (А–Я), затем английский (A–Z) */
+function compareAlphabetical(a,b){
+ var na=stripQuotaText((a&&a.name)||'').trim();
+ var nb=stripQuotaText((b&&b.name)||'').trim();
+ var ga=alphaGroup(na);
+ var gb=alphaGroup(nb);
+ if(ga!==gb)return ga-gb;
+ if(ga===0){
+  return na.localeCompare(nb,'ru',{sensitivity:'base',numeric:true});
+ }
+ return na.localeCompare(nb,'en',{sensitivity:'base',numeric:true});
+}
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
 function hex2rgba(h,a){
  var r=parseInt(h.substring(1,3),16);
@@ -555,6 +576,7 @@ function sanitizeItemsList(arr){
   arr[i].name=stripQuotaText(arr[i].name||'');
   arr[i].desc=stripQuotaText(arr[i].desc||'');
  }
+ arr.sort(compareAlphabetical);
  return arr;
 }
 
@@ -578,14 +600,16 @@ function loadLocal(){
   if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
   return sanitizeItemsList(toArr(d.items));
  }
- return seed();
+ return sanitizeItemsList(seed());
 }
 function saveLocal(items){
  DEPS=cloneDeps(DEPS);
+ sanitizeItemsList(items);
  try{ LS.set(LOCAL_K,JSON.stringify({items:items,deps:DEPS})) }catch(e){ toast('Локальное хранилище переполнено',true) }
 }
 function cacheItems(){
  DEPS=cloneDeps(DEPS);
+ sanitizeItemsList(ITEMS);
  try{LS.set(CACHE_K,JSON.stringify({rev:localRev,items:ITEMS,deps:DEPS}))}catch(e){}
 }
 function loadCache(){
@@ -626,7 +650,7 @@ function countClassUsage(depKey,clsKey){
  return n;
 }
 
-/* ===================== СОХРАНЕНИЕ (ЧТЕНИЕ ИЗ data.json И GARAGE_DATA) ===================== */
+/* ===================== СОХРАНЕНИЕ ===================== */
 var NET_TO_READ=8000;
 var NET_TO_WRITE=20000;
 var GARAGE_DATA_FILE='garage_data.json';
@@ -1021,9 +1045,8 @@ function setClassColor(depK,clsK,c){
  render();
 }
 
-/* ===================== СОСТОЯНИЕ И РЕНДЕР ===================== */
+/* ===================== СОСТОЯНИЕ И РЕНДЕР (ПО АЛФАВИТУ, БЕЗ ПЕРЕТАСКИВАНИЯ) ===================== */
 var state={kind:'cars',cat:'main',dep:'all',cls:'all',q:''};
-var dragId=null;
 
 function setKind(k){
  if(state.kind===k){return}
@@ -1091,6 +1114,8 @@ function visibleItems(){
   }
   out.push(it);
  }
+ /* Сортируем все карточки по алфавиту: сначала А–Я, затем A–Z */
+ out.sort(compareAlphabetical);
  return out;
 }
 function cardColor(it){
@@ -1108,15 +1133,15 @@ function cardHtml(it){
  var tools='';
  if(adminMode){
   tools='<div class="vph-tools">'+
-   '<button class="vtool" title="Редактировать и сменить раздел" onclick="event.stopPropagation();openEdit(\''+it.id+'\')">✏️</button>'+
+   '<button class="vtool" title="Редактировать карточку" onclick="event.stopPropagation();openEdit(\''+it.id+'\')">✏️</button>'+
    '<button class="vtool vtool-del" title="Удалить" onclick="event.stopPropagation();delItem(\''+it.id+'\')">🗑</button>'+
   '</div>';
  }
  var ph;
  if(it.photo){
-  ph='<img src="'+it.photo+'" alt="" onclick="event.stopPropagation();openLb(\''+it.id+'\')">';
+  ph='<img src="'+it.photo+'" alt="" draggable="false" onclick="event.stopPropagation();openLb(\''+it.id+'\')">';
  }else if(adminMode){
-  ph='<div class="vph-empty" onclick="event.stopPropagation();pickPhotoFor(\''+it.id+'\')"><div class="pe-ic">📷</div><b>Добавить фото</b><span>клик или перетащите</span></div>';
+  ph='<div class="vph-empty" onclick="event.stopPropagation();pickPhotoFor(\''+it.id+'\')"><div class="pe-ic">📷</div><b>Добавить фото</b><span>нажмите для выбора</span></div>';
  }else{
   ph='<div class="vph-empty plain"><div class="pe-ic">'+(state.kind==='cars'?'🚗':'🎽')+'</div><b>Нет фото</b><span></span></div>';
  }
@@ -1124,8 +1149,8 @@ function cardHtml(it){
  var speedRow=(it.kind==='cars')
   ?'<div class="vsp"><span class="l">Скорость</span><i>км/ч</i><b'+ed+' data-ph="—" data-f="speed">'+esc(it.speed||'')+'</b></div>'
   :'';
- return '<div class="vcard" data-id="'+it.id+'" style="--dc:'+dc+'">'+
-  '<div class="vph'+(it.photo?'':' empty')+'">'+
+ return '<div class="vcard" draggable="false" data-id="'+it.id+'" style="--dc:'+dc+'">'+
+  '<div class="vph'+(it.photo?'':' empty')+'" draggable="false">'+
    '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(stripQuotaText(d.s))+'</span>'+
    tools+ph+
   '</div>'+
@@ -1149,11 +1174,12 @@ function renderGrid(){
    var cl=classes[i];
    var grp=[];
    for(var j=0;j<items.length;j++){ if(clsOf(items[j])===cl.k){ grp.push(items[j]) } }
+   grp.sort(compareAlphabetical);
    h+='<div class="gsec" data-cls="'+esc(cl.k)+'" style="--gc:'+cl.c+'">'+
     '<div class="ghead">'+
      '<span class="gd" style="background:'+cl.c+';box-shadow:0 0 8px 1px '+hex2rgba(cl.c,.45)+'"></span>'+
      '<span class="gname">'+esc(cl.n)+'</span><i class="cn">'+grp.length+'</i>'+
-     '<span class="gline"></span><span class="ghint">перетащите карточку, чтобы сменить класс</span>'+
+     '<span class="gline"></span>'+
     '</div>'+
     '<div class="ggrid">'+(grp.length?grp.map(cardHtml).join(''):'<div class="gempty">В классе пока пусто</div>')+'</div>'+
    '</div>';
@@ -1192,6 +1218,7 @@ function bindEdit(el,it,field){
   if((it[field]||'')===v){return}
   it[field]=v;
   commit();
+  if(field==='name'){renderGrid()}
  });
  el.addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); el.blur() }
@@ -1199,72 +1226,27 @@ function bindEdit(el,it,field){
 }
 function applyCardEvents(){
  qsa('.vcard').forEach(function(card){
+  /* Запрещаем любое перетаскивание самой карточки или её фото */
+  card.draggable=false;
+  card.addEventListener('dragstart',function(e){e.preventDefault();return false});
   var id=card.getAttribute('data-id');
   if(!id){return}
   var it=byId(id);
   if(!it){return}
   if(adminMode){
-   card.draggable=true;
-   card.addEventListener('dragstart',function(e){
-    dragId=id;
-    card.classList.add('dragging');
-    try{ e.dataTransfer.setData('text/plain',id); e.dataTransfer.effectAllowed='move' }catch(err){}
-   });
-   card.addEventListener('dragend',function(){
-    card.classList.remove('dragging');
-    dragId=null;
-    qsa('.gsec').forEach(function(s){s.classList.remove('dragover')});
-   });
    bindEdit(card.querySelector('.vname'),it,'name');
    bindEdit(card.querySelector('.vdesc'),it,'desc');
    bindEdit(card.querySelector('.vsp b'),it,'speed');
   }
-  var phEl=card.querySelector('.vph');
-  if(phEl){
-   phEl.addEventListener('dragover',function(e){
-    if(!adminMode){return}
-    var has=false;
-    if(e.dataTransfer&&e.dataTransfer.types){
-     for(var i=0;i<e.dataTransfer.types.length;i++){ if(e.dataTransfer.types[i]==='Files'){has=true;break} }
-    }
-    if(has){ e.preventDefault(); phEl.classList.add('drag') }
-   });
-   phEl.addEventListener('dragleave',function(){ phEl.classList.remove('drag') });
-   phEl.addEventListener('drop',function(e){
-    phEl.classList.remove('drag');
-    if(!adminMode){return}
-    var f=e.dataTransfer.files&&e.dataTransfer.files[0];
-    if(!f){return}
-    e.preventDefault();
-    e.stopPropagation();
-    compressImage(f,function(data){
-     it.photo=data;
-     commit();
-     render();
-     toast('Фото обновлено');
-    });
-   });
-  }
- });
- qsa('.gsec').forEach(function(sec){
-  sec.addEventListener('dragover',function(e){
-   if(dragId){ e.preventDefault(); sec.classList.add('dragover') }
-  });
-  sec.addEventListener('dragleave',function(){ sec.classList.remove('dragover') });
-  sec.addEventListener('drop',function(e){
-   e.preventDefault();
-   sec.classList.remove('dragover');
-   if(!dragId){return}
-   var it=byId(dragId);
-   var ck=sec.getAttribute('data-cls');
-   if(!it||!ck||it.cls===ck){return}
-   it.cls=ck;
-   commit();
-   render();
-   toast('Перенесено в «'+classNameOf(it.dep,ck)+'»');
-  });
  });
 }
+
+/* Блокируем перетаскивание картинок и карточек на уровне всего документа */
+document.addEventListener('dragstart',function(e){
+ if(e.target&&(e.target.tagName==='IMG'||e.target.closest('.vcard'))){
+  e.preventDefault();
+ }
+});
 
 /* ===================== МОДАЛКИ: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ СО СМЕНОЙ РАЗДЕЛА И КАТЕГОРИИ ===================== */
 var editingId=null, editPhoto='', formCls=null, photoCb=null;
@@ -1285,7 +1267,6 @@ function openEdit(id){
  openForm(it);
 }
 
-/* При смене категории ("Основной" / "Мероприятия") или раздела в модалке — динамически обновляет список разделов и классов */
 function syncFormDepOptions(preferredDepK){
  var catSel=$('#fCat');
  var depSel=$('#fDep');
@@ -1350,14 +1331,14 @@ function openForm(it){
  '<div class="mh-sub">Вы можете изменить название, описание, раздел (фракцию), класс и фотографию</div>'+
  '<button class="m-close" onclick="closeM()">✕</button></div>'+
  '<div class="m-body"><div class="formgrid">'+
-  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: Toyota Camry"></div>'+
+  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: Лада Веста / Toyota Camry"></div>'+
   '<div class="full"><label class="flab">Описание</label><textarea class="inp" id="fDesc" rows="2" style="width:100%;min-height:44px" placeholder="Краткое описание…">'+esc(it?stripQuotaText(it.desc):'')+'</textarea></div>'+
   '<div><label class="flab">Категория каталога</label><select class="sel" id="fCat" style="width:100%" onchange="onFormCatChange()">'+catOpts+'</select></div>'+
   '<div><label class="flab">Раздел (Фракция / Структура)</label><select class="sel" id="fDep" style="width:100%" onchange="onFormDepChange()"></select></div>'+
   (isCars?'<div class="full"><label class="flab">Скорость, км/ч</label><input class="inp" id="fSpeed" style="width:100%" value="'+esc(it?it.speed:'')+'" placeholder="180"></div>':'')+
   (isCars?'<div class="full"><label class="flab">Класс транспорта</label><div id="fClsBox"></div></div>':'')+
   '<div class="full"><label class="flab">Фотография</label><div class="aph" id="fAph"></div>'+
-  '<div class="hint">Фото автоматически сжимается перед сохранением. Нажмите на область или перетащите файл.</div></div>'+
+  '<div class="hint">Фото автоматически сжимается перед сохранением. Нажмите на область, чтобы выбрать файл с компьютера.</div></div>'+
  '</div></div>'+
  '<div class="m-foot"><button class="btn ghost" onclick="closeM()">Отмена</button>'+
  '<button class="btn" onclick="saveForm()">'+(it?'Сохранить изменения':'Добавить')+'</button></div>'+
@@ -1371,15 +1352,6 @@ function openForm(it){
   a.addEventListener('click',function(e){
    if(e.target.closest('.vtool')){return}
    pickPhoto(function(data){ editPhoto=data; renderAph() });
-  });
-  a.addEventListener('dragover',function(e){ e.preventDefault(); a.classList.add('drag') });
-  a.addEventListener('dragleave',function(){ a.classList.remove('drag') });
-  a.addEventListener('drop',function(e){
-   e.preventDefault();
-   a.classList.remove('drag');
-   var f=e.dataTransfer.files&&e.dataTransfer.files[0];
-   if(!f){return}
-   compressImage(f,function(data){ editPhoto=data; renderAph() });
   });
  }
  setTimeout(function(){ var n=$('#fName'); if(n){n.focus()} },60);
@@ -1411,10 +1383,10 @@ function renderAph(){
  var a=$('#fAph');
  if(!a){return}
  if(editPhoto){
-  a.innerHTML='<img src="'+editPhoto+'" alt="">'+
+  a.innerHTML='<img src="'+editPhoto+'" alt="" draggable="false">'+
    '<button class="vtool vtool-del" style="position:absolute;top:10px;right:10px;z-index:3" title="Убрать фото" onclick="event.stopPropagation();clearPhoto()">🗑</button>';
  }else{
-  a.innerHTML='<div class="aph-in"><div class="aph-ic">📷</div><b>Добавить фото</b><span>нажмите или перетащите файл</span></div>';
+  a.innerHTML='<div class="aph-in"><div class="aph-ic">📷</div><b>Добавить фото</b><span>нажмите для выбора файла</span></div>';
  }
 }
 function clearPhoto(){ editPhoto=''; renderAph() }
@@ -1440,6 +1412,7 @@ function saveForm(){
  it.cls=(it.kind==='cars')?(formCls||''):'';
  it.speed=($('#fSpeed')?$('#fSpeed').value:'').trim();
  it.photo=editPhoto;
+ ITEMS.sort(compareAlphabetical);
  closeM();
  commit();
  render();
