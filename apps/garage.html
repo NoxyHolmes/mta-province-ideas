@@ -22,7 +22,6 @@ h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .cnt{font-size:12px;background:#22304a;border:1px solid #32456a;color:#a9c7ef;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px}
 .ph-sub{color:var(--mut);font-size:12.5px;margin-top:5px}
 .ph-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:2px}
-/* Строгое скрытие кнопок владельца по умолчанию */
 .owner-only{display:none!important}
 body.is-owner .owner-only{display:inline-flex!important}
 .tabs{display:flex;gap:5px;background:#141a23;border:1px solid var(--line);border-radius:13px;padding:5px}
@@ -61,13 +60,6 @@ textarea.inp{resize:vertical}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
 .vcard:hover{border-color:#3a4757;transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
 .vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc,#4da3ff);z-index:3}
-.vcard.sk{pointer-events:none;cursor:default}
-.vcard.sk::before{display:none}
-.skph{aspect-ratio:16/10;background:#161c26;position:relative;overflow:hidden}
-.skph::after,.skb::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.05) 50%,transparent 75%);transform:translateX(-100%);animation:skmove 1.4s infinite}
-@keyframes skmove{to{transform:translateX(100%)}}
-.skb{height:11px;border-radius:6px;background:#161c26;margin:10px 14px 0;position:relative;overflow:hidden}
-.skb:last-child{margin-bottom:14px}
 .vph{position:relative;aspect-ratio:16/10;background:#141a23;cursor:pointer;overflow:hidden}
 .vph.empty{background:#12161e}
 .vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;animation:fadeIn .4s;-webkit-user-drag:none;user-select:none}
@@ -275,7 +267,7 @@ var REPO=(function(){
 })();
 var BRANCH='main';
 
-/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + БЕЗЛИМИТНАЯ INDEXEDDB ===================== */
+/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ ===================== */
 var LS=(function(){
  var mem={},ok=false;
  try{
@@ -301,52 +293,7 @@ var LS=(function(){
  };
 })();
 
-/* IndexedDB на 500+ МБ, чтобы ваш большой список машин с фотографиями всегда открывался мгновенно с 1-й миллисекунды */
-var IDB=(function(){
- var dbP=null;
- function open(){
-  if(dbP)return dbP;
-  dbP=new Promise(function(resolve){
-   if(!window.indexedDB){resolve(null);return}
-   try{
-    var req=window.indexedDB.open('mvd_garage_idb_v1',1);
-    req.onupgradeneeded=function(e){
-     var db=e.target.result;
-     if(!db.objectStoreNames.contains('kv')){db.createObjectStore('kv')}
-    };
-    req.onsuccess=function(e){resolve(e.target.result)};
-    req.onerror=function(){resolve(null)};
-   }catch(err){resolve(null)}
-  });
-  return dbP;
- }
- return {
-  get:function(key){
-   return open().then(function(db){
-    if(!db)return null;
-    return new Promise(function(resolve){
-     try{
-      var tx=db.transaction('kv','readonly');
-      var r=tx.objectStore('kv').get(key);
-      r.onsuccess=function(){resolve(r.result||null)};
-      r.onerror=function(){resolve(null)};
-     }catch(e){resolve(null)}
-    });
-   });
-  },
-  set:function(key,val){
-   return open().then(function(db){
-    if(!db)return;
-    try{
-     var tx=db.transaction('kv','readwrite');
-     tx.objectStore('kv').put(val,key);
-    }catch(e){}
-   });
-  }
- };
-})();
-
-/* ===================== УТИЛИТЫ И СТРОГАЯ СОРТИРОВКА ПО АЛФАВИТУ СЛЕВА НАПРАВО ===================== */
+/* ===================== УТИЛИТЫ И СОРТИРОВКА ПО АЛФАВИТУ (РУС -> АНГЛ) ===================== */
 function $(s){return document.querySelector(s)}
 function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
 function stripQuotaText(str){
@@ -357,50 +304,25 @@ function stripQuotaText(str){
   .trim();
 }
 
-function cleanSortStr(s){
- return stripQuotaText(s||'')
-  .replace(/^[^a-zA-Zа-яА-ЯёЁ0-9]+/,'')
-  .replace(/\s+/g,' ')
-  .trim();
-}
-
-/* Языковая группа по первой букве:
-   0 — Русские названия (А–Я, Ё)
-   1 — Английские названия (A–Z, например: BMW -> Mercedes -> Nissan)
-   2 — Цифры и прочее */
-function alphaGroup(str){
- if(!str)return 2;
- var ch=str.charAt(0);
+function alphaGroup(name){
+ var s=stripQuotaText(name||'').replace(/^[^a-zA-Zа-яА-ЯёЁ0-9]+/,'').trim();
+ if(!s)return 2;
+ var ch=s.charAt(0);
  if(/[а-яА-ЯёЁ]/.test(ch))return 0;
  if(/[a-zA-Z]/.test(ch))return 1;
  return 2;
 }
 
-/* Умный компаратор для автоматического выстраивания машин и скинов слева направо:
-   1. Сначала группирует по языку (Русский А–Я, затем Английский A–Z)
-   2. Внутри языка сравнивает сначала первое слово/марку (чтобы все BMW шли строго подряд, за ними все Mercedes, затем Nissan и т.д.)
-   3. При одинаковой марке сравнивает модель целиком, а затем описание */
 function compareAlphabetical(a,b){
- var na=cleanSortStr(a&&a.name);
- var nb=cleanSortStr(b&&b.name);
+ var na=stripQuotaText((a&&a.name)||'').trim();
+ var nb=stripQuotaText((b&&b.name)||'').trim();
  var ga=alphaGroup(na);
  var gb=alphaGroup(nb);
  if(ga!==gb)return ga-gb;
-
- var loc=(ga===0)?'ru':'en';
- var opts={sensitivity:'base',numeric:true};
-
- var brandA=(na.split(/[\s\-·/]+/)[0]||'').toLowerCase();
- var brandB=(nb.split(/[\s\-·/]+/)[0]||'').toLowerCase();
- var cmpBrand=brandA.localeCompare(brandB,loc,opts);
- if(cmpBrand!==0)return cmpBrand;
-
- var cmpFull=na.localeCompare(nb,loc,opts);
- if(cmpFull!==0)return cmpFull;
-
- var da=cleanSortStr(a&&a.desc);
- var db=cleanSortStr(b&&b.desc);
- return da.localeCompare(db,loc,opts);
+ if(ga===0){
+  return na.localeCompare(nb,'ru',{sensitivity:'base',numeric:true});
+ }
+ return na.localeCompare(nb,'en',{sensitivity:'base',numeric:true});
 }
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
@@ -560,7 +482,6 @@ function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].
 
 /* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА ===================== */
 var LOCAL_K='mvd_garage_local', CACHE_K='mvd_garage_cache', MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
-var IDB_CACHE_K='mvd_garage_full_snapshot_v1';
 var ITEMS=[], localRev=0, pendingRev=null, needSeed=false;
 var ADMIN_KEY='';
 var adminMode=false;
@@ -606,18 +527,36 @@ setInterval(function(){
  if(prev!==adminMode){render()}
 },500);
 
-/* Никаких демо-машин для примера — изначально только ваш список! */
-function seed(){return [];}
+/* Список старых шаблонных ID (c1..c20, f1..f13), которые были удалены пользователем (если у них нет залитого фото) */
+var OLD_SEED_IDS={
+ c1:1,c2:1,c3:1,c4:1,c5:1,c6:1,c7:1,c8:1,c9:1,c10:1,
+ c11:1,c12:1,c13:1,c14:1,c15:1,c16:1,c17:1,c18:1,c19:1,c20:1,
+ f1:1,f2:1,f3:1,f4:1,f5:1,f6:1,f7:1,f8:1,f9:1,f10:1,f11:1,f12:1,f13:1
+};
+
+/* Стандартные шаблонные карточки полностью отключены по вашему запросу */
+function seed(){
+ return [];
+}
 
 function sanitizeItemsList(arr){
- if(!arr||!arr.length)return [];
+ if(!arr||!Array.isArray(arr))return [];
+ var out=[];
+ var seen={};
  for(var i=0;i<arr.length;i++){
-  if(!arr[i])continue;
-  arr[i].name=stripQuotaText(arr[i].name||'');
-  arr[i].desc=stripQuotaText(arr[i].desc||'');
+  var it=arr[i];
+  if(!it||typeof it!=='object')continue;
+  if(it.kind!=='cars'&&it.kind!=='form')continue;
+  /* Пропускаем старые пустые стандартные ячейки без фото */
+  if(OLD_SEED_IDS[it.id]&&!it.photo)continue;
+  if(it.id&&seen[it.id])continue;
+  if(it.id)seen[it.id]=1;
+  it.name=stripQuotaText(it.name||'');
+  it.desc=stripQuotaText(it.desc||'');
+  out.push(it);
  }
- arr.sort(compareAlphabetical);
- return arr;
+ out.sort(compareAlphabetical);
+ return out;
 }
 
 function toArr(x){
@@ -627,48 +566,56 @@ function toArr(x){
  for(var i=0;i<ks.length;i++){arr[+ks[i]]=x[ks[i]]}
  return arr;
 }
+
+/* Проверяет, что JSON относится к автопарку (даже если список карточек пустой или в нём удалены стандартные ячейки) */
 function isGaragePayload(obj){
- if(!obj){return false}
+ if(!obj||typeof obj!=='object')return false;
+ if(obj.deps&&Array.isArray(obj.deps))return true;
  var a=toArr(obj.items);
- if(!a){return false}
- if(!a.length){return Array.isArray(obj.deps)}
- return !!(a[0]&&(a[0].kind==='cars'||a[0].kind==='form'));
-}
-function loadLocal(){
- var d=null;
- try{ d=JSON.parse(LS.get(LOCAL_K)||'null') }catch(e){}
- if(d&&isGaragePayload(d)){
-  if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
-  return sanitizeItemsList(toArr(d.items));
+ if(!a)return false;
+ if(a.length===0)return true;
+ for(var i=0;i<a.length;i++){
+  if(a[i]&&(a[i].kind==='cars'||a[i].kind==='form'))return true;
+  if(a[i]&&a[i].fac&&a[i].title)return false; /* Это главный список идей, а не автопарк */
  }
- return [];
+ return false;
+}
+
+function loadLocal(){
+ var merged=[];
+ var keys=[CACHE_K,LOCAL_K];
+ for(var i=0;i<keys.length;i++){
+  try{
+   var d=JSON.parse(LS.get(keys[i])||'null');
+   if(d&&isGaragePayload(d)){
+    if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
+    var a=toArr(d.items);
+    if(a&&a.length){merged=merged.concat(a)}
+   }
+  }catch(e){}
+ }
+ return sanitizeItemsList(merged);
 }
 function saveLocal(items){
  DEPS=cloneDeps(DEPS);
- sanitizeItemsList(items);
- var payload={rev:localRev,items:items,deps:DEPS};
- IDB.set(IDB_CACHE_K,payload);
- try{ LS.set(LOCAL_K,JSON.stringify(payload)) }catch(e){}
+ ITEMS=sanitizeItemsList(items);
+ try{ LS.set(LOCAL_K,JSON.stringify({items:ITEMS,deps:DEPS})) }catch(e){ toast('Локальное хранилище переполнено',true) }
 }
 function cacheItems(){
  DEPS=cloneDeps(DEPS);
- sanitizeItemsList(ITEMS);
- var payload={rev:localRev,items:ITEMS,deps:DEPS};
- IDB.set(IDB_CACHE_K,payload);
- try{LS.set(CACHE_K,JSON.stringify(payload))}catch(e){}
+ ITEMS=sanitizeItemsList(ITEMS);
+ try{LS.set(CACHE_K,JSON.stringify({rev:localRev,items:ITEMS,deps:DEPS}))}catch(e){}
 }
-function loadCacheSync(){
+function loadCache(){
  try{
-  var c=JSON.parse(LS.get(CACHE_K)||LS.get(LOCAL_K)||'null');
+  var c=JSON.parse(LS.get(CACHE_K)||'null');
   if(c&&isGaragePayload(c)){
-   var a=toArr(c.items);
-   if(a&&a.length){
-    return {
-     rev:(typeof c.rev==='number'?c.rev:0),
-     items:sanitizeItemsList(a),
-     deps:(c.deps&&Array.isArray(c.deps)&&c.deps.length)?cloneDeps(c.deps):null
-    };
-   }
+   var a=toArr(c.items)||[];
+   return {
+    rev:(typeof c.rev==='number'?c.rev:0),
+    items:sanitizeItemsList(a),
+    deps:(c.deps&&Array.isArray(c.deps)&&c.deps.length)?cloneDeps(c.deps):null
+   };
   }
  }catch(e){}
  return null;
@@ -695,7 +642,7 @@ function countClassUsage(depKey,clsKey){
  return n;
 }
 
-/* ===================== СИНХРОНИЗАЦИЯ С GITHUB (ПОДДЕРЖКА И garage_data.json, И data.json) ===================== */
+/* ===================== СИНХРОНИЗАЦИЯ И АВТОВОССТАНОВЛЕНИЕ С GITHUB ===================== */
 var NET_TO_READ=8000;
 var NET_TO_WRITE=20000;
 var GARAGE_DATA_FILE='garage_data.json';
@@ -716,14 +663,6 @@ function apiText(path,auth){
   if(!r.ok){var e=new Error(r.status);if(r.status===403&&!(auth&&ADMIN_KEY)){e.rl=true}throw e}
   return r.text();
  });
-}
-function apiBlobText(sha){
- var h={Accept:'application/vnd.github+json'};
- if(ADMIN_KEY){h.Authorization='token '+ADMIN_KEY}
- return fetchT('https://api.github.com/repos/'+REPO+'/git/blobs/'+sha+'?t='+Date.now(),{headers:h,cache:'no-store'},NET_TO_READ).then(function(r){
-  if(!r.ok){var e=new Error(r.status);if(r.status===403&&!ADMIN_KEY){e.rl=true}throw e}
-  return r.json();
- }).then(function(j){return b64d(j.content)});
 }
 function ghHeaders(){return {Authorization:'token '+ADMIN_KEY,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
 function ghReq(method,path,body){
@@ -822,90 +761,49 @@ function doPush(){
  });
 }
 
-/* Чтение вашего списка с GitHub (проверяет и garage_data.json, и старый data.json) */
-function fetchRemoteGarageJson(){
- function tryParse(txt){
-  var j=null;
-  try{j=JSON.parse(txt)}catch(e){}
+/* Проверяет и garage_data.json, и старый data.json (если там остались залитые вами машины/скины) */
+function tryFetchGarageFile(filename){
+ return rawGet(filename).catch(function(){
+  return apiText(filename,!!ADMIN_KEY);
+ }).then(function(txt){
+  var j=JSON.parse(txt);
   if(!isGaragePayload(j))throw new Error('not garage');
   return {
-   rev:(typeof j.rev==='number')?j.rev:1,
+   rev:(typeof j.rev==='number'?j.rev:0),
    items:sanitizeItemsList(toArr(j.items)||[]),
    deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?cloneDeps(j.deps):null
   };
- }
- return rawGet(GARAGE_DATA_FILE).then(tryParse)
-  .catch(function(){return apiText(GARAGE_DATA_FILE,!!ADMIN_KEY).then(tryParse)})
-  .catch(function(){return rawGet('data.json').then(tryParse)})
-  .catch(function(){return apiText('data.json',!!ADMIN_KEY).then(tryParse)});
-}
-
-function showSkeleton(){
- var h='';
- for(var i=0;i<10;i++){
-  h+='<div class="vcard sk" style="animation-delay:'+Math.min(i*45,350)+'ms">'+
-     '<div class="skph"></div>'+
-     '<div class="skb" style="width:78%"></div>'+
-     '<div class="skb" style="width:56%"></div>'+
-     '</div>';
- }
- var g=$('#vgrid');
- if(g){g.className='vgrid';g.innerHTML=h}
- var emp=$('#vempty');
- if(emp){emp.style.display='none'}
-}
-
-function applyData(rev,items,deps){
- ITEMS=sanitizeItemsList(items);
- if(deps&&Array.isArray(deps)&&deps.length){DEPS=cloneDeps(deps)}
- localRev=rev;
- booted=true;
- cacheItems();
- saveLocal(ITEMS);
- render();
-}
-
-function initGarageApp(){
- /* 1. Пробуем мгновенный синхронный кэш */
- var syncCache=loadCacheSync();
- if(syncCache&&syncCache.items&&syncCache.items.length){
-  ITEMS=syncCache.items;
-  if(syncCache.deps){DEPS=syncCache.deps}
-  localRev=syncCache.rev;
-  booted=true;
-  render();
- }else{
-  /* Пока читаем вашу большую базу из IndexedDB / GitHub — показываем скелетон (никаких демо-машин!) */
-  showSkeleton();
- }
-
- /* 2. Читаем полную базу из безлимитной IndexedDB */
- IDB.get(IDB_CACHE_K).then(function(idbData){
-  if(idbData&&isGaragePayload(idbData)){
-   var a=toArr(idbData.items)||[];
-   if(a.length&&(!booted||a.length>=ITEMS.length)){
-    ITEMS=sanitizeItemsList(a);
-    if(idbData.deps&&idbData.deps.length){DEPS=cloneDeps(idbData.deps)}
-    localRev=typeof idbData.rev==='number'?idbData.rev:localRev;
-    booted=true;
-    render();
-   }
-  }
-  /* 3. Синхронизируем актуальную версию с GitHub */
-  if(!REPO){
-   booted=true;
-   render();
-   return;
-  }
-  return fetchRemoteGarageJson().then(function(res){
-   if(res&&res.items){
-    applyData(res.rev,res.items,res.deps);
-   }
-  });
- }).catch(function(){
-  booted=true;
-  render();
  });
+}
+
+function initRemote(){
+ ITEMS=loadLocal();
+ booted=true;
+ render();
+
+ if(!REPO)return;
+
+ /* Пытаемся подтянуть актуальные данные из garage_data.json и из старого data.json */
+ Promise.all([
+  tryFetchGarageFile(GARAGE_DATA_FILE).catch(function(){return null}),
+  tryFetchGarageFile('data.json').catch(function(){return null})
+ ]).then(function(results){
+  var g1=results[0];
+  var g2=results[1];
+  var combined=ITEMS.slice();
+  if(g1&&g1.items&&g1.items.length)combined=combined.concat(g1.items);
+  if(g2&&g2.items&&g2.items.length)combined=combined.concat(g2.items);
+
+  var bestDeps=(g1&&g1.deps)?g1.deps:((g2&&g2.deps)?g2.deps:null);
+  if(bestDeps)DEPS=cloneDeps(bestDeps);
+
+  var maxRev=Math.max(localRev,(g1?g1.rev:0),(g2?g2.rev:0));
+  localRev=maxRev;
+  ITEMS=sanitizeItemsList(combined);
+  saveLocal(ITEMS);
+  cacheItems();
+  render();
+ }).catch(function(){});
 }
 
 function renderTop(){
@@ -921,6 +819,7 @@ function openDepsManager(){
  if(!adminMode){return}
  renderDepsModal();
 }
+window.openDepsManager=openDepsManager;
 
 function renderDepsModal(){
  var root=$('#croot');
@@ -970,6 +869,8 @@ function renderDepsModal(){
   el.addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();el.blur()} });
  });
 }
+window.renderDepsModal=renderDepsModal;
+
 function addDep(){
  var nm=stripQuotaText($('#ndName')?$('#ndName').value.trim():'');
  if(!nm){toast('Введите название раздела',true);return}
@@ -988,6 +889,8 @@ function addDep(){
  render();
  toast('Раздел добавлен');
 }
+window.addDep=addDep;
+
 function delDep(k){
  var d=findDep(k);
  if(!d){return}
@@ -1001,6 +904,8 @@ function delDep(k){
  render();
  toast('Раздел удалён');
 }
+window.delDep=delDep;
+
 function setDepColor(k,c){
  var d=findDep(k);
  if(!d){return}
@@ -1008,6 +913,8 @@ function setDepColor(k,c){
  commit();
  render();
 }
+window.setDepColor=setDepColor;
+
 function openClassesManager(depK){
  var d=findDep(depK);
  if(!d){return}
@@ -1055,6 +962,8 @@ function openClassesManager(depK){
   el.addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();el.blur()} });
  });
 }
+window.openClassesManager=openClassesManager;
+
 function addClass(depK){
  var d=findDep(depK);
  if(!d){return}
@@ -1067,6 +976,8 @@ function addClass(depK){
  render();
  toast('Класс добавлен');
 }
+window.addClass=addClass;
+
 function delClass(depK,clsK){
  var d=findDep(depK);
  if(!d){return}
@@ -1085,6 +996,8 @@ function delClass(depK,clsK){
  render();
  toast('Класс удалён');
 }
+window.delClass=delClass;
+
 function setClassColor(depK,clsK,c){
  var d=findDep(depK);
  if(!d){return}
@@ -1094,12 +1007,12 @@ function setClassColor(depK,clsK,c){
  commit();
  render();
 }
+window.setClassColor=setClassColor;
 
-/* ===================== СОСТОЯНИЕ И РЕНДЕР (СЛЕВА НАПРАВО ПО АЛФАВИТУ) ===================== */
+/* ===================== СОСТОЯНИЕ И РЕНДЕР (ЯВНАЯ ПРИВЯЗКА К WINDOW) ===================== */
 var state={kind:'cars',cat:'main',dep:'all',cls:'all',q:''};
 
 function setKind(k){
- if(state.kind===k){return}
  state.kind=k;
  state.dep='all';
  state.cls='all';
@@ -1111,6 +1024,11 @@ function setKind(k){
 function setCat(k){ state.cat=k; state.dep='all'; state.cls='all'; render() }
 function setDep(k){ state.dep=k; state.cls='all'; render() }
 function setCls(k){ state.cls=k; render() }
+
+window.setKind=setKind;
+window.setCat=setCat;
+window.setDep=setDep;
+window.setCls=setCls;
 
 function renderCats(){
  var box=$('#cats');
@@ -1164,7 +1082,6 @@ function visibleItems(){
   }
   out.push(it);
  }
- /* Выстраиваем карточки строго по алфавиту слева направо */
  out.sort(compareAlphabetical);
  return out;
 }
@@ -1212,7 +1129,6 @@ function cardHtml(it){
  '</div>';
 }
 function renderGrid(){
- if(!booted){return}
  var grid=$('#vgrid'), emp=$('#vempty');
  if(!grid){return}
  var items=visibleItems();
@@ -1245,7 +1161,7 @@ function renderGrid(){
  if(emp){
   if(!items.length){
    emp.style.display='block';
-   emp.textContent=state.q?'Ничего не найдено':(adminMode?'Здесь пока пусто — добавьте первую запись':'Здесь пока пусто');
+   emp.textContent=state.q?'Ничего не найдено':(adminMode?'Здесь пока пусто — нажмите «＋ Добавить» сверху справа':'Здесь пока пусто');
   }else{ emp.style.display='none' }
  }
  applyCardEvents();
@@ -1268,9 +1184,8 @@ function bindEdit(el,it,field){
   var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
   if((it[field]||'')===v){return}
   it[field]=v;
-  ITEMS.sort(compareAlphabetical);
   commit();
-  if(field==='name'||field==='desc'){renderGrid()}
+  if(field==='name'){renderGrid()}
  });
  el.addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); el.blur() }
@@ -1298,11 +1213,13 @@ document.addEventListener('dragstart',function(e){
  }
 });
 
-/* ===================== МОДАЛКИ: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ СО СМЕНОЙ РАЗДЕЛА И КАТЕГОРИИ ===================== */
+/* ===================== МОДАЛКИ: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ===================== */
 var editingId=null, editPhoto='', formCls=null, photoCb=null;
 
 function closeM(){ var m=$('#mroot'); if(m){m.innerHTML=''} editingId=null; photoCb=null }
 function closeC(){ var c=$('#croot'); if(c){c.innerHTML=''} }
+window.closeM=closeM;
+window.closeC=closeC;
 
 function openAdd(){
  syncGlobalOwnerAuth();
@@ -1316,6 +1233,8 @@ function openEdit(id){
  if(!it){return}
  openForm(it);
 }
+window.openAdd=openAdd;
+window.openEdit=openEdit;
 
 function syncFormDepOptions(preferredDepK){
  var catSel=$('#fCat');
@@ -1378,13 +1297,229 @@ function openForm(it){
  $('#mroot').innerHTML=
  '<div class="back" onclick="if(event.target===this)closeM()"><div class="modal">'+
  '<div class="m-head"><div class="mh-nm">'+(it?'✏️ Редактирование карточки':'＋ '+(isCars?'Новая машина':'Новая форма'))+'</div>'+
- '<div class="mh-sub">Все карточки автоматически выстраиваются по алфавиту слева направо (А–Я, затем A–Z)</div>'+
+ '<div class="mh-sub">Вы можете изменить название, описание, раздел (фракцию), класс и фотографию</div>'+
  '<button class="m-close" onclick="closeM()">✕</button></div>'+
  '<div class="m-body"><div class="formgrid">'+
-  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: BMW M5 F90 / Mercedes E63 / Nissan GTR"></div>'+
+  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: Лада Веста / Toyota Camry"></div>'+
   '<div class="full"><label class="flab">Описание</label><textarea class="inp" id="fDesc" rows="2" style="width:100%;min-height:44px" placeholder="Краткое описание…">'+esc(it?stripQuotaText(it.desc):'')+'</textarea></div>'+
   '<div><label class="flab">Категория каталога</label><select class="sel" id="fCat" style="width:100%" onchange="onFormCatChange()">'+catOpts+'</select></div>'+
   '<div><label class="flab">Раздел (Фракция / Структура)</label><select class="sel" id="fDep" style="width:100%" onchange="onFormDepChange()"></select></div>'+
   (isCars?'<div class="full"><label class="flab">Скорость, км/ч</label><input class="inp" id="fSpeed" style="width:100%" value="'+esc(it?it.speed:'')+'" placeholder="180"></div>':'')+
   (isCars?'<div class="full"><label class="flab">Класс транспорта</label><div id="fClsBox"></div></div>':'')+
-  '<div class="full"><label class="flab">Фотография</label><div class="aph"
+  '<div class="full"><label class="flab">Фотография</label><div class="aph" id="fAph"></div>'+
+  '<div class="hint">Фото автоматически сжимается перед сохранением. Нажмите на область, чтобы выбрать файл с компьютера.</div></div>'+
+ '</div></div>'+
+ '<div class="m-foot"><button class="btn ghost" onclick="closeM()">Отмена</button>'+
+ '<button class="btn" onclick="saveForm()">'+(it?'Сохранить изменения':'Добавить')+'</button></div>'+
+ '</div></div>';
+
+ syncFormDepOptions(selDep);
+ renderAph();
+
+ var a=$('#fAph');
+ if(a){
+  a.addEventListener('click',function(e){
+   if(e.target.closest('.vtool')){return}
+   pickPhoto(function(data){ editPhoto=data; renderAph() });
+  });
+ }
+ setTimeout(function(){ var n=$('#fName'); if(n){n.focus()} },60);
+}
+function renderClsPicker(selK){
+ var box=$('#fClsBox');
+ if(!box){return}
+ var depK=$('#fDep')?$('#fDep').value:'';
+ var classes=classesOfDep(depK);
+ if(!classes.length){
+  box.innerHTML='<div class="hint" style="margin-top:0">В этом разделе нет классов — карточка будет отображаться в общем списке раздела.</div>';
+  formCls='';
+  return;
+ }
+ var found=false;
+ for(var i=0;i<classes.length;i++){ if(classes[i].k===selK){found=true;break} }
+ if(!found){ selK=classes[0].k }
+ formCls=selK;
+ var h='<div class="clsgrid">';
+ for(var j=0;j<classes.length;j++){
+  var c=classes[j];
+  h+='<button type="button" class="clsbtn'+(c.k===selK?' on':'')+'" style="--cc:'+c.c+';--ccb:'+hex2rgba(c.c,.16)+'" onclick="renderClsPicker(\''+esc(c.k)+'\')">'+
+   '<span style="width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:'+c.c+';box-shadow:0 0 8px 1px '+hex2rgba(c.c,.45)+'"></span>'+esc(c.n)+'</button>';
+ }
+ h+='</div>';
+ box.innerHTML=h;
+}
+window.renderClsPicker=renderClsPicker;
+
+function renderAph(){
+ var a=$('#fAph');
+ if(!a){return}
+ if(editPhoto){
+  a.innerHTML='<img src="'+editPhoto+'" alt="" draggable="false">'+
+   '<button class="vtool vtool-del" style="position:absolute;top:10px;right:10px;z-index:3" title="Убрать фото" onclick="event.stopPropagation();clearPhoto()">🗑</button>';
+ }else{
+  a.innerHTML='<div class="aph-in"><div class="aph-ic">📷</div><b>Добавить фото</b><span>нажмите для выбора файла</span></div>';
+ }
+}
+function clearPhoto(){ editPhoto=''; renderAph() }
+window.clearPhoto=clearPhoto;
+
+function saveForm(){
+ var name=stripQuotaText(($('#fName')?$('#fName').value:'').trim());
+ if(!name){toast('Введите название',true);return}
+ var depK=$('#fDep')?$('#fDep').value:'';
+ if(!depK){toast('Выберите раздел',true);return}
+ var targetDep=findDep(depK);
+ var catK=targetDep?targetDep.cat:(($('#fCat')?$('#fCat').value:'')||state.cat);
+
+ var it=null;
+ if(editingId){ it=byId(editingId) }
+ var isNew=!it;
+ if(isNew){
+  it={id:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind:state.kind,cat:catK,dep:depK,cls:'',name:'',desc:'',speed:'',photo:''};
+  ITEMS.push(it);
+ }
+ it.name=name;
+ it.desc=stripQuotaText(($('#fDesc')?$('#fDesc').value:'').trim());
+ it.cat=catK;
+ it.dep=depK;
+ it.cls=(it.kind==='cars')?(formCls||''):'';
+ it.speed=($('#fSpeed')?$('#fSpeed').value:'').trim();
+ it.photo=editPhoto;
+ ITEMS.sort(compareAlphabetical);
+ closeM();
+ commit();
+ render();
+ toast(isNew?'Запись добавлена':'Изменения сохранены (раздел: '+(targetDep?targetDep.n:depK)+')');
+}
+window.saveForm=saveForm;
+
+function delItem(id){
+ if(!adminMode){return}
+ var it=byId(id);
+ if(!it){return}
+ if(!window.confirm('Удалить «'+(it.name||'без названия')+'»?')){return}
+ for(var i=0;i<ITEMS.length;i++){
+  if(ITEMS[i].id===id){ ITEMS.splice(i,1); break }
+ }
+ commit();
+ render();
+ toast('Запись удалена');
+}
+window.delItem=delItem;
+
+/* ===================== ФОТО ===================== */
+function pickPhoto(cb){
+ photoCb=cb;
+ var f=$('#fileInp');
+ if(!f){return}
+ f.value='';
+ f.click();
+}
+function pickPhotoFor(id){
+ if(!adminMode){return}
+ pickPhoto(function(data){
+  var it=byId(id);
+  if(!it){return}
+  it.photo=data;
+  commit();
+  render();
+  toast('Фото обновлено');
+ });
+}
+window.pickPhotoFor=pickPhotoFor;
+
+function compressImage(file,cb){
+ var reader=new FileReader();
+ reader.onload=function(ev){
+  var img=new Image();
+  img.onload=function(){
+   var MAX=1200;
+   var w=img.naturalWidth||img.width;
+   var h=img.naturalHeight||img.height;
+   var k=Math.min(1,MAX/Math.max(w,h));
+   var cv=document.createElement('canvas');
+   cv.width=Math.max(1,Math.round(w*k));
+   cv.height=Math.max(1,Math.round(h*k));
+   cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+   var out;
+   try{ out=cv.toDataURL('image/jpeg',.85) }catch(e){ out=ev.target.result }
+   if(cb){cb(out)}
+  };
+  img.onerror=function(){
+   toast('Не удалось прочитать файл изображения',true);
+  };
+  img.src=ev.target.result;
+ };
+ reader.readAsDataURL(file);
+}
+
+/* ===================== ЛАЙТБОКС ===================== */
+var lbTimer=null;
+function openLb(id){
+ var it=byId(id);
+ if(!it||!it.photo){return}
+ var d=dep(it.dep);
+ var lb=$('#lb'),img=$('#lbImg'),cap=$('#lbCap');
+ if(!lb||!img){return}
+ if(lbTimer){clearTimeout(lbTimer);lbTimer=null}
+ lb.classList.remove('zoom');
+ if(cap){
+  cap.innerHTML='<span class="lbdot" style="background:'+d.c+';box-shadow:0 0 8px 1px '+hex2rgba(d.c,.5)+'"></span>'+esc(stripQuotaText(it.name||'—'))+
+   (it.desc?'<span>'+esc(stripQuotaText(it.desc))+'</span>':'');
+ }
+ img.src=it.photo;
+ var go=function(){
+  lb.classList.add('show');
+  requestAnimationFrame(function(){
+   requestAnimationFrame(function(){
+    if(lb.classList.contains('show')){ lb.classList.add('zoom') }
+   });
+  });
+ };
+ var dec=null;
+ try{ if(typeof img.decode==='function'){ dec=img.decode() } }catch(e){ dec=null }
+ if(dec&&typeof dec.then==='function'){ dec.then(go,go) } else { go() }
+}
+window.openLb=openLb;
+
+function closeLb(){
+ var lb=$('#lb');
+ if(!lb||!lb.classList.contains('show')){return}
+ lb.classList.remove('zoom');
+ lb.classList.remove('show');
+ if(lbTimer){clearTimeout(lbTimer)}
+ lbTimer=setTimeout(function(){
+  var img=$('#lbImg');
+  if(img){ img.src='' }
+ },380);
+}
+window.closeLb=closeLb;
+
+/* ===================== ЗАПУСК ===================== */
+(function(){
+ syncGlobalOwnerAuth();
+ renderTop();
+ var qi=$('#q');
+ if(qi){ qi.addEventListener('input',function(){ state.q=this.value; renderGrid() }) }
+ var lb=$('#lb');
+ if(lb){ lb.addEventListener('click',closeLb) }
+ var fi=$('#fileInp');
+ if(fi){
+  fi.addEventListener('change',function(){
+   var f=this.files&&this.files[0];
+   this.value='';
+   if(!f||!photoCb){return}
+   var cb=photoCb;
+   photoCb=null;
+   compressImage(f,cb);
+  });
+ }
+ document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){ closeLb(); closeC(); closeM() }
+ });
+ if(REPO){ initRemote() }
+ else{ ITEMS=loadLocal(); render() }
+})();
+</script>
+</body>
+</html>
