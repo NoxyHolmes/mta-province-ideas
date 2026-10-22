@@ -61,6 +61,13 @@ textarea.inp{resize:vertical}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
 .vcard:hover{border-color:#3a4757;transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
 .vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc,#4da3ff);z-index:3}
+.vcard.sk{pointer-events:none;cursor:default}
+.vcard.sk::before{display:none}
+.skph{aspect-ratio:16/10;background:#161c26;position:relative;overflow:hidden}
+.skph::after,.skb::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.05) 50%,transparent 75%);transform:translateX(-100%);animation:skmove 1.4s infinite}
+@keyframes skmove{to{transform:translateX(100%)}}
+.skb{height:11px;border-radius:6px;background:#161c26;margin:10px 14px 0;position:relative;overflow:hidden}
+.skb:last-child{margin-bottom:14px}
 .vph{position:relative;aspect-ratio:16/10;background:#141a23;cursor:pointer;overflow:hidden}
 .vph.empty{background:#12161e}
 .vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;animation:fadeIn .4s;-webkit-user-drag:none;user-select:none}
@@ -268,7 +275,7 @@ var REPO=(function(){
 })();
 var BRANCH='main';
 
-/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ ===================== */
+/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + БЕЗЛИМИТНАЯ INDEXEDDB ===================== */
 var LS=(function(){
  var mem={},ok=false;
  try{
@@ -294,7 +301,52 @@ var LS=(function(){
  };
 })();
 
-/* ===================== УТИЛИТЫ И СОРТИРОВКА ПО АЛФАВИТУ (РУС -> АНГЛ) ===================== */
+/* IndexedDB на 500+ МБ, чтобы ваш большой список машин с фотографиями всегда открывался мгновенно с 1-й миллисекунды */
+var IDB=(function(){
+ var dbP=null;
+ function open(){
+  if(dbP)return dbP;
+  dbP=new Promise(function(resolve){
+   if(!window.indexedDB){resolve(null);return}
+   try{
+    var req=window.indexedDB.open('mvd_garage_idb_v1',1);
+    req.onupgradeneeded=function(e){
+     var db=e.target.result;
+     if(!db.objectStoreNames.contains('kv')){db.createObjectStore('kv')}
+    };
+    req.onsuccess=function(e){resolve(e.target.result)};
+    req.onerror=function(){resolve(null)};
+   }catch(err){resolve(null)}
+  });
+  return dbP;
+ }
+ return {
+  get:function(key){
+   return open().then(function(db){
+    if(!db)return null;
+    return new Promise(function(resolve){
+     try{
+      var tx=db.transaction('kv','readonly');
+      var r=tx.objectStore('kv').get(key);
+      r.onsuccess=function(){resolve(r.result||null)};
+      r.onerror=function(){resolve(null)};
+     }catch(e){resolve(null)}
+    });
+   });
+  },
+  set:function(key,val){
+   return open().then(function(db){
+    if(!db)return;
+    try{
+     var tx=db.transaction('kv','readwrite');
+     tx.objectStore('kv').put(val,key);
+    }catch(e){}
+   });
+  }
+ };
+})();
+
+/* ===================== УТИЛИТЫ И СТРОГАЯ СОРТИРОВКА ПО АЛФАВИТУ СЛЕВА НАПРАВО ===================== */
 function $(s){return document.querySelector(s)}
 function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
 function stripQuotaText(str){
@@ -305,30 +357,50 @@ function stripQuotaText(str){
   .trim();
 }
 
-/* Определение языковой группы по первой букве названия:
-   0 — Русский алфавит (А–Я, Ё)
-   1 — Английский алфавит (A–Z)
-   2 — Цифры и прочие символы */
-function alphaGroup(name){
- var s=stripQuotaText(name||'').replace(/^[^a-zA-Zа-яА-ЯёЁ0-9]+/,'').trim();
- if(!s)return 2;
- var ch=s.charAt(0);
+function cleanSortStr(s){
+ return stripQuotaText(s||'')
+  .replace(/^[^a-zA-Zа-яА-ЯёЁ0-9]+/,'')
+  .replace(/\s+/g,' ')
+  .trim();
+}
+
+/* Языковая группа по первой букве:
+   0 — Русские названия (А–Я, Ё)
+   1 — Английские названия (A–Z, например: BMW -> Mercedes -> Nissan)
+   2 — Цифры и прочее */
+function alphaGroup(str){
+ if(!str)return 2;
+ var ch=str.charAt(0);
  if(/[а-яА-ЯёЁ]/.test(ch))return 0;
  if(/[a-zA-Z]/.test(ch))return 1;
  return 2;
 }
 
-/* Строгая сортировка карточек: сначала русский алфавит (А–Я), затем английский (A–Z) */
+/* Умный компаратор для автоматического выстраивания машин и скинов слева направо:
+   1. Сначала группирует по языку (Русский А–Я, затем Английский A–Z)
+   2. Внутри языка сравнивает сначала первое слово/марку (чтобы все BMW шли строго подряд, за ними все Mercedes, затем Nissan и т.д.)
+   3. При одинаковой марке сравнивает модель целиком, а затем описание */
 function compareAlphabetical(a,b){
- var na=stripQuotaText((a&&a.name)||'').trim();
- var nb=stripQuotaText((b&&b.name)||'').trim();
+ var na=cleanSortStr(a&&a.name);
+ var nb=cleanSortStr(b&&b.name);
  var ga=alphaGroup(na);
  var gb=alphaGroup(nb);
  if(ga!==gb)return ga-gb;
- if(ga===0){
-  return na.localeCompare(nb,'ru',{sensitivity:'base',numeric:true});
- }
- return na.localeCompare(nb,'en',{sensitivity:'base',numeric:true});
+
+ var loc=(ga===0)?'ru':'en';
+ var opts={sensitivity:'base',numeric:true};
+
+ var brandA=(na.split(/[\s\-·/]+/)[0]||'').toLowerCase();
+ var brandB=(nb.split(/[\s\-·/]+/)[0]||'').toLowerCase();
+ var cmpBrand=brandA.localeCompare(brandB,loc,opts);
+ if(cmpBrand!==0)return cmpBrand;
+
+ var cmpFull=na.localeCompare(nb,loc,opts);
+ if(cmpFull!==0)return cmpFull;
+
+ var da=cleanSortStr(a&&a.desc);
+ var db=cleanSortStr(b&&b.desc);
+ return da.localeCompare(db,loc,opts);
 }
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
@@ -488,6 +560,7 @@ function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].
 
 /* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА ===================== */
 var LOCAL_K='mvd_garage_local', CACHE_K='mvd_garage_cache', MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
+var IDB_CACHE_K='mvd_garage_full_snapshot_v1';
 var ITEMS=[], localRev=0, pendingRev=null, needSeed=false;
 var ADMIN_KEY='';
 var adminMode=false;
@@ -533,44 +606,11 @@ setInterval(function(){
  if(prev!==adminMode){render()}
 },500);
 
-function seed(){return [
- {id:'c1', kind:'cars',cat:'main', dep:'uvd',  cls:'standard',name:'Lada Vesta',                desc:'Патрульный автомобиль ППС · базовая комплектация', speed:'178', photo:''},
- {id:'c2', kind:'cars',cat:'main', dep:'uvd',  cls:'special', name:'УАЗ Патриот',               desc:'Автомобиль руководящего состава УМВД',             speed:'140', photo:''},
- {id:'c3', kind:'cars',cat:'main', dep:'uvd',  cls:'special', name:'ГАЗель Next',               desc:'Спецтранспорт для перевозки группы задержания',    speed:'120', photo:''},
- {id:'c4', kind:'cars',cat:'main', dep:'gibdd',cls:'budget',  name:'Lada Priora',               desc:'Патрульный автомобиль ДПС · с маячками',           speed:'183', photo:''},
- {id:'c5', kind:'cars',cat:'main', dep:'gibdd',cls:'standard',name:'Kia Rio',                   desc:'Автомобиль дорожно-патрульной службы',             speed:'180', photo:''},
- {id:'c6', kind:'cars',cat:'main', dep:'gibdd',cls:'high',    name:'Skoda Octavia',             desc:'Оперативный автомобиль ДПС',                       speed:'190', photo:''},
- {id:'c7', kind:'cars',cat:'main', dep:'cgb',  cls:'special', name:'ГАЗель Next · Реанимобиль', desc:'Класс C · оборудование интенсивной терапии',       speed:'120', photo:''},
- {id:'c8', kind:'cars',cat:'main', dep:'cgb',  cls:'special', name:'Ford Transit · Скорая',     desc:'Санитарный автомобиль ЦГБ',                        speed:'140', photo:''},
- {id:'c9', kind:'cars',cat:'main', dep:'vs',   cls:'special', name:'УАЗ Хантер',                desc:'Патрульный автомобиль комендатуры',                speed:'120', photo:''},
- {id:'c10',kind:'cars',cat:'main', dep:'vs',   cls:'special', name:'КАМАЗ-43118',               desc:'Грузовой автомобиль обеспечения',                  speed:'90',  photo:''},
- {id:'c11',kind:'cars',cat:'main', dep:'rzd',  cls:'special', name:'УАЗ Патриот',               desc:'Машина сопровождения и охраны объектов РЖД',       speed:'140', photo:''},
- {id:'c12',kind:'cars',cat:'main', dep:'rzd',  cls:'special', name:'Ford Transit',              desc:'Транспорт ведомственной службы',                   speed:'135', photo:''},
- {id:'c13',kind:'cars',cat:'event',dep:'fsb',  name:'Toyota Camry',              desc:'Служебный автомобиль оперативной группы',          speed:'210', photo:''},
- {id:'c14',kind:'cars',cat:'event',dep:'fsb',  name:'Volkswagen Passat',         desc:'Немаркированный оперативный автомобиль',           speed:'205', photo:''},
- {id:'c15',kind:'cars',cat:'event',dep:'sk',   name:'Hyundai Solaris',           desc:'Автомобиль следственной группы',                   speed:'185', photo:''},
- {id:'c16',kind:'cars',cat:'event',dep:'prok', name:'Toyota Camry',              desc:'Служебный транспорт прокуратуры',                  speed:'210', photo:''},
- {id:'c17',kind:'cars',cat:'event',dep:'mchs', name:'УАЗ Патриот',               desc:'Автомобиль оперативной группы МЧС',                speed:'140', photo:''},
- {id:'c18',kind:'cars',cat:'event',dep:'mchs', name:'КАМАЗ · ПА',                desc:'Пожарный автомобиль · цистерна 8 т',               speed:'100', photo:''},
- {id:'c19',kind:'cars',cat:'event',dep:'fso',  name:'BMW 760Li',                 desc:'Автомобиль сопровождения ФСО',                     speed:'250', photo:''},
- {id:'c20',kind:'cars',cat:'event',dep:'fso',  name:'Aurus Senat',               desc:'Представительский автомобиль кортежа',             speed:'250', photo:''},
- {id:'f1', kind:'form',cat:'main', dep:'uvd',  name:'Летняя повседневная форма', desc:'Светло-серая рубашка, тёмные брюки, галстук МВД',  photo:''},
- {id:'f2', kind:'form',cat:'main', dep:'uvd',  name:'Зимняя повседневная форма', desc:'Тёмно-серое пальто, кашне, форменная фуражка',     photo:''},
- {id:'f3', kind:'form',cat:'main', dep:'gibdd',name:'Форма инспектора ДПС',      desc:'Китель со светоотражающими полосами, жезл',        photo:''},
- {id:'f4', kind:'form',cat:'main', dep:'cgb',  name:'Медицинская форма',         desc:'Белый халат или хирургический костюм, бейдж ЦГБ',  photo:''},
- {id:'f5', kind:'form',cat:'main', dep:'cgb',  name:'Форма выездной бригады',    desc:'Комбинезон бригады скорой помощи',                 photo:''},
- {id:'f6', kind:'form',cat:'main', dep:'vs',   name:'Полевая форма ВС РФ',       desc:'Камуфляж, берцы, разгрузочная система',            photo:''},
- {id:'f7', kind:'form',cat:'main', dep:'vs',   name:'Парадная форма',            desc:'Китель, парадный ремень, фуражка',                 photo:''},
- {id:'f8', kind:'form',cat:'main', dep:'rzd',  name:'Форменная одежда РЖД',      desc:'Тёмно-синий китель, фуражка с эмблемой',           photo:''},
- {id:'f9', kind:'form',cat:'event',dep:'fsb',  name:'Оперативная форма ФСБ',     desc:'Чёрный костюм, тактическая разгрузка, гарнитура',  photo:''},
- {id:'f10',kind:'form',cat:'event',dep:'sk',   name:'Костюм следователя',        desc:'Тёмный деловой костюм, нагрудный значок СК',       photo:''},
- {id:'f11',kind:'form',cat:'event',dep:'prok', name:'Форма прокурора',           desc:'Синий китель с золотыми погонами и петлицами',     photo:''},
- {id:'f12',kind:'form',cat:'event',dep:'mchs', name:'Сертифицированная форма МЧС',desc:'Оранжевая куртка, СИЗ, защитная каска',           photo:''},
- {id:'f13',kind:'form',cat:'event',dep:'fso',  name:'Форма ФСО',                 desc:'Чёрный костюм, значок ФСО, проводная гарнитура',   photo:''}
-];}
+/* Никаких демо-машин для примера — изначально только ваш список! */
+function seed(){return [];}
 
 function sanitizeItemsList(arr){
- if(!arr||!arr.length)return arr;
+ if(!arr||!arr.length)return [];
  for(var i=0;i<arr.length;i++){
   if(!arr[i])continue;
   arr[i].name=stripQuotaText(arr[i].name||'');
@@ -590,7 +630,8 @@ function toArr(x){
 function isGaragePayload(obj){
  if(!obj){return false}
  var a=toArr(obj.items);
- if(!a||!a.length){return false}
+ if(!a){return false}
+ if(!a.length){return Array.isArray(obj.deps)}
  return !!(a[0]&&(a[0].kind==='cars'||a[0].kind==='form'));
 }
 function loadLocal(){
@@ -600,21 +641,25 @@ function loadLocal(){
   if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
   return sanitizeItemsList(toArr(d.items));
  }
- return sanitizeItemsList(seed());
+ return [];
 }
 function saveLocal(items){
  DEPS=cloneDeps(DEPS);
  sanitizeItemsList(items);
- try{ LS.set(LOCAL_K,JSON.stringify({items:items,deps:DEPS})) }catch(e){ toast('Локальное хранилище переполнено',true) }
+ var payload={rev:localRev,items:items,deps:DEPS};
+ IDB.set(IDB_CACHE_K,payload);
+ try{ LS.set(LOCAL_K,JSON.stringify(payload)) }catch(e){}
 }
 function cacheItems(){
  DEPS=cloneDeps(DEPS);
  sanitizeItemsList(ITEMS);
- try{LS.set(CACHE_K,JSON.stringify({rev:localRev,items:ITEMS,deps:DEPS}))}catch(e){}
+ var payload={rev:localRev,items:ITEMS,deps:DEPS};
+ IDB.set(IDB_CACHE_K,payload);
+ try{LS.set(CACHE_K,JSON.stringify(payload))}catch(e){}
 }
-function loadCache(){
+function loadCacheSync(){
  try{
-  var c=JSON.parse(LS.get(CACHE_K)||'null');
+  var c=JSON.parse(LS.get(CACHE_K)||LS.get(LOCAL_K)||'null');
   if(c&&isGaragePayload(c)){
    var a=toArr(c.items);
    if(a&&a.length){
@@ -650,7 +695,7 @@ function countClassUsage(depKey,clsKey){
  return n;
 }
 
-/* ===================== СОХРАНЕНИЕ ===================== */
+/* ===================== СИНХРОНИЗАЦИЯ С GITHUB (ПОДДЕРЖКА И garage_data.json, И data.json) ===================== */
 var NET_TO_READ=8000;
 var NET_TO_WRITE=20000;
 var GARAGE_DATA_FILE='garage_data.json';
@@ -777,85 +822,90 @@ function doPush(){
  });
 }
 
-/* ===================== ЧТЕНИЕ ===================== */
-function resolveRev(){
- return rawGet(GARAGE_REV_FILE).then(function(t){return parseRevTxt(t)})
- .catch(function(e){
-  if(e&&e.nf){return {rev:0,sha:null}}
-  return apiText(GARAGE_REV_FILE,!!ADMIN_KEY).then(function(t){return parseRevTxt(t)})
-   .catch(function(){return {rev:0,sha:null}});
- });
-}
-function pullData(rv){
- return rawGet(GARAGE_DATA_FILE).then(function(d){
+/* Чтение вашего списка с GitHub (проверяет и garage_data.json, и старый data.json) */
+function fetchRemoteGarageJson(){
+ function tryParse(txt){
   var j=null;
-  try{j=JSON.parse(d)}catch(e){}
-  if(!isGaragePayload(j)){throw new Error('bad')}
-  var items=sanitizeItemsList(toArr(j.items));
+  try{j=JSON.parse(txt)}catch(e){}
+  if(!isGaragePayload(j))throw new Error('not garage');
   return {
-   rev:(typeof j.rev==='number')?Math.max(j.rev,rv.rev):rv.rev,
-   items:items,
+   rev:(typeof j.rev==='number')?j.rev:1,
+   items:sanitizeItemsList(toArr(j.items)||[]),
    deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?cloneDeps(j.deps):null
   };
- }).catch(function(){
-  if(rv.sha){
-   return apiBlobText(rv.sha).then(function(txt){
-    var j=JSON.parse(txt);
-    if(!isGaragePayload(j)){throw new Error('bad')}
-    return {
-     rev:rv.rev,
-     items:sanitizeItemsList(toArr(j.items)||[]),
-     deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?cloneDeps(j.deps):null
-    };
-   });
-  }
-  return apiText(GARAGE_DATA_FILE,!!ADMIN_KEY).then(function(txt){
-   var j=JSON.parse(txt);
-   if(!isGaragePayload(j)){throw new Error('bad')}
-   return {
-    rev:(typeof j.rev==='number'?j.rev:rv.rev),
-    items:sanitizeItemsList(toArr(j.items)||[]),
-    deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?cloneDeps(j.deps):null
-   };
-  });
- });
+ }
+ return rawGet(GARAGE_DATA_FILE).then(tryParse)
+  .catch(function(){return apiText(GARAGE_DATA_FILE,!!ADMIN_KEY).then(tryParse)})
+  .catch(function(){return rawGet('data.json').then(tryParse)})
+  .catch(function(){return apiText('data.json',!!ADMIN_KEY).then(tryParse)});
 }
+
+function showSkeleton(){
+ var h='';
+ for(var i=0;i<10;i++){
+  h+='<div class="vcard sk" style="animation-delay:'+Math.min(i*45,350)+'ms">'+
+     '<div class="skph"></div>'+
+     '<div class="skb" style="width:78%"></div>'+
+     '<div class="skb" style="width:56%"></div>'+
+     '</div>';
+ }
+ var g=$('#vgrid');
+ if(g){g.className='vgrid';g.innerHTML=h}
+ var emp=$('#vempty');
+ if(emp){emp.style.display='none'}
+}
+
 function applyData(rev,items,deps){
  ITEMS=sanitizeItemsList(items);
  if(deps&&Array.isArray(deps)&&deps.length){DEPS=cloneDeps(deps)}
  localRev=rev;
+ booted=true;
  cacheItems();
  saveLocal(ITEMS);
  render();
 }
 
-function initRemote(){
- var cache=loadCache();
- if(cache&&cache.items&&cache.items.length){
-  ITEMS=sanitizeItemsList(cache.items);
-  if(cache.deps&&cache.deps.length){DEPS=cloneDeps(cache.deps)}
-  localRev=cache.rev;
-  needSeed=false;
+function initGarageApp(){
+ /* 1. Пробуем мгновенный синхронный кэш */
+ var syncCache=loadCacheSync();
+ if(syncCache&&syncCache.items&&syncCache.items.length){
+  ITEMS=syncCache.items;
+  if(syncCache.deps){DEPS=syncCache.deps}
+  localRev=syncCache.rev;
   booted=true;
-  saveLocal(ITEMS);
-  cacheItems();
   render();
  }else{
-  ITEMS=loadLocal();
-  booted=true;
-  saveLocal(ITEMS);
-  cacheItems();
-  render();
+  /* Пока читаем вашу большую базу из IndexedDB / GitHub — показываем скелетон (никаких демо-машин!) */
+  showSkeleton();
  }
 
- resolveRev().then(function(rv){
-  if(!rv||!rv.rev||localRev>=rv.rev){return}
-  return pullData(rv).then(function(res){
-   if(res&&res.items&&res.items.length){
+ /* 2. Читаем полную базу из безлимитной IndexedDB */
+ IDB.get(IDB_CACHE_K).then(function(idbData){
+  if(idbData&&isGaragePayload(idbData)){
+   var a=toArr(idbData.items)||[];
+   if(a.length&&(!booted||a.length>=ITEMS.length)){
+    ITEMS=sanitizeItemsList(a);
+    if(idbData.deps&&idbData.deps.length){DEPS=cloneDeps(idbData.deps)}
+    localRev=typeof idbData.rev==='number'?idbData.rev:localRev;
+    booted=true;
+    render();
+   }
+  }
+  /* 3. Синхронизируем актуальную версию с GitHub */
+  if(!REPO){
+   booted=true;
+   render();
+   return;
+  }
+  return fetchRemoteGarageJson().then(function(res){
+   if(res&&res.items){
     applyData(res.rev,res.items,res.deps);
    }
   });
- }).catch(function(){});
+ }).catch(function(){
+  booted=true;
+  render();
+ });
 }
 
 function renderTop(){
@@ -1045,7 +1095,7 @@ function setClassColor(depK,clsK,c){
  render();
 }
 
-/* ===================== СОСТОЯНИЕ И РЕНДЕР (ПО АЛФАВИТУ, БЕЗ ПЕРЕТАСКИВАНИЯ) ===================== */
+/* ===================== СОСТОЯНИЕ И РЕНДЕР (СЛЕВА НАПРАВО ПО АЛФАВИТУ) ===================== */
 var state={kind:'cars',cat:'main',dep:'all',cls:'all',q:''};
 
 function setKind(k){
@@ -1114,7 +1164,7 @@ function visibleItems(){
   }
   out.push(it);
  }
- /* Сортируем все карточки по алфавиту: сначала А–Я, затем A–Z */
+ /* Выстраиваем карточки строго по алфавиту слева направо */
  out.sort(compareAlphabetical);
  return out;
 }
@@ -1162,6 +1212,7 @@ function cardHtml(it){
  '</div>';
 }
 function renderGrid(){
+ if(!booted){return}
  var grid=$('#vgrid'), emp=$('#vempty');
  if(!grid){return}
  var items=visibleItems();
@@ -1217,8 +1268,9 @@ function bindEdit(el,it,field){
   var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
   if((it[field]||'')===v){return}
   it[field]=v;
+  ITEMS.sort(compareAlphabetical);
   commit();
-  if(field==='name'){renderGrid()}
+  if(field==='name'||field==='desc'){renderGrid()}
  });
  el.addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); el.blur() }
@@ -1226,7 +1278,6 @@ function bindEdit(el,it,field){
 }
 function applyCardEvents(){
  qsa('.vcard').forEach(function(card){
-  /* Запрещаем любое перетаскивание самой карточки или её фото */
   card.draggable=false;
   card.addEventListener('dragstart',function(e){e.preventDefault();return false});
   var id=card.getAttribute('data-id');
@@ -1241,7 +1292,6 @@ function applyCardEvents(){
  });
 }
 
-/* Блокируем перетаскивание картинок и карточек на уровне всего документа */
 document.addEventListener('dragstart',function(e){
  if(e.target&&(e.target.tagName==='IMG'||e.target.closest('.vcard'))){
   e.preventDefault();
@@ -1328,217 +1378,13 @@ function openForm(it){
  $('#mroot').innerHTML=
  '<div class="back" onclick="if(event.target===this)closeM()"><div class="modal">'+
  '<div class="m-head"><div class="mh-nm">'+(it?'✏️ Редактирование карточки':'＋ '+(isCars?'Новая машина':'Новая форма'))+'</div>'+
- '<div class="mh-sub">Вы можете изменить название, описание, раздел (фракцию), класс и фотографию</div>'+
+ '<div class="mh-sub">Все карточки автоматически выстраиваются по алфавиту слева направо (А–Я, затем A–Z)</div>'+
  '<button class="m-close" onclick="closeM()">✕</button></div>'+
  '<div class="m-body"><div class="formgrid">'+
-  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: Лада Веста / Toyota Camry"></div>'+
+  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: BMW M5 F90 / Mercedes E63 / Nissan GTR"></div>'+
   '<div class="full"><label class="flab">Описание</label><textarea class="inp" id="fDesc" rows="2" style="width:100%;min-height:44px" placeholder="Краткое описание…">'+esc(it?stripQuotaText(it.desc):'')+'</textarea></div>'+
   '<div><label class="flab">Категория каталога</label><select class="sel" id="fCat" style="width:100%" onchange="onFormCatChange()">'+catOpts+'</select></div>'+
   '<div><label class="flab">Раздел (Фракция / Структура)</label><select class="sel" id="fDep" style="width:100%" onchange="onFormDepChange()"></select></div>'+
   (isCars?'<div class="full"><label class="flab">Скорость, км/ч</label><input class="inp" id="fSpeed" style="width:100%" value="'+esc(it?it.speed:'')+'" placeholder="180"></div>':'')+
   (isCars?'<div class="full"><label class="flab">Класс транспорта</label><div id="fClsBox"></div></div>':'')+
-  '<div class="full"><label class="flab">Фотография</label><div class="aph" id="fAph"></div>'+
-  '<div class="hint">Фото автоматически сжимается перед сохранением. Нажмите на область, чтобы выбрать файл с компьютера.</div></div>'+
- '</div></div>'+
- '<div class="m-foot"><button class="btn ghost" onclick="closeM()">Отмена</button>'+
- '<button class="btn" onclick="saveForm()">'+(it?'Сохранить изменения':'Добавить')+'</button></div>'+
- '</div></div>';
-
- syncFormDepOptions(selDep);
- renderAph();
-
- var a=$('#fAph');
- if(a){
-  a.addEventListener('click',function(e){
-   if(e.target.closest('.vtool')){return}
-   pickPhoto(function(data){ editPhoto=data; renderAph() });
-  });
- }
- setTimeout(function(){ var n=$('#fName'); if(n){n.focus()} },60);
-}
-function renderClsPicker(selK){
- var box=$('#fClsBox');
- if(!box){return}
- var depK=$('#fDep')?$('#fDep').value:'';
- var classes=classesOfDep(depK);
- if(!classes.length){
-  box.innerHTML='<div class="hint" style="margin-top:0">В этом разделе нет классов — карточка будет отображаться в общем списке раздела.</div>';
-  formCls='';
-  return;
- }
- var found=false;
- for(var i=0;i<classes.length;i++){ if(classes[i].k===selK){found=true;break} }
- if(!found){ selK=classes[0].k }
- formCls=selK;
- var h='<div class="clsgrid">';
- for(var j=0;j<classes.length;j++){
-  var c=classes[j];
-  h+='<button type="button" class="clsbtn'+(c.k===selK?' on':'')+'" style="--cc:'+c.c+';--ccb:'+hex2rgba(c.c,.16)+'" onclick="renderClsPicker(\''+esc(c.k)+'\')">'+
-   '<span style="width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:'+c.c+';box-shadow:0 0 8px 1px '+hex2rgba(c.c,.45)+'"></span>'+esc(c.n)+'</button>';
- }
- h+='</div>';
- box.innerHTML=h;
-}
-function renderAph(){
- var a=$('#fAph');
- if(!a){return}
- if(editPhoto){
-  a.innerHTML='<img src="'+editPhoto+'" alt="" draggable="false">'+
-   '<button class="vtool vtool-del" style="position:absolute;top:10px;right:10px;z-index:3" title="Убрать фото" onclick="event.stopPropagation();clearPhoto()">🗑</button>';
- }else{
-  a.innerHTML='<div class="aph-in"><div class="aph-ic">📷</div><b>Добавить фото</b><span>нажмите для выбора файла</span></div>';
- }
-}
-function clearPhoto(){ editPhoto=''; renderAph() }
-function saveForm(){
- var name=stripQuotaText(($('#fName')?$('#fName').value:'').trim());
- if(!name){toast('Введите название',true);return}
- var depK=$('#fDep')?$('#fDep').value:'';
- if(!depK){toast('Выберите раздел',true);return}
- var targetDep=findDep(depK);
- var catK=targetDep?targetDep.cat:(($('#fCat')?$('#fCat').value:'')||state.cat);
-
- var it=null;
- if(editingId){ it=byId(editingId) }
- var isNew=!it;
- if(isNew){
-  it={id:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind:state.kind,cat:catK,dep:depK,cls:'',name:'',desc:'',speed:'',photo:''};
-  ITEMS.push(it);
- }
- it.name=name;
- it.desc=stripQuotaText(($('#fDesc')?$('#fDesc').value:'').trim());
- it.cat=catK;
- it.dep=depK;
- it.cls=(it.kind==='cars')?(formCls||''):'';
- it.speed=($('#fSpeed')?$('#fSpeed').value:'').trim();
- it.photo=editPhoto;
- ITEMS.sort(compareAlphabetical);
- closeM();
- commit();
- render();
- toast(isNew?'Запись добавлена':'Изменения сохранены (раздел: '+(targetDep?targetDep.n:depK)+')');
-}
-function delItem(id){
- if(!adminMode){return}
- var it=byId(id);
- if(!it){return}
- if(!window.confirm('Удалить «'+(it.name||'без названия')+'»?')){return}
- for(var i=0;i<ITEMS.length;i++){
-  if(ITEMS[i].id===id){ ITEMS.splice(i,1); break }
- }
- commit();
- render();
- toast('Запись удалена');
-}
-
-/* ===================== ФОТО ===================== */
-function pickPhoto(cb){
- photoCb=cb;
- var f=$('#fileInp');
- if(!f){return}
- f.value='';
- f.click();
-}
-function pickPhotoFor(id){
- if(!adminMode){return}
- pickPhoto(function(data){
-  var it=byId(id);
-  if(!it){return}
-  it.photo=data;
-  commit();
-  render();
-  toast('Фото обновлено');
- });
-}
-function compressImage(file,cb){
- var reader=new FileReader();
- reader.onload=function(ev){
-  var img=new Image();
-  img.onload=function(){
-   var MAX=1200;
-   var w=img.naturalWidth||img.width;
-   var h=img.naturalHeight||img.height;
-   var k=Math.min(1,MAX/Math.max(w,h));
-   var cv=document.createElement('canvas');
-   cv.width=Math.max(1,Math.round(w*k));
-   cv.height=Math.max(1,Math.round(h*k));
-   cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
-   var out;
-   try{ out=cv.toDataURL('image/jpeg',.85) }catch(e){ out=ev.target.result }
-   if(cb){cb(out)}
-  };
-  img.onerror=function(){
-   toast('Не удалось прочитать файл изображения',true);
-  };
-  img.src=ev.target.result;
- };
- reader.readAsDataURL(file);
-}
-
-/* ===================== ЛАЙТБОКС ===================== */
-var lbTimer=null;
-function openLb(id){
- var it=byId(id);
- if(!it||!it.photo){return}
- var d=dep(it.dep);
- var lb=$('#lb'),img=$('#lbImg'),cap=$('#lbCap');
- if(!lb||!img){return}
- if(lbTimer){clearTimeout(lbTimer);lbTimer=null}
- lb.classList.remove('zoom');
- if(cap){
-  cap.innerHTML='<span class="lbdot" style="background:'+d.c+';box-shadow:0 0 8px 1px '+hex2rgba(d.c,.5)+'"></span>'+esc(stripQuotaText(it.name||'—'))+
-   (it.desc?'<span>'+esc(stripQuotaText(it.desc))+'</span>':'');
- }
- img.src=it.photo;
- var go=function(){
-  lb.classList.add('show');
-  requestAnimationFrame(function(){
-   requestAnimationFrame(function(){
-    if(lb.classList.contains('show')){ lb.classList.add('zoom') }
-   });
-  });
- };
- var dec=null;
- try{ if(typeof img.decode==='function'){ dec=img.decode() } }catch(e){ dec=null }
- if(dec&&typeof dec.then==='function'){ dec.then(go,go) } else { go() }
-}
-function closeLb(){
- var lb=$('#lb');
- if(!lb||!lb.classList.contains('show')){return}
- lb.classList.remove('zoom');
- lb.classList.remove('show');
- if(lbTimer){clearTimeout(lbTimer)}
- lbTimer=setTimeout(function(){
-  var img=$('#lbImg');
-  if(img){ img.src='' }
- },380);
-}
-
-/* ===================== ЗАПУСК ===================== */
-(function(){
- syncGlobalOwnerAuth();
- renderTop();
- var qi=$('#q');
- if(qi){ qi.addEventListener('input',function(){ state.q=this.value; renderGrid() }) }
- var lb=$('#lb');
- if(lb){ lb.addEventListener('click',closeLb) }
- var fi=$('#fileInp');
- if(fi){
-  fi.addEventListener('change',function(){
-   var f=this.files&&this.files[0];
-   this.value='';
-   if(!f||!photoCb){return}
-   var cb=photoCb;
-   photoCb=null;
-   compressImage(f,cb);
-  });
- }
- document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){ closeLb(); closeC(); closeM() }
- });
- if(REPO){ initRemote() }
- else{ ITEMS=loadLocal(); render() }
-})();
-</script>
-</body>
-</html>
+  '<div class="full"><label class="flab">Фотография</label><div class="aph"
