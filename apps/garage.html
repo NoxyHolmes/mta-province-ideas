@@ -123,7 +123,7 @@ textarea.inp{resize:vertical}
 #croot .back{z-index:420}
 @keyframes up{from{transform:translateY(24px);opacity:0}}
 .modal{width:100%;max-width:820px;background:#161c25;border:1px solid #2b3442;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.6);animation:up .25s;overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 70px)}
-.modal.smw{max-width:430px}
+.modal.smw{max-width:460px}
 .m-head{flex:0 0 auto;padding:22px 24px 16px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,rgba(77,163,255,.08),transparent)}
 .m-close{position:absolute;top:14px;right:14px;background:#1d2531;border:1px solid var(--line);color:var(--mut);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:13px;transition:all .15s;font-family:inherit}
 .m-close:hover{color:var(--txt);border-color:#3a4757}
@@ -147,7 +147,8 @@ textarea.inp{resize:vertical}
 .deplist-head:first-child{margin-top:0}
 .deprow{display:flex;align-items:center;gap:8px;padding:5px 0}
 .deprow .ddot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;box-shadow:0 0 8px 1px rgba(0,0,0,.3)}
-.deprow .dep-name{flex:1;min-width:0;padding:8px 10px;font-size:13px}
+.deprow .dep-name{flex:1;min-width:0;padding:8px 10px;font-size:13px;background:#141a23;border:1px solid var(--line);border-radius:9px;color:var(--txt);font-family:inherit;outline:none}
+.deprow .dep-name:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.14)}
 .deprow .dep-color{width:34px;height:34px;flex:0 0 34px;padding:2px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:#141a23}
 .deprow .dep-del{width:34px;height:34px;flex:0 0 34px;padding:0;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
 .deprow .dep-del:hover{background:linear-gradient(145deg,#c04646,#8f2f2f)}
@@ -277,10 +278,7 @@ var REPO=(function(){
 })();
 var BRANCH='main';
 
-/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + БЕЗЛИМИТНАЯ INDEXEDDB =====================
-   В localStorage хранятся только лёгкие флаги (ключ, список удалённых ID и номер ревизии).
-   Весь массив из 100+ машин с фотографиями хранится в IndexedDB (лимит > 500 МБ),
-   поэтому при обновлении страницы сразу загружается весь список без скачка 11 -> 107! */
+/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + СИНХРОННЫЙ КЭШ РАЗДЕЛОВ ===================== */
 var LS=(function(){
  var mem={},ok=false;
  try{
@@ -306,7 +304,6 @@ var LS=(function(){
  };
 })();
 
-/* Очищаем переполненные старые ключи localStorage из прошлых версий (те самые 11 застрявших машин) */
 try{
  LS.remove('mvd_garage_local');
  LS.remove('mvd_garage_cache');
@@ -316,6 +313,9 @@ try{
 var IDB_NAME='mta_garage_full_db_v1';
 var IDB_STORE='snapshots';
 var IDB_KEY='current_state';
+/* Отдельный лёгкий ключ в localStorage специально для мгновенного синхронного сохранения разделов и классов */
+var DEPS_LS_KEY='mvd_garage_deps_v2';
+var REV_LS_KEY='mvd_garage_rev_v2';
 
 function idbOpen(){
  return new Promise(function(resolve,reject){
@@ -358,8 +358,7 @@ function idbSaveState(payload){
  }).catch(function(){return false});
 }
 
-/* ===================== РЕЕСТР УДАЛЁННЫХ КАРТОЧЕК =====================
-   Чтобы удалённые вами карточки НИКОГДА не возвращались из старого кэша GitHub */
+/* ===================== РЕЕСТР УДАЛЁННЫХ КАРТОЧЕК ===================== */
 var DEL_K='mvd_garage_deleted_ids_v1';
 var DELETED_IDS={};
 try{
@@ -503,10 +502,10 @@ function cloneDeps(src){
   }
   var cleanN=stripQuotaText(d.n||d.s||'—');
   var cleanS=stripQuotaText(d.s||d.n||'—');
-  if(cleanS.length>14)cleanS=cleanN;
+  if(cleanS.length>18)cleanS=cleanN.slice(0,17)+'…';
   out.push({
    k:String(d.k),
-   s:cleanS||cleanN||'—',
+   s:cleanN||cleanS||'—',
    n:cleanN||cleanS||'—',
    c:String(d.c||'#4da3ff'),
    cat:cat,
@@ -515,7 +514,20 @@ function cloneDeps(src){
  }
  return out;
 }
-var DEPS=cloneDeps(DEFAULT_DEPS);
+
+/* Загружаем сохранённые разделы синхронно сразу при старте скрипта */
+var DEPS=(function(){
+ try{
+  var savedDeps=JSON.parse(LS.get(DEPS_LS_KEY)||'null');
+  if(Array.isArray(savedDeps)&&savedDeps.length){return cloneDeps(savedDeps)}
+ }catch(e){}
+ return cloneDeps(DEFAULT_DEPS);
+})();
+
+function saveDepsSync(){
+ DEPS=cloneDeps(DEPS);
+ try{LS.set(DEPS_LS_KEY,JSON.stringify(DEPS))}catch(e){}
+}
 
 function findDep(k){
  for(var i=0;i<DEPS.length;i++){if(DEPS[i].k===k){return DEPS[i]}}
@@ -569,7 +581,9 @@ function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].
 
 /* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА ===================== */
 var MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
-var ITEMS=[], localRev=0, pendingRev=null;
+var ITEMS=[];
+var localRev=parseInt(LS.get(REV_LS_KEY)||'0',10)||0;
+var pendingRev=null;
 var ADMIN_KEY='';
 var adminMode=false;
 var booted=false;
@@ -664,8 +678,9 @@ function isGaragePayload(obj){
 }
 
 function saveToIndexedDB(){
- DEPS=cloneDeps(DEPS);
+ saveDepsSync();
  ITEMS=sanitizeItemsList(ITEMS);
+ try{LS.set(REV_LS_KEY,String(localRev))}catch(e){}
  return idbSaveState({
   rev:localRev,
   items:ITEMS,
@@ -761,7 +776,7 @@ function doPush(){
  pushTimer=null;
  syncGlobalOwnerAuth();
  if(!adminMode||!REPO||!ADMIN_KEY||pushInFlight||!dataDirty){ return }
- DEPS=cloneDeps(DEPS);
+ saveDepsSync();
  ITEMS=sanitizeItemsList(ITEMS);
  var rev=localRev;
  var snapshot=JSON.stringify({
@@ -830,7 +845,6 @@ function doPush(){
  });
 }
 
-/* Загрузка JSON файла с GitHub (сначала свежий API или raw) */
 function fetchRemoteGarageJson(filename){
  return apiFileContent(filename).catch(function(){
   return rawGet(filename);
@@ -859,19 +873,20 @@ function showLoadingSkeleton(){
  grid.innerHTML=h;
 }
 
-/* ЗАГРУЗКА:
-   1. Сразу читаем полный список (все 107+ машин) из безлимитной IndexedDB — он отрисовывается мгновенно без скачка!
-   2. Если у владельца есть несохранённые правки (PENDING_K), отправляем их на GitHub, НЕ перезаписывая старым файлом с сервера.
-   3. Только если на сервере ревизия новее (или база в браузере пуста при самом первом входе), загружаем список с сервера целиком. */
 function initApp(){
+ var hasLocalCustomDeps=!!LS.get(DEPS_LS_KEY);
  idbGetState().then(function(saved){
   var hasPending=!!LS.get(PENDING_K);
   if(saved&&saved.items&&saved.items.length){
    if(saved.deletedIds&&typeof saved.deletedIds==='object'){
     for(var k in saved.deletedIds){if(saved.deletedIds[k])DELETED_IDS[k]=1}
    }
-   if(saved.deps&&saved.deps.length){DEPS=cloneDeps(saved.deps)}
-   localRev=(typeof saved.rev==='number'?saved.rev:0);
+   /* Если разделы ещё не были сохранены в синхронный DEPS_LS_KEY — берём их из IndexedDB */
+   if(!hasLocalCustomDeps&&saved.deps&&saved.deps.length){
+    DEPS=cloneDeps(saved.deps);
+    saveDepsSync();
+   }
+   localRev=Math.max(localRev,(typeof saved.rev==='number'?saved.rev:0));
    ITEMS=sanitizeItemsList(saved.items);
    booted=true;
    render();
@@ -885,14 +900,12 @@ function initApp(){
    return;
   }
 
-  /* Если владелец что-то изменил/удалил и обновил страницу — пушим его актуальное состояние в GitHub */
   if(hasPending&&ITEMS.length&&adminMode&&ADMIN_KEY){
    dataDirty=true;
    doPush();
    return;
   }
 
-  /* Проверяем серверные файлы: выбираем самый актуальный полный набор (БЕЗ склеивания старых удалённых машин!) */
   Promise.all([
    fetchRemoteGarageJson(GARAGE_DATA_FILE).catch(function(){return null}),
    fetchRemoteGarageJson('data.json').catch(function(){return null})
@@ -901,7 +914,6 @@ function initApp(){
    var r2=res[1];
    var chosen=null;
 
-   /* Если в IndexedDB уже лежит актуальный полный список и его ревизия >= серверной, ничего не перерисовываем */
    if(ITEMS.length>0){
     var bestRemoteRev=Math.max(r1?r1.rev:0, r2?r2.rev:0);
     if(localRev>=bestRemoteRev && ITEMS.length >= Math.max(r1?r1.items.length:0, r2?r2.items.length:0)){
@@ -909,12 +921,10 @@ function initApp(){
     }
    }
 
-   /* Если один из файлов содержит полный каталог (например 107 машин в data.json против 11 в старом garage_data.json) — берём полный и сразу синхронизируем */
    if(r1&&r2){
-    if(r1.rev>r2.rev && r1.items.length>=r2.items.length){
+    if(r1.rev>=r2.rev && r1.items.length>=r2.items.length){
      chosen=r1;
     }else if(r2.items.length>r1.items.length){
-     /* Однократная миграция полного списка из data.json + новых карточек из garage_data.json (с фильтрацией DELETED_IDS) */
      var mergedMap={};
      var mergedArr=[];
      r2.items.concat(r1.items).forEach(function(it){
@@ -931,7 +941,8 @@ function initApp(){
      chosen={
       rev:Math.max(r1.rev,r2.rev)+1,
       items:sanitizeItemsList(mergedArr),
-      deps:r1.deps||r2.deps
+      /* Предпочитаем сохранённые вами разделы, чтобы старый data.json их не перетёр */
+      deps:hasLocalCustomDeps?DEPS:(r1.deps||r2.deps)
      };
      if(adminMode&&ADMIN_KEY){dataDirty=true}
     }else{
@@ -942,7 +953,11 @@ function initApp(){
    }
 
    if(chosen){
-    if(chosen.deps&&chosen.deps.length){DEPS=cloneDeps(chosen.deps)}
+    /* Обновляем разделы с сервера только если серверная ревизия строго выше локальной или локальных разделов ещё не было */
+    if(chosen.deps&&chosen.deps.length&&(!hasLocalCustomDeps||chosen.rev>localRev)){
+     DEPS=cloneDeps(chosen.deps);
+     saveDepsSync();
+    }
     localRev=Math.max(localRev,chosen.rev||0);
     ITEMS=sanitizeItemsList(chosen.items);
     saveToIndexedDB();
@@ -963,9 +978,55 @@ function renderTop(){
  syncGlobalOwnerAuth();
 }
 
-/* ===================== МЕНЕДЖЕР РАЗДЕЛОВ ===================== */
+/* ===================== МЕНЕДЖЕР РАЗДЕЛОВ И КЛАССОВ (С МГНОВЕННЫМ СОХРАНЕНИЕМ) ===================== */
 var DEP_PALETTE=['#4da3ff','#56ccff','#ff5c5c','#2fd97a','#ff9a3d','#818cf8','#e05c82','#f7c948','#ff8a52','#c084fc','#7dd3fc','#a78bfa','#f472b6','#34d399','#fbbf24'];
 var currentClassDepK=null;
+var depsInputDirty=false;
+
+/* Считывает все введённые названия разделов и классов прямо из открытых полей input перед закрытием или сохранением */
+function flushOpenDepAndClassInputs(){
+ var root=$('#croot');
+ if(!root)return false;
+ var changed=false;
+ qsa('input.dep-name[data-depk]',root).forEach(function(inp){
+  var d=findDep(inp.getAttribute('data-depk'));
+  if(!d)return;
+  var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+  if(v&&v!==d.n){
+   d.n=v;
+   d.s=v;
+   changed=true;
+  }
+ });
+ qsa('input.dep-name[data-clsk]',root).forEach(function(inp){
+  var depK=inp.getAttribute('data-parentdep')||currentClassDepK;
+  var ck=inp.getAttribute('data-clsk');
+  var d=findDep(depK);
+  if(!d||!d.classes)return;
+  var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+  if(!v)return;
+  for(var i=0;i<d.classes.length;i++){
+   if(d.classes[i].k===ck){
+    if(d.classes[i].n!==v){
+     d.classes[i].n=v;
+     changed=true;
+    }
+    break;
+   }
+  }
+ });
+ if(changed||depsInputDirty){
+  depsInputDirty=false;
+  saveDepsSync();
+  commit();
+  render();
+ }
+ return changed;
+}
+
+window.addEventListener('beforeunload',function(){
+ flushOpenDepAndClassInputs();
+});
 
 function openDepsManager(){
  syncGlobalOwnerAuth();
@@ -975,14 +1036,15 @@ function openDepsManager(){
 window.openDepsManager=openDepsManager;
 
 function renderDepsModal(){
+ flushOpenDepAndClassInputs();
  var root=$('#croot');
  if(!root){return}
  var h='<div class="back" onclick="if(event.target===this)closeC()"><div class="modal">'+
   '<div class="m-head"><div class="mh-nm">⚙️ Разделы и классы</div>'+
-  '<div class="mh-sub">Названия разделов можно менять прямо в списке. Классы настраиваются отдельно для каждого раздела.</div>'+
+  '<div class="mh-sub">Измените название любого раздела — оно сохраняется автоматически для Автопарка и Формы.</div>'+
   '<button class="m-close" onclick="closeC()">✕</button></div>'+
   '<div class="m-body">';
- var groups=[['main','Основные разделы'],['event','Разделы для мероприятий']];
+ var groups=[['main','Основные разделы (Автопарк и Форма)'],['event','Разделы для мероприятий (МП)']];
  for(var gi=0;gi<groups.length;gi++){
   h+='<div class="deplist-head">'+groups[gi][1]+'</div>';
   var any=false;
@@ -992,7 +1054,7 @@ function renderDepsModal(){
    any=true;
    h+='<div class="deprow">'+
     '<span class="ddot" style="background:'+d.c+';box-shadow:0 0 8px 1px '+hex2rgba(d.c,.45)+'"></span>'+
-    '<div class="dep-name" contenteditable="true" data-ph="Название" data-depk="'+esc(d.k)+'">'+esc(stripQuotaText(d.n))+'</div>'+
+    '<input type="text" class="dep-name" placeholder="Название раздела" data-depk="'+esc(d.k)+'" value="'+esc(stripQuotaText(d.n))+'">'+
     '<input type="color" class="dep-color" value="'+d.c+'" title="Цвет раздела" oninput="setDepColor(\''+esc(d.k)+'\',this.value)">'+
     '<button class="btn ghost slim dep-cls-btn" onclick="openClassesManager(\''+esc(d.k)+'\')">🏷 Классы · '+d.classes.length+'</button>'+
     '<button class="btn warn slim dep-del" title="Удалить раздел" onclick="delDep(\''+esc(d.k)+'\')">🗑</button>'+
@@ -1001,50 +1063,73 @@ function renderDepsModal(){
   if(!any){ h+='<div class="gempty" style="margin-bottom:10px">Нет разделов</div>' }
  }
  h+='</div>'+
-  '<div class="m-foot"><div class="newdep" style="flex:1;margin-top:0">'+
-   '<input class="inp" id="ndName" placeholder="Название нового раздела…">'+
-   '<select class="sel" id="ndCat"><option value="main">Основной</option><option value="event">Мероприятия</option></select>'+
-   '<button class="btn" onclick="addDep()">＋ Добавить</button>'+
-  '</div></div>'+
+  '<div class="m-foot" style="justify-content:space-between">'+
+   '<div class="newdep" style="flex:1;margin-top:0;border-top:none;padding-top:0">'+
+    '<input class="inp" id="ndName" placeholder="Название нового раздела…">'+
+    '<select class="sel" id="ndCat"><option value="main">Основной</option><option value="event">Мероприятия</option></select>'+
+    '<button class="btn ghost" onclick="addDep()">＋ Добавить раздел</button>'+
+   '</div>'+
+   '<button class="btn" onclick="saveAndCloseDepsModal()">💾 Сохранить</button>'+
+  '</div>'+
  '</div></div>';
  root.innerHTML=h;
- qsa('.dep-name',root).forEach(function(el){
-  el.addEventListener('blur',function(){
-   var d=findDep(el.getAttribute('data-depk'));
-   if(!d){return}
-   var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
-   if(!v||v===d.n){return}
+
+ qsa('input.dep-name[data-depk]',root).forEach(function(inp){
+  /* Мгновенное обновление в памяти и localStorage при каждом вводе символа */
+  inp.addEventListener('input',function(){
+   var d=findDep(inp.getAttribute('data-depk'));
+   if(!d)return;
+   var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+   if(!v)return;
    d.n=v;
-   d.s=v.length>14?v.slice(0,13)+'…':v;
-   commit();
-   render();
+   d.s=v;
+   depsInputDirty=true;
+   saveDepsSync();
+   renderChips();
   });
-  el.addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();el.blur()} });
+  inp.addEventListener('change',function(){
+   flushOpenDepAndClassInputs();
+  });
+  inp.addEventListener('keydown',function(e){
+   if(e.key==='Enter'){e.preventDefault();inp.blur();flushOpenDepAndClassInputs();toast('Название раздела сохранено')}
+  });
  });
 }
 window.renderDepsModal=renderDepsModal;
 
+window.saveAndCloseDepsModal=function(){
+ flushOpenDepAndClassInputs();
+ saveDepsSync();
+ commit();
+ closeC();
+ render();
+ toast('✓ Разделы сохранены');
+};
+
 function addDep(){
+ flushOpenDepAndClassInputs();
  var nm=stripQuotaText($('#ndName')?$('#ndName').value.trim():'');
  if(!nm){toast('Введите название раздела',true);return}
  var cat=($('#ndCat')&&$('#ndCat').value==='event')?'event':'main';
  var k='d'+Date.now().toString(36)+Math.floor(Math.random()*100);
  DEPS.push({
   k:k,
-  s:nm.length>14?nm.slice(0,13)+'…':nm,
+  s:nm,
   n:nm,
   c:DEP_PALETTE[DEPS.length%DEP_PALETTE.length],
   cat:cat,
   classes:defaultClassesFor(cat)
  });
+ saveDepsSync();
  commit();
  renderDepsModal();
  render();
- toast('Раздел добавлен');
+ toast('Раздел «'+nm+'» добавлен');
 }
 window.addDep=addDep;
 
 function delDep(k){
+ flushOpenDepAndClassInputs();
  var d=findDep(k);
  if(!d){return}
  var used=countDepUsage(k);
@@ -1052,6 +1137,7 @@ function delDep(k){
  if(!window.confirm('Удалить раздел «'+d.n+'»?')){return}
  DEPS=DEPS.filter(function(x){return x.k!==k});
  if(state.dep===k){ state.dep='all'; state.cls='all' }
+ saveDepsSync();
  commit();
  renderDepsModal();
  render();
@@ -1063,12 +1149,14 @@ function setDepColor(k,c){
  var d=findDep(k);
  if(!d){return}
  d.c=c;
+ saveDepsSync();
  commit();
  render();
 }
 window.setDepColor=setDepColor;
 
 function openClassesManager(depK){
+ flushOpenDepAndClassInputs();
  var d=findDep(depK);
  if(!d){return}
  currentClassDepK=depK;
@@ -1086,44 +1174,57 @@ function openClassesManager(depK){
   var c=d.classes[i];
   h+='<div class="deprow">'+
    '<span class="ddot" style="background:'+c.c+';box-shadow:0 0 8px 1px '+hex2rgba(c.c,.45)+'"></span>'+
-   '<div class="dep-name" contenteditable="true" data-ph="Название" data-clsk="'+esc(c.k)+'">'+esc(c.n)+'</div>'+
+   '<input type="text" class="dep-name" placeholder="Название класса" data-parentdep="'+esc(depK)+'" data-clsk="'+esc(c.k)+'" value="'+esc(c.n)+'">'+
    '<i class="cn" title="Записей в классе">'+countClassUsage(depK,c.k)+'</i>'+
    '<input type="color" class="dep-color" value="'+c.c+'" title="Цвет класса" oninput="setClassColor(\''+esc(depK)+'\',\''+esc(c.k)+'\',this.value)">'+
    '<button class="btn warn slim dep-del" title="Удалить класс" onclick="delClass(\''+esc(depK)+'\',\''+esc(c.k)+'\')">🗑</button>'+
   '</div>';
  }
  h+='</div></div>'+
-  '<div class="m-foot"><div class="newdep" style="flex:1;margin-top:0">'+
-   '<input class="inp" id="ncName" placeholder="Новый класс…">'+
-   '<input type="color" id="ncColor" value="#4da3ff" title="Цвет" style="flex:0 0 auto;width:42px;height:38px;padding:3px;border-radius:10px;border:1px solid var(--line);background:#141a23;cursor:pointer">'+
-   '<button class="btn" onclick="addClass(\''+esc(depK)+'\')">＋</button>'+
-  '</div></div>'+
+  '<div class="m-foot" style="justify-content:space-between">'+
+   '<div class="newdep" style="flex:1;margin-top:0;border-top:none;padding-top:0">'+
+    '<input class="inp" id="ncName" placeholder="Новый класс…">'+
+    '<input type="color" id="ncColor" value="#4da3ff" title="Цвет" style="flex:0 0 auto;width:42px;height:38px;padding:3px;border-radius:10px;border:1px solid var(--line);background:#141a23;cursor:pointer">'+
+    '<button class="btn ghost" onclick="addClass(\''+esc(depK)+'\')">＋</button>'+
+   '</div>'+
+   '<button class="btn" onclick="renderDepsModal()">Готово</button>'+
+  '</div>'+
  '</div></div>';
  root.innerHTML=h;
- qsa('.dep-name',root).forEach(function(el){
-  el.addEventListener('blur',function(){
-   var ck=el.getAttribute('data-clsk');
-   var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
-   if(!v){return}
+
+ qsa('input.dep-name[data-clsk]',root).forEach(function(inp){
+  inp.addEventListener('input',function(){
+   var ck=inp.getAttribute('data-clsk');
+   var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+   if(!v)return;
    for(var i=0;i<d.classes.length;i++){
     if(d.classes[i].k===ck){
-     if(d.classes[i].n!==v){ d.classes[i].n=v; commit(); render() }
+     d.classes[i].n=v;
+     depsInputDirty=true;
+     saveDepsSync();
      break;
     }
    }
   });
-  el.addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();el.blur()} });
+  inp.addEventListener('change',function(){
+   flushOpenDepAndClassInputs();
+  });
+  inp.addEventListener('keydown',function(e){
+   if(e.key==='Enter'){e.preventDefault();inp.blur();flushOpenDepAndClassInputs();toast('Название класса сохранено')}
+  });
  });
 }
 window.openClassesManager=openClassesManager;
 
 function addClass(depK){
+ flushOpenDepAndClassInputs();
  var d=findDep(depK);
  if(!d){return}
  var nm=stripQuotaText($('#ncName')?$('#ncName').value.trim():'');
  if(!nm){toast('Введите название класса',true);return}
  var col=$('#ncColor')?$('#ncColor').value:'#4da3ff';
  d.classes.push({k:'k'+Date.now().toString(36)+Math.floor(Math.random()*100),n:nm,c:col});
+ saveDepsSync();
  commit();
  openClassesManager(depK);
  render();
@@ -1132,6 +1233,7 @@ function addClass(depK){
 window.addClass=addClass;
 
 function delClass(depK,clsK){
+ flushOpenDepAndClassInputs();
  var d=findDep(depK);
  if(!d){return}
  if(d.classes.length<=1){toast('Должен остаться хотя бы один класс',true);return}
@@ -1144,6 +1246,7 @@ function delClass(depK,clsK){
   if(ITEMS[j].dep===depK&&ITEMS[j].cls===clsK){ ITEMS[j].cls=d.classes[0].k }
  }
  if(state.cls===clsK){ state.cls='all' }
+ saveDepsSync();
  commit();
  openClassesManager(depK);
  render();
@@ -1157,6 +1260,7 @@ function setClassColor(depK,clsK,c){
  for(var i=0;i<d.classes.length;i++){
   if(d.classes[i].k===clsK){ d.classes[i].c=c; break }
  }
+ saveDepsSync();
  commit();
  render();
 }
@@ -1271,7 +1375,7 @@ function cardHtml(it){
   :'';
  return '<div class="vcard" draggable="false" data-id="'+it.id+'" style="--dc:'+dc+'">'+
   '<div class="vph'+(it.photo?'':' empty')+'" draggable="false">'+
-   '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(stripQuotaText(d.s))+'</span>'+
+   '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(stripQuotaText(d.n||d.s))+'</span>'+
    tools+ph+
   '</div>'+
   '<div class="vbody">'+
@@ -1370,7 +1474,11 @@ document.addEventListener('dragstart',function(e){
 var editingId=null, editPhoto='', formCls=null, photoCb=null;
 
 function closeM(){ var m=$('#mroot'); if(m){m.innerHTML=''} editingId=null; photoCb=null }
-function closeC(){ var c=$('#croot'); if(c){c.innerHTML=''} }
+function closeC(){
+ flushOpenDepAndClassInputs();
+ var c=$('#croot');
+ if(c){c.innerHTML=''}
+}
 window.closeM=closeM;
 window.closeC=closeC;
 
