@@ -15,8 +15,8 @@ body{background:radial-gradient(1100px 520px at 8% -10%,rgba(45,100,170,.17),tra
 ::-webkit-scrollbar-thumb:hover{background:#3a4656}
 #errbox{display:none;position:fixed;left:12px;top:12px;z-index:990;background:#3a1414;border:1px solid #a34444;color:#ffb3b3;padding:12px 16px;border-radius:10px;font:12px/1.5 monospace;max-width:85%;white-space:pre-wrap}
 button{touch-action:manipulation}
-#content{padding:22px;max-width:1440px;width:100%;margin:0 auto;animation:fade .3s}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+#content{padding:22px;max-width:1440px;width:100%;margin:0 auto;animation:fade .22s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
 .ph{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:2px}
 h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .cnt{font-size:12px;background:#22304a;border:1px solid #32456a;color:#a9c7ef;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px}
@@ -24,6 +24,10 @@ h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
 .ph-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:2px}
 .owner-only{display:none!important}
 body.is-owner .owner-only{display:inline-flex!important}
+.sync-pill{font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:9px;border:1px solid var(--line);background:#141a23;color:var(--mut);align-items:center;gap:6px}
+.sync-pill.ok{color:#6ee7b7;border-color:rgba(47,217,122,.35);background:rgba(47,217,122,.08)}
+.sync-pill.busy{color:#fcd34d;border-color:rgba(247,201,72,.4);background:rgba(247,201,72,.1)}
+.sync-pill.err{color:#fca5a5;border-color:rgba(255,92,92,.4);background:rgba(255,92,92,.1)}
 .tabs{display:flex;gap:5px;background:#141a23;border:1px solid var(--line);border-radius:13px;padding:5px}
 .tab{padding:9px 18px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--mut);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
 .tab:hover{color:var(--txt)}
@@ -56,14 +60,12 @@ body.is-owner .owner-only{display:inline-flex!important}
 textarea.inp{resize:vertical}
 .vgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:14px}
 .vgrid.grouped{display:block}
-.vcard{background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);animation:cardIn .4s both;user-select:none}
-@keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
+.vcard{background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);user-select:none}
 .vcard:hover{border-color:#3a4757;transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
 .vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc,#4da3ff);z-index:3}
 .vph{position:relative;aspect-ratio:16/10;background:#141a23;cursor:pointer;overflow:hidden}
 .vph.empty{background:#12161e}
-.vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;animation:fadeIn .4s;-webkit-user-drag:none;user-select:none}
-@keyframes fadeIn{from{opacity:0}}
+.vph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;-webkit-user-drag:none;user-select:none}
 .vph-empty{position:absolute;inset:10px;border:1px dashed #2c3644;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#5b6675;transition:all .2s;text-align:center;padding:6px}
 .vph-empty .pe-ic{font-size:25px;opacity:.7}
 .vph-empty b{color:#8b95a7;font-size:12px;font-weight:700}
@@ -101,6 +103,13 @@ textarea.inp{resize:vertical}
 .clsbtn{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(145deg,#1c2432,#181e28);color:var(--txt);font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;text-align:left}
 .clsbtn:hover{border-color:var(--cc,var(--acc));transform:translateX(3px)}
 .clsbtn.on{border-color:var(--cc,var(--acc));background:var(--ccb,rgba(77,163,255,.14));box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.vcard.sk{pointer-events:none;cursor:default}
+.vcard.sk::before{display:none}
+.skph{aspect-ratio:16/10;background:#161c26;position:relative;overflow:hidden}
+.skph::after,.skb::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.05) 50%,transparent 75%);transform:translateX(-100%);animation:skmove 1.4s infinite}
+@keyframes skmove{to{transform:translateX(100%)}}
+.skb{height:11px;border-radius:6px;background:#161c26;margin:10px 14px 0;position:relative;overflow:hidden}
+.skb:last-child{margin-bottom:14px}
 #lb{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:14px;cursor:zoom-out;opacity:0;transition:opacity .28s ease;pointer-events:none}
 #lb::before{content:'';position:absolute;inset:0;background:rgba(4,7,11,.88);backdrop-filter:blur(9px);opacity:0;transition:opacity .28s ease}
 #lb.show{opacity:1;pointer-events:auto}
@@ -110,10 +119,10 @@ textarea.inp{resize:vertical}
 .lb-cap{position:absolute;top:20px;left:24px;font-weight:800;font-size:14px;color:#e9edf4;background:rgba(14,17,22,.72);border:1px solid #2e3846;padding:9px 15px;border-radius:12px;backdrop-filter:blur(6px);max-width:70vw}
 .lb-cap span{display:block;font-weight:600;font-size:11px;color:var(--mut);margin-top:3px}
 .lbdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
-.back{position:fixed;inset:0;background:rgba(4,7,11,.75);backdrop-filter:blur(7px);z-index:400;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px;animation:fadeIn .2s}
+.back{position:fixed;inset:0;background:rgba(4,7,11,.75);backdrop-filter:blur(7px);z-index:400;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px}
 #croot .back{z-index:420}
 @keyframes up{from{transform:translateY(24px);opacity:0}}
-.modal{width:100%;max-width:820px;background:#161c25;border:1px solid #2b3442;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.6);animation:up .3s;overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 70px)}
+.modal{width:100%;max-width:820px;background:#161c25;border:1px solid #2b3442;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.6);animation:up .25s;overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 70px)}
 .modal.smw{max-width:430px}
 .m-head{flex:0 0 auto;padding:22px 24px 16px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,rgba(77,163,255,.08),transparent)}
 .m-close{position:absolute;top:14px;right:14px;background:#1d2531;border:1px solid var(--line);color:var(--mut);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:13px;transition:all .15s;font-family:inherit}
@@ -230,6 +239,7 @@ window.addEventListener('error',function(ev){
       <div class="ph-sub" id="hSub"></div>
     </div>
     <div class="ph-actions">
+      <span class="sync-pill owner-only" id="syncPill">✓ Сохранено</span>
       <button class="btn ghost slim owner-only" id="depsBtn" style="display:none" onclick="openDepsManager()" title="Управление разделами и классами">⚙️ Разделы</button>
       <div class="tabs">
         <button class="tab on" data-kind="cars" onclick="setKind('cars')">🚔 Автопарк</button>
@@ -267,7 +277,10 @@ var REPO=(function(){
 })();
 var BRANCH='main';
 
-/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ ===================== */
+/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + БЕЗЛИМИТНАЯ INDEXEDDB =====================
+   В localStorage хранятся только лёгкие флаги (ключ, список удалённых ID и номер ревизии).
+   Весь массив из 100+ машин с фотографиями хранится в IndexedDB (лимит > 500 МБ),
+   поэтому при обновлении страницы сразу загружается весь список без скачка 11 -> 107! */
 var LS=(function(){
  var mem={},ok=false;
  try{
@@ -292,6 +305,73 @@ var LS=(function(){
   }
  };
 })();
+
+/* Очищаем переполненные старые ключи localStorage из прошлых версий (те самые 11 застрявших машин) */
+try{
+ LS.remove('mvd_garage_local');
+ LS.remove('mvd_garage_cache');
+ LS.remove('mvd_garage_admin_key');
+}catch(e){}
+
+var IDB_NAME='mta_garage_full_db_v1';
+var IDB_STORE='snapshots';
+var IDB_KEY='current_state';
+
+function idbOpen(){
+ return new Promise(function(resolve,reject){
+  if(!window.indexedDB){reject(new Error('no idb'));return}
+  var req=window.indexedDB.open(IDB_NAME,1);
+  req.onupgradeneeded=function(ev){
+   var db=ev.target.result;
+   if(!db.objectStoreNames.contains(IDB_STORE)){
+    db.createObjectStore(IDB_STORE);
+   }
+  };
+  req.onsuccess=function(ev){resolve(ev.target.result)};
+  req.onerror=function(){reject(req.error)};
+ });
+}
+function idbGetState(){
+ return idbOpen().then(function(db){
+  return new Promise(function(resolve){
+   try{
+    var tx=db.transaction(IDB_STORE,'readonly');
+    var st=tx.objectStore(IDB_STORE);
+    var r=st.get(IDB_KEY);
+    r.onsuccess=function(){resolve(r.result||null)};
+    r.onerror=function(){resolve(null)};
+   }catch(e){resolve(null)}
+  });
+ }).catch(function(){return null});
+}
+function idbSaveState(payload){
+ return idbOpen().then(function(db){
+  return new Promise(function(resolve){
+   try{
+    var tx=db.transaction(IDB_STORE,'readwrite');
+    var st=tx.objectStore(IDB_STORE);
+    st.put(payload,IDB_KEY);
+    tx.oncomplete=function(){resolve(true)};
+    tx.onerror=function(){resolve(false)};
+   }catch(e){resolve(false)}
+  });
+ }).catch(function(){return false});
+}
+
+/* ===================== РЕЕСТР УДАЛЁННЫХ КАРТОЧЕК =====================
+   Чтобы удалённые вами карточки НИКОГДА не возвращались из старого кэша GitHub */
+var DEL_K='mvd_garage_deleted_ids_v1';
+var DELETED_IDS={};
+try{
+ var rawDel=JSON.parse(LS.get(DEL_K)||'{}');
+ if(rawDel&&typeof rawDel==='object'){DELETED_IDS=rawDel}
+}catch(e){DELETED_IDS={}}
+
+function markDeletedId(id){
+ if(!id)return;
+ DELETED_IDS[id]=1;
+ try{LS.set(DEL_K,JSON.stringify(DELETED_IDS))}catch(e){}
+}
 
 /* ===================== УТИЛИТЫ И СОРТИРОВКА ПО АЛФАВИТУ (РУС -> АНГЛ) ===================== */
 function $(s){return document.querySelector(s)}
@@ -343,6 +423,13 @@ function toast(msg,warn){
 function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function b64d(s){return decodeURIComponent(escape(atob(s)))}
 
+function setSyncStatus(mode,txt){
+ var el=$('#syncPill');
+ if(!el)return;
+ el.className='sync-pill owner-only '+(mode||'ok');
+ el.textContent=txt||'✓ Сохранено';
+}
+
 function fetchT(url,opts,ms){
  var ctl=null,to=null;
  try{ if(typeof AbortController!=='undefined'){ctl=new AbortController()} }catch(e){ctl=null}
@@ -350,7 +437,7 @@ function fetchT(url,opts,ms){
  if(opts){for(var k in opts){if(Object.prototype.hasOwnProperty.call(opts,k)){o[k]=opts[k]}}}
  if(ctl){o.signal=ctl.signal}
  if(ctl){
-  to=setTimeout(function(){try{ctl.abort()}catch(e){}},ms||8000);
+  to=setTimeout(function(){try{ctl.abort()}catch(e){}},ms||12000);
  }
  return fetch(url,o).then(function(r){
   if(to){clearTimeout(to);to=null}
@@ -481,13 +568,11 @@ var CATS={
 function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].k===cat){return a[i].n}}return a[0].n}
 
 /* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА ===================== */
-var LOCAL_K='mvd_garage_local', CACHE_K='mvd_garage_cache', MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
-var ITEMS=[], localRev=0, pendingRev=null, needSeed=false;
+var MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
+var ITEMS=[], localRev=0, pendingRev=null;
 var ADMIN_KEY='';
 var adminMode=false;
 var booted=false;
-
-try{LS.remove('mvd_garage_admin_key')}catch(e){}
 
 function syncGlobalOwnerAuth(){
  var isAdm=false;
@@ -498,9 +583,10 @@ function syncGlobalOwnerAuth(){
    if(isAdm&&window.parent.localStorage){
     tok=window.parent.localStorage.getItem(MAIN_KEY_K)||'';
    }
-  }else{
+  }
+  if(!tok){
    tok=LS.get(MAIN_KEY_K)||'';
-   if(/^(ghp_|github_pat_)[A-Za-z0-9_]{10,}/.test(String(tok||'').trim())){
+   if(!isAdm&&/^(ghp_|github_pat_)[A-Za-z0-9_]{10,}/.test(String(tok||'').trim())){
     isAdm=true;
    }
   }
@@ -524,20 +610,17 @@ window.addEventListener('storage',function(){
 setInterval(function(){
  var prev=adminMode;
  syncGlobalOwnerAuth();
- if(prev!==adminMode){render()}
+ if(prev!==adminMode){
+  render();
+  if(adminMode&&dataDirty&&!pushInFlight){doPush()}
+ }
 },500);
 
-/* Список старых шаблонных ID (c1..c20, f1..f13), которые были удалены пользователем (если у них нет залитого фото) */
 var OLD_SEED_IDS={
  c1:1,c2:1,c3:1,c4:1,c5:1,c6:1,c7:1,c8:1,c9:1,c10:1,
  c11:1,c12:1,c13:1,c14:1,c15:1,c16:1,c17:1,c18:1,c19:1,c20:1,
  f1:1,f2:1,f3:1,f4:1,f5:1,f6:1,f7:1,f8:1,f9:1,f10:1,f11:1,f12:1,f13:1
 };
-
-/* Стандартные шаблонные карточки полностью отключены по вашему запросу */
-function seed(){
- return [];
-}
 
 function sanitizeItemsList(arr){
  if(!arr||!Array.isArray(arr))return [];
@@ -547,8 +630,8 @@ function sanitizeItemsList(arr){
   var it=arr[i];
   if(!it||typeof it!=='object')continue;
   if(it.kind!=='cars'&&it.kind!=='form')continue;
-  /* Пропускаем старые пустые стандартные ячейки без фото */
   if(OLD_SEED_IDS[it.id]&&!it.photo)continue;
+  if(it.id&&DELETED_IDS[it.id])continue;
   if(it.id&&seen[it.id])continue;
   if(it.id)seen[it.id]=1;
   it.name=stripQuotaText(it.name||'');
@@ -567,7 +650,6 @@ function toArr(x){
  return arr;
 }
 
-/* Проверяет, что JSON относится к автопарку (даже если список карточек пустой или в нём удалены стандартные ячейки) */
 function isGaragePayload(obj){
  if(!obj||typeof obj!=='object')return false;
  if(obj.deps&&Array.isArray(obj.deps))return true;
@@ -576,50 +658,23 @@ function isGaragePayload(obj){
  if(a.length===0)return true;
  for(var i=0;i<a.length;i++){
   if(a[i]&&(a[i].kind==='cars'||a[i].kind==='form'))return true;
-  if(a[i]&&a[i].fac&&a[i].title)return false; /* Это главный список идей, а не автопарк */
+  if(a[i]&&a[i].fac&&a[i].title)return false;
  }
  return false;
 }
 
-function loadLocal(){
- var merged=[];
- var keys=[CACHE_K,LOCAL_K];
- for(var i=0;i<keys.length;i++){
-  try{
-   var d=JSON.parse(LS.get(keys[i])||'null');
-   if(d&&isGaragePayload(d)){
-    if(d.deps&&Array.isArray(d.deps)&&d.deps.length){DEPS=cloneDeps(d.deps)}
-    var a=toArr(d.items);
-    if(a&&a.length){merged=merged.concat(a)}
-   }
-  }catch(e){}
- }
- return sanitizeItemsList(merged);
-}
-function saveLocal(items){
- DEPS=cloneDeps(DEPS);
- ITEMS=sanitizeItemsList(items);
- try{ LS.set(LOCAL_K,JSON.stringify({items:ITEMS,deps:DEPS})) }catch(e){ toast('Локальное хранилище переполнено',true) }
-}
-function cacheItems(){
+function saveToIndexedDB(){
  DEPS=cloneDeps(DEPS);
  ITEMS=sanitizeItemsList(ITEMS);
- try{LS.set(CACHE_K,JSON.stringify({rev:localRev,items:ITEMS,deps:DEPS}))}catch(e){}
+ return idbSaveState({
+  rev:localRev,
+  items:ITEMS,
+  deps:DEPS,
+  deletedIds:DELETED_IDS,
+  savedAt:Date.now()
+ });
 }
-function loadCache(){
- try{
-  var c=JSON.parse(LS.get(CACHE_K)||'null');
-  if(c&&isGaragePayload(c)){
-   var a=toArr(c.items)||[];
-   return {
-    rev:(typeof c.rev==='number'?c.rev:0),
-    items:sanitizeItemsList(a),
-    deps:(c.deps&&Array.isArray(c.deps)&&c.deps.length)?cloneDeps(c.deps):null
-   };
-  }
- }catch(e){}
- return null;
-}
+
 function byId(id){for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].id===id){return ITEMS[i]}}return null}
 function countItems(kind,cat,dp){
  var n=0;
@@ -642,9 +697,9 @@ function countClassUsage(depKey,clsKey){
  return n;
 }
 
-/* ===================== СИНХРОНИЗАЦИЯ И АВТОВОССТАНОВЛЕНИЕ С GITHUB ===================== */
-var NET_TO_READ=8000;
-var NET_TO_WRITE=20000;
+/* ===================== НАДЁЖНАЯ СИНХРОНИЗАЦИЯ С GITHUB ===================== */
+var NET_TO_READ=12000;
+var NET_TO_WRITE=35000;
 var GARAGE_DATA_FILE='garage_data.json';
 var GARAGE_REV_FILE='garage_rev.txt';
 
@@ -656,13 +711,23 @@ function rawGet(file,br){
   return r.text();
  });
 }
-function apiText(path,auth){
- var h={Accept:'application/vnd.github.raw'};
- if(auth&&ADMIN_KEY){h.Authorization='token '+ADMIN_KEY}
- return fetchT('https://api.github.com/repos/'+REPO+'/contents/'+path+'?t='+Date.now(),{headers:h,cache:'no-store'},NET_TO_READ).then(function(r){
-  if(!r.ok){var e=new Error(r.status);if(r.status===403&&!(auth&&ADMIN_KEY)){e.rl=true}throw e}
-  return r.text();
- });
+function apiBlobBySha(sha){
+ var h={Accept:'application/vnd.github+json'};
+ if(ADMIN_KEY){h.Authorization='token '+ADMIN_KEY}
+ return fetchT('https://api.github.com/repos/'+REPO+'/git/blobs/'+sha+'?t='+Date.now(),{headers:h,cache:'no-store'},NET_TO_READ)
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(function(j){return b64d(String(j.content||'').replace(/\s+/g,''))});
+}
+function apiFileContent(path){
+ var h={Accept:'application/vnd.github+json'};
+ if(ADMIN_KEY){h.Authorization='token '+ADMIN_KEY}
+ return fetchT('https://api.github.com/repos/'+REPO+'/contents/'+path+'?t='+Date.now(),{headers:h,cache:'no-store'},NET_TO_READ)
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(function(j){
+   if(j&&j.content){return b64d(String(j.content).replace(/\s+/g,''))}
+   if(j&&j.sha){return apiBlobBySha(j.sha)}
+   throw new Error('empty');
+  });
 }
 function ghHeaders(){return {Authorization:'token '+ADMIN_KEY,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
 function ghReq(method,path,body){
@@ -675,38 +740,41 @@ function ghReq(method,path,body){
   return r.status===204?null:r.json();
  });
 }
-function parseRevTxt(t){
- t=String(t||'').trim();
- var i=t.indexOf(':');
- if(i<0){return {rev:parseInt(t,10)||0,sha:null}}
- return {rev:parseInt(t.substring(0,i),10)||0,sha:t.substring(i+1).trim()};
-}
 
 var pushTimer=null, pushInFlight=false, dataDirty=false, pushRetries=0;
 var lastCommitSha=null, lastTreeSha=null;
 
 function commit(){
  syncGlobalOwnerAuth();
- saveLocal(ITEMS);
- cacheItems();
+ localRev=(typeof localRev==='number'?localRev:0)+1;
+ saveToIndexedDB();
  if(!REPO||!adminMode||!ADMIN_KEY){ return }
  dataDirty=true;
  LS.set(PENDING_K,String(Date.now()));
- if(pushInFlight||pushTimer){ return }
- pushTimer=setTimeout(doPush,150);
+ setSyncStatus('busy','⏳ Сохранение…');
+ if(pushInFlight){ return }
+ if(pushTimer){ clearTimeout(pushTimer) }
+ pushTimer=setTimeout(doPush,120);
 }
 
 function doPush(){
  pushTimer=null;
+ syncGlobalOwnerAuth();
  if(!adminMode||!REPO||!ADMIN_KEY||pushInFlight||!dataDirty){ return }
  DEPS=cloneDeps(DEPS);
  ITEMS=sanitizeItemsList(ITEMS);
- var rev=(typeof localRev==='number'?localRev:0)+1;
- var snapshot=JSON.stringify({rev:rev,items:ITEMS,deps:DEPS});
+ var rev=localRev;
+ var snapshot=JSON.stringify({
+  rev:rev,
+  items:ITEMS,
+  deps:DEPS,
+  deletedIds:DELETED_IDS
+ });
  dataDirty=false;
- needSeed=false;
  pushInFlight=true;
  pendingRev=rev;
+ setSyncStatus('busy','⏳ Сохранение в GitHub…');
+
  var dataSha=null;
  ghReq('POST','git/blobs',{content:b64e(snapshot),encoding:'base64'}).then(function(b){
   dataSha=b.sha;
@@ -732,7 +800,7 @@ function doPush(){
   return base.then(function(b){
    return ghReq('POST','git/trees',{base_tree:b.t,tree:tree}).then(function(nt){
     return ghReq('POST','git/commits',{message:'garage sync: '+rev,tree:nt.sha,parents:[b.c]}).then(function(nc){
-     return ghReq('PATCH','git/refs/heads/'+BRANCH,{sha:nc.sha}).then(function(){
+     return ghReq('PATCH','git/refs/heads/'+BRANCH,{sha:nc.sha,force:true}).then(function(){
       lastCommitSha=nc.sha;
       lastTreeSha=nt.sha;
      });
@@ -742,32 +810,37 @@ function doPush(){
  }).then(function(){
   pushInFlight=false;
   pushRetries=0;
-  localRev=rev;
   pendingRev=null;
-  cacheItems();
-  saveLocal(ITEMS);
+  saveToIndexedDB();
   LS.remove(PENDING_K);
+  setSyncStatus('ok','✓ Сохранено в GitHub');
   if(dataDirty){ pushTimer=setTimeout(doPush,150) }
  }).catch(function(code){
   pushInFlight=false;
   pendingRev=null;
-  if(code===422&&pushRetries<3){
+  dataDirty=true;
+  lastCommitSha=null;
+  lastTreeSha=null;
+  if(pushRetries<4){
    pushRetries++;
-   lastCommitSha=null;
-   lastTreeSha=null;
-   dataDirty=true;
-   pushTimer=setTimeout(doPush,400);
+   pushTimer=setTimeout(doPush,800);
+  }else{
+   setSyncStatus('err','⚠️ Ошибка GitHub ('+code+')');
   }
  });
 }
 
-/* Проверяет и garage_data.json, и старый data.json (если там остались залитые вами машины/скины) */
-function tryFetchGarageFile(filename){
- return rawGet(filename).catch(function(){
-  return apiText(filename,!!ADMIN_KEY);
+/* Загрузка JSON файла с GitHub (сначала свежий API или raw) */
+function fetchRemoteGarageJson(filename){
+ return apiFileContent(filename).catch(function(){
+  return rawGet(filename);
  }).then(function(txt){
   var j=JSON.parse(txt);
   if(!isGaragePayload(j))throw new Error('not garage');
+  if(j.deletedIds&&typeof j.deletedIds==='object'){
+   for(var dk in j.deletedIds){if(j.deletedIds[dk])DELETED_IDS[dk]=1}
+   try{LS.set(DEL_K,JSON.stringify(DELETED_IDS))}catch(e){}
+  }
   return {
    rev:(typeof j.rev==='number'?j.rev:0),
    items:sanitizeItemsList(toArr(j.items)||[]),
@@ -776,34 +849,114 @@ function tryFetchGarageFile(filename){
  });
 }
 
-function initRemote(){
- ITEMS=loadLocal();
- booted=true;
- render();
+function showLoadingSkeleton(){
+ var grid=$('#vgrid');
+ if(!grid)return;
+ var h='';
+ for(var i=0;i<10;i++){
+  h+='<div class="vcard sk"><div class="skph"></div><div class="skb" style="width:76%"></div><div class="skb" style="width:52%"></div></div>';
+ }
+ grid.innerHTML=h;
+}
 
- if(!REPO)return;
+/* ЗАГРУЗКА:
+   1. Сразу читаем полный список (все 107+ машин) из безлимитной IndexedDB — он отрисовывается мгновенно без скачка!
+   2. Если у владельца есть несохранённые правки (PENDING_K), отправляем их на GitHub, НЕ перезаписывая старым файлом с сервера.
+   3. Только если на сервере ревизия новее (или база в браузере пуста при самом первом входе), загружаем список с сервера целиком. */
+function initApp(){
+ idbGetState().then(function(saved){
+  var hasPending=!!LS.get(PENDING_K);
+  if(saved&&saved.items&&saved.items.length){
+   if(saved.deletedIds&&typeof saved.deletedIds==='object'){
+    for(var k in saved.deletedIds){if(saved.deletedIds[k])DELETED_IDS[k]=1}
+   }
+   if(saved.deps&&saved.deps.length){DEPS=cloneDeps(saved.deps)}
+   localRev=(typeof saved.rev==='number'?saved.rev:0);
+   ITEMS=sanitizeItemsList(saved.items);
+   booted=true;
+   render();
+  }else{
+   showLoadingSkeleton();
+  }
 
- /* Пытаемся подтянуть актуальные данные из garage_data.json и из старого data.json */
- Promise.all([
-  tryFetchGarageFile(GARAGE_DATA_FILE).catch(function(){return null}),
-  tryFetchGarageFile('data.json').catch(function(){return null})
- ]).then(function(results){
-  var g1=results[0];
-  var g2=results[1];
-  var combined=ITEMS.slice();
-  if(g1&&g1.items&&g1.items.length)combined=combined.concat(g1.items);
-  if(g2&&g2.items&&g2.items.length)combined=combined.concat(g2.items);
+  if(!REPO){
+   booted=true;
+   render();
+   return;
+  }
 
-  var bestDeps=(g1&&g1.deps)?g1.deps:((g2&&g2.deps)?g2.deps:null);
-  if(bestDeps)DEPS=cloneDeps(bestDeps);
+  /* Если владелец что-то изменил/удалил и обновил страницу — пушим его актуальное состояние в GitHub */
+  if(hasPending&&ITEMS.length&&adminMode&&ADMIN_KEY){
+   dataDirty=true;
+   doPush();
+   return;
+  }
 
-  var maxRev=Math.max(localRev,(g1?g1.rev:0),(g2?g2.rev:0));
-  localRev=maxRev;
-  ITEMS=sanitizeItemsList(combined);
-  saveLocal(ITEMS);
-  cacheItems();
-  render();
- }).catch(function(){});
+  /* Проверяем серверные файлы: выбираем самый актуальный полный набор (БЕЗ склеивания старых удалённых машин!) */
+  Promise.all([
+   fetchRemoteGarageJson(GARAGE_DATA_FILE).catch(function(){return null}),
+   fetchRemoteGarageJson('data.json').catch(function(){return null})
+  ]).then(function(res){
+   var r1=res[0];
+   var r2=res[1];
+   var chosen=null;
+
+   /* Если в IndexedDB уже лежит актуальный полный список и его ревизия >= серверной, ничего не перерисовываем */
+   if(ITEMS.length>0){
+    var bestRemoteRev=Math.max(r1?r1.rev:0, r2?r2.rev:0);
+    if(localRev>=bestRemoteRev && ITEMS.length >= Math.max(r1?r1.items.length:0, r2?r2.items.length:0)){
+     return;
+    }
+   }
+
+   /* Если один из файлов содержит полный каталог (например 107 машин в data.json против 11 в старом garage_data.json) — берём полный и сразу синхронизируем */
+   if(r1&&r2){
+    if(r1.rev>r2.rev && r1.items.length>=r2.items.length){
+     chosen=r1;
+    }else if(r2.items.length>r1.items.length){
+     /* Однократная миграция полного списка из data.json + новых карточек из garage_data.json (с фильтрацией DELETED_IDS) */
+     var mergedMap={};
+     var mergedArr=[];
+     r2.items.concat(r1.items).forEach(function(it){
+      if(!it||!it.id||DELETED_IDS[it.id])return;
+      if(!mergedMap[it.id]){
+       mergedMap[it.id]=it;
+       mergedArr.push(it);
+      }else{
+       var idx=mergedArr.indexOf(mergedMap[it.id]);
+       if(idx>=0)mergedArr[idx]=it;
+       mergedMap[it.id]=it;
+      }
+     });
+     chosen={
+      rev:Math.max(r1.rev,r2.rev)+1,
+      items:sanitizeItemsList(mergedArr),
+      deps:r1.deps||r2.deps
+     };
+     if(adminMode&&ADMIN_KEY){dataDirty=true}
+    }else{
+     chosen=r1;
+    }
+   }else{
+    chosen=r1||r2;
+   }
+
+   if(chosen){
+    if(chosen.deps&&chosen.deps.length){DEPS=cloneDeps(chosen.deps)}
+    localRev=Math.max(localRev,chosen.rev||0);
+    ITEMS=sanitizeItemsList(chosen.items);
+    saveToIndexedDB();
+    booted=true;
+    render();
+    if(dataDirty&&adminMode&&ADMIN_KEY){doPush()}
+   }else if(!booted){
+    booted=true;
+    render();
+   }
+  }).catch(function(){
+   if(!booted){booted=true;render()}
+  });
+ });
 }
 
 function renderTop(){
@@ -1009,7 +1162,7 @@ function setClassColor(depK,clsK,c){
 }
 window.setClassColor=setClassColor;
 
-/* ===================== СОСТОЯНИЕ И РЕНДЕР (ЯВНАЯ ПРИВЯЗКА К WINDOW) ===================== */
+/* ===================== СОСТОЯНИЕ И РЕНДЕР ===================== */
 var state={kind:'cars',cat:'main',dep:'all',cls:'all',q:''};
 
 function setKind(k){
@@ -1398,12 +1551,13 @@ function delItem(id){
  var it=byId(id);
  if(!it){return}
  if(!window.confirm('Удалить «'+(it.name||'без названия')+'»?')){return}
+ markDeletedId(id);
  for(var i=0;i<ITEMS.length;i++){
   if(ITEMS[i].id===id){ ITEMS.splice(i,1); break }
  }
  commit();
  render();
- toast('Запись удалена');
+ toast('Запись удалена навсегда');
 }
 window.delItem=delItem;
 
@@ -1433,7 +1587,7 @@ function compressImage(file,cb){
  reader.onload=function(ev){
   var img=new Image();
   img.onload=function(){
-   var MAX=1200;
+   var MAX=1000;
    var w=img.naturalWidth||img.width;
    var h=img.naturalHeight||img.height;
    var k=Math.min(1,MAX/Math.max(w,h));
@@ -1442,7 +1596,7 @@ function compressImage(file,cb){
    cv.height=Math.max(1,Math.round(h*k));
    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
    var out;
-   try{ out=cv.toDataURL('image/jpeg',.85) }catch(e){ out=ev.target.result }
+   try{ out=cv.toDataURL('image/jpeg',.82) }catch(e){ out=ev.target.result }
    if(cb){cb(out)}
   };
   img.onerror=function(){
@@ -1517,8 +1671,7 @@ window.closeLb=closeLb;
  document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){ closeLb(); closeC(); closeM() }
  });
- if(REPO){ initRemote() }
- else{ ITEMS=loadLocal(); render() }
+ initApp();
 })();
 </script>
 </body>
