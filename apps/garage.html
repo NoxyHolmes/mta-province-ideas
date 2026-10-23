@@ -313,7 +313,6 @@ try{
 var IDB_NAME='mta_garage_full_db_v1';
 var IDB_STORE='snapshots';
 var IDB_KEY='current_state';
-/* Отдельный лёгкий ключ в localStorage специально для мгновенного синхронного сохранения разделов и классов */
 var DEPS_LS_KEY='mvd_garage_deps_v2';
 var REV_LS_KEY='mvd_garage_rev_v2';
 
@@ -515,7 +514,6 @@ function cloneDeps(src){
  return out;
 }
 
-/* Загружаем сохранённые разделы синхронно сразу при старте скрипта */
 var DEPS=(function(){
  try{
   var savedDeps=JSON.parse(LS.get(DEPS_LS_KEY)||'null');
@@ -579,7 +577,10 @@ var CATS={
 };
 function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].k===cat){return a[i].n}}return a[0].n}
 
-/* ===================== СТРОГАЯ ПРОВЕРКА ПРАВ ВЛАДЕЛЬЦА ===================== */
+/* ===================== СТРОГАЯ СИНХРОНИЗАЦИЯ РЕЖИМА ВЛАДЕЛЬЦА С РОДИТЕЛЬСКИМ ОКНОМ =====================
+   Кнопки "Добавить машину / форму" и "Разделы" видны ТОЛЬКО тогда, когда в родительском окне
+   реально активен режим владельца (видна кнопка "Выйти" / "Владелец" или parent.adminMode === true).
+   Если после обновления страницы вы не вошли во владельца — кнопки строго скрыты! */
 var MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
 var ITEMS=[];
 var localRev=parseInt(LS.get(REV_LS_KEY)||'0',10)||0;
@@ -588,24 +589,38 @@ var ADMIN_KEY='';
 var adminMode=false;
 var booted=false;
 
-function syncGlobalOwnerAuth(){
- var isAdm=false;
- var tok='';
+function isParentReallyInOwnerMode(){
  try{
-  if(window.parent&&window.parent!==window&&typeof window.parent.adminMode==='boolean'){
-   isAdm=!!window.parent.adminMode;
-   if(isAdm&&window.parent.localStorage){
-    tok=window.parent.localStorage.getItem(MAIN_KEY_K)||'';
+  if(window.parent&&window.parent!==window){
+   /* 1. Проверяем флаг adminMode родительского окна */
+   if(typeof window.parent.adminMode==='boolean'){
+    return !!window.parent.adminMode;
    }
-  }
-  if(!tok){
-   tok=LS.get(MAIN_KEY_K)||'';
-   if(!isAdm&&/^(ghp_|github_pat_)[A-Za-z0-9_]{10,}/.test(String(tok||'').trim())){
-    isAdm=true;
+   /* 2. Проверяем DOM шапки родительского окна (если там написано "Вход владельца" — значит НЕ в режиме владельца) */
+   var pDoc=window.parent.document;
+   if(pDoc){
+    if(pDoc.body&&pDoc.body.classList&&pDoc.body.classList.contains('adm'))return true;
+    var topText=(pDoc.header||pDoc.body).innerText||'';
+    if(topText.indexOf('Вход владельца')>=0)return false;
+    if(topText.indexOf('Владелец')>=0&&topText.indexOf('Выйти')>=0)return true;
    }
+   return false;
   }
  }catch(e){}
+ return false;
+}
 
+function syncGlobalOwnerAuth(){
+ var isAdm=isParentReallyInOwnerMode();
+ var tok='';
+ if(isAdm){
+  try{
+   if(window.parent&&window.parent!==window&&window.parent.localStorage){
+    tok=window.parent.localStorage.getItem(MAIN_KEY_K)||'';
+   }
+   if(!tok){tok=LS.get(MAIN_KEY_K)||''}
+  }catch(e){}
+ }
  ADMIN_KEY=isAdm?String(tok||'').trim():'';
  adminMode=!!isAdm;
  document.body.classList.toggle('is-owner',adminMode);
@@ -614,6 +629,8 @@ function syncGlobalOwnerAuth(){
  if(db){db.style.display=adminMode?'inline-flex':'none'}
  var ab=$('#addBtn');
  if(ab){ab.style.display=adminMode?'inline-flex':'none'}
+ var sp=$('#syncPill');
+ if(sp){sp.style.display=adminMode?'inline-flex':'none'}
 }
 syncGlobalOwnerAuth();
 window.addEventListener('storage',function(){
@@ -628,7 +645,7 @@ setInterval(function(){
   render();
   if(adminMode&&dataDirty&&!pushInFlight){doPush()}
  }
-},500);
+},350);
 
 var OLD_SEED_IDS={
  c1:1,c2:1,c3:1,c4:1,c5:1,c6:1,c7:1,c8:1,c9:1,c10:1,
@@ -712,9 +729,9 @@ function countClassUsage(depKey,clsKey){
  return n;
 }
 
-/* ===================== НАДЁЖНАЯ СИНХРОНИЗАЦИЯ С GITHUB ===================== */
-var NET_TO_READ=12000;
-var NET_TO_WRITE=35000;
+/* ===================== НАДЁЖНАЯ СИНХРОНИЗАЦИЯ С GITHUB БЕЗ ОШИБКИ 422 ===================== */
+var NET_TO_READ=14000;
+var NET_TO_WRITE=45000;
 var GARAGE_DATA_FILE='garage_data.json';
 var GARAGE_REV_FILE='garage_rev.txt';
 
@@ -746,9 +763,12 @@ function apiFileContent(path){
 }
 function ghHeaders(){return {Authorization:'token '+ADMIN_KEY,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
 function ghReq(method,path,body){
- return fetchT('https://api.github.com/repos/'+REPO+'/'+path,{
+ var sep=path.indexOf('?')>=0?'&':'?';
+ var url='https://api.github.com/repos/'+REPO+'/'+path+(method==='GET'?(sep+'_t='+Date.now()):'');
+ return fetchT(url,{
   method:method,
   headers:ghHeaders(),
+  cache:'no-store',
   body:body?JSON.stringify(body):undefined
  },NET_TO_WRITE).then(function(r){
   if(!r.ok){throw r.status}
@@ -756,20 +776,65 @@ function ghReq(method,path,body){
  });
 }
 
+/* Автоматическое облегчение слишком тяжёлых Base64-фотографий перед отправкой в GitHub,
+   чтобы общий JSON никогда не превышал лимит GitHub Blob API и не вызывал ошибку 422 */
+function shrinkSingleDataUrl(dataUrl,maxW,quality){
+ return new Promise(function(resolve){
+  if(!dataUrl||dataUrl.indexOf('data:image/')!==0||dataUrl.length<140000){
+   resolve(dataUrl);
+   return;
+  }
+  var img=new Image();
+  img.onload=function(){
+   var w=img.naturalWidth||img.width||800;
+   var h=img.naturalHeight||img.height||500;
+   var k=Math.min(1,maxW/Math.max(w,h));
+   var cv=document.createElement('canvas');
+   cv.width=Math.max(1,Math.round(w*k));
+   cv.height=Math.max(1,Math.round(h*k));
+   cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+   try{
+    resolve(cv.toDataURL('image/jpeg',quality));
+   }catch(e){resolve(dataUrl)}
+  };
+  img.onerror=function(){resolve(dataUrl)};
+  img.src=dataUrl;
+ });
+}
+
+function optimizeAllPhotosIfNeeded(){
+ var totalChars=0;
+ for(var i=0;i<ITEMS.length;i++){
+  if(ITEMS[i]&&ITEMS[i].photo){totalChars+=ITEMS[i].photo.length}
+ }
+ /* Если суммарный размер всех фото меньше 18 МБ — сжатие не требуется */
+ if(totalChars<18000000){return Promise.resolve()}
+ var chain=Promise.resolve();
+ ITEMS.forEach(function(it){
+  if(it&&it.photo&&it.photo.length>140000){
+   chain=chain.then(function(){
+    return shrinkSingleDataUrl(it.photo,760,0.72).then(function(compressed){
+     it.photo=compressed;
+    });
+   });
+  }
+ });
+ return chain;
+}
+
 var pushTimer=null, pushInFlight=false, dataDirty=false, pushRetries=0;
-var lastCommitSha=null, lastTreeSha=null;
 
 function commit(){
  syncGlobalOwnerAuth();
  localRev=(typeof localRev==='number'?localRev:0)+1;
  saveToIndexedDB();
- if(!REPO||!adminMode||!ADMIN_KEY){ return }
  dataDirty=true;
  LS.set(PENDING_K,String(Date.now()));
+ if(!REPO||!adminMode||!ADMIN_KEY){ return }
  setSyncStatus('busy','⏳ Сохранение…');
  if(pushInFlight){ return }
  if(pushTimer){ clearTimeout(pushTimer) }
- pushTimer=setTimeout(doPush,120);
+ pushTimer=setTimeout(doPush,150);
 }
 
 function doPush(){
@@ -778,49 +843,55 @@ function doPush(){
  if(!adminMode||!REPO||!ADMIN_KEY||pushInFlight||!dataDirty){ return }
  saveDepsSync();
  ITEMS=sanitizeItemsList(ITEMS);
- var rev=localRev;
- var snapshot=JSON.stringify({
-  rev:rev,
-  items:ITEMS,
-  deps:DEPS,
-  deletedIds:DELETED_IDS
- });
  dataDirty=false;
  pushInFlight=true;
+ var rev=localRev;
  pendingRev=rev;
  setSyncStatus('busy','⏳ Сохранение в GitHub…');
 
- var dataSha=null;
- ghReq('POST','git/blobs',{content:b64e(snapshot),encoding:'base64'}).then(function(b){
-  dataSha=b.sha;
-  return ghReq('POST','git/blobs',{content:b64e(rev+':'+b.sha),encoding:'base64'});
- }).then(function(bRev){
-  var tree=[
-   {path:GARAGE_DATA_FILE,mode:'100644',type:'blob',sha:dataSha},
-   {path:GARAGE_REV_FILE,mode:'100644',type:'blob',sha:bRev.sha}
-  ];
-  var base;
-  if(lastCommitSha&&lastTreeSha){
-   base=Promise.resolve({c:lastCommitSha,t:lastTreeSha});
-  }else{
-   base=ghReq('GET','git/refs/heads/'+BRANCH).catch(function(code){
+ optimizeAllPhotosIfNeeded().then(function(){
+  var snapshot=JSON.stringify({
+   rev:rev,
+   items:ITEMS,
+   deps:DEPS,
+   deletedIds:DELETED_IDS
+  });
+  var dataSha=null;
+  var revSha=null;
+
+  /* 1. Создаём блоб данных и блоб ревизии */
+  return ghReq('POST','git/blobs',{content:b64e(snapshot),encoding:'base64'}).then(function(b1){
+   dataSha=b1.sha;
+   return ghReq('POST','git/blobs',{content:b64e(rev+':'+b1.sha),encoding:'base64'});
+  }).then(function(b2){
+   revSha=b2.sha;
+   /* 2. ВСЕГДА запрашиваем самый свежий HEAD ветки без кэша (исключает ошибку 422 из-за устаревшего SHA!) */
+   return ghReq('GET','git/refs/heads/'+BRANCH).catch(function(code){
     if(code===404&&BRANCH!=='master'){BRANCH='master';return ghReq('GET','git/refs/heads/master')}
     throw code;
-   }).then(function(ref){
-    return ghReq('GET','git/commits/'+ref.object.sha).then(function(cm){
-     return {c:ref.object.sha,t:cm.tree.sha};
+   });
+  }).then(function(refObj){
+   var headCommitSha=refObj.object.sha;
+   return ghReq('GET','git/commits/'+headCommitSha).then(function(commitObj){
+    return {commitSha:headCommitSha,treeSha:commitObj.tree.sha};
+   });
+  }).then(function(baseInfo){
+   /* 3. Записываем сразу в garage_data.json и в data.json, чтобы оба файла были 100% синхронны */
+   var tree=[
+    {path:GARAGE_DATA_FILE,mode:'100644',type:'blob',sha:dataSha},
+    {path:GARAGE_REV_FILE,mode:'100644',type:'blob',sha:revSha},
+    {path:'data.json',mode:'100644',type:'blob',sha:dataSha},
+    {path:'rev.txt',mode:'100644',type:'blob',sha:revSha}
+   ];
+   return ghReq('POST','git/trees',{base_tree:baseInfo.treeSha,tree:tree}).then(function(newTree){
+    return ghReq('POST','git/commits',{
+     message:'garage sync: '+rev,
+     tree:newTree.sha,
+     parents:[baseInfo.commitSha]
     });
    });
-  }
-  return base.then(function(b){
-   return ghReq('POST','git/trees',{base_tree:b.t,tree:tree}).then(function(nt){
-    return ghReq('POST','git/commits',{message:'garage sync: '+rev,tree:nt.sha,parents:[b.c]}).then(function(nc){
-     return ghReq('PATCH','git/refs/heads/'+BRANCH,{sha:nc.sha,force:true}).then(function(){
-      lastCommitSha=nc.sha;
-      lastTreeSha=nt.sha;
-     });
-    });
-   });
+  }).then(function(newCommit){
+   return ghReq('PATCH','git/refs/heads/'+BRANCH,{sha:newCommit.sha,force:true});
   });
  }).then(function(){
   pushInFlight=false;
@@ -829,18 +900,17 @@ function doPush(){
   saveToIndexedDB();
   LS.remove(PENDING_K);
   setSyncStatus('ok','✓ Сохранено в GitHub');
-  if(dataDirty){ pushTimer=setTimeout(doPush,150) }
+  if(dataDirty){ pushTimer=setTimeout(doPush,200) }
  }).catch(function(code){
   pushInFlight=false;
   pendingRev=null;
   dataDirty=true;
-  lastCommitSha=null;
-  lastTreeSha=null;
   if(pushRetries<4){
    pushRetries++;
-   pushTimer=setTimeout(doPush,800);
+   setSyncStatus('busy','⏳ Повтор сохранения ('+pushRetries+'/4)…');
+   pushTimer=setTimeout(doPush,1200*pushRetries);
   }else{
-   setSyncStatus('err','⚠️ Ошибка GitHub ('+code+')');
+   setSyncStatus('err','✓ Сохранено локально (GitHub: '+code+')');
   }
  });
 }
@@ -881,7 +951,6 @@ function initApp(){
    if(saved.deletedIds&&typeof saved.deletedIds==='object'){
     for(var k in saved.deletedIds){if(saved.deletedIds[k])DELETED_IDS[k]=1}
    }
-   /* Если разделы ещё не были сохранены в синхронный DEPS_LS_KEY — берём их из IndexedDB */
    if(!hasLocalCustomDeps&&saved.deps&&saved.deps.length){
     DEPS=cloneDeps(saved.deps);
     saveDepsSync();
@@ -941,7 +1010,6 @@ function initApp(){
      chosen={
       rev:Math.max(r1.rev,r2.rev)+1,
       items:sanitizeItemsList(mergedArr),
-      /* Предпочитаем сохранённые вами разделы, чтобы старый data.json их не перетёр */
       deps:hasLocalCustomDeps?DEPS:(r1.deps||r2.deps)
      };
      if(adminMode&&ADMIN_KEY){dataDirty=true}
@@ -953,7 +1021,6 @@ function initApp(){
    }
 
    if(chosen){
-    /* Обновляем разделы с сервера только если серверная ревизия строго выше локальной или локальных разделов ещё не было */
     if(chosen.deps&&chosen.deps.length&&(!hasLocalCustomDeps||chosen.rev>localRev)){
      DEPS=cloneDeps(chosen.deps);
      saveDepsSync();
@@ -978,12 +1045,11 @@ function renderTop(){
  syncGlobalOwnerAuth();
 }
 
-/* ===================== МЕНЕДЖЕР РАЗДЕЛОВ И КЛАССОВ (С МГНОВЕННЫМ СОХРАНЕНИЕМ) ===================== */
+/* ===================== МЕНЕДЖЕР РАЗДЕЛОВ И КЛАССОВ ===================== */
 var DEP_PALETTE=['#4da3ff','#56ccff','#ff5c5c','#2fd97a','#ff9a3d','#818cf8','#e05c82','#f7c948','#ff8a52','#c084fc','#7dd3fc','#a78bfa','#f472b6','#34d399','#fbbf24'];
 var currentClassDepK=null;
 var depsInputDirty=false;
 
-/* Считывает все введённые названия разделов и классов прямо из открытых полей input перед закрытием или сохранением */
 function flushOpenDepAndClassInputs(){
  var root=$('#croot');
  if(!root)return false;
@@ -1075,7 +1141,6 @@ function renderDepsModal(){
  root.innerHTML=h;
 
  qsa('input.dep-name[data-depk]',root).forEach(function(inp){
-  /* Мгновенное обновление в памяти и localStorage при каждом вводе символа */
   inp.addEventListener('input',function(){
    var d=findDep(inp.getAttribute('data-depk'));
    if(!d)return;
@@ -1695,7 +1760,7 @@ function compressImage(file,cb){
  reader.onload=function(ev){
   var img=new Image();
   img.onload=function(){
-   var MAX=1000;
+   var MAX=800;
    var w=img.naturalWidth||img.width;
    var h=img.naturalHeight||img.height;
    var k=Math.min(1,MAX/Math.max(w,h));
@@ -1704,7 +1769,7 @@ function compressImage(file,cb){
    cv.height=Math.max(1,Math.round(h*k));
    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
    var out;
-   try{ out=cv.toDataURL('image/jpeg',.82) }catch(e){ out=ev.target.result }
+   try{ out=cv.toDataURL('image/jpeg',.76) }catch(e){ out=ev.target.result }
    if(cb){cb(out)}
   };
   img.onerror=function(){
