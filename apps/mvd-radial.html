@@ -116,6 +116,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 }
 .d-btn:hover{border-color:var(--acc)}
 .d-btn.warn:hover{border-color:var(--red);color:#fca5a5}
+.d-btn.fav-active{background:rgba(245,158,11,.22);border-color:#fbbf24;color:#fde047}
 
 #trunkKeyHint{
   position:fixed;
@@ -135,6 +136,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   box-shadow:0 14px 35px rgba(0,0,0,.65);
   flex-wrap:wrap;
   justify-content:center;
+  max-width:96vw;
 }
 #trunkKeyHint kbd{background:#2563eb;color:#fff;padding:2px 8px;border-radius:5px;font-weight:900;font-family:inherit}
 .trunk-toggle{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:1px solid #10b981;background:rgba(16,185,129,.15);color:#6ee7b7}
@@ -177,6 +179,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   fill:rgba(37,99,235,.9);
   stroke:#93c5fd;
 }
+/* Сектор Избранное */
+.r-sector.fav-sec{
+  fill:rgba(68,46,14,.94);
+  stroke:rgba(251,191,36,.6);
+}
+.r-sector.fav-sec:hover,.r-sector.fav-sec.active{
+  fill:rgba(217,119,6,.92);
+  stroke:#fde047;
+}
 
 .r-sub-sector{
   fill:rgba(20,30,52,.96);
@@ -188,6 +199,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .r-sub-sector:hover{
   fill:rgba(37,99,235,.92);
   stroke:#ffffff;
+}
+.r-sub-sector.fav-sub-sec{
+  fill:rgba(58,38,12,.96);
+  stroke:rgba(251,191,36,.65);
+}
+.r-sub-sector.fav-sub-sec:hover{
+  fill:rgba(217,119,6,.92);
+  stroke:#fef08a;
 }
 .r-sub-sector.attach-sec{
   fill:rgba(68,40,18,.96);
@@ -267,17 +286,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:16px;
 }
 .act-modal{
-  width:650px;
+  width:680px;
   max-width:96vw;
   background:#161b24;
   border:1px solid rgba(255,255,255,.14);
   border-radius:16px;
   padding:18px 20px;
   box-shadow:0 25px 70px rgba(0,0,0,.75);
-  max-height:86vh;
+  max-height:88vh;
   overflow-y:auto;
 }
-.act-m-title{font-weight:900;font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.act-m-title{font-weight:900;font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .act-opt{
   display:flex;
   align-items:center;
@@ -307,7 +326,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 }
 .tow-info-card b{color:#fcd34d}
 
-/* МИНИ-ИГРА ВЗЛОМА НАРУЧНИКОВ ОТВЁРТКОЙ */
+/* СТИЛИ 3 МИНИ-ИГР ВЗЛОМА НАРУЧНИКОВ (НАБОР ОТВЁРТОК 5 ШТ.) */
 .lockpick-box{
   background:#111621;
   border:1px solid #2b384e;
@@ -316,23 +335,48 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   text-align:center;
   margin-bottom:14px;
 }
-.lp-Cylinder{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  margin:0 auto 14px;
-  background:radial-gradient(circle,#263246,#111722);
-  border:4px solid #475569;
+.lp-steps{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.lp-step{
+  padding:6px 12px;
+  border-radius:9px;
+  font-size:11.5px;
+  font-weight:800;
+  background:#192130;
+  border:1px solid #2e3d56;
+  color:#8e95a2;
+}
+.lp-step.active{
+  background:rgba(124,58,237,.22);
+  border-color:#c084fc;
+  color:#fff;
+  box-shadow:0 0 12px rgba(192,132,252,.25);
+}
+.lp-step.done{
+  background:rgba(16,185,129,.2);
+  border-color:#34d399;
+  color:#6ee7b7;
+}
+.lp-kit-bar{
   display:flex;
   align-items:center;
-  justify-content:center;
-  font-size:38px;
-  box-shadow:inset 0 4px 14px rgba(0,0,0,.85);
-  position:relative;
+  justify-content:space-between;
+  background:rgba(245,158,11,.1);
+  border:1px solid rgba(245,158,11,.35);
+  border-radius:10px;
+  padding:9px 14px;
+  margin-bottom:14px;
+  font-size:12.5px;
+  font-weight:800;
 }
 .lp-track{
   position:relative;
-  height:28px;
+  height:30px;
   background:#192130;
   border:1px solid #334155;
   border-radius:14px;
@@ -343,8 +387,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   position:absolute;
   top:0;
   bottom:0;
-  left:35%;
-  width:30%;
+  left:36%;
+  width:28%;
   background:rgba(16,185,129,.28);
   border-left:2px solid #10b981;
   border-right:2px solid #10b981;
@@ -358,6 +402,60 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   background:#fbbf24;
   box-shadow:0 0 12px #fbbf24;
   left:0%;
+}
+/* Мини-игра 2: 3 штифта замка */
+.lp-pins-wrap{
+  display:flex;
+  justify-content:center;
+  gap:22px;
+  margin:16px 0;
+}
+.lp-pin-col{
+  width:64px;
+  height:140px;
+  background:#182030;
+  border:2px solid #334155;
+  border-radius:12px;
+  position:relative;
+  overflow:hidden;
+}
+.lp-pin-col.active{border-color:#c084fc;box-shadow:0 0 14px rgba(192,132,252,.35)}
+.lp-pin-col.locked{border-color:#10b981;background:rgba(16,185,129,.1)}
+.lp-pin-target{
+  position:absolute;
+  left:0;
+  right:0;
+  top:34%;
+  height:26%;
+  background:rgba(16,185,129,.25);
+  border-top:2px dashed #34d399;
+  border-bottom:2px dashed #34d399;
+}
+.lp-pin-bar{
+  position:absolute;
+  left:12px;
+  right:12px;
+  height:22px;
+  border-radius:6px;
+  background:linear-gradient(180deg,#fbbf24,#d97706);
+  box-shadow:0 0 10px rgba(251,191,36,.6);
+  top:70%;
+}
+/* Мини-игра 3: Силовой проворот пружины */
+.lp-power-wrap{
+  height:32px;
+  background:#182030;
+  border:2px solid #334155;
+  border-radius:16px;
+  overflow:hidden;
+  margin:14px 0;
+  position:relative;
+}
+.lp-power-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#3b82f6,#10b981);
+  transition:width .06s linear;
 }
 
 .mega-owner-box{
@@ -691,6 +789,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 </div>
 
 <div id="demoTopCtl">
+  <button class="d-btn" onclick="openFavoritesCatalogModal()">⭐ Настроить избранное</button>
   <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
 </div>
 
@@ -702,7 +801,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   <div id="radialWrap">
     <svg class="radial-svg" viewBox="0 0 600 600" id="radialSvg"></svg>
     <div class="r-labels" id="radialLabels"></div>
-    <div class="radial-center" id="radialCenter" onclick="toggleFacArc(false)">
+    <div class="radial-center" id="radialCenter" onclick="closeAllArcs()">
       <div class="rc-title" id="rcTitle">Взаимодействие</div>
       <div class="rc-sub" id="rcSub"></div>
     </div>
@@ -712,7 +811,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
     <span onclick="tryOpenTrunkSearch()" style="cursor:pointer">Возле авто · <kbd>E</kbd> Багажник</span>
     <span class="trunk-toggle" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Багажник: Открыт</span>
     <span class="trunk-toggle" id="btnTintMeter" onclick="toggleTintMeter()">📟 Замерщик тонировки: В руках</span>
-    <span class="trunk-toggle" id="btnScrewdriver" onclick="toggleScrewdriver()">🪛 Отвёртка: Есть в инвентаре</span>
+    <span class="trunk-toggle" id="btnScrewdriverKit" onclick="refillScrewdriverKit()">🧰 Набор отвёрток: 5 / 5 шт. (Пополнить)</span>
   </div>
 </div>
 
@@ -940,10 +1039,11 @@ var OFFICER_NAME = 'Евгений Холмс';
 var SUSPECT_NAME = 'Sergey_Vorovskoy';
 var TRUNK_OPEN = true;
 var HAS_TINT_METER = true;
-var HAS_SCREWDRIVER = true;
+/* Набор отвёрток содержит 5 отвёрток */
+var SCREWDRIVER_KIT_COUNT = 5;
 var SEARCH_MODE = 'player';
-var FAC_ARC_OPEN = false;
-var CUFFED = false;
+var ACTIVE_ARC = null; /* null | 'faction' | 'favorites' */
+var CUFFED = true;
 var ATTACHED_ENV = false;
 var IN_CAR_SUSPECTS = [];
 var ACTIVE_PURSUIT = null;
@@ -972,6 +1072,175 @@ var DEFAULT_MEGAPHONE_PHRASES = [
 
 var MEGAPHONE_PHRASES = [];
 
+/* ===================== СИСТЕМА «⭐ ИЗБРАННОЕ» В РАДИАЛЬНОМ МЕНЮ =====================
+   Позволяет добавлять в быстрый доступ как отдельные фразы мегафона (сразу с озвучкой),
+   так и любые действия из разных подменю радиального меню! */
+var FAV_LS_KEY = 'mvd_radial_favorites_v1';
+var FAVORITES_LIST = [];
+
+function loadFavorites() {
+  try {
+    var raw = JSON.parse(localStorage.getItem(FAV_LS_KEY) || 'null');
+    if (Array.isArray(raw)) {
+      FAVORITES_LIST = raw;
+      return;
+    }
+  } catch (e) {}
+  /* По умолчанию добавим пару удобных быстрых действий для демонстрации */
+  FAVORITES_LIST = [
+    { key: 'mega_id:m1', type: 'mega', megaId: 'm1', ic: '📢', name: 'Мегафон: Обочина' },
+    { key: 'act:idcard', type: 'act',  act: 'idcard', ic: '🪪', name: 'Удостоверение' },
+    { key: 'act:lockpick_cuffs', type: 'act', act: 'lockpick_cuffs', ic: '🪛', name: 'Освободить задержанного' }
+  ];
+}
+
+function saveFavorites() {
+  try {
+    localStorage.setItem(FAV_LS_KEY, JSON.stringify(FAVORITES_LIST));
+  } catch (e) {}
+  if (radialSyncChannel) {
+    try { radialSyncChannel.postMessage({ favorites: FAVORITES_LIST }); } catch (e) {}
+  }
+  renderRadialMenu();
+}
+
+function isFavKey(key) {
+  for (var i = 0; i < FAVORITES_LIST.length; i++) {
+    if (FAVORITES_LIST[i].key === key) return true;
+  }
+  return false;
+}
+
+window.toggleFavoriteItem = function(key, type, payload) {
+  var idx = -1;
+  for (var i = 0; i < FAVORITES_LIST.length; i++) {
+    if (FAVORITES_LIST[i].key === key) { idx = i; break; }
+  }
+  if (idx >= 0) {
+    FAVORITES_LIST.splice(idx, 1);
+  } else {
+    var item = Object.assign({ key: key, type: type }, payload || {});
+    FAVORITES_LIST.push(item);
+  }
+  saveFavorites();
+};
+
+window.executeFavoriteItem = function(favIndex) {
+  var fav = FAVORITES_LIST[favIndex];
+  if (!fav) return;
+  if (fav.type === 'mega') {
+    /* Находим фразу мегафона по ID или индексу и сразу воспроизводим её! */
+    var foundIdx = -1;
+    for (var i = 0; i < MEGAPHONE_PHRASES.length; i++) {
+      if (MEGAPHONE_PHRASES[i].id === fav.megaId || ('idx_' + i) === fav.megaId) {
+        foundIdx = i;
+        break;
+      }
+    }
+    if (foundIdx < 0 && typeof fav.megaIdx === 'number' && MEGAPHONE_PHRASES[fav.megaIdx]) {
+      foundIdx = fav.megaIdx;
+    }
+    if (foundIdx >= 0) {
+      useMegaphonePhrase(foundIdx);
+    } else {
+      addChat('err', '[Избранное] Эта фраза мегафона была удалена.');
+    }
+    return;
+  }
+  if (fav.type === 'glass_measure') {
+    doMeasureGlass(fav.gTitle, fav.gRes);
+    return;
+  }
+  if (fav.type === 'glass_remove') {
+    removeTintGlass(fav.gTitle);
+    return;
+  }
+  if (fav.type === 'tow_step') {
+    if (fav.step === 1) startTowProcess();
+    else if (fav.step === 2) loadCarOntoTowTruck();
+    else if (fav.step === 3) deliverCarToImpoundLot();
+    return;
+  }
+  if (fav.type === 'act') {
+    doFacAction(fav.act);
+  }
+};
+
+/* Окно быстрой настройки избранного (добавление/удаление любых действий и фраз мегафона) */
+window.openFavoritesCatalogModal = function() {
+  var back = document.getElementById('actModalBack');
+  var box  = document.getElementById('actModalBox');
+
+  var allCandidates = [
+    { key: 'act:idcard',         type: 'act', act: 'idcard',         ic: '🪪', name: 'Удостоверение МВД',              cat: 'Основные действия' },
+    { key: 'act:cuffs',          type: 'act', act: 'cuffs',          ic: '⛓️', name: 'Надеть / Снять наручники',       cat: 'Основные действия' },
+    { key: 'act:attach_env',     type: 'act', act: 'attach_env',     ic: '🔗', name: 'Прицепить к окружению',          cat: 'Основные действия' },
+    { key: 'act:lockpick_cuffs', type: 'act', act: 'lockpick_cuffs', ic: '🪛', name: 'Освободить задержанного (3 игры)',cat: 'Взлом наручников' },
+    { key: 'act:frisk_player',   type: 'act', act: 'frisk_player',   ic: '🔍', name: 'Обыск гражданина',               cat: 'Досмотр и обыск' },
+    { key: 'act:frisk_trunk',    type: 'act', act: 'frisk_trunk',    ic: '🚘', name: 'Обыск багажника авто',           cat: 'Досмотр и обыск' },
+    { key: 'act:seat_detainee',  type: 'act', act: 'seat_detainee',  ic: '🚔', name: 'Посадить задержанного в авто',   cat: 'Конвоирование' },
+    { key: 'act:unseat_detainee',type: 'act', act: 'unseat_detainee',ic: '🚪', name: 'Высадить задержанного из авто',  cat: 'Конвоирование' },
+    { key: 'act:tow_car',        type: 'act', act: 'tow_car',        ic: '🪝', name: 'Меню эвакуации авто',            cat: 'Эвакуация ТС' },
+    { key: 'tow:1',              type: 'tow_step', step: 1,          ic: '⏳', name: 'Эвакуация: 1. Старт (5 мин)',    cat: 'Эвакуация ТС' },
+    { key: 'tow:2',              type: 'tow_step', step: 2,          ic: '🪝', name: 'Эвакуация: 2. На эвакуатор',     cat: 'Эвакуация ТС' },
+    { key: 'tow:3',              type: 'tow_step', step: 3,          ic: '🅿️', name: 'Эвакуация: 3. Сдать в метку',    cat: 'Эвакуация ТС' },
+    { key: 'glass_m:1',          type: 'glass_measure', gTitle: 'Замерить лобовое стекло', gRes: 'Светопропускаемость: 15% (Норма: не менее 70% — Нарушение)', ic: '📟', name: 'Замер: Лобовое стекло', cat: 'Тонировка' },
+    { key: 'glass_r:1',          type: 'glass_remove',  gTitle: 'Снять тонировку с лобового стекла', ic: '🪟', name: 'Снять плёнку: Лобовое стекло', cat: 'Тонировка' },
+    { key: 'act:pursuit',        type: 'act', act: 'pursuit',        ic: '🎯', name: 'Преследование игрока',           cat: 'Патруль' }
+  ];
+
+  /* Добавляем все текущие фразы мегафона в список для добавления в Избранное */
+  MEGAPHONE_PHRASES.forEach(function(phr, idx) {
+    var mId = phr.id || ('idx_' + idx);
+    var shortTxt = phr.txt.length > 22 ? phr.txt.slice(0, 21) + '…' : phr.txt;
+    allCandidates.unshift({
+      key: 'mega_id:' + mId,
+      type: 'mega',
+      megaId: mId,
+      megaIdx: idx,
+      ic: '📢',
+      name: 'Мегафон №' + (idx + 1) + ': ' + shortTxt,
+      fullTxt: phr.txt,
+      cat: 'Быстрые фразы мегафона (включаются сразу)'
+    });
+  });
+
+  var rowsHtml = allCandidates.map(function(c) {
+    var active = isFavKey(c.key);
+    return '<div class="act-opt" onclick="toggleFavoriteFromModal(\'' + c.key.replace(/'/g, "\\'") + '\')">' +
+      '<div style="flex:1;min-width:0">' +
+        '<b>' + c.ic + ' ' + escHtml(c.name) + '</b>' +
+        '<span>Раздел: ' + escHtml(c.cat) + (c.fullTxt ? ' · «' + escHtml(c.fullTxt) + '»' : '') + '</span>' +
+      '</div>' +
+      '<button class="d-btn ' + (active ? 'fav-active' : '') + '" style="flex-shrink:0">' +
+        (active ? '⭐ В избранном' : '☆ Добавить в избранное') +
+      '</button>' +
+    '</div>';
+  }).join('');
+
+  box.innerHTML =
+    '<div class="act-m-title"><span>⭐ Настройка сектора «Избранное» (' + FAVORITES_LIST.length + ')</span></div>' +
+    '<div class="tow-info-card">' +
+      'Отметьте нужные вам фразы мегафона или действия из разных меню. Они появятся в секторе <b>«⭐ Избранное»</b> радиального меню и будут срабатывать <b>сразу в 1 клик</b>!' +
+    '</div>' +
+    rowsHtml +
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Готово</button></div>';
+
+  back.style.display = 'flex';
+  window._lastFavModalCandidates = allCandidates;
+};
+
+window.toggleFavoriteFromModal = function(key) {
+  var list = window._lastFavModalCandidates || [];
+  var found = null;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].key === key) { found = list[i]; break; }
+  }
+  if (!found) return;
+  toggleFavoriteItem(found.key, found.type, found);
+  openFavoritesCatalogModal();
+};
+
 /* ===================== МГНОВЕННАЯ СИНХРОНИЗАЦИЯ МЕЖДУ ВСЕМИ ПРЕДЛОЖЕНИЯМИ РАДИАЛЬНОГО МЕНЮ ===================== */
 var MEGA_IDB_NAME = 'mvd_megaphone_db_v2';
 var MEGA_IDB_STORE = 'phrases_store';
@@ -985,9 +1254,14 @@ try {
   if (typeof BroadcastChannel !== 'undefined') {
     radialSyncChannel = new BroadcastChannel('mvd_radial_sync_channel');
     radialSyncChannel.onmessage = function(ev) {
-      if (ev.data && Array.isArray(ev.data.phrases)) {
+      if (!ev.data) return;
+      if (Array.isArray(ev.data.phrases)) {
         MEGAPHONE_PHRASES = ev.data.phrases;
         localMegaRev = ev.data.rev || localMegaRev;
+      }
+      if (Array.isArray(ev.data.favorites)) {
+        FAVORITES_LIST = ev.data.favorites;
+        renderRadialMenu();
       }
     };
   }
@@ -1000,6 +1274,10 @@ window.addEventListener('storage', function(ev) {
         MEGAPHONE_PHRASES = st.phrases;
       }
     });
+  }
+  if (ev.key === FAV_LS_KEY) {
+    loadFavorites();
+    renderRadialMenu();
   }
 });
 
@@ -1159,15 +1437,16 @@ var NEARBY_PLAYERS = [
   { uid: '#В309ХК1', id: 52, inCar: true,  make: 'Lada Priora',       plate: 'Е824РС 52',  role: 'Водитель',  dist: 92 }
 ];
 
+/* Корневые сектора радиального меню (включая новый сектор «⭐ Избранное») */
 var ROOT_SECTORS = [
-  { id: 'faction', ic: '🛡️', name: 'Фракционное', isFac: true },
-  { id: 'docs',    ic: '🪪', name: 'Документы' },
-  { id: 'car',     ic: '🚕', name: 'Транспорт' },
-  { id: 'trade',   ic: '🤝', name: 'Обмен' },
-  { id: 'money',   ic: '💵', name: 'Передать деньги' },
-  { id: 'anim',    ic: '🕺', name: 'Анимации' },
-  { id: 'med',     ic: '🩹', name: 'Первая помощь' },
-  { id: 'other',   ic: '⚙️', name: 'Прочее' }
+  { id: 'faction',   ic: '🛡️', name: 'Фракционное', isFac: true },
+  { id: 'favorites', ic: '⭐', name: 'Избранное',   isFav: true },
+  { id: 'docs',      ic: '🪪', name: 'Документы' },
+  { id: 'car',       ic: '🚕', name: 'Транспорт' },
+  { id: 'trade',     ic: '🤝', name: 'Обмен' },
+  { id: 'money',     ic: '💵', name: 'Передать деньги' },
+  { id: 'anim',      ic: '🕺', name: 'Анимации' },
+  { id: 'med',       ic: '🩹', name: 'Первая помощь' }
 ];
 
 function polarToCartesian(cx, cy, r, angleDeg) {
@@ -1198,7 +1477,10 @@ function renderRadialMenu() {
     var a2 = (i + 1) * step - step / 2 - gap / 2;
     var p = document.createElementNS(ns, 'path');
     p.setAttribute('d', sectorPath(cx, cy, 78, 170, a1, a2));
-    p.setAttribute('class', 'r-sector' + (it.isFac ? (' fac-sec' + (FAC_ARC_OPEN ? ' active' : '')) : ''));
+    var cls = 'r-sector';
+    if (it.isFac) cls += ' fac-sec' + (ACTIVE_ARC === 'faction' ? ' active' : '');
+    if (it.isFav) cls += ' fav-sec' + (ACTIVE_ARC === 'favorites' ? ' active' : '');
+    p.setAttribute('class', cls);
     p.addEventListener('click', function() { onSectorClick(it.id); });
     svg.appendChild(p);
 
@@ -1207,11 +1489,13 @@ function renderRadialMenu() {
     div.className = 'r-lbl';
     div.style.left = pos.x + 'px';
     div.style.top = pos.y + 'px';
-    div.innerHTML = '<span class="ic">' + it.ic + '</span><span class="nm">' + it.name + '</span>';
+    var nmTxt = it.isFav ? (it.name + ' (' + FAVORITES_LIST.length + ')') : it.name;
+    div.innerHTML = '<span class="ic">' + it.ic + '</span><span class="nm">' + nmTxt + '</span>';
     lbls.appendChild(div);
   });
 
-  if (FAC_ARC_OPEN) {
+  /* ДУГА 1: ФРАКЦИОННОЕ МЕНЮ (С ОТДЕЛЬНОЙ КНОПКОЙ «ОСВОБОДИТЬ ЗАДЕРЖАННОГО») */
+  if (ACTIVE_ARC === 'faction') {
     var subList = [
       { id: 'idcard',       ic: '🪪', name: 'Удостоверение' },
       { id: 'cuffs',        ic: '⛓️', name: CUFFED ? 'Снять наручники' : 'Надеть наручники' }
@@ -1223,13 +1507,15 @@ function renderRadialMenu() {
         name: ATTACHED_ENV ? 'Отцепить от окружения' : 'Прицепить к окружению',
         isAttach: true
       });
-      subList.push({
-        id: 'lockpick_cuffs',
-        ic: '🪛',
-        name: 'Освободить задержанного',
-        isLockpick: true
-      });
     }
+    /* «Освободить задержанного» всегда вынесено как отдельное самостоятельное меню! */
+    subList.push({
+      id: 'lockpick_cuffs',
+      ic: '🪛',
+      name: 'Освободить задержанного',
+      isLockpick: true
+    });
+
     subList.push(
       { id: 'frisk_player', ic: '🔍', name: 'Обыск' },
       { id: 'frisk_trunk',  ic: '🚘', name: 'Обыск багажника' }
@@ -1288,18 +1574,60 @@ function renderRadialMenu() {
     });
   }
 
-  document.getElementById('rcTitle').textContent = FAC_ARC_OPEN ? 'Фракционное' : 'Взаимодействие';
+  /* ДУГА 2: СЕКТОР «⭐ ИЗБРАННОЕ» (БЫСТРЫЙ ЗАПУСК ЛЮБЫХ ДЕЙСТВИЙ И ФРАЗ МЕГАФОНА В 1 КЛИК) */
+  if (ACTIVE_ARC === 'favorites') {
+    var favArcList = FAVORITES_LIST.map(function(f, idx) {
+      return { favIdx: idx, ic: f.ic || '⭐', name: f.name || 'Действие' };
+    });
+    favArcList.push({ isConfig: true, ic: '➕', name: 'Настроить избранное' });
+
+    var fSpan = Math.min(260, Math.max(90, favArcList.length * 36));
+    var fStart = -fSpan / 2;
+    var fStep = fSpan / favArcList.length;
+
+    favArcList.forEach(function(fItem, s) {
+      var sa1 = fStart + s * fStep + 1.0;
+      var sa2 = fStart + (s + 1) * fStep - 1.0;
+      var sp = document.createElementNS(ns, 'path');
+      sp.setAttribute('d', sectorPath(cx, cy, 180, 274, sa1, sa2));
+      sp.setAttribute('class', 'r-sub-sector fav-sub-sec');
+      sp.addEventListener('click', function() {
+        if (fItem.isConfig) openFavoritesCatalogModal();
+        else executeFavoriteItem(fItem.favIdx);
+      });
+      svg.appendChild(sp);
+
+      var smid = (sa1 + sa2) / 2;
+      var spos = polarToCartesian(cx, cy, 227, smid);
+      var sdiv = document.createElement('div');
+      sdiv.className = 'r-lbl';
+      sdiv.style.left = spos.x + 'px';
+      sdiv.style.top = spos.y + 'px';
+      sdiv.innerHTML = '<span class="ic">' + fItem.ic + '</span><span class="nm">' + escHtml(fItem.name) + '</span>';
+      lbls.appendChild(sdiv);
+    });
+  }
+
+  var titleMap = { faction: 'Фракционное', favorites: '⭐ Избранное' };
+  document.getElementById('rcTitle').textContent = titleMap[ACTIVE_ARC] || 'Взаимодействие';
   document.getElementById('rcSub').textContent = ACTIVE_PURSUIT ? ('Погоня: ' + ACTIVE_PURSUIT.uid + ' [' + ACTIVE_PURSUIT.id + ']') : '';
 }
 
-function toggleFacArc(force) {
-  FAC_ARC_OPEN = (typeof force === 'boolean') ? force : !FAC_ARC_OPEN;
+window.closeAllArcs = function() {
+  ACTIVE_ARC = null;
   renderRadialMenu();
-}
+};
 
 window.onSectorClick = function(id) {
   if (id === 'faction') {
-    toggleFacArc();
+    ACTIVE_ARC = (ACTIVE_ARC === 'faction') ? null : 'faction';
+    renderRadialMenu();
+    return;
+  }
+  if (id === 'favorites') {
+    ACTIVE_ARC = (ACTIVE_ARC === 'favorites') ? null : 'favorites';
+    renderRadialMenu();
+    return;
   }
 };
 
@@ -1375,16 +1703,43 @@ window.doFacAction = function(act) {
   }
 };
 
-/* ============ МИНИ-ИГРА ВЗЛОМА НАРУЧНИКОВ С ПОМОЩЬЮ ОТВЁРТКИ ИЛИ ОТМЫЧКИ (ШАНС 50%) ============ */
+/* =========================================================================
+   ОТДЕЛЬНОЕ МЕНЮ «🪛 ОСВОБОДИТЬ ЗАДЕРЖАННОГО»:
+   - Предмет «🧰 Набор отвёрток» (содержит 5 отвёрток)
+   - 3 последовательные различные мини-игры:
+     Игра 1: Попадание отвёрткой в паз замочной скважины
+     Игра 2: Выставление 3 штифтов цилиндра на линию среза
+     Игра 3: Силовой проворот пружины храповика до 100% за 5 секунд
+   - Если любая игра провалена — ломается 1 отвёртка и прогресс сбрасывается на Игру 1!
+   ========================================================================= */
+var LOCKPICK_STAGE = 1; /* 1 | 2 | 3 */
 var lockpickAnimId = null;
-var lockpickCursorPos = 0;
-var lockpickDir = 1;
+var lockpickTimerId = null;
 
-window.toggleScrewdriver = function() {
-  HAS_SCREWDRIVER = !HAS_SCREWDRIVER;
-  var b = document.getElementById('btnScrewdriver');
-  b.textContent = HAS_SCREWDRIVER ? '🪛 Отвёртка: Есть в инвентаре' : '🪛 Отвёртка: Сломана / Нет';
-  b.className = 'trunk-toggle' + (HAS_SCREWDRIVER ? '' : ' closed');
+/* Параметры Игры 1 */
+var lp1Pos = 5, lp1Dir = 1;
+/* Параметры Игры 2 (3 штифта) */
+var lp2CurrentPin = 0;
+var lp2PinPositions = [70, 70, 70];
+var lp2PinDir = 1;
+/* Параметры Игры 3 (силовой проворот) */
+var lp3Power = 20;
+var lp3TimeLeft = 5.0;
+
+function updateScrewdriverKitBtn() {
+  var b = document.getElementById('btnScrewdriverKit');
+  if (!b) return;
+  b.textContent = '🧰 Набор отвёрток: ' + SCREWDRIVER_KIT_COUNT + ' / 5 шт. (Пополнить)';
+  b.className = 'trunk-toggle' + (SCREWDRIVER_KIT_COUNT > 0 ? '' : ' closed');
+}
+
+window.refillScrewdriverKit = function() {
+  SCREWDRIVER_KIT_COUNT = 5;
+  updateScrewdriverKitBtn();
+  addChat('sys-info', '[Инвентарь] Вы взяли новый «Набор отвёрток» (внутри 5 отвёрток).');
+  if (document.getElementById('actModalBack').style.display === 'flex' && document.getElementById('lpStageContainer')) {
+    renderCurrentLockpickStage();
+  }
 };
 
 function stopLockpickLoop() {
@@ -1392,79 +1747,231 @@ function stopLockpickLoop() {
     cancelAnimationFrame(lockpickAnimId);
     lockpickAnimId = null;
   }
+  if (lockpickTimerId) {
+    clearInterval(lockpickTimerId);
+    lockpickTimerId = null;
+  }
 }
 
 function openLockpickMinigameModal() {
-  if (!CUFFED) return;
-  if (!HAS_SCREWDRIVER) {
-    addChat('err', '[Система] Для взлома наручников необходима отвёртка или отмычка в инвентаре!');
-    return;
+  stopLockpickLoop();
+  if (!CUFFED) {
+    CUFFED = true;
+    renderRadialMenu();
   }
+  LOCKPICK_STAGE = 1;
   var back = document.getElementById('actModalBack');
-  var box  = document.getElementById('actModalBox');
+  back.style.display = 'flex';
+  renderCurrentLockpickStage();
+}
+
+function renderCurrentLockpickStage() {
+  stopLockpickLoop();
+  var box = document.getElementById('actModalBox');
+  var favActive = isFavKey('act:lockpick_cuffs');
+
+  var stepsHtml =
+    '<div class="lp-steps">' +
+      '<div class="lp-step ' + (LOCKPICK_STAGE === 1 ? 'active' : (LOCKPICK_STAGE > 1 ? 'done' : '')) + '">1. Паз скважины</div>' +
+      '<div class="lp-step ' + (LOCKPICK_STAGE === 2 ? 'active' : (LOCKPICK_STAGE > 2 ? 'done' : '')) + '">2. Штифты замка (3 пина)</div>' +
+      '<div class="lp-step ' + (LOCKPICK_STAGE === 3 ? 'active' : '') + '">3. Силовой проворот пружины</div>' +
+    '</div>';
+
+  var kitHtml =
+    '<div class="lp-kit-bar">' +
+      '<span style="color:#fcd34d">🧰 Предмет «Набор отвёрток» (5 шт. в наборе)</span>' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<span style="color:' + (SCREWDRIVER_KIT_COUNT > 0 ? '#6ee7b7' : '#f87171') + '">Осталось отвёрток: ' + SCREWDRIVER_KIT_COUNT + ' / 5 шт.</span>' +
+        '<button class="d-btn" style="padding:4px 9px;font-size:11px" onclick="refillScrewdriverKit()">＋ Взять набор (5 шт.)</button>' +
+      '</div>' +
+    '</div>';
+
+  var stageBodyHtml = '';
+  if (SCREWDRIVER_KIT_COUNT <= 0) {
+    stageBodyHtml =
+      '<div class="lockpick-box" id="lpStageContainer">' +
+        '<div style="font-size:36px;margin-bottom:8px">🧰</div>' +
+        '<div style="font-size:14px;font-weight:800;color:#f87171;margin-bottom:6px">Все отвёртки в наборе сломаны (0 из 5)!</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-bottom:14px">Для продолжения взлома с 1-й мини-игры необходима новая отвёртка из «Набора отвёрток».</div>' +
+        '<button class="d-btn" style="background:#2563eb;border-color:#60a5fa;padding:10px 20px" onclick="refillScrewdriverKit()">🧰 Открыть новый набор отвёрток (5 шт.)</button>' +
+      '</div>';
+  } else if (LOCKPICK_STAGE === 1) {
+    stageBodyHtml =
+      '<div class="lockpick-box" id="lpStageContainer">' +
+        '<div style="font-size:14px;font-weight:900;color:#fff">Мини-игра 1 из 3 · Зацеп паза замочной скважины</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-top:4px">Остановите бегунок точно в зелёной зоне, чтобы зацепить отвёрткой первый секрет замка</div>' +
+        '<div class="lp-track">' +
+          '<div class="lp-zone"></div>' +
+          '<div class="lp-cursor" id="lp1Cursor"></div>' +
+        '</div>' +
+        '<button class="d-btn" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);border-color:#c084fc;padding:11px 24px;font-size:13px" onclick="checkStage1Strike()">🪛 Зафиксировать паз (ПРОБЕЛ)</button>' +
+      '</div>';
+  } else if (LOCKPICK_STAGE === 2) {
+    stageBodyHtml =
+      '<div class="lockpick-box" id="lpStageContainer">' +
+        '<div style="font-size:14px;font-weight:900;color:#fff">Мини-игра 2 из 3 · Выставление 3 штифтов замка</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-top:4px">По очереди поймайте каждый из 3 золотых штифтов внутри зелёной линии среза</div>' +
+        '<div class="lp-pins-wrap">' +
+          [0, 1, 2].map(function(pIdx) {
+            var stCls = (pIdx < lp2CurrentPin) ? 'locked' : (pIdx === lp2CurrentPin ? 'active' : '');
+            return '<div class="lp-pin-col ' + stCls + '" id="lpPinCol_' + pIdx + '">' +
+              '<div class="lp-pin-target"></div>' +
+              '<div class="lp-pin-bar" id="lpPinBar_' + pIdx + '" style="top:' + (pIdx < lp2CurrentPin ? '39%' : '70%') + '"></div>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+        '<button class="d-btn" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);border-color:#c084fc;padding:11px 24px;font-size:13px" onclick="checkStage2PinStrike()">🔓 Защёлкнуть штифт №' + (lp2CurrentPin + 1) + ' из 3 (ПРОБЕЛ)</button>' +
+      '</div>';
+  } else if (LOCKPICK_STAGE === 3) {
+    stageBodyHtml =
+      '<div class="lockpick-box" id="lpStageContainer">' +
+        '<div style="font-size:14px;font-weight:900;color:#fff">Мини-игра 3 из 3 · Силовой проворот пружины наручников</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-top:4px">Быстро нажимайте кнопку или ПРОБЕЛ, чтобы дожать пружину замка до 100%, пока не вышло время!</div>' +
+        '<div style="font-size:13px;font-weight:900;color:#fbbf24;margin-top:8px" id="lp3TimerTxt">Осталось времени: 5.0 сек</div>' +
+        '<div class="lp-power-wrap">' +
+          '<div class="lp-power-fill" id="lp3Fill" style="width:' + lp3Power + '%"></div>' +
+        '</div>' +
+        '<button class="d-btn" style="background:linear-gradient(135deg,#10b981,#059669);border-color:#6ee7b7;padding:12px 28px;font-size:13.5px" onclick="pumpStage3Power()">🔄 Нажать на отвёртку! (ПРОБЕЛ)</button>' +
+      '</div>';
+  }
 
   box.innerHTML =
-    '<div class="act-m-title"><span>🪛 Взлом наручников отвёрткой · Мини-игра</span></div>' +
-    '<div class="lockpick-box">' +
-      '<div class="lp-Cylinder" id="lpCyl">⛓️</div>' +
-      '<div style="font-size:13px;font-weight:800;color:#fff">Поймайте бегунок в зелёной зоне штифта замка (Шанс взлома: 50%)</div>' +
-      '<div style="font-size:11.5px;color:#94a3b8;margin-top:4px">Отвёртка сломается в любом из исходов после попытки проворота</div>' +
-      '<div class="lp-track">' +
-        '<div class="lp-zone"></div>' +
-        '<div class="lp-cursor" id="lpCursor"></div>' +
-      '</div>' +
-      '<button class="d-btn" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);border-color:#c084fc;padding:11px 24px;font-size:13px" onclick="attemptLockpickStrike()">🪛 Провернуть отвёртку в замке</button>' +
+    '<div class="act-m-title">' +
+      '<span>🪛 Освободить задержанного (3 мини-игры)</span>' +
+      '<button class="d-btn ' + (favActive ? 'fav-active' : '') + '" style="padding:5px 10px;font-size:11px" onclick="toggleFavoriteItem(\'act:lockpick_cuffs\',\'act\',{act:\'lockpick_cuffs\',ic:\'🪛\',name:\'Освободить задержанного\'});renderCurrentLockpickStage()">' +
+        (favActive ? '⭐ В избранном' : '☆ В избранное') +
+      '</button>' +
     '</div>' +
-    '<div style="text-align:right"><button class="d-btn" onclick="stopLockpickLoop();closeActModal()">Отмена</button></div>';
+    kitHtml +
+    stepsHtml +
+    stageBodyHtml +
+    '<div style="text-align:right"><button class="d-btn" onclick="stopLockpickLoop();closeActModal()">Закрыть</button></div>';
 
-  back.style.display = 'flex';
-  lockpickCursorPos = 5;
-  lockpickDir = 1;
+  if (SCREWDRIVER_KIT_COUNT <= 0) return;
 
-  function stepCursor() {
-    var curEl = document.getElementById('lpCursor');
-    if (!curEl || document.getElementById('actModalBack').style.display !== 'flex') {
+  if (LOCKPICK_STAGE === 1) startStage1Loop();
+  else if (LOCKPICK_STAGE === 2) startStage2Loop();
+  else if (LOCKPICK_STAGE === 3) startStage3Loop();
+}
+
+function handleLockpickFailure(reasonMsg) {
+  stopLockpickLoop();
+  SCREWDRIVER_KIT_COUNT = Math.max(0, SCREWDRIVER_KIT_COUNT - 1);
+  updateScrewdriverKitBtn();
+  LOCKPICK_STAGE = 1;
+  lp2CurrentPin = 0;
+  addChat('err', '[Взлом наручников · Неудача] ' + reasonMsg + ' Отвёртка сломалась (осталось в наборе: ' + SCREWDRIVER_KIT_COUNT + '/5 шт.). Прогресс сброшен на 1-ю мини-игру!');
+  renderCurrentLockpickStage();
+}
+
+/* --- ИГРА 1 --- */
+function startStage1Loop() {
+  lp1Pos = 5;
+  lp1Dir = 1;
+  function step1() {
+    var el = document.getElementById('lp1Cursor');
+    if (!el || LOCKPICK_STAGE !== 1) return;
+    lp1Pos += lp1Dir * 2.2;
+    if (lp1Pos >= 96) { lp1Pos = 96; lp1Dir = -1; }
+    if (lp1Pos <= 2)  { lp1Pos = 2;  lp1Dir = 1; }
+    el.style.left = lp1Pos + '%';
+    lockpickAnimId = requestAnimationFrame(step1);
+  }
+  lockpickAnimId = requestAnimationFrame(step1);
+}
+
+window.checkStage1Strike = function() {
+  if (LOCKPICK_STAGE !== 1 || SCREWDRIVER_KIT_COUNT <= 0) return;
+  stopLockpickLoop();
+  if (lp1Pos >= 34 && lp1Pos <= 64) {
+    addChat('sys-info', '[Взлом · Этап 1/3 пройден] Вы попали отвёрткой в паз скважины! Переход ко 2-й мини-игре (Штифты замка).');
+    LOCKPICK_STAGE = 2;
+    lp2CurrentPin = 0;
+    renderCurrentLockpickStage();
+  } else {
+    handleLockpickFailure('Отвёртка сорвалась мимо паза скважины на 1-м этапе!');
+  }
+};
+
+/* --- ИГРА 2 --- */
+function startStage2Loop() {
+  var pos = 75;
+  lp2PinDir = -1;
+  function step2() {
+    var bar = document.getElementById('lpPinBar_' + lp2CurrentPin);
+    if (!bar || LOCKPICK_STAGE !== 2) return;
+    pos += lp2PinDir * 1.9;
+    if (pos <= 6)  { pos = 6;  lp2PinDir = 1; }
+    if (pos >= 80) { pos = 80; lp2PinDir = -1; }
+    lp2PinPositions[lp2CurrentPin] = pos;
+    bar.style.top = pos + '%';
+    lockpickAnimId = requestAnimationFrame(step2);
+  }
+  lockpickAnimId = requestAnimationFrame(step2);
+}
+
+window.checkStage2PinStrike = function() {
+  if (LOCKPICK_STAGE !== 2 || SCREWDRIVER_KIT_COUNT <= 0) return;
+  var curPos = lp2PinPositions[lp2CurrentPin];
+  if (curPos >= 28 && curPos <= 54) {
+    lp2CurrentPin++;
+    if (lp2CurrentPin >= 3) {
+      stopLockpickLoop();
+      addChat('sys-info', '[Взлом · Этап 2/3 пройден] Все 3 штифта цилиндра выставлены! Переход к финальной 3-й мини-игре.');
+      LOCKPICK_STAGE = 3;
+      lp3Power = 22;
+      lp3TimeLeft = 5.0;
+      renderCurrentLockpickStage();
+    } else {
+      renderCurrentLockpickStage();
+    }
+  } else {
+    handleLockpickFailure('Штифт №' + (lp2CurrentPin + 1) + ' сорвался с линии среза на 2-м этапе!');
+  }
+};
+
+/* --- ИГРА 3 --- */
+function startStage3Loop() {
+  lp3Power = 22;
+  lp3TimeLeft = 5.0;
+  lockpickTimerId = setInterval(function() {
+    if (LOCKPICK_STAGE !== 3) {
       stopLockpickLoop();
       return;
     }
-    lockpickCursorPos += lockpickDir * 2.1;
-    if (lockpickCursorPos >= 96) { lockpickCursorPos = 96; lockpickDir = -1; }
-    if (lockpickCursorPos <= 2)  { lockpickCursorPos = 2;  lockpickDir = 1; }
-    curEl.style.left = lockpickCursorPos + '%';
-    lockpickAnimId = requestAnimationFrame(stepCursor);
-  }
-  stopLockpickLoop();
-  lockpickAnimId = requestAnimationFrame(stepCursor);
+    lp3TimeLeft = Math.max(0, lp3TimeLeft - 0.1);
+    /* Пружина постоянно сопротивляется и тянет шкалу назад */
+    lp3Power = Math.max(0, lp3Power - 2.3);
+
+    var fillEl = document.getElementById('lp3Fill');
+    var timerEl = document.getElementById('lp3TimerTxt');
+    if (fillEl) fillEl.style.width = Math.min(100, lp3Power) + '%';
+    if (timerEl) timerEl.textContent = 'Осталось времени: ' + lp3TimeLeft.toFixed(1) + ' сек · Натяжение: ' + Math.round(lp3Power) + '%';
+
+    if (lp3TimeLeft <= 0) {
+      handleLockpickFailure('Не хватило усилия для проворота тугой пружины за 5 секунд на 3-м этапе!');
+    }
+  }, 100);
 }
 
-window.attemptLockpickStrike = function() {
-  stopLockpickLoop();
-  var inGreenZone = (lockpickCursorPos >= 33 && lockpickCursorPos <= 66);
-  /* Даже при попадании в зону действует 50% шанс успешного проворота пружины */
-  var rngSuccess = Math.random() < 0.5;
-  var finalSuccess = inGreenZone && rngSuccess;
+window.pumpStage3Power = function() {
+  if (LOCKPICK_STAGE !== 3 || SCREWDRIVER_KIT_COUNT <= 0) return;
+  lp3Power = Math.min(100, lp3Power + 17);
+  var fillEl = document.getElementById('lp3Fill');
+  if (fillEl) fillEl.style.width = lp3Power + '%';
 
-  /* Отвёртка ломается в любом из исходов */
-  HAS_SCREWDRIVER = false;
-  var b = document.getElementById('btnScrewdriver');
-  if (b) {
-    b.textContent = '🪛 Отвёртка: Сломана / Нет';
-    b.className = 'trunk-toggle closed';
+  if (lp3Power >= 100) {
+    stopLockpickLoop();
+    SCREWDRIVER_KIT_COUNT = Math.max(0, SCREWDRIVER_KIT_COUNT - 1);
+    updateScrewdriverKitBtn();
+    CUFFED = false;
+    ATTACHED_ENV = false;
+    LOCKPICK_STAGE = 1;
+    closeActModal();
+    renderRadialMenu();
+    addChat('me', '* Гражданин провернул последний механизм замка отвёрткой и освободил ' + SUSPECT_NAME + ' из наручников');
+    addChat('sys-info', '[Взлом наручников · Все 3 мини-игры пройдены!] Задержанный ' + SUSPECT_NAME + ' успешно освобождён! Использованная отвёртка сломалась (осталось в наборе: ' + SCREWDRIVER_KIT_COUNT + '/5 шт.).');
   }
-
-  closeActModal();
-  addChat('me', '* Гражданин вставил отвёртку в замочную скважину наручников ' + SUSPECT_NAME + ' и резко провернул её...');
-
-  setTimeout(function() {
-    if (finalSuccess) {
-      CUFFED = false;
-      ATTACHED_ENV = false;
-      renderRadialMenu();
-      addChat('sys-info', '[Взлом наручников · Успех 50%] Штифт замка щёлкнул! ' + SUSPECT_NAME + ' освобождён из наручников, но отвёртка сломалась.');
-    } else {
-      addChat('err', '[Взлом наручников · Неудача 50%] Отвёртка сломалась внутри механизма замка — освободить задержанного не удалось!');
-    }
-  }, 450);
 };
 
 /* ============ ПОСАДКА И ВЫСАДКА ДО 2 ЗАДЕРЖАННЫХ ОТДЕЛЬНЫМИ КНОПКАМИ ============ */
@@ -1730,8 +2237,8 @@ window.removeTintGlass = function(actionName) {
 
 /* =========================================================================
    МЕГАФОН:
-   - Встроенный щелчок нажатия и отпускания рации
-   - Мгновенная синхронизация между всеми предложениями
+   - Напротив каждой фразы есть кнопка «⭐ В избранное» (чтобы вынести конкретную фразу
+     прямо в радиальное меню «Избранное» и включать её в 1 клик!)
    ========================================================================= */
 var radioCtx = null;
 var currentMegaAudio = null;
@@ -1798,6 +2305,22 @@ function escHtml(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+window.toggleFavoriteMegaphonePhrase = function(ev, idx) {
+  if (ev) ev.stopPropagation();
+  var phr = MEGAPHONE_PHRASES[idx];
+  if (!phr) return;
+  if (!phr.id) phr.id = 'm_' + idx;
+  var key = 'mega_id:' + phr.id;
+  var shortTxt = phr.txt.length > 20 ? phr.txt.slice(0, 19) + '…' : phr.txt;
+  toggleFavoriteItem(key, 'mega', {
+    megaId: phr.id,
+    megaIdx: idx,
+    ic: '📢',
+    name: 'Мегафон: ' + shortTxt
+  });
+  openMegaphoneModal();
+};
+
 function openMegaphoneModal() {
   var back = document.getElementById('actModalBack');
   var box  = document.getElementById('actModalBox');
@@ -1822,12 +2345,20 @@ function openMegaphoneModal() {
 
   var listHtml = MEGAPHONE_PHRASES.length
     ? MEGAPHONE_PHRASES.map(function(phr, idx) {
+        if (!phr.id) phr.id = 'm_' + idx;
         var hasAudio = !!(phr.audio && phr.audio.length > 50);
         var audioBadge = hasAudio ? '<span class="mega-badge-audio">🔊 Запись загружена</span>' : '';
-        var ownerTools = '';
+        var isFav = isFavKey('mega_id:' + phr.id);
+
+        var favBtn = '<button class="d-btn ' + (isFav ? 'fav-active' : '') + '" style="padding:6px 9px;font-size:11px" onclick="toggleFavoriteMegaphonePhrase(event,' + idx + ')" title="Добавить эту фразу мегафона в сектор Избранное для запуска в 1 клик">' +
+          (isFav ? '⭐ В избранном' : '☆ В избранное') +
+        '</button>';
+
+        var rightControls = '';
         if (ownerMode) {
-          ownerTools =
+          rightControls =
             '<div style="display:flex;align-items:center;gap:5px;flex-shrink:0" onclick="event.stopPropagation()">' +
+              favBtn +
               '<button class="d-btn" style="padding:6px 10px;font-size:11px;border-color:' + (hasAudio ? '#10b981' : 'rgba(255,255,255,.2)') + '" onclick="ownerTriggerUploadAudio(' + idx + ')" title="Загрузить аудиозапись (MP3/WAV/OGG) для этой фразы">' +
                 (hasAudio ? '📂 Заменить запись' : '📂 Загрузить запись') +
               '</button>' +
@@ -1836,7 +2367,11 @@ function openMegaphoneModal() {
               '<button class="d-btn warn" style="padding:6px 8px;font-size:11px" onclick="ownerDeleteMegaphonePhrase(' + idx + ')" title="Удалить фразу">🗑</button>' +
             '</div>';
         } else {
-          ownerTools = '<span style="color:' + phr.col + ';font-weight:800;font-size:12px;flex-shrink:0">Сказать →</span>';
+          rightControls =
+            '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">' +
+              favBtn +
+              '<span style="color:' + phr.col + ';font-weight:800;font-size:12px;cursor:pointer" onclick="useMegaphonePhrase(' + idx + ')">Сказать →</span>' +
+            '</div>';
         }
 
         return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
@@ -1844,13 +2379,13 @@ function openMegaphoneModal() {
             '<b>Фраза №' + (idx + 1) + audioBadge + '</b>' +
             '<span style="color:' + phr.col + '">«' + escHtml(phr.txt) + '»</span>' +
           '</div>' +
-          ownerTools +
+          rightControls +
         '</div>';
       }).join('')
     : '<div style="padding:20px;text-align:center;color:var(--mut);border:1px dashed rgba(255,255,255,.12);border-radius:12px;margin-bottom:10px">Список фраз мегафона пуст</div>';
 
   box.innerHTML =
-    '<div class="act-m-title"><span>📢 Мегафон</span></div>' +
+    '<div class="act-m-title"><span>📢 Мегафон (нажмите ☆, чтобы закрепить нужную речь в «Избранном»)</span></div>' +
     ownerPanelHtml +
     listHtml +
     '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
@@ -2096,12 +2631,9 @@ function resetDemo() {
   SEIZED_BUFFER = [];
   IN_CAR_SUSPECTS = [];
   ACTIVE_PURSUIT = null;
-  HAS_SCREWDRIVER = true;
-  var sb = document.getElementById('btnScrewdriver');
-  if (sb) {
-    sb.textContent = '🪛 Отвёртка: Есть в инвентаре';
-    sb.className = 'trunk-toggle';
-  }
+  CUFFED = true;
+  SCREWDRIVER_KIT_COUNT = 5;
+  updateScrewdriverKitBtn();
   stopTowInterval();
   TOW_STATE.stage = 'idle';
   updateTowHud();
@@ -2271,9 +2803,11 @@ document.addEventListener('keydown', function(ev) {
     switchScene('radial');
     return;
   }
-  if (ev.code === 'Space' && lockpickAnimId) {
+  if (ev.code === 'Space' && document.getElementById('actModalBack').style.display === 'flex' && document.getElementById('lpStageContainer')) {
     ev.preventDefault();
-    attemptLockpickStrike();
+    if (LOCKPICK_STAGE === 1) checkStage1Strike();
+    else if (LOCKPICK_STAGE === 2) checkStage2PinStrike();
+    else if (LOCKPICK_STAGE === 3) pumpStage3Power();
     return;
   }
   if ((ev.key === 'e' || ev.key === 'E' || ev.key === 'у' || ev.key === 'У') && document.getElementById('invOverlay').style.display !== 'flex') {
@@ -2282,6 +2816,7 @@ document.addEventListener('keydown', function(ev) {
 });
 
 initEquipmentIcons();
+loadFavorites();
 initMegaphoneStorage();
 MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
 BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
