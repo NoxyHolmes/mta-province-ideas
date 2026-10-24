@@ -2,2085 +2,1838 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>МВД · Фракционное радиальное меню</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>МВД · Автопарк и форма</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
-:root{
-  --bg:#0d0e11;
-  --slot:#27292e;
-  --slot-hover:#32353c;
-  --slot-line:rgba(255,255,255,.06);
-  --txt:#f3f4f6;
-  --mut:#8e95a2;
-  --red:#ef4444;
-  --orange:#f59e0b;
-  --green:#10b981;
-  --acc:#3b82f6;
-}
-html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--txt);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:13px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-user-drag:none}
+:root{--bg:#0e1116;--bg2:#131820;--card:#191f28;--line:#27303d;--txt:#e9edf4;--mut:#8b95a7;--acc:#4da3ff;--green:#2fd97a;--yellow:#f7c948;--red:#ff5c5c}
+html{color-scheme:dark}
+body{background:radial-gradient(1100px 520px at 8% -10%,rgba(45,100,170,.17),transparent 60%),radial-gradient(900px 520px at 115% 115%,rgba(130,90,220,.11),transparent 55%),#0e1116;color:var(--txt);font-family:Inter,system-ui,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#2a3342;border-radius:8px;border:2px solid #131820}
+::-webkit-scrollbar-thumb:hover{background:#3a4656}
+#errbox{display:none;position:fixed;left:12px;top:12px;z-index:990;background:#3a1414;border:1px solid #a34444;color:#ffb3b3;padding:12px 16px;border-radius:10px;font:12px/1.5 monospace;max-width:85%;white-space:pre-wrap}
+button{touch-action:manipulation}
+#content{padding:22px;max-width:1440px;width:100%;margin:0 auto;animation:fade .22s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:2px}
+h1{font-size:23px;font-weight:800;letter-spacing:-.3px}
+.cnt{font-size:12px;background:#22304a;border:1px solid #32456a;color:#a9c7ef;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px}
+.ph-sub{color:var(--mut);font-size:12.5px;margin-top:5px}
+.ph-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:2px}
+.owner-only{display:none!important}
+body.is-owner .owner-only{display:inline-flex!important}
+.sync-pill{font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:9px;border:1px solid var(--line);background:#141a23;color:var(--mut);align-items:center;gap:6px}
+.sync-pill.ok{color:#6ee7b7;border-color:rgba(47,217,122,.35);background:rgba(47,217,122,.08)}
+.sync-pill.busy{color:#fcd34d;border-color:rgba(247,201,72,.4);background:rgba(247,201,72,.1)}
+.sync-pill.err{color:#fca5a5;border-color:rgba(255,92,92,.4);background:rgba(255,92,92,.1)}
+.tabs{display:flex;gap:5px;background:#141a23;border:1px solid var(--line);border-radius:13px;padding:5px}
+.tab{padding:9px 18px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--mut);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--txt)}
+.tab.on{color:#fff;background:linear-gradient(90deg,rgba(77,163,255,.26),rgba(77,163,255,.07));border-color:rgba(77,163,255,.4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.btn{background:linear-gradient(145deg,#3684e6,#2868c9);border:1px solid #3a6cb4;color:#fff;padding:9px 15px;border-radius:10px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:all .18s;box-shadow:0 4px 14px rgba(40,100,190,.25);align-items:center;justify-content:center}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.big{padding:12px 20px;font-size:13px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);box-shadow:none}
+.btn.ghost:hover{border-color:#3a4757;filter:none}
+.btn.slim{padding:7px 13px;font-size:11.5px}
+.btn.warn{background:linear-gradient(145deg,#a03c3c,#7c2a2a);border-color:#a34444;box-shadow:0 4px 14px rgba(160,60,60,.25)}
+.cats{display:flex;gap:10px;margin:16px 0 12px;flex-wrap:wrap}
+.cat{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:13px;border:1px solid var(--line);background:linear-gradient(145deg,#1c2432,#181e28);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--mut);font-family:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.cat:hover{border-color:#3a4757;color:var(--txt);transform:translateY(-1px)}
+.cat:active{transform:scale(.98)}
+.cat.on{border-color:rgba(77,163,255,.5);background:linear-gradient(90deg,rgba(77,163,255,.2),rgba(77,163,255,.05));color:#fff;box-shadow:0 4px 18px rgba(40,100,190,.22)}
+.cat-ic{font-size:15px}
+.cn{margin-left:4px;background:#232e3d;border:1px solid #32405a;padding:1px 8px;border-radius:10px;font-size:10.5px;color:#aeb9cc;font-style:normal;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mut);font-size:12.5px;font-weight:700;cursor:pointer;user-select:none;transition:all .18s}
+.chip:hover{border-color:var(--cc,var(--acc));color:var(--txt)}
+.chip:active{transform:scale(.97)}
+.chip.on{border-color:var(--cc,var(--acc));color:#fff;background:var(--ccb,rgba(77,163,255,.18));box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 7px;box-shadow:0 0 8px 1px var(--cc,transparent);transition:box-shadow .25s}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 4px}
+.inp,.sel{background:#141a23;border:1px solid var(--line);color:var(--txt);padding:10px 13px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color .18s,box-shadow .18s}
+.inp:focus,.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.14)}
+.sel option,.sel optgroup{background:#141a23;color:var(--txt)}
+textarea.inp{resize:vertical}
+.vgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:14px}
+.vgrid.grouped{display:block}
+.vcard{background:linear-gradient(145deg,#1c2432,#181e28);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s,opacity .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);user-select:none}
+.vcard:hover{border-color:#3a4757;transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
+.vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc,#4da3ff);z-index:3}
+.vph{position:relative;aspect-ratio:16/10;background:#0f131a;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.vph.empty{background:#12161e}
+/* Полное отображение картинки в карточке без обрезки краёв */
+.vph img{width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;-webkit-user-drag:none;user-select:none}
+.vph-empty{position:absolute;inset:10px;border:1px dashed #2c3644;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#5b6675;transition:all .2s;text-align:center;padding:6px}
+.vph-empty .pe-ic{font-size:25px;opacity:.7}
+.vph-empty b{color:#8b95a7;font-size:12px;font-weight:700}
+.vph-empty span{font-size:10px}
+.vph:hover .vph-empty{border-color:rgba(77,163,255,.5);color:var(--acc)}
+.vph:hover .vph-empty b{color:#cfe4ff}
+.vph-empty.plain{border-style:solid;border-color:#20262f;cursor:default}
+.vph-empty.plain:hover{border-color:#20262f;color:#5b6675}
+.vdep{position:absolute;left:8px;top:11px;padding:3px 9px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:.5px;border:1px solid;background:rgba(14,17,22,.72);backdrop-filter:blur(4px);pointer-events:none;z-index:2}
+.vph-tools{position:absolute;top:11px;right:8px;display:flex;gap:6px;opacity:0;transition:opacity .2s;z-index:4}
+.vcard:hover .vph-tools{opacity:1}
+@media(hover:none){.vph-tools{opacity:1}.vcard:hover{transform:none}}
+.vtool{width:28px;height:28px;border-radius:9px;background:rgba(14,17,22,.85);border:1px solid #2e3846;color:#c9d3e3;cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center}
+.vtool:hover{border-color:var(--acc);color:#fff}
+.vtool.vtool-del:hover{border-color:var(--red);color:#ffb3b3}
+.vbody{padding:12px 14px 14px}
+.vname{font-weight:800;font-size:13.5px;line-height:1.35;min-height:18px;border-radius:6px;padding:1px 3px;margin-left:-3px}
+.vdesc{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5;min-height:17px;border-radius:6px;padding:1px 3px;margin-left:-3px}
+.vsp{display:flex;align-items:baseline;gap:6px;margin-top:10px;padding-top:9px;border-top:1px dashed #232b37}
+.vsp .l{color:#5b6675;text-transform:uppercase;letter-spacing:1.1px;font-weight:800;font-size:9px}
+.vsp b{margin-left:auto;font-size:14px;font-weight:800;color:var(--dc,#6cc0ff);min-width:14px;text-align:right;border-radius:6px;padding:1px 3px}
+.vsp i{font-style:normal;color:var(--mut);font-size:10px;font-weight:700}
+[contenteditable]{outline:none;user-select:text}
+[contenteditable]:focus{background:#141a23;box-shadow:0 0 0 3px rgba(77,163,255,.14)}
+[contenteditable]:empty::before{content:attr(data-ph);color:#4a5462}
+.empty{padding:26px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:12px;margin-top:10px}
+.gsec{margin:0 0 24px;border-radius:14px;padding:10px}
+.ghead{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800;margin-bottom:11px}
+.ghead .gd{width:8px;height:8px;border-radius:50%;flex:0 0 8px}
+.ghead .gname{white-space:nowrap}
+.ghead .gline{flex:1;height:1px;background:linear-gradient(90deg,#27303d,transparent)}
+.ggrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.gempty{min-height:64px;display:flex;align-items:center;justify-content:center;border:1px dashed #232b37;border-radius:12px;color:#5b6675;font-size:12px}
+.clsgrid{display:flex;flex-direction:column;gap:8px}
+.clsbtn{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(145deg,#1c2432,#181e28);color:var(--txt);font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;text-align:left}
+.clsbtn:hover{border-color:var(--cc,var(--acc));transform:translateX(3px)}
+.clsbtn.on{border-color:var(--cc,var(--acc));background:var(--ccb,rgba(77,163,255,.14));box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.vcard.sk{pointer-events:none;cursor:default}
+.vcard.sk::before{display:none}
+.skph{aspect-ratio:16/10;background:#161c26;position:relative;overflow:hidden}
+.skph::after,.skb::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.05) 50%,transparent 75%);transform:translateX(-100%);animation:skmove 1.4s infinite}
+@keyframes skmove{to{transform:translateX(100%)}}
+.skb{height:11px;border-radius:6px;background:#161c26;margin:10px 14px 0;position:relative;overflow:hidden}
+.skb:last-child{margin-bottom:14px}
 
-#gameScene{
-  position:relative;
-  width:100%;
-  height:100vh;
-  background:
-    radial-gradient(900px 500px at 70% 20%,rgba(65,95,135,.32),transparent 70%),
-    radial-gradient(800px 600px at 20% 80%,rgba(40,65,45,.38),transparent 70%),
-    linear-gradient(180deg,#1a2433 0%,#232f28 58%,#181c1b 100%);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-.road-bg{
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(220px 100px at 42% 56%,rgba(210,220,235,.22),transparent 70%),
-    linear-gradient(115deg,transparent 55%,rgba(120,130,145,.16) 62%,rgba(90,100,115,.22) 72%,transparent 80%);
-  filter:blur(14px);
-  pointer-events:none;
-}
-
-#rpChat{
+/* ЛАЙТБОКС: ОТКРЫТИЕ ФОТО В ПОЛНЫЙ ОРИГИНАЛЬНЫЙ РАЗМЕР (100% НАТУРАЛЬНАЯ ВЕЛИЧИНА) */
+#lb{
   position:fixed;
-  top:14px;
-  left:18px;
-  width:680px;
-  max-width:calc(100vw - 36px);
-  z-index:500;
-  pointer-events:none;
-}
-.chat-box{
-  background:rgba(10,12,16,.86);
+  inset:0;
+  z-index:600;
+  background:rgba(4,7,11,.92);
   backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.08);
-  border-left:3px solid var(--acc);
-  border-radius:10px;
-  padding:9px 13px;
-  box-shadow:0 12px 32px rgba(0,0,0,.55);
-  pointer-events:auto;
-  max-height:205px;
-  overflow-y:auto;
-}
-.chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:5px}
-.chat-line{font-size:12px;line-height:1.48;margin-bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
-.chat-line.me{color:#e879f9;font-weight:600}
-.chat-line.mega-yellow{color:#fde047;font-weight:800}
-.chat-line.mega-red{color:#ff5c5c;font-weight:900}
-.chat-line.mega-cyan{color:#38bdf8;font-weight:900}
-.chat-line.sys-info{color:#6ee7b7;font-weight:800}
-.chat-line.sys-warn{color:#fbbf24;font-weight:800}
-.chat-line.err{color:#f87171;font-weight:700}
-
-/* Виджет таймера эвакуации */
-#towHudBadge{
-  position:fixed;
-  top:58px;
-  right:18px;
-  z-index:510;
-  background:rgba(18,24,34,.94);
-  border:1px solid rgba(245,158,11,.45);
-  border-left:4px solid #f59e0b;
-  border-radius:12px;
-  padding:10px 14px;
-  box-shadow:0 12px 30px rgba(0,0,0,.6);
   display:none;
-  min-width:250px;
+  overflow:auto;
+  padding:74px 24px 32px;
+  cursor:zoom-out;
 }
-.th-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;color:#fcd34d}
-.th-sub{font-size:11.5px;color:#e2e8f0;margin-top:3px;font-weight:600}
-.th-timer{font-size:14px;font-weight:900;color:#34d399;margin-top:4px}
-
-#demoTopCtl{
+#lb.show{display:flex;align-items:safe center;justify-content:safe center}
+.lb-bar{
   position:fixed;
   top:14px;
-  right:18px;
-  z-index:520;
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.d-btn{
-  background:rgba(22,25,32,.92);
-  border:1px solid rgba(255,255,255,.14);
-  color:#fff;
-  padding:8px 14px;
-  border-radius:10px;
-  font-weight:800;
-  font-size:12px;
-  cursor:pointer;
-  transition:.18s;
-  font-family:inherit;
-}
-.d-btn:hover{border-color:var(--acc)}
-.d-btn.warn:hover{border-color:var(--red);color:#fca5a5}
-
-#trunkKeyHint{
-  position:fixed;
-  bottom:24px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:250;
-  background:rgba(15,20,28,.92);
-  border:1px solid rgba(255,255,255,.14);
-  padding:9px 16px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-weight:700;
-  font-size:12px;
-  box-shadow:0 14px 35px rgba(0,0,0,.65);
-  flex-wrap:wrap;
-  justify-content:center;
-}
-#trunkKeyHint kbd{background:#2563eb;color:#fff;padding:2px 8px;border-radius:5px;font-weight:900;font-family:inherit}
-.trunk-toggle{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:1px solid #10b981;background:rgba(16,185,129,.15);color:#6ee7b7}
-.trunk-toggle.closed{border-color:#ef4444;background:rgba(239,68,68,.15);color:#fca5a5}
-
-/* Радиальное меню */
-#radialWrap{
-  position:relative;
-  width:600px;
-  height:600px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
-}
-.radial-svg{
-  position:absolute;
-  inset:0;
-  width:600px;
-  height:600px;
-  overflow:visible;
-  filter:drop-shadow(0 22px 50px rgba(0,0,0,.75));
-}
-.r-sector{
-  fill:rgba(22,25,32,.9);
-  stroke:rgba(255,255,255,.12);
-  stroke-width:1.6px;
-  cursor:pointer;
-  transition:fill .18s,stroke .18s;
-}
-.r-sector:hover{
-  fill:rgba(45,53,68,.95);
-  stroke:rgba(148,163,184,.45);
-}
-.r-sector.fac-sec{
-  fill:rgba(30,44,74,.94);
-  stroke:rgba(96,165,250,.55);
-}
-.r-sector.fac-sec:hover,.r-sector.fac-sec.active{
-  fill:rgba(37,99,235,.9);
-  stroke:#93c5fd;
-}
-
-.r-sub-sector{
-  fill:rgba(20,30,52,.96);
-  stroke:rgba(96,165,250,.55);
-  stroke-width:1.5px;
-  cursor:pointer;
-  transition:fill .18s,stroke .18s;
-}
-.r-sub-sector:hover{
-  fill:rgba(37,99,235,.92);
-  stroke:#ffffff;
-}
-.r-sub-sector.attach-sec{
-  fill:rgba(68,40,18,.96);
-  stroke:rgba(251,191,36,.65);
-}
-.r-sub-sector.attach-sec:hover{
-  fill:rgba(217,119,6,.92);
-  stroke:#fef08a;
-}
-.r-sub-sector.unseat-sec{
-  fill:rgba(18,58,48,.96);
-  stroke:rgba(52,211,153,.65);
-}
-.r-sub-sector.unseat-sec:hover{
-  fill:rgba(5,150,105,.92);
-  stroke:#a7f3d0;
-}
-.r-sub-sector.tow-sec{
-  fill:rgba(58,36,14,.96);
-  stroke:rgba(251,191,36,.6);
-}
-.r-sub-sector.tow-sec:hover{
-  fill:rgba(217,119,6,.92);
-  stroke:#fde68a;
-}
-.r-sub-sector.stop-sec{
-  fill:rgba(127,29,29,.95);
-  stroke:#f87171;
-}
-.r-sub-sector.stop-sec:hover{
-  fill:#dc2626;
-  stroke:#fff;
-}
-
-.radial-center{
-  position:relative;
-  z-index:5;
-  width:142px;
-  height:142px;
-  border-radius:50%;
-  background:radial-gradient(circle,#1c2026 0%,#121519 100%);
-  border:2px solid rgba(148,163,184,.28);
-  box-shadow:inset 0 2px 10px rgba(0,0,0,.85);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:14px;
-  cursor:pointer;
-}
-.rc-title{font-weight:800;font-size:13px;color:#fff;letter-spacing:.2px}
-.rc-sub{font-size:10.5px;color:var(--mut);margin-top:5px;line-height:1.3}
-
-.r-labels{position:absolute;inset:0;pointer-events:none;z-index:4}
-.r-lbl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;width:82px}
-.r-lbl .ic{font-size:15px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))}
-.r-lbl .nm{font-size:9px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.1}
-
-.act-modal-back{
-  position:fixed;
-  inset:0;
-  z-index:580;
-  background:rgba(5,7,12,.82);
-  backdrop-filter:blur(8px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:16px;
-}
-.act-modal{
-  width:650px;
-  max-width:96vw;
-  background:#161b24;
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:16px;
-  padding:18px 20px;
-  box-shadow:0 25px 70px rgba(0,0,0,.75);
-  max-height:86vh;
-  overflow-y:auto;
-}
-.act-m-title{font-weight:900;font-size:16px;color:#fff;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.act-m-sub{font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.5}
-.act-opt{
+  left:20px;
+  right:20px;
+  z-index:620;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  padding:11px 14px;
-  border-radius:11px;
-  background:#1f2633;
-  border:1px solid rgba(255,255,255,.08);
-  margin-bottom:8px;
-  cursor:pointer;
-  transition:.15s;
-}
-.act-opt:hover{border-color:#60a5fa;background:#263145}
-.act-opt.disabled{opacity:.45;cursor:not-allowed}
-.act-opt b{font-size:13px;color:#fff;display:block}
-.act-opt span{font-size:11.5px;color:#94a3b8;line-height:1.45;display:block;margin-top:3px}
-.tow-info-card{
-  background:rgba(245,158,11,.08);
-  border:1px solid rgba(245,158,11,.32);
-  border-radius:12px;
-  padding:12px 14px;
-  font-size:12px;
-  color:#e2e8f0;
-  line-height:1.55;
-  margin-bottom:14px;
-}
-.tow-info-card b{color:#fcd34d}
-
-/* Панель владельца для добавления фраз мегафона */
-.mega-owner-box{
-  background:rgba(37,99,235,.08);
-  border:1px dashed rgba(96,165,250,.4);
-  border-radius:12px;
-  padding:12px;
-  margin-bottom:14px;
-}
-.mega-owner-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#93c5fd;margin-bottom:8px}
-.mega-owner-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.mega-inp,.mega-sel{
-  background:#111620;
-  border:1px solid rgba(255,255,255,.15);
-  color:#fff;
-  padding:8px 11px;
-  border-radius:9px;
-  font-size:12.5px;
-  font-family:inherit;
-  outline:none;
-}
-.mega-inp:focus,.mega-sel:focus{border-color:#60a5fa}
-.mega-badge-audio{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  font-size:10.5px;
-  font-weight:800;
-  color:#34d399;
-  background:rgba(16,185,129,.14);
-  border:1px solid rgba(16,185,129,.35);
-  padding:2px 7px;
-  border-radius:6px;
-  margin-left:6px;
-}
-
-/* ================= СЛУЖЕБНОЕ УДОСТОВЕРЕНИЕ МВД РФ ================= */
-#idCardModal{
-  position:fixed;
-  inset:0;
-  z-index:600;
-  background:rgba(5,7,11,.82);
-  backdrop-filter:blur(10px);
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:22px;
-  padding:20px;
-  animation:fadeIn .2s;
-}
-@keyframes fadeIn{from{opacity:0}}
-.mvd-id-wallet{
-  width:740px;
-  max-width:96vw;
-  background:linear-gradient(145deg,#5a121b,#3b0a10 50%,#4d0f17);
-  border:3px solid #781d27;
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 35px 90px rgba(0,0,0,.85),inset 0 2px 4px rgba(255,255,255,.15);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  position:relative;
-}
-.mvd-id-wallet::after{
-  content:'';
-  position:absolute;
-  top:10px;
-  bottom:10px;
-  left:50%;
-  width:4px;
-  transform:translateX(-50%);
-  background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(255,255,255,.08),rgba(0,0,0,.65));
-}
-.id-page{
-  background:
-    radial-gradient(circle at 80% 20%,rgba(59,130,246,.08),transparent 55%),
-    repeating-linear-gradient(45deg,rgba(180,195,215,.06) 0px,rgba(180,195,215,.06) 2px,transparent 2px,transparent 6px),
-    linear-gradient(135deg,#f8fafc,#e2e8f0);
-  border:1px solid #94a3b8;
-  border-radius:10px;
-  padding:16px 18px;
-  color:#0f172a;
-  position:relative;
-  overflow:hidden;
-  box-shadow:inset 0 0 18px rgba(15,23,42,.12);
-}
-.id-tri-bar{
-  height:6px;
-  background:linear-gradient(90deg,#ffffff 0%,#ffffff 33%,#1d4ed8 33%,#1d4ed8 66%,#dc2626 66%,#dc2626 100%);
-  border-radius:3px;
-  margin-bottom:10px;
-  border:1px solid rgba(0,0,0,.1);
-}
-.id-min-hdr{text-align:center;font-weight:900;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:#1e293b;line-height:1.25}
-.id-emblem{
-  width:56px;
-  height:56px;
-  margin:10px auto 8px;
-  border-radius:50%;
-  background:radial-gradient(circle,#fef08a,#ca8a04);
-  border:2px solid #854d0e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  box-shadow:0 4px 12px rgba(0,0,0,.25);
-}
-.id-big-code{text-align:center;font-weight:900;font-size:15px;letter-spacing:1.8px;color:#7f1d1d;margin-top:4px}
-.id-sub-dep{text-align:center;font-weight:800;font-size:10.5px;color:#1e293b;margin-top:5px;line-height:1.3}
-.id-valid{text-align:center;font-size:9.5px;color:#475569;margin-top:12px;font-weight:700}
-
-.id-right-top{font-weight:900;font-size:10.5px;letter-spacing:.5px;color:#7f1d1d;text-transform:uppercase;border-bottom:1.5px solid #cbd5e1;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between}
-.id-body-row{display:flex;gap:14px;align-items:flex-start}
-.id-photo{
-  width:86px;
-  height:112px;
-  border-radius:6px;
-  background:linear-gradient(180deg,#cbd5e1,#94a3b8);
-  border:1.5px solid #475569;
-  flex:0 0 86px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-end;
-  overflow:hidden;
-  position:relative;
-}
-.id-holo{
-  position:absolute;
-  right:4px;
-  bottom:4px;
-  width:22px;
-  height:22px;
-  border-radius:50%;
-  background:conic-gradient(from 45deg,#38bdf8,#a78bfa,#34d399,#facc15,#38bdf8);
-  opacity:.75;
-  border:1px solid #fff;
-}
-.id-fields{flex:1;font-size:11.5px;line-height:1.35}
-.id-f-lbl{font-size:8.5px;text-transform:uppercase;color:#64748b;font-weight:800;letter-spacing:.5px}
-.id-f-val{font-weight:900;font-size:12.5px;color:#0f172a;margin-bottom:5px}
-.id-stamp{
-  position:absolute;
-  right:12px;
-  bottom:10px;
-  width:54px;
-  height:54px;
-  border-radius:50%;
-  border:2px dashed rgba(29,78,216,.55);
-  color:rgba(29,78,216,.65);
-  font-size:6.5px;
-  font-weight:900;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  transform:rotate(-14deg);
   pointer-events:none;
 }
-.id-outside-close{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  border:1px solid #93c5fd;
-  color:#fff;
-  padding:11px 28px;
+.lb-cap{
+  pointer-events:auto;
+  font-weight:800;
+  font-size:14px;
+  color:#e9edf4;
+  background:rgba(14,17,22,.88);
+  border:1px solid #2e3846;
+  padding:9px 15px;
   border-radius:12px;
-  font-weight:800;
-  font-size:13.5px;
-  cursor:pointer;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);
-  transition:.18s;
+  backdrop-filter:blur(6px);
+  max-width:65vw;
 }
-.id-outside-close:hover{filter:brightness(1.12);transform:translateY(-1px)}
-
-/* ================= ИНВЕНТАРЬ ИГРОКА И ОТДЕЛЬНЫЙ БАГАЖНИК ================= */
-#invOverlay{
-  position:fixed;
-  inset:0;
-  z-index:300;
-  background:radial-gradient(900px 600px at 50% 48%,#161920 0%,#0d0e12 75%);
-  display:none;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding:42px 32px 20px;
-}
-.inv-container{width:100%;max-width:980px}
-.inv-container.trunk-only{max-width:520px}
-
-.inv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
-.inv-h1{font-size:23px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#fff}
-.inv-player-row{display:flex;align-items:center;gap:60px;margin-top:4px;font-size:15px;color:#8e95a2;font-weight:600}
-.inv-esc{display:flex;align-items:center;gap:10px;color:#d1d5db;font-size:12.5px;font-weight:600;cursor:pointer}
-.inv-esc kbd{background:#27292e;border:1px solid rgba(255,255,255,.1);padding:5px 10px;border-radius:5px;font-family:inherit;font-weight:800;color:#fff}
-
-.inv-grid-player{
-  display:grid;
-  grid-template-columns:330px 440px;
-  justify-content:space-between;
-  gap:32px;
-  align-items:start;
-}
-#trunkOnlyView{display:none;width:100%}
-
-.inv-col-bar{
-  height:42px;
-  background:#222429;
-  border-radius:6px;
-  padding:0 16px;
+.lb-cap span{display:block;font-weight:600;font-size:11px;color:var(--mut);margin-top:3px}
+.lbdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+.lb-ctl{
+  pointer-events:auto;
   display:flex;
+  gap:8px;
   align-items:center;
-  justify-content:space-between;
-  font-weight:700;
-  font-size:13.5px;
-  color:#e5e7eb;
-  margin-bottom:14px;
 }
-.inv-col-bar .bar-left{display:flex;align-items:center;gap:10px;color:#d1d5db}
-.inv-col-bar .bar-tools{display:flex;gap:6px}
-.bar-tool{width:28px;height:28px;border-radius:5px;background:#2f3238;border:none;color:#cbd5e1;font-size:11px;font-weight:800;cursor:pointer}
-
-.char-area{display:grid;grid-template-columns:76px 1fr 76px;gap:12px;align-items:start}
-.char-col{display:flex;flex-direction:column;gap:9px}
-.char-col-lbl{font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:2px}
-.char-mid{display:flex;flex-direction:column;align-items:center;gap:20px;padding-top:20px}
-
-.ring-box{position:relative;width:78px;height:78px;display:flex;align-items:center;justify-content:center}
-.ring-box svg{width:78px;height:78px;transform:rotate(-90deg)}
-.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:800;font-size:11px;color:#fff}
-
-.quick-wrap{margin-top:20px}
-.quick-head{font-size:12px;color:#9ca3af;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.quick-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-
-.islot{
-  aspect-ratio:1/1;
-  background:var(--slot);
-  border:1px solid var(--slot-line);
-  border-radius:6px;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition:background .15s,border-color .15s;
-  padding:8px;
+#lb img{
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:none;
+  max-height:none;
+  border-radius:12px;
+  border:1px solid #2e3846;
+  box-shadow:0 30px 90px rgba(0,0,0,.8);
+  cursor:default;
+  margin:auto;
 }
-.islot:hover{background:var(--slot-hover);border-color:rgba(255,255,255,.2)}
-.islot svg{width:80%;height:80%;display:block;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));transition:transform .15s}
-.islot:hover svg{transform:scale(1.07)}
-.islot .s-qty{position:absolute;right:6px;bottom:4px;font-size:10.5px;font-weight:800;color:#d1d5db}
-.islot .s-num{position:absolute;left:6px;top:4px;font-size:10px;color:#6b7280;font-weight:700}
-.islot .s-plus{font-size:22px;color:#4b5563;font-weight:300}
+#lb.fit-screen img{
+  max-width:95vw;
+  max-height:85vh;
+  object-fit:contain;
+}
 
-.inv-slots-5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.weight-bar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px;color:#9ca3af;font-weight:700}
-.weight-bar .w-line{flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 12px}
-.weight-bar b{color:#fff}
+.back{position:fixed;inset:0;background:rgba(4,7,11,.75);backdrop-filter:blur(7px);z-index:400;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:34px 14px}
+#croot .back{z-index:420}
+@keyframes up{from{transform:translateY(24px);opacity:0}}
+.modal{width:100%;max-width:820px;background:#161c25;border:1px solid #2b3442;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.6);animation:up .25s;overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 70px)}
+.modal.smw{max-width:460px}
+.m-head{flex:0 0 auto;padding:22px 24px 16px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,rgba(77,163,255,.08),transparent)}
+.m-close{position:absolute;top:14px;right:14px;background:#1d2531;border:1px solid var(--line);color:var(--mut);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:13px;transition:all .15s;font-family:inherit}
+.m-close:hover{color:var(--txt);border-color:#3a4757}
+.mh-nm{font-size:19px;font-weight:800;letter-spacing:.4px;padding-right:36px}
+.mh-sub{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.5;padding-right:36px}
+.m-body{flex:1 1 auto;overflow-y:auto;min-height:100px;padding:18px 24px}
+.m-foot{flex:0 0 auto;padding:13px 24px;border-top:1px solid var(--line);background:#141a24;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
+.flab{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);font-weight:800;margin:0 0 6px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.formgrid .full{grid-column:1/-1}
+.aph{aspect-ratio:16/8;border:1px dashed #2c3644;border-radius:12px;background:#0f131a;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;overflow:hidden;position:relative}
+.aph:hover{border-color:rgba(77,163,255,.55)}
+.aph-in{display:flex;flex-direction:column;align-items:center;gap:5px;color:#5b6675;text-align:center;padding:6px}
+.aph-in .aph-ic{font-size:26px;opacity:.75}
+.aph-in b{color:#8b95a7;font-size:12.5px}
+.aph-in span{font-size:10.5px}
+.aph img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none}
+.hint{font-size:11.5px;color:var(--mut);line-height:1.6;margin-top:10px;background:#141a23;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 
-.handover-box{
-  margin-top:16px;
-  background:#1c1f26;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;
-  padding:12px 14px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-.handover-btn{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  border:1px solid #60a5fa;
-  color:#fff;
-  padding:8px 14px;
-  border-radius:7px;
-  font-weight:800;
-  font-size:12px;
-  cursor:pointer;
-  white-space:nowrap;
-}
-.handover-btn:disabled{opacity:.4;cursor:not-allowed}
+.deplist-head{font-size:10px;text-transform:uppercase;letter-spacing:1.6px;color:var(--mut);font-weight:800;margin:14px 0 6px}
+.deplist-head:first-child{margin-top:0}
+.deprow{display:flex;align-items:center;gap:8px;padding:5px 0}
+.deprow .ddot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;box-shadow:0 0 8px 1px rgba(0,0,0,.3)}
+.deprow .dep-name{flex:1;min-width:0;padding:8px 10px;font-size:13px;background:#141a23;border:1px solid var(--line);border-radius:9px;color:var(--txt);font-family:inherit;outline:none}
+.deprow .dep-name:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,163,255,.14)}
+.deprow .dep-color{width:34px;height:34px;flex:0 0 34px;padding:2px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:#141a23}
+.deprow .dep-del{width:34px;height:34px;flex:0 0 34px;padding:0;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
+.deprow .dep-del:hover{background:linear-gradient(145deg,#c04646,#8f2f2f)}
+.deprow .dep-cls-btn{flex:0 0 auto;padding:8px 10px;font-size:11.5px;white-space:nowrap}
+.newdep{border-top:1px dashed #232b37;padding-top:14px;margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.newdep .inp{flex:1 1 160px;min-width:0}
+.newdep .sel{flex:0 0 auto;padding:8px 10px}
+.newdep .btn{flex:0 0 auto}
 
-#itemPopover{
-  position:fixed;
-  z-index:650;
-  width:240px;
-  background:#2b2f38;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:9px;
-  padding:14px;
-  box-shadow:0 22px 55px rgba(0,0,0,.85);
-  display:none;
+#troot{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:700;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1c2531;border:1px solid #32435c;border-left:3px solid var(--acc);padding:12px 16px;border-radius:12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45);animation:up .3s;max-width:360px;transition:opacity .35s,transform .35s}
+.toast.warn{border-left-color:var(--red)}
+.toast.out{opacity:0;transform:translateY(8px)}
+@media(max-width:1150px){.vgrid,.ggrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:920px){.vgrid,.ggrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){
+body{font-size:13.5px}
+#content{padding:14px 12px 40px}
+.ph{flex-direction:column;gap:12px}
+h1{font-size:20px}
+.ph-sub{font-size:11.5px}
+.ph-actions{width:100%;display:grid;grid-template-columns:1fr;gap:10px}
+.tabs{padding:4px}
+.tab{flex:1;padding:11px 6px;font-size:12px;text-align:center}
+.btn.big{width:100%;padding:14px}
+.cats{gap:8px;margin:12px 0 10px}
+.cat{flex:1 1 100%;padding:14px 16px;font-size:13px;justify-content:center}
+.chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin:10px 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;white-space:nowrap}
+.ctl .inp{width:100%}
+.vgrid,.ggrid{grid-template-columns:repeat(2,1fr);gap:10px}
+.gsec{padding:6px;margin-bottom:16px}
+.ghead{gap:7px;font-size:10px}
+.vcard{border-radius:14px}
+.vph{aspect-ratio:16/11}
+.vph-empty{inset:8px}
+.vph-empty span{display:none}
+.vph-empty b{font-size:11px}
+.vdep{font-size:9px;padding:2px 7px;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vph-tools{flex-wrap:wrap;max-width:66px;gap:4px}
+.vtool{width:31px;height:31px;font-size:12px}
+.vbody{padding:9px 10px 11px}
+.vname{font-size:12.5px}
+.vdesc{font-size:10.5px;line-height:1.45}
+.vsp b{font-size:12.5px}
+.vsp{margin-top:8px;padding-top:7px}
+.gempty{min-height:52px;font-size:11px}
+.back{padding:10px;align-items:stretch}
+.modal{max-height:calc(100vh - 20px);border-radius:16px}
+.m-head{padding:16px 16px 12px}
+.mh-nm{font-size:16px}
+.m-body{padding:14px 16px}
+.m-foot{padding:12px 16px}
+.m-foot .btn{flex:1;padding:13px}
+.formgrid{grid-template-columns:1fr}
+.deprow .dep-name{font-size:12.5px}
+.deprow .dep-color{width:32px;height:32px;flex-basis:32px}
+.deprow .dep-del{width:32px;height:32px;flex-basis:32px}
+.deprow .dep-cls-btn{padding:6px 8px;font-size:10.5px}
+#troot{right:10px;left:10px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+.toast{max-width:none}
 }
-.ip-title{font-weight:800;font-size:13.5px;color:#fff;margin-bottom:8px}
-.ip-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#d1d5db;margin-bottom:5px;font-weight:600}
-.ip-desc{font-size:11px;color:#9ca3af;line-height:1.45;margin:8px 0 6px}
-.ip-seize-btn{
-  margin-top:10px;
-  width:100%;
-  padding:9px 12px;
-  border-radius:6px;
-  border:1px solid #f87171;
-  background:linear-gradient(135deg,#dc2626,#991b1b);
-  color:#fff;
-  font-weight:800;
-  font-size:12px;
-  cursor:pointer;
-}
+@media(max-width:360px){.vgrid,.ggrid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div id="errbox"></div>
+<script>
+window.addEventListener('error',function(ev){
+ if(!(ev instanceof ErrorEvent)){return}
+ if(!ev.message){return}
+ var b=document.getElementById('errbox');
+ if(b){
+  b.style.display='block';
+  b.textContent='Ошибка: '+ev.message+(ev.filename?'\n'+ev.filename+':'+(ev.lineno||0):'');
+ }
+},true);
+</script>
 
-<div id="rpChat">
-  <div class="chat-box" id="chatBox">
-    <div class="chat-hdr">
-      <span>💬 Игровой чат</span>
-      <span style="color:#6ee7b7">● MTA:Province</span>
+<main id="content">
+  <div class="ph">
+    <div>
+      <h1><span id="hTitle">Автопарк</span><span class="cnt" id="cnt">0</span></h1>
+      <div class="ph-sub" id="hSub"></div>
     </div>
-    <div id="chatMessages">
-      <div class="chat-line me">* Нажмите на сектор «Фракционное», чтобы открыть полукруг служебных действий.</div>
-    </div>
-  </div>
-</div>
-
-<!-- Виджет статуса эвакуации ТС -->
-<div id="towHudBadge">
-  <div class="th-title" id="towHudTitle">🪝 Эвакуация автомобиля</div>
-  <div class="th-sub" id="towHudSub">Toyota Camry XV70 (А777АА 77)</div>
-  <div class="th-timer" id="towHudTimer">Осталось: 05:00</div>
-</div>
-
-<div id="demoTopCtl">
-  <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
-</div>
-
-<!-- Скрытый input для загрузки аудиозаписи мегафона владельцем -->
-<input type="file" id="megaOwnerAudioInp" accept="audio/*" style="display:none">
-
-<div id="gameScene">
-  <div class="road-bg"></div>
-
-  <div id="radialWrap">
-    <svg class="radial-svg" viewBox="0 0 600 600" id="radialSvg"></svg>
-    <div class="r-labels" id="radialLabels"></div>
-    <div class="radial-center" id="radialCenter" onclick="toggleFacArc(false)">
-      <div class="rc-title" id="rcTitle">Взаимодействие</div>
-      <div class="rc-sub" id="rcSub">Нажмите «Фракционное»</div>
+    <div class="ph-actions">
+      <span class="sync-pill owner-only" id="syncPill">✓ Сохранено</span>
+      <button class="btn ghost slim owner-only" id="depsBtn" style="display:none" onclick="openDepsManager()" title="Управление разделами и классами">⚙️ Разделы</button>
+      <div class="tabs">
+        <button class="tab on" data-kind="cars" onclick="setKind('cars')">🚔 Автопарк</button>
+        <button class="tab" data-kind="form" onclick="setKind('form')">🎽 Форма</button>
+      </div>
+      <button class="btn big owner-only" id="addBtn" style="display:none" onclick="openAdd()">＋ Добавить машину</button>
     </div>
   </div>
 
-  <div id="trunkKeyHint">
-    <span onclick="tryOpenTrunkSearch()" style="cursor:pointer">Возле авто · Нажмите <kbd>E</kbd> для осмотра багажника</span>
-    <span class="trunk-toggle" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Багажник: Открыт</span>
-    <span class="trunk-toggle" id="btnTintMeter" onclick="toggleTintMeter()">📟 Замерщик тонировки: В руках</span>
+  <div class="cats" id="cats"></div>
+  <div class="chips" id="chips"></div>
+
+  <div class="ctl">
+    <input class="inp" id="q" placeholder="🔍 Поиск по названию или описанию…">
   </div>
-</div>
 
-<div class="act-modal-back" id="actModalBack" onclick="if(event.target===this)closeActModal()">
-  <div class="act-modal" id="actModalBox"></div>
-</div>
+  <div class="vgrid" id="vgrid"></div>
+  <div class="empty" id="vempty" style="display:none"></div>
+</main>
 
-<div id="idCardModal" onclick="if(event.target===this)closeIdCard()">
-  <div class="mvd-id-wallet">
-    <div class="id-page">
-      <div class="id-tri-bar"></div>
-      <div class="id-min-hdr">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ<br>РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
-      <div class="id-emblem">🦅</div>
-      <div class="id-big-code">МВД РОССИИ</div>
-      <div class="id-sub-dep">УПРАВЛЕНИЕ МИНИСТЕРСТВА ВНУТРЕННИХ ДЕЛ<br>ПО РЕСПУБЛИКЕ ПРОВИНЦИЯ<br><strong>г. ПРИВОЛЖСК</strong></div>
-      <div class="id-valid">Настоящее удостоверение является официальным документом, подтверждающим личность и полномочия сотрудника органов внутренних дел.</div>
-    </div>
-    <div class="id-page">
-      <div class="id-right-top">
-        <span>УДОСТОВЕРЕНИЕ</span>
-        <span>№ 748291</span>
-      </div>
-      <div class="id-body-row">
-        <div class="id-photo">
-          <svg viewBox="0 0 80 100" style="width:100%;height:100%">
-            <rect width="80" height="100" fill="#cbd5e1"/>
-            <circle cx="40" cy="34" r="16" fill="#475569"/>
-            <path d="M12 98 C12 66, 68 66, 68 98 Z" fill="#1e3a8a"/>
-            <path d="M26 70 L40 88 L54 70" fill="#ffffff"/>
-            <path d="M38 74 L42 74 L41 92 L39 92 Z" fill="#1e293b"/>
-            <rect x="14" y="68" width="12" height="5" rx="1" fill="#eab308"/>
-            <rect x="54" y="68" width="12" height="5" rx="1" fill="#eab308"/>
-          </svg>
-          <div class="id-holo" title="Голограмма МВД"></div>
-        </div>
-        <div class="id-fields">
-          <div class="id-f-lbl">Фамилия, Имя</div>
-          <div class="id-f-val">ХОЛМС Евгений</div>
-          <div class="id-f-lbl">Специальное звание</div>
-          <div class="id-f-val" style="color:#1e3a8a">Капитан полиции</div>
-          <div class="id-f-lbl">Должность и подразделение</div>
-          <div class="id-f-val" style="font-size:11px;line-height:1.25">Оперуполномоченный ОУР · УМВД по Республике Провинция (г. Приволжск)</div>
-          <div class="id-f-lbl">Личный номер / UID</div>
-          <div class="id-f-val" style="font-size:11px;margin-bottom:0">Ж-748291 · UID #K8W4C6</div>
-        </div>
-      </div>
-      <div class="id-stamp">МВД РФ<br>УМВД ПО РП<br>ПРИВОЛЖСК</div>
+<input type="file" id="fileInp" accept="image/*" style="display:none">
+<div id="lb" onclick="if(event.target===this)closeLb()">
+  <div class="lb-bar">
+    <div class="lb-cap" id="lbCap"></div>
+    <div class="lb-ctl">
+      <button class="btn ghost slim" id="lbScaleBtn" onclick="event.stopPropagation();toggleLbScale()">📐 По размеру экрана</button>
+      <button class="btn warn slim" onclick="event.stopPropagation();closeLb()">✕ Закрыть (ESC)</button>
     </div>
   </div>
-  <button class="id-outside-close" onclick="closeIdCard()">Закрыть удостоверение</button>
+  <img id="lbImg" alt="" draggable="false" onclick="event.stopPropagation()">
 </div>
-
-<!-- ОКНО ОБЫСКА ИГРОКА ИЛИ БАГАЖНИКА АВТОМОБИЛЯ -->
-<div id="invOverlay">
-  <div class="inv-container" id="invContainer">
-    <div class="inv-top">
-      <div>
-        <div class="inv-h1" id="invHeaderTitle">ИНВЕНТАРЬ</div>
-        <div class="inv-player-row" id="invHeaderSub">
-          <span>Sergey_Vorovskoy</span>
-          <span>25 110 ₽</span>
-        </div>
-      </div>
-      <div class="inv-esc" onclick="switchScene('radial')">
-        <span>Выйти</span>
-        <kbd>ESC</kbd>
-      </div>
-    </div>
-
-    <div class="inv-grid-player" id="playerOnlyView">
-      <div>
-        <div class="inv-col-bar">
-          <div class="bar-left"><span>👤</span><span>Персонаж</span></div>
-        </div>
-        <div class="char-area">
-          <div class="char-col">
-            <div class="char-col-lbl">Аксессуары</div>
-            <div class="islot" id="eqHat"></div>
-            <div class="islot" id="eqMask"></div>
-            <div class="islot" id="eqShirt"></div>
-            <div class="islot" id="eqUmbrella"></div>
-          </div>
-
-          <div class="char-mid">
-            <div class="ring-box">
-              <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#181a20" stroke="#ef4444" stroke-width="5"/></svg>
-              <div class="ring-inner"><span style="color:#ef4444;font-size:18px">❤️</span><span>100%</span></div>
-            </div>
-            <div class="ring-box">
-              <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#181a20" stroke="#d97706" stroke-width="5"/></svg>
-              <div class="ring-inner"><span style="color:#f59e0b;font-size:18px">🍗</span><span>100%</span></div>
-            </div>
-            <div class="ring-box">
-              <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#181a20" stroke="#2a2d35" stroke-width="5"/></svg>
-              <div class="ring-inner" style="opacity:.35"><span style="font-size:18px">🦺</span></div>
-            </div>
-          </div>
-
-          <div class="char-col">
-            <div class="char-col-lbl">Руки</div>
-            <div class="islot" id="eqHands"></div>
-            <div class="char-col-lbl" style="margin-top:38px">Основное</div>
-            <div class="islot" id="eqSuit"></div>
-            <div class="islot" id="eqBag"></div>
-          </div>
-        </div>
-
-        <div class="quick-wrap">
-          <div class="quick-head"><span>⊞</span><span>Быстрый доступ</span></div>
-          <div class="quick-grid">
-            <div class="islot"><span class="s-num">1</span><span class="s-plus">+</span></div>
-            <div class="islot"><span class="s-num">2</span><span class="s-plus">+</span></div>
-            <div class="islot"><span class="s-num">3</span><span class="s-plus">+</span></div>
-            <div class="islot"><span class="s-num">4</span><span class="s-plus">+</span></div>
-            <div class="islot"><span class="s-num">5</span><span class="s-plus">+</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="inv-col-bar">
-          <div class="bar-left"><span>📦</span><span>Инвентарь</span></div>
-          <div class="bar-tools">
-            <button class="bar-tool">↓↑</button>
-            <button class="bar-tool">⊞</button>
-          </div>
-        </div>
-        <div class="inv-slots-5" id="mainInvGrid"></div>
-
-        <div class="inv-col-bar" style="margin-top:16px">
-          <div class="bar-left"><span>🎒</span><span>Рюкзак</span></div>
-          <div class="bar-tools">
-            <button class="bar-tool">↓↑</button>
-            <button class="bar-tool">⊞</button>
-          </div>
-        </div>
-        <div class="inv-slots-5" id="backpackGrid"></div>
-
-        <div class="weight-bar">
-          <span>Общий вес</span>
-          <div class="w-line"></div>
-          <b id="totalWeightTxt">4.85 кг</b>
-        </div>
-      </div>
-    </div>
-
-    <div id="trunkOnlyView">
-      <div class="inv-col-bar">
-        <div class="bar-left"><span>🚘</span><span>Багажник автомобиля</span></div>
-        <div class="bar-tools">
-          <button class="bar-tool">↓↑</button>
-          <button class="bar-tool">⊞</button>
-        </div>
-      </div>
-      <div class="inv-slots-5" id="trunkGrid"></div>
-    </div>
-
-    <div class="handover-box">
-      <div>
-        <div style="font-weight:800;font-size:12.5px;color:#fff">Камера хранения вещдоков МВД</div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:2px" id="seizedInfoTxt">Изъято нелегальных предметов: 0 шт.</div>
-      </div>
-      <button class="handover-btn" id="btnHandover" onclick="handoverToDutyOfficer()" disabled>📦 Сдать изъятое дежурному</button>
-    </div>
-  </div>
-</div>
-
-<div id="itemPopover"></div>
+<div id="mroot"></div>
+<div id="croot"></div>
+<div id="troot"></div>
 
 <script>
-/* ===================== ПРОВЕРКА РЕЖИМА ВЛАДЕЛЬЦА И РЕПОЗИТОРИЯ ===================== */
-var REPO = (function() {
-  var h = location.hostname, p = location.pathname;
-  if (!/\.github\.io$/.test(h)) return 'noxyholmes/mta-province-ideas';
-  var owner = h.replace(/\.github\.io$/, '');
-  var seg = p.split('/').filter(Boolean);
-  return owner + '/' + (seg.length ? seg[0] : (owner + '.github.io'));
+/* ===================== АВТООПРЕДЕЛЕНИЕ РЕПОЗИТОРИЯ ===================== */
+var REPO=(function(){
+ var h=location.hostname,p=location.pathname;
+ if(!/\.github\.io$/.test(h)){return null}
+ var owner=h.replace(/\.github\.io$/,'');
+ var seg=p.split('/').filter(Boolean);
+ return owner+'/'+(seg.length?seg[0]:(owner+'.github.io'));
 })();
-var BRANCH = 'main';
-var MEGA_GH_FILE = 'megaphone_data.json';
-var MAIN_KEY_K = 'idea_admin_key';
+var BRANCH='main';
 
-function isOwnerActive() {
-  try {
-    if (window.parent && window.parent !== window) {
-      if (typeof window.parent.adminMode === 'boolean') return !!window.parent.adminMode;
-      var pDoc = window.parent.document;
-      if (pDoc && pDoc.body && pDoc.body.classList.contains('adm')) return true;
-    }
-  } catch (e) {}
-  return false;
-}
+/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + СИНХРОННЫЙ КЭШ РАЗДЕЛОВ ===================== */
+var LS=(function(){
+ var mem={},ok=false;
+ try{
+  var t='__ls_test__';
+  window.localStorage.setItem(t,'1');
+  window.localStorage.removeItem(t);
+  ok=true;
+ }catch(e){ok=false}
+ return {
+  get:function(k){
+   if(ok){try{return window.localStorage.getItem(k)}catch(e){}}
+   return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null;
+  },
+  set:function(k,v){
+   v=String(v);
+   if(ok){try{window.localStorage.setItem(k,v);return}catch(e){}}
+   mem[k]=v;
+  },
+  remove:function(k){
+   if(ok){try{window.localStorage.removeItem(k);return}catch(e){}}
+   delete mem[k];
+  }
+ };
+})();
 
-function getOwnerToken() {
-  try {
-    if (window.parent && window.parent !== window && window.parent.localStorage) {
-      var t = window.parent.localStorage.getItem(MAIN_KEY_K);
-      if (t) return t.trim();
-    }
-    return (localStorage.getItem(MAIN_KEY_K) || '').trim();
-  } catch (e) { return ''; }
-}
+try{
+ LS.remove('mvd_garage_local');
+ LS.remove('mvd_garage_cache');
+ LS.remove('mvd_garage_admin_key');
+}catch(e){}
 
-/* ===================== ИКОНКИ И БАЗОВЫЕ ДАННЫЕ ===================== */
-var SVG_ICONS = {
-  pistol1: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#d1d5db" opacity=".25"/><g transform="rotate(-22 32 32)"><path d="M12 22h36l2 3v5H28l-3 16h-9l3-16-5-2z" fill="#374151"/><path d="M14 23h32v3H14z" fill="#6b7280"/><rect x="17" y="30" width="6" height="12" rx="1" fill="#4b3621"/></g></svg>',
-  ammo2: '<svg viewBox="0 0 64 64"><g transform="translate(15,10)"><path d="M4 16 C4 6, 12 6, 12 16 Z" fill="#b45309"/><rect x="3" y="16" width="10" height="26" rx="1" fill="#d97706"/><rect x="2" y="42" width="12" height="3" fill="#92400e"/></g><g transform="translate(33,10)"><path d="M4 16 C4 6, 12 6, 12 16 Z" fill="#b45309"/><rect x="3" y="16" width="10" height="26" rx="1" fill="#f59e0b"/><rect x="2" y="42" width="12" height="3" fill="#92400e"/></g></svg>',
-  pills3: '<svg viewBox="0 0 64 64"><g transform="rotate(-28 32 32)"><rect x="16" y="10" width="32" height="44" rx="5" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><line x1="32" y1="12" x2="32" y2="52" stroke="#94a3b8" stroke-width="1"/><ellipse cx="24" cy="18" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="40" cy="18" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="24" cy="27" rx="4" ry="2.5" fill="#0284c7"/><ellipse cx="40" cy="27" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="24" cy="36" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="40" cy="36" rx="4" ry="2.5" fill="#0284c7"/><ellipse cx="24" cy="45" rx="4" ry="2.5" fill="#38bdf8"/><ellipse cx="40" cy="45" rx="4" ry="2.5" fill="#38bdf8"/></g></svg>',
-  pepsi4: '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="14" rx="13" ry="3.5" fill="#9ca3af"/><rect x="19" y="14" width="26" height="38" rx="4" fill="#1d4ed8"/><ellipse cx="32" cy="52" rx="13" ry="3.5" fill="#6b7280"/><circle cx="32" cy="31" r="8" fill="#ffffff"/><path d="M24 31 A8 8 0 0 1 40 29 L24 33 Z" fill="#ef4444"/><path d="M24 33 L40 31 A8 8 0 0 1 24 33 Z" fill="#1e3a8a"/></svg>',
-  knife5: '<svg viewBox="0 0 64 64"><g transform="rotate(-40 32 32)"><path d="M8 29 C18 27, 32 27, 40 30 L38 34 L8 34 Z" fill="#d1d5db"/><path d="M8 29 L38 30 L38 31.5 L8 31 Z" fill="#9ca3af"/><rect x="38" y="27" width="3" height="9" fill="#d97706"/><rect x="41" y="29" width="15" height="6" rx="2" fill="#78350f"/></g></svg>',
-  beer6: '<svg viewBox="0 0 64 64"><rect x="29" y="8" width="6" height="4" rx="1" fill="#d97706"/><path d="M29 12 L27 24 L23 29 L23 54 A3 3 0 0 0 26 56 L38 56 A3 3 0 0 0 41 54 L41 29 L37 24 L35 12 Z" fill="#15803d"/><ellipse cx="32" cy="18" rx="4" ry="2.5" fill="#facc15"/><rect x="24" y="34" width="16" height="11" rx="1" fill="#facc15"/><rect x="26" y="37" width="12" height="5" fill="#166534"/></svg>',
-  frame_terra: '<svg viewBox="0 0 64 64"><g transform="rotate(-14 32 32)"><rect x="8" y="22" width="48" height="18" rx="2" fill="#9a4a2a" stroke="#5c2814" stroke-width="1.5"/><rect x="12" y="25" width="40" height="10" fill="#7c3a20"/></g></svg>',
-  frame_blue: '<svg viewBox="0 0 64 64"><g transform="rotate(-14 32 32)"><rect x="8" y="22" width="48" height="18" rx="2" fill="#3b7a9e" stroke="#1e4963" stroke-width="1.5"/><rect x="12" y="25" width="40" height="10" fill="#2c5e7a"/></g></svg>',
-  frame_black: '<svg viewBox="0 0 64 64"><g transform="rotate(-14 32 32)"><rect x="8" y="22" width="48" height="18" rx="2" fill="#1f242d" stroke="#374151" stroke-width="1.5"/><rect x="12" y="25" width="40" height="10" fill="#111318"/></g></svg>',
-  pink_ushanka: '<svg viewBox="0 0 64 64"><path d="M16 26 C16 14, 48 14, 48 26 L50 46 L43 46 L42 32 L22 32 L21 46 L14 46 Z" fill="#ec4899"/><rect x="22" y="20" width="20" height="11" rx="2" fill="#f472b6"/><circle cx="32" cy="25" r="2.5" fill="#facc15"/></svg>',
-  suit: '<svg viewBox="0 0 64 64"><path d="M26 12h12l4 10v28H22V22z" fill="#f8fafc"/><path d="M30 16h4l1 18-3 4-3-4z" fill="#f472b6"/><path d="M16 14l10-2 4 22v18H14V22z" fill="#3b6998"/><path d="M48 14l-10-2-4 22v18h16V22z" fill="#3b6998"/></svg>',
-  dark_bag: '<svg viewBox="0 0 64 64"><rect x="16" y="14" width="32" height="38" rx="8" fill="#181a20" stroke="#374151" stroke-width="1.5"/><circle cx="27" cy="28" r="2" fill="#ef4444"/><circle cx="37" cy="28" r="2" fill="#10b981"/><path d="M25 38h14" stroke="#60a5fa" stroke-width="2"/></svg>',
-  sil_head: '<svg viewBox="0 0 64 64" opacity=".2"><circle cx="32" cy="30" r="14" fill="#9ca3af"/></svg>',
-  sil_shirt: '<svg viewBox="0 0 64 64" opacity=".2"><path d="M20 14h24l10 10-6 6-4-4v26H20V26l-4 4-6-6z" fill="#9ca3af"/></svg>',
-  sil_umb: '<svg viewBox="0 0 64 64" opacity=".2"><path d="M12 32a20 20 0 0 1 40 0zm20 0v18a4 4 0 0 1-8 0" fill="none" stroke="#9ca3af" stroke-width="4"/></svg>',
-  sil_hands: '<svg viewBox="0 0 64 64" opacity=".2"><path d="M16 26c0-5 10-5 10 0v14H16zm22 0c0-5 10-5 10 0v14H38z" fill="#9ca3af"/></svg>'
-};
+var IDB_NAME='mta_garage_full_db_v1';
+var IDB_STORE='snapshots';
+var IDB_KEY='current_state';
+var DEPS_LS_KEY='mvd_garage_deps_v2';
+var REV_LS_KEY='mvd_garage_rev_v2';
 
-var OFFICER_NAME = 'Евгений Холмс';
-var SUSPECT_NAME = 'Sergey_Vorovskoy';
-var TRUNK_OPEN = true;
-var HAS_TINT_METER = true;
-var SEARCH_MODE = 'player';
-var FAC_ARC_OPEN = false;
-var CUFFED = false;
-var ATTACHED_ENV = false;
-var IN_CAR_SUSPECTS = [];
-var ACTIVE_PURSUIT = null;
-
-var TOW_STATE = {
-  stage: 'idle',
-  carName: 'Toyota Camry XV70',
-  plate: 'А777АА 77',
-  owner: 'Sergey_Vorovskoy',
-  secondsLeft: 300,
-  timerId: null
-};
-
-var CUFFED_CANDIDATES = [
-  { name: 'Sergey_Vorovskoy', id: 142, status: 'В наручниках' },
-  { name: 'Maksim_Saraev',    id: 289, status: 'В наручниках' }
-];
-
-var DEFAULT_MEGAPHONE_PHRASES = [
-  { id: 'm1', txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!', cls: 'mega-yellow', col: '#fde047', audio: '' },
-  { id: 'm2', txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!', cls: 'mega-yellow', col: '#fde047', audio: '' },
-  { id: 'm3', txt: 'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!', cls: 'mega-cyan', col: '#38bdf8', audio: '' },
-  { id: 'm4', txt: 'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!', cls: 'mega-red', col: '#ff5c5c', audio: '' },
-  { id: 'm5', txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!', cls: 'mega-cyan', col: '#38bdf8', audio: '' }
-];
-
-var MEGAPHONE_PHRASES = JSON.parse(JSON.stringify(DEFAULT_MEGAPHONE_PHRASES));
-
-/* ===================== ХРАНИЛИЩЕ INDEXEDDB + GITHUB ДЛЯ ФРАЗ И ЗАПИСЕЙ МЕГАФОНА ===================== */
-var MEGA_IDB_NAME = 'mvd_megaphone_db_v1';
-var MEGA_IDB_STORE = 'phrases_store';
-
-function openMegaIdb() {
-  return new Promise(function(resolve, reject) {
-    if (!window.indexedDB) { reject(new Error('no idb')); return; }
-    var req = window.indexedDB.open(MEGA_IDB_NAME, 1);
-    req.onupgradeneeded = function(ev) {
-      var db = ev.target.result;
-      if (!db.objectStoreNames.contains(MEGA_IDB_STORE)) {
-        db.createObjectStore(MEGA_IDB_STORE);
-      }
-    };
-    req.onsuccess = function(ev) { resolve(ev.target.result); };
-    req.onerror = function() { reject(req.error); };
-  });
-}
-
-function loadMegaFromIdb() {
-  return openMegaIdb().then(function(db) {
-    return new Promise(function(resolve) {
-      try {
-        var tx = db.transaction(MEGA_IDB_STORE, 'readonly');
-        var st = tx.objectStore(MEGA_IDB_STORE);
-        var r = st.get('mega_list');
-        r.onsuccess = function() { resolve(r.result || null); };
-        r.onerror = function() { resolve(null); };
-      } catch (e) { resolve(null); }
-    });
-  }).catch(function() { return null; });
-}
-
-function saveMegaToIdb() {
-  return openMegaIdb().then(function(db) {
-    return new Promise(function(resolve) {
-      try {
-        var tx = db.transaction(MEGA_IDB_STORE, 'readwrite');
-        var st = tx.objectStore(MEGA_IDB_STORE);
-        st.put(MEGAPHONE_PHRASES, 'mega_list');
-        tx.oncomplete = function() { resolve(true); };
-        tx.onerror = function() { resolve(false); };
-      } catch (e) { resolve(false); }
-    });
-  }).catch(function() { return false; });
-}
-
-function b64e(s) { return btoa(unescape(encodeURIComponent(s))); }
-function b64d(s) { return decodeURIComponent(escape(atob(s))); }
-
-function syncMegaphoneToGitHub() {
-  saveMegaToIdb();
-  var tok = getOwnerToken();
-  if (!REPO || !isOwnerActive() || !tok) return;
-  var payload = JSON.stringify({ updated: Date.now(), phrases: MEGAPHONE_PHRASES });
-  var headers = {
-    Authorization: 'token ' + tok,
-    Accept: 'application/vnd.github+json',
-    'Content-Type': 'application/json'
+function idbOpen(){
+ return new Promise(function(resolve,reject){
+  if(!window.indexedDB){reject(new Error('no idb'));return}
+  var req=window.indexedDB.open(IDB_NAME,1);
+  req.onupgradeneeded=function(ev){
+   var db=ev.target.result;
+   if(!db.objectStoreNames.contains(IDB_STORE)){
+    db.createObjectStore(IDB_STORE);
+   }
   };
-  var dataSha = null;
-  fetch('https://api.github.com/repos/' + REPO + '/git/blobs', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({ content: b64e(payload), encoding: 'base64' })
-  }).then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function(blobObj) {
-      dataSha = blobObj.sha;
-      return fetch('https://api.github.com/repos/' + REPO + '/git/refs/heads/' + BRANCH + '?_t=' + Date.now(), { headers: headers });
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(refObj) {
-      var headSha = refObj.object.sha;
-      return fetch('https://api.github.com/repos/' + REPO + '/git/commits/' + headSha, { headers: headers })
-        .then(function(r) { return r.json(); })
-        .then(function(cm) { return { headSha: headSha, treeSha: cm.tree.sha }; });
-    })
-    .then(function(base) {
-      return fetch('https://api.github.com/repos/' + REPO + '/git/trees', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({
-          base_tree: base.treeSha,
-          tree: [{ path: MEGA_GH_FILE, mode: '100644', type: 'blob', sha: dataSha }]
-        })
-      }).then(function(r) { return r.json(); })
-        .then(function(nt) {
-          return fetch('https://api.github.com/repos/' + REPO + '/git/commits', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({ message: 'megaphone sync', tree: nt.sha, parents: [base.headSha] })
-          });
-        });
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(nc) {
-      return fetch('https://api.github.com/repos/' + REPO + '/git/refs/heads/' + BRANCH, {
-        method: 'PATCH',
-        headers: headers,
-        body: JSON.stringify({ sha: nc.sha, force: true })
-      });
-    }).catch(function() {});
+  req.onsuccess=function(ev){resolve(ev.target.result)};
+  req.onerror=function(){reject(req.error)};
+ });
 }
-
-function initMegaphoneStorage() {
-  loadMegaFromIdb().then(function(localList) {
-    if (Array.isArray(localList) && localList.length) {
-      MEGAPHONE_PHRASES = localList;
-    }
-    if (!REPO) return;
-    fetch('https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/' + MEGA_GH_FILE + '?v=' + Date.now(), { cache: 'no-store' })
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .then(function(j) {
-        if (j && Array.isArray(j.phrases) && j.phrases.length) {
-          MEGAPHONE_PHRASES = j.phrases;
-          saveMegaToIdb();
-        }
-      }).catch(function() {});
+function idbGetState(){
+ return idbOpen().then(function(db){
+  return new Promise(function(resolve){
+   try{
+    var tx=db.transaction(IDB_STORE,'readonly');
+    var st=tx.objectStore(IDB_STORE);
+    var r=st.get(IDB_KEY);
+    r.onsuccess=function(){resolve(r.result||null)};
+    r.onerror=function(){resolve(null)};
+   }catch(e){resolve(null)}
   });
+ }).catch(function(){return null});
+}
+function idbSaveState(payload){
+ return idbOpen().then(function(db){
+  return new Promise(function(resolve){
+   try{
+    var tx=db.transaction(IDB_STORE,'readwrite');
+    var st=tx.objectStore(IDB_STORE);
+    st.put(payload,IDB_KEY);
+    tx.oncomplete=function(){resolve(true)};
+    tx.onerror=function(){resolve(false)};
+   }catch(e){resolve(false)}
+  });
+ }).catch(function(){return false});
 }
 
-var NEARBY_PLAYERS = [
-  { uid: '#У173ТТ4', id: 36, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Водитель',  dist: 18 },
-  { uid: '#К904МВ2', id: 21, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Пассажир',  dist: 18 },
-  { uid: '#А418ОР7', id: 84, inCar: true,  make: 'Toyota Camry XV70', plate: 'Без номеров',role: 'Водитель',  dist: 46 },
-  { uid: '#С821НТ5', id: 19, inCar: false, make: null,                plate: null,         role: 'Пешеход',   dist: 64 },
-  { uid: '#В309ХК1', id: 52, inCar: true,  make: 'Lada Priora',       plate: 'Е824РС 52',  role: 'Водитель',  dist: 92 }
+/* ===================== РЕЕСТР УДАЛЁННЫХ КАРТОЧЕК ===================== */
+var DEL_K='mvd_garage_deleted_ids_v1';
+var DELETED_IDS={};
+try{
+ var rawDel=JSON.parse(LS.get(DEL_K)||'{}');
+ if(rawDel&&typeof rawDel==='object'){DELETED_IDS=rawDel}
+}catch(e){DELETED_IDS={}}
+
+function markDeletedId(id){
+ if(!id)return;
+ DELETED_IDS[id]=1;
+ try{LS.set(DEL_K,JSON.stringify(DELETED_IDS))}catch(e){}
+}
+
+/* ===================== УТИЛИТЫ И СОРТИРОВКА ПО АЛФАВИТУ (РУС -> АНГЛ) ===================== */
+function $(s){return document.querySelector(s)}
+function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function stripQuotaText(str){
+ return String(str||'')
+  .replace(/\s*\([^)]*(?:осн|уник|баз)[^)]*\)/gi,'')
+  .replace(/\s*\[[^\]]*(?:осн|уник|уникал|баз)[^\]]*\]/gi,'')
+  .replace(/\s*·?\s*\d+\s*осн\.?\s*\+\s*\d+\s*уник\.?[а-я]*/gi,'')
+  .trim();
+}
+
+function alphaGroup(name){
+ var s=stripQuotaText(name||'').replace(/^[^a-zA-Zа-яА-ЯёЁ0-9]+/,'').trim();
+ if(!s)return 2;
+ var ch=s.charAt(0);
+ if(/[а-яА-ЯёЁ]/.test(ch))return 0;
+ if(/[a-zA-Z]/.test(ch))return 1;
+ return 2;
+}
+
+function compareAlphabetical(a,b){
+ var na=stripQuotaText((a&&a.name)||'').trim();
+ var nb=stripQuotaText((b&&b.name)||'').trim();
+ var ga=alphaGroup(na);
+ var gb=alphaGroup(nb);
+ if(ga!==gb)return ga-gb;
+ if(ga===0){
+  return na.localeCompare(nb,'ru',{sensitivity:'base',numeric:true});
+ }
+ return na.localeCompare(nb,'en',{sensitivity:'base',numeric:true});
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function hex2rgba(h,a){
+ var r=parseInt(h.substring(1,3),16);
+ var g=parseInt(h.substring(3,5),16);
+ var b=parseInt(h.substring(5,7),16);
+ return 'rgba('+r+','+g+','+b+','+a+')';
+}
+function toast(msg,warn){
+ var t=document.createElement('div');
+ t.className='toast'+(warn?' warn':'');
+ t.textContent=msg;
+ $('#troot').appendChild(t);
+ setTimeout(function(){t.classList.add('out')},3400);
+ setTimeout(function(){t.remove()},3900);
+}
+function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
+function b64d(s){return decodeURIComponent(escape(atob(s)))}
+
+function setSyncStatus(mode,txt){
+ var el=$('#syncPill');
+ if(!el)return;
+ el.className='sync-pill owner-only '+(mode||'ok');
+ el.textContent=txt||'✓ Сохранено';
+}
+
+function fetchT(url,opts,ms){
+ var ctl=null,to=null;
+ try{ if(typeof AbortController!=='undefined'){ctl=new AbortController()} }catch(e){ctl=null}
+ var o={};
+ if(opts){for(var k in opts){if(Object.prototype.hasOwnProperty.call(opts,k)){o[k]=opts[k]}}}
+ if(ctl){o.signal=ctl.signal}
+ if(ctl){
+  to=setTimeout(function(){try{ctl.abort()}catch(e){}},ms||12000);
+ }
+ return fetch(url,o).then(function(r){
+  if(to){clearTimeout(to);to=null}
+  return r;
+ },function(e){
+  if(to){clearTimeout(to);to=null}
+  throw e;
+ });
+}
+
+/* ===================== РАЗДЕЛЫ И КЛАССЫ ===================== */
+function defaultClasses(){
+ return [
+  {k:'premium', n:'Премиум',       c:'#f7c948'},
+  {k:'high',    n:'Высший класс',  c:'#c084fc'},
+  {k:'standard',n:'Стандарт',      c:'#4da3ff'},
+  {k:'budget',  n:'Бюджет',        c:'#8b95a7'},
+  {k:'special', n:'Спецтранспорт', c:'#ff9a3d'}
+ ];
+}
+function defaultClassesFor(cat){
+ if(cat==='event'){return []}
+ return defaultClasses();
+}
+function cloneClasses(src){
+ var out=[];
+ if(!src||!src.length){return out}
+ for(var i=0;i<src.length;i++){
+  var c=src[i];
+  if(!c||!c.k){continue}
+  out.push({
+   k:String(c.k),
+   n:stripQuotaText(c.n||c.s||'—'),
+   c:String(c.c||'#4da3ff')
+  });
+ }
+ return out;
+}
+var DEFAULT_DEPS=[
+ {k:'uvd',  s:'УМВД',        n:'УМВД',                 c:'#4da3ff', cat:'main'},
+ {k:'gibdd',s:'ОГИБДД',      n:'ОГИБДД',               c:'#56ccff', cat:'main'},
+ {k:'cgb',  s:'ЦГБ/ОКБ',     n:'ЦГБ/ОКБ',              c:'#ff5c5c', cat:'main'},
+ {k:'vs',   s:'ВС РФ',       n:'ВС РФ',                c:'#2fd97a', cat:'main'},
+ {k:'rzd',  s:'РЖД',         n:'РЖД',                  c:'#ff9a3d', cat:'main'},
+ {k:'fsb',  s:'ФСБ',         n:'ФСБ',                  c:'#818cf8', cat:'event'},
+ {k:'sk',   s:'СК',          n:'Следственный комитет', c:'#e05c82', cat:'event'},
+ {k:'prok', s:'Прокуратура', n:'Прокуратура',          c:'#f7c948', cat:'event'},
+ {k:'mchs', s:'МЧС',         n:'МЧС',                  c:'#ff8a52', cat:'event'},
+ {k:'fso',  s:'ФСО',         n:'ФСО',                  c:'#c084fc', cat:'event'}
 ];
-
-var ROOT_SECTORS = [
-  { id: 'faction', ic: '🛡️', name: 'Фракционное', isFac: true },
-  { id: 'docs',    ic: '🪪', name: 'Документы' },
-  { id: 'car',     ic: '🚕', name: 'Транспорт' },
-  { id: 'trade',   ic: '🤝', name: 'Обмен' },
-  { id: 'money',   ic: '💵', name: 'Передать деньги' },
-  { id: 'anim',    ic: '🕺', name: 'Анимации' },
-  { id: 'med',     ic: '🩹', name: 'Первая помощь' },
-  { id: 'other',   ic: '⚙️', name: 'Прочее' }
-];
-
-function polarToCartesian(cx, cy, r, angleDeg) {
-  var rad = (angleDeg - 90) * Math.PI / 180.0;
-  return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
-}
-function sectorPath(cx, cy, rIn, rOut, startAngle, endAngle) {
-  var p1 = polarToCartesian(cx, cy, rOut, endAngle);
-  var p2 = polarToCartesian(cx, cy, rOut, startAngle);
-  var p3 = polarToCartesian(cx, cy, rIn, startAngle);
-  var p4 = polarToCartesian(cx, cy, rIn, endAngle);
-  var largeArc = (endAngle - startAngle <= 180) ? '0' : '1';
-  return ['M', p1.x, p1.y, 'A', rOut, rOut, 0, largeArc, 0, p2.x, p2.y, 'L', p3.x, p3.y, 'A', rIn, rIn, 0, largeArc, 1, p4.x, p4.y, 'Z'].join(' ');
-}
-
-function renderRadialMenu() {
-  var svg = document.getElementById('radialSvg');
-  var lbls = document.getElementById('radialLabels');
-  while (svg.firstChild) svg.removeChild(svg.firstChild);
-  lbls.innerHTML = '';
-
-  var ns = 'http://www.w3.org/2000/svg';
-  var cx = 300, cy = 300;
-  var n = ROOT_SECTORS.length, step = 360 / n, gap = 2.4;
-
-  ROOT_SECTORS.forEach(function(it, i) {
-    var a1 = i * step - step / 2 + gap / 2;
-    var a2 = (i + 1) * step - step / 2 - gap / 2;
-    var p = document.createElementNS(ns, 'path');
-    p.setAttribute('d', sectorPath(cx, cy, 78, 170, a1, a2));
-    p.setAttribute('class', 'r-sector' + (it.isFac ? (' fac-sec' + (FAC_ARC_OPEN ? ' active' : '')) : ''));
-    p.addEventListener('click', function() { onSectorClick(it.id); });
-    svg.appendChild(p);
-
-    var pos = polarToCartesian(cx, cy, 125, i * step);
-    var div = document.createElement('div');
-    div.className = 'r-lbl';
-    div.style.left = pos.x + 'px';
-    div.style.top = pos.y + 'px';
-    div.innerHTML = '<span class="ic">' + it.ic + '</span><span class="nm">' + it.name + '</span>';
-    lbls.appendChild(div);
+function cloneDeps(src){
+ var out=[];
+ if(!src||!src.length){return out}
+ for(var i=0;i<src.length;i++){
+  var d=src[i];
+  if(!d||!d.k){continue}
+  var cat=(d.cat==='event')?'event':'main';
+  var classes;
+  if(d.classes&&Array.isArray(d.classes)){
+   classes=cloneClasses(d.classes);
+  }else{
+   classes=defaultClassesFor(cat);
+  }
+  var cleanN=stripQuotaText(d.n||d.s||'—');
+  var cleanS=stripQuotaText(d.s||d.n||'—');
+  if(cleanS.length>18)cleanS=cleanN.slice(0,17)+'…';
+  out.push({
+   k:String(d.k),
+   s:cleanN||cleanS||'—',
+   n:cleanN||cleanS||'—',
+   c:String(d.c||'#4da3ff'),
+   cat:cat,
+   classes:classes
   });
-
-  if (FAC_ARC_OPEN) {
-    var subList = [
-      { id: 'idcard',       ic: '🪪', name: 'Удостоверение' },
-      { id: 'cuffs',        ic: '⛓️', name: CUFFED ? 'Снять наручники' : 'Надеть наручники' }
-    ];
-    if (CUFFED) {
-      subList.push({
-        id: 'attach_env',
-        ic: '🔗',
-        name: ATTACHED_ENV ? 'Отцепить от окружения' : 'Прицепить к окружению',
-        isAttach: true
-      });
-    }
-    subList.push(
-      { id: 'frisk_player', ic: '🔍', name: 'Обыск' },
-      { id: 'frisk_trunk',  ic: '🚘', name: 'Обыск багажника' }
-    );
-
-    if (IN_CAR_SUSPECTS.length < CUFFED_CANDIDATES.length) {
-      subList.push({
-        id: 'seat_detainee',
-        ic: '🚔',
-        name: 'Посадить задержанного (' + IN_CAR_SUSPECTS.length + '/2)'
-      });
-    }
-    if (IN_CAR_SUSPECTS.length > 0) {
-      subList.push({
-        id: 'unseat_detainee',
-        ic: '🚪',
-        name: 'Высадить задержанного (' + IN_CAR_SUSPECTS.length + ')',
-        isUnseat: true
-      });
-    }
-
-    subList.push(
-      { id: 'measure_tint', ic: '📟', name: 'Замер тонировки' },
-      { id: 'remove_tint',  ic: '🪟', name: 'Снять тонировку' },
-      { id: 'tow_car',      ic: '🪝', name: 'Эвакуация авто', isTow: true },
-      { id: 'megaphone',    ic: '📢', name: 'Мегафон' },
-      { id: 'pursuit',      ic: ACTIVE_PURSUIT ? '🛑' : '🎯', name: ACTIVE_PURSUIT ? 'Прекратить' : 'Преследование', isStop: !!ACTIVE_PURSUIT }
-    );
-
-    var arcStart = -140, arcSpan = 280;
-    var subStep = arcSpan / subList.length;
-
-    subList.forEach(function(sub, s) {
-      var sa1 = arcStart + s * subStep + 0.9;
-      var sa2 = arcStart + (s + 1) * subStep - 0.9;
-      var sp = document.createElementNS(ns, 'path');
-      sp.setAttribute('d', sectorPath(cx, cy, 180, 274, sa1, sa2));
-      var cls = 'r-sub-sector' +
-        (sub.isAttach ? ' attach-sec' : '') +
-        (sub.isUnseat ? ' unseat-sec' : '') +
-        (sub.isTow ? ' tow-sec' : '') +
-        (sub.isStop ? ' stop-sec' : '');
-      sp.setAttribute('class', cls);
-      sp.addEventListener('click', function() { doFacAction(sub.id); });
-      svg.appendChild(sp);
-
-      var smid = (sa1 + sa2) / 2;
-      var spos = polarToCartesian(cx, cy, 227, smid);
-      var sdiv = document.createElement('div');
-      sdiv.className = 'r-lbl';
-      sdiv.style.left = spos.x + 'px';
-      sdiv.style.top = spos.y + 'px';
-      sdiv.innerHTML = '<span class="ic">' + sub.ic + '</span><span class="nm">' + sub.name + '</span>';
-      lbls.appendChild(sdiv);
-    });
-  }
-
-  document.getElementById('rcTitle').textContent = FAC_ARC_OPEN ? 'Фракционное' : 'Взаимодействие';
-  document.getElementById('rcSub').textContent = FAC_ARC_OPEN ? (ACTIVE_PURSUIT ? ('Погоня: ' + ACTIVE_PURSUIT.uid + ' [' + ACTIVE_PURSUIT.id + ']') : 'Выберите действие сверху') : 'Нажмите «Фракционное»';
+ }
+ return out;
 }
 
-function toggleFacArc(force) {
-  FAC_ARC_OPEN = (typeof force === 'boolean') ? force : !FAC_ARC_OPEN;
-  renderRadialMenu();
+var DEPS=(function(){
+ try{
+  var savedDeps=JSON.parse(LS.get(DEPS_LS_KEY)||'null');
+  if(Array.isArray(savedDeps)&&savedDeps.length){return cloneDeps(savedDeps)}
+ }catch(e){}
+ return cloneDeps(DEFAULT_DEPS);
+})();
+
+function saveDepsSync(){
+ DEPS=cloneDeps(DEPS);
+ try{LS.set(DEPS_LS_KEY,JSON.stringify(DEPS))}catch(e){}
 }
 
-window.onSectorClick = function(id) {
-  if (id === 'faction') {
-    toggleFacArc();
+function findDep(k){
+ for(var i=0;i<DEPS.length;i++){if(DEPS[i].k===k){return DEPS[i]}}
+ return null;
+}
+function dep(k){
+ var d=findDep(k);
+ if(d){return d}
+ return {k:k||'_',s:'—',n:'Раздел удалён',c:'#6b7280',cat:'main',classes:[]};
+}
+function classesOfDep(depKey){
+ var d=findDep(depKey);
+ if(!d||!d.classes){return []}
+ return d.classes;
+}
+function classNameOf(depKey, clsKey){
+ var classes=classesOfDep(depKey);
+ for(var i=0;i<classes.length;i++){
+  if(classes[i].k===clsKey){return classes[i].n}
+ }
+ return '—';
+}
+function clsOf(it){
+ if(!it){return null}
+ var classes=classesOfDep(it.dep);
+ if(!classes.length){return null}
+ for(var i=0;i<classes.length;i++){
+  if(classes[i].k===it.cls){return it.cls}
+ }
+ return classes[0].k;
+}
+function isGrouped(){
+ if(state.kind!=='cars'){return false}
+ if(state.dep==='all'){return false}
+ var d=findDep(state.dep);
+ return !!(d&&d.classes&&d.classes.length);
+}
+
+/* ===================== КАТЕГОРИИ ===================== */
+var CATS={
+ cars:[
+  {k:'main', ic:'🏛️', n:'Основной автопарк фракции'},
+  {k:'event',ic:'🎪', n:'Автопарк для мероприятий'}
+ ],
+ form:[
+  {k:'main', ic:'🏛️', n:'Основная форма'},
+  {k:'event',ic:'🎪', n:'Форма для мероприятий'}
+ ]
+};
+function catName(kind,cat){var a=CATS[kind];for(var i=0;i<a.length;i++){if(a[i].k===cat){return a[i].n}}return a[0].n}
+
+/* ===================== СТРОГАЯ СИНХРОНИЗАЦИЯ РЕЖИМА ВЛАДЕЛЬЦА С РОДИТЕЛЬСКИМ ОКНОМ ===================== */
+var MAIN_KEY_K='idea_admin_key', PENDING_K='mvd_garage_pending';
+var ITEMS=[];
+var localRev=parseInt(LS.get(REV_LS_KEY)||'0',10)||0;
+var pendingRev=null;
+var ADMIN_KEY='';
+var adminMode=false;
+var booted=false;
+
+function isParentReallyInOwnerMode(){
+ try{
+  if(window.parent&&window.parent!==window){
+   if(typeof window.parent.adminMode==='boolean'){
+    return !!window.parent.adminMode;
+   }
+   var pDoc=window.parent.document;
+   if(pDoc){
+    if(pDoc.body&&pDoc.body.classList&&pDoc.body.classList.contains('adm'))return true;
+    var topText=(pDoc.header||pDoc.body).innerText||'';
+    if(topText.indexOf('Вход владельца')>=0)return false;
+    if(topText.indexOf('Владелец')>=0&&topText.indexOf('Выйти')>=0)return true;
+   }
+   return false;
   }
+ }catch(e){}
+ return false;
+}
+
+function syncGlobalOwnerAuth(){
+ var isAdm=isParentReallyInOwnerMode();
+ var tok='';
+ if(isAdm){
+  try{
+   if(window.parent&&window.parent!==window&&window.parent.localStorage){
+    tok=window.parent.localStorage.getItem(MAIN_KEY_K)||'';
+   }
+   if(!tok){tok=LS.get(MAIN_KEY_K)||''}
+  }catch(e){}
+ }
+ ADMIN_KEY=isAdm?String(tok||'').trim():'';
+ adminMode=!!isAdm;
+ document.body.classList.toggle('is-owner',adminMode);
+
+ var db=$('#depsBtn');
+ if(db){db.style.display=adminMode?'inline-flex':'none'}
+ var ab=$('#addBtn');
+ if(ab){ab.style.display=adminMode?'inline-flex':'none'}
+ var sp=$('#syncPill');
+ if(sp){sp.style.display=adminMode?'inline-flex':'none'}
+}
+syncGlobalOwnerAuth();
+window.addEventListener('storage',function(){
+ var prev=adminMode;
+ syncGlobalOwnerAuth();
+ if(prev!==adminMode){render()}
+});
+setInterval(function(){
+ var prev=adminMode;
+ syncGlobalOwnerAuth();
+ if(prev!==adminMode){
+  render();
+  if(adminMode&&dataDirty&&!pushInFlight){doPush()}
+ }
+},350);
+
+var OLD_SEED_IDS={
+ c1:1,c2:1,c3:1,c4:1,c5:1,c6:1,c7:1,c8:1,c9:1,c10:1,
+ c11:1,c12:1,c13:1,c14:1,c15:1,c16:1,c17:1,c18:1,c19:1,c20:1,
+ f1:1,f2:1,f3:1,f4:1,f5:1,f6:1,f7:1,f8:1,f9:1,f10:1,f11:1,f12:1,f13:1
 };
 
-window.doFacAction = function(act) {
-  if (act === 'idcard') {
-    document.getElementById('idCardModal').style.display = 'flex';
-    return;
-  }
-  if (act === 'cuffs') {
-    CUFFED = !CUFFED;
-    if (!CUFFED) ATTACHED_ENV = false;
-    renderRadialMenu();
-    return;
-  }
-  if (act === 'attach_env') {
-    ATTACHED_ENV = !ATTACHED_ENV;
-    renderRadialMenu();
-    if (ATTACHED_ENV) {
-      addChat('me', '* ' + OFFICER_NAME + ' снял браслет наручников с правой руки ' + SUSPECT_NAME + ' и прицепил его к окружению');
-    } else {
-      addChat('me', '* ' + OFFICER_NAME + ' отцепил браслет наручников от окружения и прицепил его обратно на правую руку ' + SUSPECT_NAME);
-    }
-    return;
-  }
-  if (act === 'frisk_player') {
-    addChat('me', '[Обыск] * ' + OFFICER_NAME + ' надел тактические перчатки и начал обыск гражданина ' + SUSPECT_NAME);
-    openSearchMode('player');
-    return;
-  }
-  if (act === 'frisk_trunk') {
-    tryOpenTrunkSearch();
-    return;
-  }
-  if (act === 'seat_detainee') {
-    openSeatDetaineeModal();
-    return;
-  }
-  if (act === 'unseat_detainee') {
-    openUnseatDetaineeModal();
-    return;
-  }
-  if (act === 'measure_tint') {
-    openMeasureTintModal();
-    return;
-  }
-  if (act === 'remove_tint') {
-    openTintModal();
-    return;
-  }
-  if (act === 'tow_car') {
-    openTowModal();
-    return;
-  }
-  if (act === 'megaphone') {
-    openMegaphoneModal();
-    return;
-  }
-  if (act === 'pursuit') {
-    if (ACTIVE_PURSUIT) {
-      stopActivePursuit();
-    } else {
-      openPursuitModal();
-    }
-  }
-};
-
-/* ============ ПОСАДКА И ВЫСАДКА ДО 2 ЗАДЕРЖАННЫХ ОТДЕЛЬНЫМИ КНОПКАМИ ============ */
-function isSuspectInCar(id) {
-  for (var i = 0; i < IN_CAR_SUSPECTS.length; i++) {
-    if (IN_CAR_SUSPECTS[i].id === id) return true;
-  }
-  return false;
+function sanitizeItemsList(arr){
+ if(!arr||!Array.isArray(arr))return [];
+ var out=[];
+ var seen={};
+ for(var i=0;i<arr.length;i++){
+  var it=arr[i];
+  if(!it||typeof it!=='object')continue;
+  if(it.kind!=='cars'&&it.kind!=='form')continue;
+  if(OLD_SEED_IDS[it.id]&&!it.photo)continue;
+  if(it.id&&DELETED_IDS[it.id])continue;
+  if(it.id&&seen[it.id])continue;
+  if(it.id)seen[it.id]=1;
+  it.name=stripQuotaText(it.name||'');
+  it.desc=stripQuotaText(it.desc||'');
+  out.push(it);
+ }
+ out.sort(compareAlphabetical);
+ return out;
 }
 
-function openSeatDetaineeModal() {
-  var back = document.getElementById('actModalBack');
-  var box = document.getElementById('actModalBox');
-  var available = CUFFED_CANDIDATES.filter(function(c) { return !isSuspectInCar(c.id); });
-
-  box.innerHTML =
-    '<div class="act-m-title">🚔 Посадить задержанного в автомобиль (' + IN_CAR_SUSPECTS.length + '/2 в салоне)</div>' +
-    '<div class="act-m-sub">Выберите задержанного игрока рядом, чтобы посадить его в служебный автомобиль (можно посадить до 2 задержанных):</div>' +
-    available.map(function(c) {
-      return '<div class="act-opt" onclick="putDetaineeInCarById(' + c.id + ')">' +
-        '<div><b>' + c.name + ' [' + c.id + ']</b><span>Статус: ⛓️ ' + c.status + ' · На улице</span></div>' +
-        '<span style="color:#60a5fa;font-weight:800;font-size:12px">Посадить →</span>' +
-      '</div>';
-    }).join('') +
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
-  back.style.display = 'flex';
+function toArr(x){
+ if(!x){return null}
+ if(Array.isArray(x)){return x}
+ var ks=Object.keys(x).sort(function(a,b){return a-b}),arr=[];
+ for(var i=0;i<ks.length;i++){arr[+ks[i]]=x[ks[i]]}
+ return arr;
 }
 
-function openUnseatDetaineeModal() {
-  var back = document.getElementById('actModalBack');
-  var box = document.getElementById('actModalBox');
-
-  box.innerHTML =
-    '<div class="act-m-title">🚪 Высадить задержанного из автомобиля (' + IN_CAR_SUSPECTS.length + ' в салоне)</div>' +
-    '<div class="act-m-sub">Выберите задержанного, находящегося в салоне патрульного автомобиля, чтобы высадить его:</div>' +
-    IN_CAR_SUSPECTS.map(function(c) {
-      return '<div class="act-opt" onclick="takeDetaineeFromCarById(' + c.id + ')">' +
-        '<div><b>' + c.name + ' [' + c.id + ']</b><span>В салоне авто · Пристёгнут ремнём безопасности</span></div>' +
-        '<span style="color:#34d399;font-weight:800;font-size:12px">Высадить →</span>' +
-      '</div>';
-    }).join('') +
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
-  back.style.display = 'flex';
+function isGaragePayload(obj){
+ if(!obj||typeof obj!=='object')return false;
+ if(obj.deps&&Array.isArray(obj.deps))return true;
+ var a=toArr(obj.items);
+ if(!a)return false;
+ if(a.length===0)return true;
+ for(var i=0;i<a.length;i++){
+  if(a[i]&&(a[i].kind==='cars'||a[i].kind==='form'))return true;
+  if(a[i]&&a[i].fac&&a[i].title)return false;
+ }
+ return false;
 }
 
-window.putDetaineeInCarById = function(suspectId) {
-  var c = null;
-  for (var i = 0; i < CUFFED_CANDIDATES.length; i++) {
-    if (CUFFED_CANDIDATES[i].id === suspectId) { c = CUFFED_CANDIDATES[i]; break; }
-  }
-  if (!c || isSuspectInCar(c.id)) return;
-  IN_CAR_SUSPECTS.push(c);
-  closeActModal();
-  renderRadialMenu();
-  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, посадил ' + c.name + ' в салон (' + IN_CAR_SUSPECTS.length + '/2), пристегнул ремнём безопасности и закрыл дверь');
-};
-
-window.takeDetaineeFromCarById = function(suspectId) {
-  var c = null;
-  for (var i = 0; i < IN_CAR_SUSPECTS.length; i++) {
-    if (IN_CAR_SUSPECTS[i].id === suspectId) {
-      c = IN_CAR_SUSPECTS[i];
-      IN_CAR_SUSPECTS.splice(i, 1);
-      break;
-    }
-  }
-  if (!c) return;
-  closeActModal();
-  renderRadialMenu();
-  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, отстегнул ремень безопасности, высадил ' + c.name + ' из салона и закрыл дверь');
-};
-
-/* ============ СИСТЕМА ЭВАКУАЦИИ АВТОМОБИЛЯ НА ШТРАФСТОЯНКУ (ГИБДД) ============ */
-function formatTimeMMSS(sec) {
-  var m = Math.floor(sec / 60);
-  var s = sec % 60;
-  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+function saveToIndexedDB(){
+ saveDepsSync();
+ ITEMS=sanitizeItemsList(ITEMS);
+ try{LS.set(REV_LS_KEY,String(localRev))}catch(e){}
+ return idbSaveState({
+  rev:localRev,
+  items:ITEMS,
+  deps:DEPS,
+  deletedIds:DELETED_IDS,
+  savedAt:Date.now()
+ });
 }
 
-function updateTowHud() {
-  var badge = document.getElementById('towHudBadge');
-  var title = document.getElementById('towHudTitle');
-  var sub   = document.getElementById('towHudSub');
-  var timer = document.getElementById('towHudTimer');
-
-  if (TOW_STATE.stage === 'idle') {
-    badge.style.display = 'none';
-    return;
-  }
-  badge.style.display = 'block';
-  sub.textContent = TOW_STATE.carName + ' (' + TOW_STATE.plate + ') · Владелец: ' + TOW_STATE.owner;
-
-  if (TOW_STATE.stage === 'timer') {
-    title.textContent = '⏳ Таймер эвакуации ТС';
-    timer.style.color = '#fbbf24';
-    timer.textContent = 'До пропажи авто: ' + formatTimeMMSS(TOW_STATE.secondsLeft);
-  } else if (TOW_STATE.stage === 'loaded') {
-    title.textContent = '🪝 Авто на эвакуаторе (Защита активна)';
-    timer.style.color = '#34d399';
-    timer.textContent = '✓ Таймер снят · Не пропадёт при выходе игрока';
-  }
+function byId(id){for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].id===id){return ITEMS[i]}}return null}
+function countItems(kind,cat,dp){
+ var n=0;
+ for(var i=0;i<ITEMS.length;i++){
+  var it=ITEMS[i];
+  if(it.kind===kind&&it.cat===cat&&(dp===null||it.dep===dp)){n++}
+ }
+ return n;
+}
+function countDepUsage(depKey){
+ var n=0;
+ for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].dep===depKey){n++}}
+ return n;
+}
+function countClassUsage(depKey,clsKey){
+ var n=0;
+ for(var i=0;i<ITEMS.length;i++){
+  if(ITEMS[i].dep===depKey&&ITEMS[i].cls===clsKey){n++}
+ }
+ return n;
 }
 
-function stopTowInterval() {
-  if (TOW_STATE.timerId) {
-    clearInterval(TOW_STATE.timerId);
-    TOW_STATE.timerId = null;
-  }
+/* ===================== НАДЁЖНАЯ СИНХРОНИЗАЦИЯ С GITHUB ===================== */
+var NET_TO_READ=14000;
+var NET_TO_WRITE=45000;
+var GARAGE_DATA_FILE='garage_data.json';
+var GARAGE_REV_FILE='garage_rev.txt';
+
+function rawUrl(file,br){return 'https://raw.githubusercontent.com/'+REPO+'/'+(br||BRANCH)+'/'+file+'?v='+Date.now()}
+function rawGet(file,br){
+ return fetchT(rawUrl(file,br),{cache:'no-store'},NET_TO_READ).then(function(r){
+  if(r.status===404){var e=new Error('404');e.nf=true;throw e}
+  if(!r.ok){throw new Error(r.status)}
+  return r.text();
+ });
 }
-
-function openTowModal() {
-  var back = document.getElementById('actModalBack');
-  var box  = document.getElementById('actModalBox');
-
-  var st = TOW_STATE.stage;
-  box.innerHTML =
-    '<div class="act-m-title">🪝 Эвакуация транспортного средства (Штрафстоянка ГИБДД)</div>' +
-    '<div class="tow-info-card">' +
-      '<b>Как работает механика эвакуации:</b><br>' +
-      '1. При клике на эвакуацию возле машины в чат выводится уведомление: <b>у вас есть 5 минут на эвакуацию авто</b> до того, как оно пропадёт.<br>' +
-      '2. После того как автомобиль погружен на эвакуатор, <b>время на эвакуацию пропадает</b>, и <b>даже если игрок выйдет из игры — его авто останется и не пропадёт</b>.<br>' +
-      '3. Когда автомобиль доставлен на штрафстоянку и поставлен на метку, владельцу приходит уведомление, что его ТС эвакуировано и необходимо заплатить <b>10 000 ₽</b> за услуги эвакуатора и штрафстоянку, прежде чем он сможет забрать ТС.' +
-    '</div>' +
-
-    '<div class="act-opt" onclick="startTowProcess()">' +
-      '<div>' +
-        '<b>1. Начать оформление и эвакуацию авто (Таймер 5 минут)</b>' +
-        '<span>Транспорт рядом: ' + TOW_STATE.carName + ' [' + TOW_STATE.plate + '] · Владелец: ' + TOW_STATE.owner + '</span>' +
-      '</div>' +
-      '<span style="color:#fbbf24;font-weight:800;font-size:12px">Начать →</span>' +
-    '</div>' +
-
-    '<div class="act-opt' + (st === 'idle' ? ' disabled' : '') + '" onclick="loadCarOntoTowTruck()">' +
-      '<div>' +
-        '<b>2. Поставить авто на эвакуатор (Снять таймер 5 минут + Защита от выхода)</b>' +
-        '<span>Таймер пропадает · Авто не исчезнет даже при выходе владельца из игры</span>' +
-      '</div>' +
-      '<span style="color:#60a5fa;font-weight:800;font-size:12px">Погрузить →</span>' +
-    '</div>' +
-
-    '<div class="act-opt' + (st !== 'loaded' ? ' disabled' : '') + '" onclick="deliverCarToImpoundLot()">' +
-      '<div>' +
-        '<b>3. Доставить на штрафстоянку и сдать в метку (Штраф 10 000 ₽)</b>' +
-        '<span>Игроку придёт уведомление об эвакуации ТС и оплате 10 000 ₽ за штрафстоянку</span>' +
-      '</div>' +
-      '<span style="color:#34d399;font-weight:800;font-size:12px">Сдать в метку →</span>' +
-    '</div>' +
-
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
-
-  back.style.display = 'flex';
+function apiBlobBySha(sha){
+ var h={Accept:'application/vnd.github+json'};
+ if(ADMIN_KEY){h.Authorization='token '+ADMIN_KEY}
+ return fetchT('https://api.github.com/repos/'+REPO+'/git/blobs/'+sha+'?t='+Date.now(),{headers:h,cache:'no-store'},NET_TO_READ)
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(function(j){return b64d(String(j.content||'').replace(/\s+/g,''))});
 }
-
-window.startTowProcess = function() {
-  stopTowInterval();
-  TOW_STATE.stage = 'timer';
-  TOW_STATE.secondsLeft = 300;
-  closeActModal();
-  updateTowHud();
-
-  addChat('me', '* ' + OFFICER_NAME + ' сфотографировал нарушение правил парковки автомобиля ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') и начал процедуру эвакуации');
-  addChat('sys-warn', '[Эвакуация] У вас есть 5 минут на эвакуацию автомобиля ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + '), до того как он пропадёт!');
-
-  TOW_STATE.timerId = setInterval(function() {
-    if (TOW_STATE.stage !== 'timer') {
-      stopTowInterval();
-      return;
-    }
-    TOW_STATE.secondsLeft--;
-    if (TOW_STATE.secondsLeft <= 0) {
-      stopTowInterval();
-      TOW_STATE.stage = 'idle';
-      updateTowHud();
-      addChat('err', '[Эвакуация] Время (5 минут) истекло — автомобиль не был погружен на эвакуатор.');
-      return;
-    }
-    updateTowHud();
-  }, 1000);
-};
-
-window.loadCarOntoTowTruck = function() {
-  if (TOW_STATE.stage === 'idle') {
-    addChat('err', '[Эвакуация] Сначала начните процедуру эвакуации возле автомобиля (Пункт 1)!');
-    return;
-  }
-  stopTowInterval();
-  TOW_STATE.stage = 'loaded';
-  closeActModal();
-  updateTowHud();
-
-  addChat('me', '* ' + OFFICER_NAME + ' закрепил буксировочный трос и погрузил автомобиль ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') на платформу эвакуатора');
-  addChat('sys-info', '[Эвакуация] Автомобиль поставлен на эвакуатор! Таймер 5 минут отключён: даже если владелец (' + TOW_STATE.owner + ') выйдет из игры, его авто останется и не пропадёт.');
-};
-
-window.deliverCarToImpoundLot = function() {
-  if (TOW_STATE.stage !== 'loaded') {
-    addChat('err', '[Эвакуация] Сначала погрузите автомобиль на платформу эвакуатора (Пункт 2)!');
-    return;
-  }
-  stopTowInterval();
-  TOW_STATE.stage = 'idle';
-  closeActModal();
-  updateTowHud();
-
-  addChat('me', '* ' + OFFICER_NAME + ' доставил автомобиль ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') на штрафстоянку ГИБДД и оформил протокол задержания ТС');
-  addChat('sys-info', '[Штрафстоянка] Вы успешно сдали ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') на метку штрафстоянки.');
-  addChat('sys-warn', '[Уведомление владельцу ' + TOW_STATE.owner + '] Ваше транспортное средство (' + TOW_STATE.carName + ', ' + TOW_STATE.plate + ') было эвакуировано на штрафстоянку! Вам необходимо заплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку, прежде чем вы сможете забрать своё ТС.');
-};
-
-window.toggleTintMeter = function() {
-  HAS_TINT_METER = !HAS_TINT_METER;
-  var b = document.getElementById('btnTintMeter');
-  b.textContent = HAS_TINT_METER ? '📟 Замерщик тонировки: В руках' : '📟 Замерщик тонировки: Не взят';
-  b.className = 'trunk-toggle' + (HAS_TINT_METER ? '' : ' closed');
-};
-
-function openMeasureTintModal() {
-  if (!HAS_TINT_METER) {
-    addChat('err', '[Система] Для проведения замера светопропускаемости необходимо взять функциональный замерщик тонировки!');
-    return;
-  }
-  var back = document.getElementById('actModalBack');
-  var box = document.getElementById('actModalBox');
-  var glasses = [
-    { name: 'Замерить лобовое стекло',          res: 'Светопропускаемость: 15% (Норма: не менее 70% — Нарушение)' },
-    { name: 'Замерить переднее левое стекло',   res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' },
-    { name: 'Замерить переднее правое стекло',  res: 'Светопропускаемость: 5% (Норма: не менее 70% — Нарушение)' }
-  ];
-  box.innerHTML =
-    '<div class="act-m-title">📟 Замер светопропускаемости стёкол</div>' +
-    '<div class="act-m-sub">Выберите стекло автомобиля для замера прибором «Тоник»:</div>' +
-    glasses.map(function(g) {
-      return '<div class="act-opt" onclick="doMeasureGlass(\'' + g.name + '\',\'' + g.res + '\')">' +
-        '<div><b>' + g.name + '</b><span>Прибор замера тонировки активен</span></div>' +
-        '<span style="color:#60a5fa;font-weight:800;font-size:12px">Замерить →</span>' +
-      '</div>';
-    }).join('') +
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
-  back.style.display = 'flex';
-}
-
-window.doMeasureGlass = function(title, res) {
-  closeActModal();
-  addChat('me', '* ' + OFFICER_NAME + ' приложил датчик прибора замера светопропускаемости к стеклу автомобиля и провёл замер (' + res + ')');
-};
-
-function openTintModal() {
-  var back = document.getElementById('actModalBack');
-  var box = document.getElementById('actModalBox');
-  var glasses = [
-    { name: 'Снять тонировку с лобового стекла',        sub: 'Демонтаж плёнки с лобового стекла' },
-    { name: 'Снять тонировку с бокового левого стекла',  sub: 'Переднее водительское стекло' },
-    { name: 'Снять тонировку с бокового правого стекла', sub: 'Переднее пассажирское стекло' }
-  ];
-  box.innerHTML =
-    '<div class="act-m-title">🪟 Снятие тонировки (ГИБДД)</div>' +
-    '<div class="act-m-sub">Снятию подлежит только тонировка лобового стекла и передних боковых стёкол:</div>' +
-    glasses.map(function(g) {
-      return '<div class="act-opt" onclick="removeTintGlass(\'' + g.name + '\')">' +
-        '<div><b>' + g.name + '</b><span>' + g.sub + '</span></div>' +
-        '<span style="color:#34d399;font-weight:800;font-size:12px">Снять →</span>' +
-      '</div>';
-    }).join('') +
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
-  back.style.display = 'flex';
-}
-
-window.removeTintGlass = function(actionName) {
-  closeActModal();
-  var glassPart = actionName.replace('Снять тонировку ', '');
-  addChat('me', '* ' + OFFICER_NAME + ' поддел край плёнки и снял тонировку ' + glassPart);
-};
-
-/* =========================================================================
-   МЕГАФОН:
-   1. Встроенный генератор щелчка нажатия и отпускания тангенты рации
-   2. Добавление / редактирование / удаление фраз и загрузка своей записи (только для владельца)
-   3. Синхронный сценарий при клике:
-      - Чат: "* Евгений Холмс зажал кнопку рации мегафона и сказал в него:"
-      - Чат: "[Мегафон] Евгений Холмс: ..."
-      - Звук: Щелчок нажатия рации -> Ваша загруженная запись -> Щелчок как положил рацию
-      - Чат (ровно по окончании записи): "* Евгений Холмс отжал кнопку рации"
-   ========================================================================= */
-var radioCtx = null;
-var currentMegaAudio = null;
-var uploadAudioTargetIdx = null;
-
-function getRadioAudioCtx() {
-  if (!radioCtx) {
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) radioCtx = new AC();
-  }
-  if (radioCtx && radioCtx.state === 'suspended') {
-    radioCtx.resume();
-  }
-  return radioCtx;
-}
-
-/* Встроенный реалистичный звук щелчка нажатия и отпускания кнопки рации */
-function playRadioTangentaClick(isPress) {
-  try {
-    var ctx = getRadioAudioCtx();
-    if (!ctx) return;
-    var sr = ctx.sampleRate;
-    var dur = isPress ? 0.065 : 0.11;
-    var buf = ctx.createBuffer(1, Math.floor(sr * dur), sr);
-    var d = buf.getChannelData(0);
-
-    var p1 = 0;
-    var p2 = Math.floor(sr * 0.015);
-    for (var i = 0; i < d.length; i++) {
-      var v = 0;
-      /* 1-й контакт кнопки тангенты */
-      if (i >= p1 && i < p1 + sr * 0.006) {
-        var t1 = (i - p1) / (sr * 0.006);
-        v += ((Math.random() * 2 - 1) * 0.7 + Math.sin(t1 * Math.PI * 5) * 0.5) * Math.exp(-t1 * 6);
-      }
-      /* 2-й механический зацеп пружины */
-      if (i >= p2 && i < p2 + sr * 0.008) {
-        var t2 = (i - p2) / (sr * 0.008);
-        v += ((Math.random() * 2 - 1) * 0.8 + Math.sin(t2 * Math.PI * 4) * 0.4) * Math.exp(-t2 * 7);
-      }
-      /* Короткий радио-хвост (пшик эфира) при отпускании рации */
-      if (!isPress && i > p2) {
-        var env = Math.exp(-(i - p2) / (sr * 0.025));
-        v += (Math.random() * 2 - 1) * env * 0.35;
-      }
-      d[i] = v;
-    }
-
-    var src = ctx.createBufferSource();
-    src.buffer = buf;
-
-    var filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = isPress ? 1050 : 920;
-    filter.Q.value = 1.3;
-
-    var gain = ctx.createGain();
-    gain.gain.value = 1.15;
-
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    src.start();
-  } catch (e) {}
-}
-
-function escHtml(s) {
-  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function openMegaphoneModal() {
-  var back = document.getElementById('actModalBack');
-  var box  = document.getElementById('actModalBox');
-  var ownerMode = isOwnerActive();
-
-  var ownerPanelHtml = '';
-  if (ownerMode) {
-    ownerPanelHtml =
-      '<div class="mega-owner-box">' +
-        '<div class="mega-owner-title">👑 Панель владельца · Добавить новый текст мегафона</div>' +
-        '<div class="mega-owner-row">' +
-          '<input type="text" class="mega-inp" id="newMegaTxtInp" style="flex:1;min-width:220px" placeholder="Введите новый текст мегафона…">' +
-          '<select class="mega-sel" id="newMegaColSel">' +
-            '<option value="mega-yellow|#fde047">🟡 Жёлтый</option>' +
-            '<option value="mega-cyan|#38bdf8">🔵 Голубой</option>' +
-            '<option value="mega-red|#ff5c5c">🔴 Красный</option>' +
-          '</select>' +
-          '<button class="d-btn" style="background:#2563eb;border-color:#60a5fa" onclick="ownerAddMegaphonePhrase()">＋ Добавить</button>' +
-        '</div>' +
-      '</div>';
-  }
-
-  var listHtml = MEGAPHONE_PHRASES.map(function(phr, idx) {
-    var hasAudio = !!(phr.audio && phr.audio.length > 50);
-    var audioBadge = hasAudio ? '<span class="mega-badge-audio">🔊 Запись загружена</span>' : '';
-    var ownerTools = '';
-    if (ownerMode) {
-      ownerTools =
-        '<div style="display:flex;align-items:center;gap:5px;flex-shrink:0" onclick="event.stopPropagation()">' +
-          '<button class="d-btn" style="padding:6px 10px;font-size:11px;border-color:' + (hasAudio ? '#10b981' : 'rgba(255,255,255,.2)') + '" onclick="ownerTriggerUploadAudio(' + idx + ')" title="Загрузить аудиозапись (MP3/WAV/OGG) для этой фразы">' +
-            (hasAudio ? '📂 Заменить запись' : '📂 Загрузить запись') +
-          '</button>' +
-          (hasAudio ? '<button class="d-btn warn" style="padding:6px 8px;font-size:11px" onclick="ownerRemovePhraseAudio(' + idx + ')" title="Удалить аудиозапись">🔇</button>' : '') +
-          '<button class="d-btn" style="padding:6px 8px;font-size:11px" onclick="ownerEditMegaphonePhrase(' + idx + ')" title="Редактировать текст фразы">✏️</button>' +
-          '<button class="d-btn warn" style="padding:6px 8px;font-size:11px" onclick="ownerDeleteMegaphonePhrase(' + idx + ')" title="Удалить фразу">🗑</button>' +
-        '</div>';
-    } else {
-      ownerTools = '<span style="color:' + phr.col + ';font-weight:800;font-size:12px;flex-shrink:0">Сказать →</span>';
-    }
-
-    return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
-      '<div style="flex:1;min-width:0">' +
-        '<b>Фраза №' + (idx + 1) + audioBadge + '</b>' +
-        '<span style="color:' + phr.col + '">«' + escHtml(phr.txt) + '»</span>' +
-      '</div>' +
-      ownerTools +
-    '</div>';
-  }).join('');
-
-  box.innerHTML =
-    '<div class="act-m-title"><span>📢 Мегафон</span></div>' +
-    ownerPanelHtml +
-    listHtml +
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
-  back.style.display = 'flex';
-}
-
-/* Функции владельца для управления фразами и загрузкой своей записи */
-window.ownerAddMegaphonePhrase = function() {
-  if (!isOwnerActive()) return;
-  var inp = document.getElementById('newMegaTxtInp');
-  var sel = document.getElementById('newMegaColSel');
-  var txt = inp ? inp.value.trim() : '';
-  if (!txt) return;
-  var parts = (sel ? sel.value : 'mega-yellow|#fde047').split('|');
-  MEGAPHONE_PHRASES.push({
-    id: 'm_' + Date.now().toString(36),
-    txt: txt,
-    cls: parts[0] || 'mega-yellow',
-    col: parts[1] || '#fde047',
-    audio: ''
+function apiFileContent(path){
+ var h={Accept:'application/vnd.github+json'};
+ if(ADMIN_KEY){h.Authorization='token '+ADMIN_KEY}
+ return fetchT('https://api.github.com/repos/'+REPO+'/contents/'+path+'?t='+Date.now(),{headers:h,cache:'no-store'},NET_TO_READ)
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(function(j){
+   if(j&&j.content){return b64d(String(j.content).replace(/\s+/g,''))}
+   if(j&&j.sha){return apiBlobBySha(j.sha)}
+   throw new Error('empty');
   });
-  syncMegaphoneToGitHub();
-  openMegaphoneModal();
-};
+}
+function ghHeaders(){return {Authorization:'token '+ADMIN_KEY,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
+function ghReq(method,path,body){
+ var sep=path.indexOf('?')>=0?'&':'?';
+ var url='https://api.github.com/repos/'+REPO+'/'+path+(method==='GET'?(sep+'_t='+Date.now()):'');
+ return fetchT(url,{
+  method:method,
+  headers:ghHeaders(),
+  cache:'no-store',
+  body:body?JSON.stringify(body):undefined
+ },NET_TO_WRITE).then(function(r){
+  if(!r.ok){throw r.status}
+  return r.status===204?null:r.json();
+ });
+}
 
-window.ownerEditMegaphonePhrase = function(idx) {
-  if (!isOwnerActive()) return;
-  var phr = MEGAPHONE_PHRASES[idx];
-  if (!phr) return;
-  var updated = prompt('Изменить текст мегафона:', phr.txt);
-  if (updated === null) return;
-  updated = updated.trim();
-  if (!updated) return;
-  phr.txt = updated;
-  syncMegaphoneToGitHub();
-  openMegaphoneModal();
-};
+var pushTimer=null, pushInFlight=false, dataDirty=false, pushRetries=0;
 
-window.ownerDeleteMegaphonePhrase = function(idx) {
-  if (!isOwnerActive()) return;
-  var phr = MEGAPHONE_PHRASES[idx];
-  if (!phr) return;
-  if (!confirm('Удалить фразу «' + phr.txt + '»?')) return;
-  MEGAPHONE_PHRASES.splice(idx, 1);
-  syncMegaphoneToGitHub();
-  openMegaphoneModal();
-};
+function commit(){
+ syncGlobalOwnerAuth();
+ localRev=(typeof localRev==='number'?localRev:0)+1;
+ saveToIndexedDB();
+ dataDirty=true;
+ LS.set(PENDING_K,String(Date.now()));
+ if(!REPO||!adminMode||!ADMIN_KEY){ return }
+ setSyncStatus('busy','⏳ Сохранение…');
+ if(pushInFlight){ return }
+ if(pushTimer){ clearTimeout(pushTimer) }
+ pushTimer=setTimeout(doPush,150);
+}
 
-window.ownerTriggerUploadAudio = function(idx) {
-  if (!isOwnerActive()) return;
-  uploadAudioTargetIdx = idx;
-  var fi = document.getElementById('megaOwnerAudioInp');
-  fi.value = '';
-  fi.click();
-};
+function doPush(){
+ pushTimer=null;
+ syncGlobalOwnerAuth();
+ if(!adminMode||!REPO||!ADMIN_KEY||pushInFlight||!dataDirty){ return }
+ saveDepsSync();
+ ITEMS=sanitizeItemsList(ITEMS);
+ dataDirty=false;
+ pushInFlight=true;
+ var rev=localRev;
+ pendingRev=rev;
+ setSyncStatus('busy','⏳ Сохранение в GitHub…');
 
-window.ownerRemovePhraseAudio = function(idx) {
-  if (!isOwnerActive()) return;
-  if (!MEGAPHONE_PHRASES[idx]) return;
-  MEGAPHONE_PHRASES[idx].audio = '';
-  syncMegaphoneToGitHub();
-  openMegaphoneModal();
-};
+ var snapshot=JSON.stringify({
+  rev:rev,
+  items:ITEMS,
+  deps:DEPS,
+  deletedIds:DELETED_IDS
+ });
+ var dataSha=null;
+ var revSha=null;
 
-document.getElementById('megaOwnerAudioInp').addEventListener('change', function() {
-  var file = this.files && this.files[0];
-  if (!file || uploadAudioTargetIdx === null) return;
-  var targetIdx = uploadAudioTargetIdx;
-  uploadAudioTargetIdx = null;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    if (MEGAPHONE_PHRASES[targetIdx]) {
-      MEGAPHONE_PHRASES[targetIdx].audio = ev.target.result;
-      syncMegaphoneToGitHub();
-      openMegaphoneModal();
-    }
+ ghReq('POST','git/blobs',{content:b64e(snapshot),encoding:'base64'}).then(function(b1){
+  dataSha=b1.sha;
+  return ghReq('POST','git/blobs',{content:b64e(rev+':'+b1.sha),encoding:'base64'});
+ }).then(function(b2){
+  revSha=b2.sha;
+  return ghReq('GET','git/refs/heads/'+BRANCH).catch(function(code){
+   if(code===404&&BRANCH!=='master'){BRANCH='master';return ghReq('GET','git/refs/heads/master')}
+   throw code;
+  });
+ }).then(function(refObj){
+  var headCommitSha=refObj.object.sha;
+  return ghReq('GET','git/commits/'+headCommitSha).then(function(commitObj){
+   return {commitSha:headCommitSha,treeSha:commitObj.tree.sha};
+  });
+ }).then(function(baseInfo){
+  var tree=[
+   {path:GARAGE_DATA_FILE,mode:'100644',type:'blob',sha:dataSha},
+   {path:GARAGE_REV_FILE,mode:'100644',type:'blob',sha:revSha}
+  ];
+  return ghReq('POST','git/trees',{base_tree:baseInfo.treeSha,tree:tree}).then(function(newTree){
+   return ghReq('POST','git/commits',{
+    message:'garage sync: '+rev,
+    tree:newTree.sha,
+    parents:[baseInfo.commitSha]
+   });
+  });
+ }).then(function(newCommit){
+  return ghReq('PATCH','git/refs/heads/'+BRANCH,{sha:newCommit.sha,force:true});
+ }).then(function(){
+  pushInFlight=false;
+  pushRetries=0;
+  pendingRev=null;
+  saveToIndexedDB();
+  LS.remove(PENDING_K);
+  setSyncStatus('ok','✓ Сохранено в GitHub');
+  if(dataDirty){ pushTimer=setTimeout(doPush,200) }
+ }).catch(function(code){
+  pushInFlight=false;
+  pendingRev=null;
+  dataDirty=true;
+  if(pushRetries<4){
+   pushRetries++;
+   setSyncStatus('busy','⏳ Повтор сохранения ('+pushRetries+'/4)…');
+   pushTimer=setTimeout(doPush,1200*pushRetries);
+  }else{
+   setSyncStatus('err','✓ Сохранено локально (GitHub: '+code+')');
+  }
+ });
+}
+
+function fetchRemoteGarageJson(filename){
+ return apiFileContent(filename).catch(function(){
+  return rawGet(filename);
+ }).then(function(txt){
+  var j=JSON.parse(txt);
+  if(!isGaragePayload(j))throw new Error('not garage');
+  if(j.deletedIds&&typeof j.deletedIds==='object'){
+   for(var dk in j.deletedIds){if(j.deletedIds[dk])DELETED_IDS[dk]=1}
+   try{LS.set(DEL_K,JSON.stringify(DELETED_IDS))}catch(e){}
+  }
+  return {
+   rev:(typeof j.rev==='number'?j.rev:0),
+   items:sanitizeItemsList(toArr(j.items)||[]),
+   deps:(j.deps&&Array.isArray(j.deps)&&j.deps.length)?cloneDeps(j.deps):null
   };
-  reader.readAsDataURL(file);
+ });
+}
+
+function showLoadingSkeleton(){
+ var grid=$('#vgrid');
+ if(!grid)return;
+ var h='';
+ for(var i=0;i<10;i++){
+  h+='<div class="vcard sk"><div class="skph"></div><div class="skb" style="width:76%"></div><div class="skb" style="width:52%"></div></div>';
+ }
+ grid.innerHTML=h;
+}
+
+function initApp(){
+ var hasLocalCustomDeps=!!LS.get(DEPS_LS_KEY);
+ idbGetState().then(function(saved){
+  var hasPending=!!LS.get(PENDING_K);
+  if(saved&&saved.items&&saved.items.length){
+   if(saved.deletedIds&&typeof saved.deletedIds==='object'){
+    for(var k in saved.deletedIds){if(saved.deletedIds[k])DELETED_IDS[k]=1}
+   }
+   if(!hasLocalCustomDeps&&saved.deps&&saved.deps.length){
+    DEPS=cloneDeps(saved.deps);
+    saveDepsSync();
+   }
+   localRev=Math.max(localRev,(typeof saved.rev==='number'?saved.rev:0));
+   ITEMS=sanitizeItemsList(saved.items);
+   booted=true;
+   render();
+  }else{
+   showLoadingSkeleton();
+  }
+
+  if(!REPO){
+   booted=true;
+   render();
+   return;
+  }
+
+  if(hasPending&&ITEMS.length&&adminMode&&ADMIN_KEY){
+   dataDirty=true;
+   doPush();
+   return;
+  }
+
+  Promise.all([
+   fetchRemoteGarageJson(GARAGE_DATA_FILE).catch(function(){return null}),
+   fetchRemoteGarageJson('data.json').catch(function(){return null})
+  ]).then(function(res){
+   var r1=res[0];
+   var r2=res[1];
+   var chosen=null;
+
+   if(ITEMS.length>0){
+    var bestRemoteRev=Math.max(r1?r1.rev:0, r2?r2.rev:0);
+    if(localRev>=bestRemoteRev && ITEMS.length >= Math.max(r1?r1.items.length:0, r2?r2.items.length:0)){
+     return;
+    }
+   }
+
+   if(r1&&r2){
+    if(r1.rev>=r2.rev && r1.items.length>=r2.items.length){
+     chosen=r1;
+    }else if(r2.items.length>r1.items.length){
+     var mergedMap={};
+     var mergedArr=[];
+     r2.items.concat(r1.items).forEach(function(it){
+      if(!it||!it.id||DELETED_IDS[it.id])return;
+      if(!mergedMap[it.id]){
+       mergedMap[it.id]=it;
+       mergedArr.push(it);
+      }else{
+       var idx=mergedArr.indexOf(mergedMap[it.id]);
+       if(idx>=0)mergedArr[idx]=it;
+       mergedMap[it.id]=it;
+      }
+     });
+     chosen={
+      rev:Math.max(r1.rev,r2.rev)+1,
+      items:sanitizeItemsList(mergedArr),
+      deps:hasLocalCustomDeps?DEPS:(r1.deps||r2.deps)
+     };
+     if(adminMode&&ADMIN_KEY){dataDirty=true}
+    }else{
+     chosen=r1;
+    }
+   }else{
+    chosen=r1||r2;
+   }
+
+   if(chosen){
+    if(chosen.deps&&chosen.deps.length&&(!hasLocalCustomDeps||chosen.rev>localRev)){
+     DEPS=cloneDeps(chosen.deps);
+     saveDepsSync();
+    }
+    localRev=Math.max(localRev,chosen.rev||0);
+    ITEMS=sanitizeItemsList(chosen.items);
+    saveToIndexedDB();
+    booted=true;
+    render();
+    if(dataDirty&&adminMode&&ADMIN_KEY){doPush()}
+   }else if(!booted){
+    booted=true;
+    render();
+   }
+  }).catch(function(){
+   if(!booted){booted=true;render()}
+  });
+ });
+}
+
+function renderTop(){
+ syncGlobalOwnerAuth();
+}
+
+/* ===================== МЕНЕДЖЕР РАЗДЕЛОВ И КЛАССОВ ===================== */
+var DEP_PALETTE=['#4da3ff','#56ccff','#ff5c5c','#2fd97a','#ff9a3d','#818cf8','#e05c82','#f7c948','#ff8a52','#c084fc','#7dd3fc','#a78bfa','#f472b6','#34d399','#fbbf24'];
+var currentClassDepK=null;
+var depsInputDirty=false;
+
+function flushOpenDepAndClassInputs(){
+ var root=$('#croot');
+ if(!root)return false;
+ var changed=false;
+ qsa('input.dep-name[data-depk]',root).forEach(function(inp){
+  var d=findDep(inp.getAttribute('data-depk'));
+  if(!d)return;
+  var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+  if(v&&v!==d.n){
+   d.n=v;
+   d.s=v;
+   changed=true;
+  }
+ });
+ qsa('input.dep-name[data-clsk]',root).forEach(function(inp){
+  var depK=inp.getAttribute('data-parentdep')||currentClassDepK;
+  var ck=inp.getAttribute('data-clsk');
+  var d=findDep(depK);
+  if(!d||!d.classes)return;
+  var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+  if(!v)return;
+  for(var i=0;i<d.classes.length;i++){
+   if(d.classes[i].k===ck){
+    if(d.classes[i].n!==v){
+     d.classes[i].n=v;
+     changed=true;
+    }
+    break;
+   }
+  }
+ });
+ if(changed||depsInputDirty){
+  depsInputDirty=false;
+  saveDepsSync();
+  commit();
+  render();
+ }
+ return changed;
+}
+
+window.addEventListener('beforeunload',function(){
+ flushOpenDepAndClassInputs();
 });
 
-/* СИНХРОННОЕ ИСПОЛЬЗОВАНИЕ МЕГАФОНА:
-   1. Мгновенно в чат: "* Евгений Холмс зажал кнопку рации мегафона и сказал в него:" + текст фразы
-   2. Одновременно звучит щелчок нажатия рации
-   3. Далее сразу играет ваша загруженная запись
-   4. Как только запись заканчивается по времени — звучит щелчок отпускания рации и в чат пишется "* Евгений Холмс отжал кнопку рации" */
-window.useMegaphonePhrase = function(idx) {
-  var phr = MEGAPHONE_PHRASES[idx];
-  if (!phr) return;
-  closeActModal();
+function openDepsManager(){
+ syncGlobalOwnerAuth();
+ if(!adminMode){return}
+ renderDepsModal();
+}
+window.openDepsManager=openDepsManager;
 
-  /* Останавливаем предыдущую запись, если она ещё играла */
-  if (currentMegaAudio) {
-    try { currentMegaAudio.pause(); currentMegaAudio.currentTime = 0; } catch (e) {}
-    currentMegaAudio = null;
+function renderDepsModal(){
+ flushOpenDepAndClassInputs();
+ var root=$('#croot');
+ if(!root){return}
+ var h='<div class="back" onclick="if(event.target===this)closeC()"><div class="modal">'+
+  '<div class="m-head"><div class="mh-nm">⚙️ Разделы и классы</div>'+
+  '<div class="mh-sub">Измените название любого раздела — оно сохраняется автоматически для Автопарка и Формы.</div>'+
+  '<button class="m-close" onclick="closeC()">✕</button></div>'+
+  '<div class="m-body">';
+ var groups=[['main','Основные разделы (Автопарк и Форма)'],['event','Разделы для мероприятий (МП)']];
+ for(var gi=0;gi<groups.length;gi++){
+  h+='<div class="deplist-head">'+groups[gi][1]+'</div>';
+  var any=false;
+  for(var i=0;i<DEPS.length;i++){
+   var d=DEPS[i];
+   if(d.cat!==groups[gi][0]){continue}
+   any=true;
+   h+='<div class="deprow">'+
+    '<span class="ddot" style="background:'+d.c+';box-shadow:0 0 8px 1px '+hex2rgba(d.c,.45)+'"></span>'+
+    '<input type="text" class="dep-name" placeholder="Название раздела" data-depk="'+esc(d.k)+'" value="'+esc(stripQuotaText(d.n))+'">'+
+    '<input type="color" class="dep-color" value="'+d.c+'" title="Цвет раздела" oninput="setDepColor(\''+esc(d.k)+'\',this.value)">'+
+    '<button class="btn ghost slim dep-cls-btn" onclick="openClassesManager(\''+esc(d.k)+'\')">🏷 Классы · '+d.classes.length+'</button>'+
+    '<button class="btn warn slim dep-del" title="Удалить раздел" onclick="delDep(\''+esc(d.k)+'\')">🗑</button>'+
+   '</div>';
   }
+  if(!any){ h+='<div class="gempty" style="margin-bottom:10px">Нет разделов</div>' }
+ }
+ h+='</div>'+
+  '<div class="m-foot" style="justify-content:space-between">'+
+   '<div class="newdep" style="flex:1;margin-top:0;border-top:none;padding-top:0">'+
+    '<input class="inp" id="ndName" placeholder="Название нового раздела…">'+
+    '<select class="sel" id="ndCat"><option value="main">Основной</option><option value="event">Мероприятия</option></select>'+
+    '<button class="btn ghost" onclick="addDep()">＋ Добавить раздел</button>'+
+   '</div>'+
+   '<button class="btn" onclick="saveAndCloseDepsModal()">💾 Сохранить</button>'+
+  '</div>'+
+ '</div></div>';
+ root.innerHTML=h;
 
-  /* 1. Одновременно выводим в чат зажатие кнопки и текст мегафона + воспроизводим щелчок нажатия рации */
-  addChat('me', '* ' + OFFICER_NAME + ' зажал кнопку рации мегафона и сказал в него:');
-  addChat(phr.cls, '[Мегафон] ' + OFFICER_NAME + ': ' + phr.txt);
-  playRadioTangentaClick(true);
-
-  var finished = false;
-  function finishReleaseRadio() {
-    if (finished) return;
-    finished = true;
-    currentMegaAudio = null;
-    /* Щелчок как положил/отжал рацию + отыгровка в чат */
-    playRadioTangentaClick(false);
-    addChat('me', '* ' + OFFICER_NAME + ' отжал кнопку рации');
-  }
-
-  /* 2. Если для этой фразы загружена ваша аудиозапись — воспроизводим её сразу после щелчка нажатия рации */
-  if (phr.audio && phr.audio.length > 50) {
-    setTimeout(function() {
-      var audio = new Audio(phr.audio);
-      currentMegaAudio = audio;
-      audio.volume = 1.0;
-      /* Как только запись заканчивается по времени — сразу щелчок отпускания рации и строка в чат */
-      audio.onended = function() {
-        finishReleaseRadio();
-      };
-      audio.onerror = function() {
-        finishReleaseRadio();
-      };
-      audio.play().catch(function() {
-        finishReleaseRadio();
-      });
-    }, 110);
-  } else {
-    /* Если аудиозапись к этой фразе ещё не загружена — короткая пауза и щелчок отпускания рации */
-    setTimeout(finishReleaseRadio, 850);
-  }
-};
-
-function openPursuitModal() {
-  var back = document.getElementById('actModalBack');
-  var box = document.getElementById('actModalBox');
-  box.innerHTML =
-    '<div class="act-m-title">🎯 Преследование (Игроки в радиусе 100 метров)</div>' +
-    '<div class="act-m-sub">Нажмите на игрока, чтобы начать преследование:</div>' +
-    NEARBY_PLAYERS.map(function(p, idx) {
-      var details = [];
-      details.push('1. Игрок: <b style="color:#fff;display:inline">' + p.uid + ' [' + p.id + ']</b>');
-      if (p.inCar) {
-        details.push('2. В транспорте: <b style="color:#93c5fd;display:inline">В авто</b>');
-        details.push('3. Марка авто: <b style="color:#fff;display:inline">' + p.make + '</b>');
-        details.push('4. Гос. номер: <b style="color:#fcd34d;display:inline">' + p.plate + '</b>');
-        details.push('5. Статус: <b style="color:#fff;display:inline">' + p.role + '</b>');
-        details.push('6. Дистанция: <b style="color:#34d399;display:inline">' + p.dist + ' м</b>');
-      } else {
-        details.push('2. В транспорте: <b style="color:#94a3b8;display:inline">Нет</b>');
-        details.push('3. Статус: <b style="color:#fff;display:inline">' + p.role + '</b>');
-        details.push('4. Дистанция: <b style="color:#34d399;display:inline">' + p.dist + ' м</b>');
-      }
-
-      return '<div class="act-opt" onclick="startPursuitOnPlayer(' + idx + ')">' +
-        '<div><b>' + p.uid + ' [' + p.id + ']</b><span>' + details.join(' · ') + '</span></div>' +
-        '<span style="color:#f87171;font-weight:800;font-size:12px;white-space:nowrap">Начать →</span>' +
-      '</div>';
-    }).join('') +
-    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
-  back.style.display = 'flex';
+ qsa('input.dep-name[data-depk]',root).forEach(function(inp){
+  inp.addEventListener('input',function(){
+   var d=findDep(inp.getAttribute('data-depk'));
+   if(!d)return;
+   var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+   if(!v)return;
+   d.n=v;
+   d.s=v;
+   depsInputDirty=true;
+   saveDepsSync();
+   renderChips();
+  });
+  inp.addEventListener('change',function(){
+   flushOpenDepAndClassInputs();
+  });
+  inp.addEventListener('keydown',function(e){
+   if(e.key==='Enter'){e.preventDefault();inp.blur();flushOpenDepAndClassInputs();toast('Название раздела сохранено')}
+  });
+ });
 }
+window.renderDepsModal=renderDepsModal;
 
-window.startPursuitOnPlayer = function(idx) {
-  var p = NEARBY_PLAYERS[idx];
-  if (!p) return;
-  ACTIVE_PURSUIT = p;
-  closeActModal();
-  renderRadialMenu();
-  addChat('me', '[Преследование] * ' + OFFICER_NAME + ' начал преследование за игроком ' + p.uid + ' [' + p.id + '] (' + (p.inCar ? ('В авто, ' + p.make + ', ' + p.plate + ', ' + p.role) : ('Транспорт: Нет, ' + p.role)) + ', дистанция: ' + p.dist + ' м)');
+window.saveAndCloseDepsModal=function(){
+ flushOpenDepAndClassInputs();
+ saveDepsSync();
+ commit();
+ closeC();
+ render();
+ toast('✓ Разделы сохранены');
 };
 
-window.stopActivePursuit = function() {
-  if (!ACTIVE_PURSUIT) return;
-  var old = ACTIVE_PURSUIT;
-  ACTIVE_PURSUIT = null;
-  renderRadialMenu();
-  addChat('me', '[Преследование] * ' + OFFICER_NAME + ' прекратил преследование за игроком ' + old.uid + ' [' + old.id + ']');
-};
-
-window.closeActModal = function() {
-  document.getElementById('actModalBack').style.display = 'none';
-};
-
-window.closeIdCard = function() {
-  document.getElementById('idCardModal').style.display = 'none';
-};
-
-window.toggleTrunkLock = function() {
-  TRUNK_OPEN = !TRUNK_OPEN;
-  var b = document.getElementById('btnTrunkLock');
-  b.textContent = TRUNK_OPEN ? '🔓 Багажник: Открыт' : '🔒 Багажник: Закрыт';
-  b.className = 'trunk-toggle' + (TRUNK_OPEN ? '' : ' closed');
-};
-
-window.tryOpenTrunkSearch = function() {
-  if (!TRUNK_OPEN) {
-    addChat('err', '[Система] Багажник автомобиля закрыт! Обыск возможен только при открытом багажнике.');
-    return;
-  }
-  addChat('me', '[Обыск] * ' + OFFICER_NAME + ' начал осмотр багажника автомобиля');
-  openSearchMode('trunk');
-};
-
-var INITIAL_MAIN_ITEMS = [
-  { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',         cat: 'Напиток',         qty: 2,  w: 0.33, desc: 'Прохладительный безалкогольный напиток 0.33 л.', illegal: false },
-  { slot: 1,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',    cat: 'Медикаменты',     qty: 3,  w: 0.10, desc: 'Блистер обезболивающих таблеток.', illegal: false },
-  { slot: 2,  svg: 'pistol1', name: 'Пистолет ТТ',               cat: 'Оружие',          qty: 1,  w: 0.85, desc: 'Самозарядный пистолет калибра 7.62×25 мм.', illegal: true },
-  { slot: 4,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож. Нелегальным предметом не считается.', illegal: false },
-  { slot: 6,  svg: 'beer6',   name: 'Бутылка пива',              cat: 'Напиток',         qty: 2,  w: 0.50, desc: 'Светлое пенное в стеклянной бутылке.', illegal: false },
-  { slot: 8,  svg: 'ammo2',   name: 'Патроны 7.62×25 мм',        cat: 'Боеприпасы',      qty: 36, w: 0.40, desc: 'Боевые пистолетные патроны.', illegal: true }
-];
-
-var INITIAL_BP_ITEMS = [
-  { slot: 0,  svg: 'pepsi4',  name: 'Газировка «Pepsi»',         cat: 'Напиток',         qty: 1,  w: 0.33, desc: 'Прохладительный напиток.', illegal: false },
-  { slot: 2,  svg: 'knife5',  name: 'Охотничий нож',             cat: 'Холодное оружие', qty: 1,  w: 0.35, desc: 'Туристический нож.', illegal: false },
-  { slot: 4,  svg: 'ammo2',   name: 'Патроны 9×19 мм',           cat: 'Боеприпасы',      qty: 60, w: 0.65, desc: 'Пачка боевых патронов.', illegal: true },
-  { slot: 6,  svg: 'pills3',  name: 'Таблетки (Медикаменты)',    cat: 'Медикаменты',     qty: 2,  w: 0.10, desc: 'Упаковка медицинских таблеток.', illegal: false },
-  { slot: 8,  svg: 'beer6',   name: 'Бутылка пива',              cat: 'Напиток',         qty: 1,  w: 0.50, desc: 'Стеклянная бутылка 0.5 л.', illegal: false }
-];
-
-var INITIAL_TRUNK_ITEMS = [
-  { slot: 0,  svg: 'frame_terra', name: 'Цветная «Терракотовый»', cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 1,  svg: 'frame_terra', name: 'Цветная «Терракотовый»', cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 2,  svg: 'frame_blue',  name: 'Цветная «Лазурный»',     cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 3,  svg: 'pistol1',     name: 'Пистолет ТТ',            cat: 'Оружие',         qty: 1,  w: 0.85, desc: 'Боевой пистолет в багажнике.', illegal: true },
-  { slot: 4,  svg: 'frame_blue',  name: 'Цветная «Голубой»',      cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 5,  svg: 'ammo2',       name: 'Патроны 7.62×25 мм',     cat: 'Боеприпасы',     qty: 48, w: 0.50, desc: 'Боевые патроны в нише багажника.', illegal: true },
-  { slot: 6,  svg: 'knife5',      name: 'Охотничий нож',          cat: 'Инструмент',     qty: 1,  w: 0.35, desc: 'Походный нож в чехле.', illegal: false },
-  { slot: 7,  svg: 'beer6',       name: 'Бутылка пива',           cat: 'Напиток',        qty: 4,  w: 2.00, desc: 'Упаковка напитка в багажнике.', illegal: false },
-  { slot: 10, svg: 'frame_black', name: 'Рамка «Классика»',       cat: 'Номерная рамка', qty: 1,  w: 0.25, desc: 'Фиксирует государственный номер транспортного средства.', illegal: false },
-  { slot: 11, svg: 'pills3',      name: 'Таблетки (Медикаменты)', cat: 'Медикаменты',    qty: 2,  w: 0.10, desc: 'Дорожная аптечка.', illegal: false }
-];
-
-var MAIN_ITEMS = [], BP_ITEMS = [], TRUNK_ITEMS = [], SEIZED_BUFFER = [];
-var activePopItem = null;
-
-function cloneArr(a) { return JSON.parse(JSON.stringify(a)); }
-
-function initEquipmentIcons() {
-  document.getElementById('eqHat').innerHTML = SVG_ICONS.pink_ushanka;
-  document.getElementById('eqMask').innerHTML = SVG_ICONS.sil_head;
-  document.getElementById('eqShirt').innerHTML = SVG_ICONS.sil_shirt;
-  document.getElementById('eqUmbrella').innerHTML = SVG_ICONS.sil_umb;
-  document.getElementById('eqHands').innerHTML = SVG_ICONS.sil_hands;
-  document.getElementById('eqSuit').innerHTML = SVG_ICONS.suit;
-  document.getElementById('eqBag').innerHTML = SVG_ICONS.dark_bag;
+function addDep(){
+ flushOpenDepAndClassInputs();
+ var nm=stripQuotaText($('#ndName')?$('#ndName').value.trim():'');
+ if(!nm){toast('Введите название раздела',true);return}
+ var cat=($('#ndCat')&&$('#ndCat').value==='event')?'event':'main';
+ var k='d'+Date.now().toString(36)+Math.floor(Math.random()*100);
+ DEPS.push({
+  k:k,
+  s:nm,
+  n:nm,
+  c:DEP_PALETTE[DEPS.length%DEP_PALETTE.length],
+  cat:cat,
+  classes:defaultClassesFor(cat)
+ });
+ saveDepsSync();
+ commit();
+ renderDepsModal();
+ render();
+ toast('Раздел «'+nm+'» добавлен');
 }
+window.addDep=addDep;
 
-function resetDemo() {
-  MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
-  BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
-  TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
-  SEIZED_BUFFER = [];
-  IN_CAR_SUSPECTS = [];
-  ACTIVE_PURSUIT = null;
-  stopTowInterval();
-  TOW_STATE.stage = 'idle';
-  updateTowHud();
-  closePopover();
-  renderRadialMenu();
-  renderInventoryGrids();
+function delDep(k){
+ flushOpenDepAndClassInputs();
+ var d=findDep(k);
+ if(!d){return}
+ var used=countDepUsage(k);
+ if(used){ toast('В разделе «'+d.n+'» есть записи ('+used+') — сначала удалите или перенесите их',true); return }
+ if(!window.confirm('Удалить раздел «'+d.n+'»?')){return}
+ DEPS=DEPS.filter(function(x){return x.k!==k});
+ if(state.dep===k){ state.dep='all'; state.cls='all' }
+ saveDepsSync();
+ commit();
+ renderDepsModal();
+ render();
+ toast('Раздел удалён');
 }
+window.delDep=delDep;
 
-function findInArr(arr, slot) {
-  for (var i = 0; i < arr.length; i++) if (arr[i].slot === slot) return arr[i];
-  return null;
+function setDepColor(k,c){
+ var d=findDep(k);
+ if(!d){return}
+ d.c=c;
+ saveDepsSync();
+ commit();
+ render();
 }
+window.setDepColor=setDepColor;
 
-function renderInventoryGrids() {
-  var mHtml = '';
-  for (var i = 0; i < 15; i++) mHtml += slotHtml('main', i, findInArr(MAIN_ITEMS, i));
-  document.getElementById('mainInvGrid').innerHTML = mHtml;
-
-  var bHtml = '';
-  for (var j = 0; j < 10; j++) bHtml += slotHtml('bp', j, findInArr(BP_ITEMS, j));
-  document.getElementById('backpackGrid').innerHTML = bHtml;
-
-  var tHtml = '';
-  for (var k = 0; k < 20; k++) tHtml += slotHtml('trunk', k, findInArr(TRUNK_ITEMS, k));
-  document.getElementById('trunkGrid').innerHTML = tHtml;
-
-  document.getElementById('seizedInfoTxt').textContent = 'Изъято нелегальных предметов: ' + SEIZED_BUFFER.length + ' поз.';
-  document.getElementById('btnHandover').disabled = (SEIZED_BUFFER.length === 0);
-}
-
-function slotHtml(source, slotIdx, it) {
-  if (!it) return '<div class="islot"></div>';
-  var qty = (it.qty && it.qty > 1) ? '<span class="s-qty">x' + it.qty + '</span>' : '';
-  return '<div class="islot" onclick="onSlotClick(event,\'' + source + '\',' + slotIdx + ')">' +
-    (SVG_ICONS[it.svg] || '') +
-    qty +
+function openClassesManager(depK){
+ flushOpenDepAndClassInputs();
+ var d=findDep(depK);
+ if(!d){return}
+ currentClassDepK=depK;
+ var root=$('#croot');
+ if(!root){return}
+ var h='<div class="back" onclick="if(event.target===this)renderDepsModal()"><div class="modal smw">'+
+  '<div class="m-head"><div class="mh-nm">🏷️ Классы · '+esc(stripQuotaText(d.n))+'</div>'+
+  '<div class="mh-sub">Классы группируют машины внутри раздела. При удалении класса его записи перейдут в первый класс.</div>'+
+  '<button class="m-close" onclick="renderDepsModal()" title="Назад">←</button></div>'+
+  '<div class="m-body"><div class="clsgrid">';
+ if(!d.classes.length){
+  h+='<div class="gempty">В этом разделе нет классов</div>';
+ }
+ for(var i=0;i<d.classes.length;i++){
+  var c=d.classes[i];
+  h+='<div class="deprow">'+
+   '<span class="ddot" style="background:'+c.c+';box-shadow:0 0 8px 1px '+hex2rgba(c.c,.45)+'"></span>'+
+   '<input type="text" class="dep-name" placeholder="Название класса" data-parentdep="'+esc(depK)+'" data-clsk="'+esc(c.k)+'" value="'+esc(c.n)+'">'+
+   '<i class="cn" title="Записей в классе">'+countClassUsage(depK,c.k)+'</i>'+
+   '<input type="color" class="dep-color" value="'+c.c+'" title="Цвет класса" oninput="setClassColor(\''+esc(depK)+'\',\''+esc(c.k)+'\',this.value)">'+
+   '<button class="btn warn slim dep-del" title="Удалить класс" onclick="delClass(\''+esc(depK)+'\',\''+esc(c.k)+'\')">🗑</button>'+
   '</div>';
+ }
+ h+='</div></div>'+
+  '<div class="m-foot" style="justify-content:space-between">'+
+   '<div class="newdep" style="flex:1;margin-top:0;border-top:none;padding-top:0">'+
+    '<input class="inp" id="ncName" placeholder="Новый класс…">'+
+    '<input type="color" id="ncColor" value="#4da3ff" title="Цвет" style="flex:0 0 auto;width:42px;height:38px;padding:3px;border-radius:10px;border:1px solid var(--line);background:#141a23;cursor:pointer">'+
+    '<button class="btn ghost" onclick="addClass(\''+esc(depK)+'\')">＋</button>'+
+   '</div>'+
+   '<button class="btn" onclick="renderDepsModal()">Готово</button>'+
+  '</div>'+
+ '</div></div>';
+ root.innerHTML=h;
+
+ qsa('input.dep-name[data-clsk]',root).forEach(function(inp){
+  inp.addEventListener('input',function(){
+   var ck=inp.getAttribute('data-clsk');
+   var v=stripQuotaText(inp.value.replace(/\s+/g,' ').trim());
+   if(!v)return;
+   for(var i=0;i<d.classes.length;i++){
+    if(d.classes[i].k===ck){
+     d.classes[i].n=v;
+     depsInputDirty=true;
+     saveDepsSync();
+     break;
+    }
+   }
+  });
+  inp.addEventListener('change',function(){
+   flushOpenDepAndClassInputs();
+  });
+  inp.addEventListener('keydown',function(e){
+   if(e.key==='Enter'){e.preventDefault();inp.blur();flushOpenDepAndClassInputs();toast('Название класса сохранено')}
+  });
+ });
+}
+window.openClassesManager=openClassesManager;
+
+function addClass(depK){
+ flushOpenDepAndClassInputs();
+ var d=findDep(depK);
+ if(!d){return}
+ var nm=stripQuotaText($('#ncName')?$('#ncName').value.trim():'');
+ if(!nm){toast('Введите название класса',true);return}
+ var col=$('#ncColor')?$('#ncColor').value:'#4da3ff';
+ d.classes.push({k:'k'+Date.now().toString(36)+Math.floor(Math.random()*100),n:nm,c:col});
+ saveDepsSync();
+ commit();
+ openClassesManager(depK);
+ render();
+ toast('Класс добавлен');
+}
+window.addClass=addClass;
+
+function delClass(depK,clsK){
+ flushOpenDepAndClassInputs();
+ var d=findDep(depK);
+ if(!d){return}
+ if(d.classes.length<=1){toast('Должен остаться хотя бы один класс',true);return}
+ var used=countClassUsage(depK,clsK);
+ if(used&&!window.confirm('В классе '+used+' записей — они перейдут в первый класс. Продолжить?')){return}
+ for(var i=0;i<d.classes.length;i++){
+  if(d.classes[i].k===clsK){ d.classes.splice(i,1); break }
+ }
+ for(var j=0;j<ITEMS.length;j++){
+  if(ITEMS[j].dep===depK&&ITEMS[j].cls===clsK){ ITEMS[j].cls=d.classes[0].k }
+ }
+ if(state.cls===clsK){ state.cls='all' }
+ saveDepsSync();
+ commit();
+ openClassesManager(depK);
+ render();
+ toast('Класс удалён');
+}
+window.delClass=delClass;
+
+function setClassColor(depK,clsK,c){
+ var d=findDep(depK);
+ if(!d){return}
+ for(var i=0;i<d.classes.length;i++){
+  if(d.classes[i].k===clsK){ d.classes[i].c=c; break }
+ }
+ saveDepsSync();
+ commit();
+ render();
+}
+window.setClassColor=setClassColor;
+
+/* ===================== СОСТОЯНИЕ И РЕНДЕР ===================== */
+var state={kind:'cars',cat:'main',dep:'all',cls:'all',q:''};
+
+function setKind(k){
+ state.kind=k;
+ state.dep='all';
+ state.cls='all';
+ state.q='';
+ var qi=$('#q'); if(qi){qi.value=''}
+ qsa('.tab').forEach(function(t){ t.classList.toggle('on',t.getAttribute('data-kind')===k) });
+ render();
+}
+function setCat(k){ state.cat=k; state.dep='all'; state.cls='all'; render() }
+function setDep(k){ state.dep=k; state.cls='all'; render() }
+function setCls(k){ state.cls=k; render() }
+
+window.setKind=setKind;
+window.setCat=setCat;
+window.setDep=setDep;
+window.setCls=setCls;
+
+function renderCats(){
+ var box=$('#cats');
+ if(!box){return}
+ var arr=CATS[state.kind];
+ var h='';
+ for(var i=0;i<arr.length;i++){
+  var c=arr[i];
+  h+='<button class="cat'+(state.cat===c.k?' on':'')+'" onclick="setCat(\''+c.k+'\')">'+
+   '<span class="cat-ic">'+c.ic+'</span>'+esc(c.n)+' <i class="cn">'+countItems(state.kind,c.k,null)+'</i></button>';
+ }
+ box.innerHTML=h;
+}
+function chipBtn(act,val,label,color,on,cnt){
+ return '<button class="chip'+(on?' on':'')+'" style="--cc:'+color+';--ccb:'+hex2rgba(color,.18)+'" onclick="'+act+'(\''+esc(val)+'\')">'+
+  '<span class="dot"></span>'+esc(stripQuotaText(label))+(typeof cnt==='number'?' <i class="cn">'+cnt+'</i>':'')+'</button>';
+}
+function renderChips(){
+ var box=$('#chips');
+ if(!box){return}
+ var h='';
+ if(isGrouped()){
+  h+='<button class="chip" onclick="setDep(\'all\')">← Все разделы</button>';
+  h+=chipBtn('setCls','all','Все классы','#8b95a7',state.cls==='all',countItems(state.kind,state.cat,state.dep));
+  var classes=classesOfDep(state.dep);
+  for(var i=0;i<classes.length;i++){
+   var c=classes[i];
+   h+=chipBtn('setCls',c.k,c.n,c.c,state.cls===c.k,countClassUsage(state.dep,c.k));
+  }
+ }else{
+  h+=chipBtn('setDep','all','Все разделы','#8b95a7',state.dep==='all',countItems(state.kind,state.cat,null));
+  for(var j=0;j<DEPS.length;j++){
+   var d=DEPS[j];
+   if(d.cat!==state.cat){continue}
+   h+=chipBtn('setDep',d.k,stripQuotaText(d.n),d.c,state.dep===d.k,countItems(state.kind,state.cat,d.k));
+  }
+ }
+ box.innerHTML=h;
+}
+function visibleItems(){
+ var q=(state.q||'').toLowerCase();
+ var out=[];
+ for(var i=0;i<ITEMS.length;i++){
+  var it=ITEMS[i];
+  if(it.kind!==state.kind||it.cat!==state.cat){continue}
+  if(state.dep!=='all'&&it.dep!==state.dep){continue}
+  if(state.cls!=='all'&&clsOf(it)!==state.cls){continue}
+  if(q){
+   var hay=((it.name||'')+' '+(it.desc||'')).toLowerCase();
+   if(hay.indexOf(q)<0){continue}
+  }
+  out.push(it);
+ }
+ out.sort(compareAlphabetical);
+ return out;
+}
+function cardColor(it){
+ if(it.cls){
+  var classes=classesOfDep(it.dep);
+  for(var i=0;i<classes.length;i++){
+   if(classes[i].k===it.cls){return classes[i].c}
+  }
+ }
+ return dep(it.dep).c;
+}
+function cardHtml(it){
+ var d=dep(it.dep);
+ var dc=cardColor(it);
+ var tools='';
+ if(adminMode){
+  tools='<div class="vph-tools">'+
+   '<button class="vtool" title="Редактировать карточку" onclick="event.stopPropagation();openEdit(\''+it.id+'\')">✏️</button>'+
+   '<button class="vtool vtool-del" title="Удалить" onclick="event.stopPropagation();delItem(\''+it.id+'\')">🗑</button>'+
+  '</div>';
+ }
+ var ph;
+ if(it.photo){
+  ph='<img src="'+it.photo+'" alt="" draggable="false" onclick="event.stopPropagation();openLb(\''+it.id+'\')">';
+ }else if(adminMode){
+  ph='<div class="vph-empty" onclick="event.stopPropagation();pickPhotoFor(\''+it.id+'\')"><div class="pe-ic">📷</div><b>Добавить фото</b><span>нажмите для выбора</span></div>';
+ }else{
+  ph='<div class="vph-empty plain"><div class="pe-ic">'+(state.kind==='cars'?'🚗':'🎽')+'</div><b>Нет фото</b><span></span></div>';
+ }
+ var ed=adminMode?' contenteditable="true"':'';
+ var speedRow=(it.kind==='cars')
+  ?'<div class="vsp"><span class="l">Скорость</span><i>км/ч</i><b'+ed+' data-ph="—" data-f="speed">'+esc(it.speed||'')+'</b></div>'
+  :'';
+ return '<div class="vcard" draggable="false" data-id="'+it.id+'" style="--dc:'+dc+'">'+
+  '<div class="vph'+(it.photo?'':' empty')+'" draggable="false">'+
+   '<span class="vdep" style="color:'+d.c+';border-color:'+hex2rgba(d.c,.45)+'">'+esc(stripQuotaText(d.n||d.s))+'</span>'+
+   tools+ph+
+  '</div>'+
+  '<div class="vbody">'+
+   '<div class="vname"'+ed+' data-ph="Название" data-f="name">'+esc(stripQuotaText(it.name||''))+'</div>'+
+   '<div class="vdesc"'+ed+' data-ph="Описание" data-f="desc">'+esc(stripQuotaText(it.desc||''))+'</div>'+
+   speedRow+
+  '</div>'+
+ '</div>';
+}
+function renderGrid(){
+ var grid=$('#vgrid'), emp=$('#vempty');
+ if(!grid){return}
+ var items=visibleItems();
+ var grouped=isGrouped()&&state.cls==='all';
+ if(grouped){
+  grid.className='vgrid grouped';
+  var classes=classesOfDep(state.dep);
+  var h='';
+  for(var i=0;i<classes.length;i++){
+   var cl=classes[i];
+   var grp=[];
+   for(var j=0;j<items.length;j++){ if(clsOf(items[j])===cl.k){ grp.push(items[j]) } }
+   grp.sort(compareAlphabetical);
+   h+='<div class="gsec" data-cls="'+esc(cl.k)+'" style="--gc:'+cl.c+'">'+
+    '<div class="ghead">'+
+     '<span class="gd" style="background:'+cl.c+';box-shadow:0 0 8px 1px '+hex2rgba(cl.c,.45)+'"></span>'+
+     '<span class="gname">'+esc(cl.n)+'</span><i class="cn">'+grp.length+'</i>'+
+     '<span class="gline"></span>'+
+    '</div>'+
+    '<div class="ggrid">'+(grp.length?grp.map(cardHtml).join(''):'<div class="gempty">В классе пока пусто</div>')+'</div>'+
+   '</div>';
+  }
+  grid.innerHTML=h;
+ }else{
+  grid.className='vgrid';
+  grid.innerHTML=items.map(cardHtml).join('');
+ }
+ var c=$('#cnt');
+ if(c){ c.textContent=items.length }
+ if(emp){
+  if(!items.length){
+   emp.style.display='block';
+   emp.textContent=state.q?'Ничего не найдено':(adminMode?'Здесь пока пусто — нажмите «＋ Добавить» сверху справа':'Здесь пока пусто');
+  }else{ emp.style.display='none' }
+ }
+ applyCardEvents();
+}
+function render(){
+ renderTop();
+ renderCats();
+ renderChips();
+ renderGrid();
+ var t=$('#hTitle');
+ if(t){ t.textContent=(state.kind==='cars'?'Автопарк':'Форма') }
+ var s=$('#hSub');
+ if(s){ s.textContent=catName(state.kind,state.cat)+(state.dep!=='all'?' · '+stripQuotaText(dep(state.dep).n):'') }
+ var ab=$('#addBtn');
+ if(ab){ ab.textContent=(state.kind==='cars'?'＋ Добавить машину':'＋ Добавить форму') }
+}
+function bindEdit(el,it,field){
+ if(!el){return}
+ el.addEventListener('blur',function(){
+  var v=stripQuotaText(el.textContent.replace(/\s+/g,' ').trim());
+  if((it[field]||'')===v){return}
+  it[field]=v;
+  commit();
+  if(field==='name'){renderGrid()}
+ });
+ el.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ e.preventDefault(); el.blur() }
+ });
+}
+function applyCardEvents(){
+ qsa('.vcard').forEach(function(card){
+  card.draggable=false;
+  card.addEventListener('dragstart',function(e){e.preventDefault();return false});
+  var id=card.getAttribute('data-id');
+  if(!id){return}
+  var it=byId(id);
+  if(!it){return}
+  if(adminMode){
+   bindEdit(card.querySelector('.vname'),it,'name');
+   bindEdit(card.querySelector('.vdesc'),it,'desc');
+   bindEdit(card.querySelector('.vsp b'),it,'speed');
+  }
+ });
 }
 
-window.onSlotClick = function(ev, source, slotIdx) {
-  ev.stopPropagation();
-  var arr = (source === 'main') ? MAIN_ITEMS : (source === 'bp' ? BP_ITEMS : TRUNK_ITEMS);
-  var it = findInArr(arr, slotIdx);
-  if (!it) { closePopover(); return; }
-
-  var pop = document.getElementById('itemPopover');
-  activePopItem = { source: source, slot: slotIdx, item: it };
-
-  var btnHtml = it.illegal
-    ? '<button class="ip-seize-btn" onclick="seizeActiveItem()">Изъять (' + it.qty + ' шт.)</button>'
-    : '';
-
-  pop.innerHTML =
-    '<div class="ip-title">' + it.name + '</div>' +
-    '<div class="ip-row"><span>📦</span><span>' + it.cat + '</span></div>' +
-    '<div class="ip-row"><span>⚖️</span><span>' + it.w.toFixed(2) + ' кг</span></div>' +
-    '<div class="ip-desc">' + it.desc + '</div>' +
-    btnHtml;
-
-  pop.style.display = 'block';
-  var rect = ev.currentTarget.getBoundingClientRect();
-  pop.style.left = Math.min(window.innerWidth - 255, rect.left + 16) + 'px';
-  pop.style.top = Math.min(window.innerHeight - 220, rect.top + 16) + 'px';
-};
-
-window.seizeActiveItem = function() {
-  if (!activePopItem || !activePopItem.item) return;
-  var src = activePopItem.source, sl = activePopItem.slot, it = activePopItem.item;
-  if (!it.illegal) return;
-
-  if (src === 'main') MAIN_ITEMS = MAIN_ITEMS.filter(function(x) { return x.slot !== sl; });
-  else if (src === 'bp') BP_ITEMS = BP_ITEMS.filter(function(x) { return x.slot !== sl; });
-  else if (src === 'trunk') TRUNK_ITEMS = TRUNK_ITEMS.filter(function(x) { return x.slot !== sl; });
-
-  SEIZED_BUFFER.push(it);
-  closePopover();
-  renderInventoryGrids();
-
-  var whereTxt = (src === 'trunk') ? 'из багажника автомобиля' : ('у игрока ' + SUSPECT_NAME);
-  addChat('me', '[Обыск] * ' + OFFICER_NAME + ' изъял предмет «' + it.name + '» в количестве ' + it.qty + ' шт. ' + whereTxt + ' и упаковал в спецпакет для улик');
-};
-
-window.handoverToDutyOfficer = function() {
-  if (!SEIZED_BUFFER.length) return;
-  var summaryList = SEIZED_BUFFER.map(function(x) { return x.name + ' ×' + x.qty; });
-  var summaryStr = summaryList.join(', ');
-
-  try {
-    var saved = JSON.parse(localStorage.getItem('mvd_seized_evidence_v1') || '[]');
-    var now = new Date();
-    var timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    saved.unshift({
-      d: '2026-10-18',
-      t: timeStr,
-      actor: 'Холмс Евгений',
-      actorUid: 'K8W4C6',
-      fac: 'hq',
-      items: SEIZED_BUFFER.map(function(x) { return { n: x.name + ' (камера вещдоков)', q: x.qty }; }),
-      rawItems: summaryList.map(function(s) { return s + ' (сдано в камеру вещдоков)'; }),
-      note: 'сдано дежурному в камеру хранения вещдоков МВД'
-    });
-    localStorage.setItem('mvd_seized_evidence_v1', JSON.stringify(saved.slice(0, 50)));
-  } catch (e) {}
-
-  addChat('me', '[Камера вещдоков] * ' + OFFICER_NAME + ' передал опечатанные вещдоки (' + summaryStr + ') дежурному в камеру хранения улик');
-
-  SEIZED_BUFFER = [];
-  renderInventoryGrids();
-};
-
-function closePopover() {
-  var pop = document.getElementById('itemPopover');
-  if (pop) pop.style.display = 'none';
-  activePopItem = null;
-}
-
-document.addEventListener('click', function(ev) {
-  if (!ev.target.closest('#itemPopover') && !ev.target.closest('.islot')) closePopover();
+document.addEventListener('dragstart',function(e){
+ if(e.target&&(e.target.tagName==='IMG'||e.target.closest('.vcard'))){
+  e.preventDefault();
+ }
 });
 
-function addChat(cls, txt) {
-  var box = document.getElementById('chatMessages');
-  var d = document.createElement('div');
-  d.className = 'chat-line ' + cls;
-  d.textContent = txt;
-  box.appendChild(d);
-  var wrap = document.getElementById('chatBox');
-  wrap.scrollTop = wrap.scrollHeight;
+/* ===================== МОДАЛКИ: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ===================== */
+var editingId=null, editPhoto='', formCls=null, photoCb=null;
+
+function closeM(){ var m=$('#mroot'); if(m){m.innerHTML=''} editingId=null; photoCb=null }
+function closeC(){
+ flushOpenDepAndClassInputs();
+ var c=$('#croot');
+ if(c){c.innerHTML=''}
+}
+window.closeM=closeM;
+window.closeC=closeC;
+
+function openAdd(){
+ syncGlobalOwnerAuth();
+ if(!adminMode){return}
+ openForm(null);
+}
+function openEdit(id){
+ syncGlobalOwnerAuth();
+ if(!adminMode){return}
+ var it=byId(id);
+ if(!it){return}
+ openForm(it);
+}
+window.openAdd=openAdd;
+window.openEdit=openEdit;
+
+function syncFormDepOptions(preferredDepK){
+ var catSel=$('#fCat');
+ var depSel=$('#fDep');
+ if(!depSel){return}
+ var curCat=catSel?catSel.value:state.cat;
+ var mainOpts='', eventOpts='';
+ var firstMatch='';
+ for(var i=0;i<DEPS.length;i++){
+  var d=DEPS[i];
+  var cleanN=stripQuotaText(d.n);
+  var isSel=(preferredDepK&&preferredDepK===d.k);
+  if(d.cat===curCat&&!firstMatch){firstMatch=d.k}
+  var optHtml='<option value="'+esc(d.k)+'"'+(isSel?' selected':'')+'>'+esc(cleanN)+'</option>';
+  if(d.cat==='main'){mainOpts+=optHtml}else{eventOpts+=optHtml}
+ }
+ depSel.innerHTML=
+  '<optgroup label="🏛️ Основные разделы фракций">'+mainOpts+'</optgroup>'+
+  '<optgroup label="🎪 Разделы для мероприятий (МП)">'+eventOpts+'</optgroup>';
+
+ if(preferredDepK&&findDep(preferredDepK)){
+  depSel.value=preferredDepK;
+ }else if(firstMatch){
+  depSel.value=firstMatch;
+ }
+ renderClsPicker(formCls);
 }
 
-window.openSearchMode = function(mode) {
-  SEARCH_MODE = mode;
-  var cont = document.getElementById('invContainer');
-  var pView = document.getElementById('playerOnlyView');
-  var tView = document.getElementById('trunkOnlyView');
-  var hTitle = document.getElementById('invHeaderTitle');
-  var hSub = document.getElementById('invHeaderSub');
-
-  if (mode === 'trunk') {
-    cont.classList.add('trunk-only');
-    pView.style.display = 'none';
-    tView.style.display = 'block';
-    hTitle.textContent = 'БАГАЖНИК АВТОМОБИЛЯ';
-    hSub.innerHTML = '<span>Досмотр багажника автомобиля</span>';
-  } else {
-    cont.classList.remove('trunk-only');
-    pView.style.display = 'grid';
-    tView.style.display = 'none';
-    hTitle.textContent = 'ИНВЕНТАРЬ';
-    hSub.innerHTML = '<span>' + SUSPECT_NAME + '</span><span>25 110 ₽</span>';
-  }
-  document.getElementById('invOverlay').style.display = 'flex';
-  renderInventoryGrids();
+window.onFormCatChange=function(){
+ var catVal=$('#fCat')?$('#fCat').value:'main';
+ var firstDep='';
+ for(var i=0;i<DEPS.length;i++){
+  if(DEPS[i].cat===catVal){firstDep=DEPS[i].k;break}
+ }
+ syncFormDepOptions(firstDep);
 };
 
-window.switchScene = function(sc) {
-  closePopover();
-  closeIdCard();
-  closeActModal();
-  if (sc === 'radial') {
-    document.getElementById('invOverlay').style.display = 'none';
-  }
+window.onFormDepChange=function(){
+ var depK=$('#fDep')?$('#fDep').value:'';
+ var d=findDep(depK);
+ if(d&&$('#fCat')&&$('#fCat').value!==d.cat){
+  $('#fCat').value=d.cat;
+ }
+ renderClsPicker(formCls);
 };
 
-document.addEventListener('keydown', function(ev) {
-  if (ev.key === 'Escape') {
-    switchScene('radial');
-    return;
-  }
-  if ((ev.key === 'e' || ev.key === 'E' || ev.key === 'у' || ev.key === 'У') && document.getElementById('invOverlay').style.display !== 'flex') {
-    tryOpenTrunkSearch();
-  }
-});
+function openForm(it){
+ editingId=it?it.id:null;
+ editPhoto=it?(it.photo||''):'';
+ formCls=(it&&it.cls)?it.cls:null;
+ var itemKind=it?it.kind:state.kind;
+ var isCars=(itemKind==='cars');
+ var selCat=it?it.cat:state.cat;
+ var selDep=it?it.dep:(state.dep!=='all'?state.dep:null);
 
-initEquipmentIcons();
-initMegaphoneStorage();
-MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
-BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
-TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
-renderRadialMenu();
-renderInventoryGrids();
+ var catOpts=CATS[itemKind].map(function(c){
+  return '<option value="'+esc(c.k)+'"'+(selCat===c.k?' selected':'')+'>'+c.ic+' '+esc(c.n)+'</option>';
+ }).join('');
+
+ $('#mroot').innerHTML=
+ '<div class="back" onclick="if(event.target===this)closeM()"><div class="modal">'+
+ '<div class="m-head"><div class="mh-nm">'+(it?'✏️ Редактирование карточки':'＋ '+(isCars?'Новая машина':'Новая форма'))+'</div>'+
+ '<div class="mh-sub">Вы можете изменить название, описание, раздел (фракцию), класс и фотографию</div>'+
+ '<button class="m-close" onclick="closeM()">✕</button></div>'+
+ '<div class="m-body"><div class="formgrid">'+
+  '<div class="full"><label class="flab">Название</label><input class="inp" id="fName" style="width:100%" value="'+esc(it?stripQuotaText(it.name):'')+'" placeholder="Например: Лада Веста / Toyota Camry"></div>'+
+  '<div class="full"><label class="flab">Описание</label><textarea class="inp" id="fDesc" rows="2" style="width:100%;min-height:44px" placeholder="Краткое описание…">'+esc(it?stripQuotaText(it.desc):'')+'</textarea></div>'+
+  '<div><label class="flab">Категория каталога</label><select class="sel" id="fCat" style="width:100%" onchange="onFormCatChange()">'+catOpts+'</select></div>'+
+  '<div><label class="flab">Раздел (Фракция / Структура)</label><select class="sel" id="fDep" style="width:100%" onchange="onFormDepChange()"></select></div>'+
+  (isCars?'<div class="full"><label class="flab">Скорость, км/ч</label><input class="inp" id="fSpeed" style="width:100%" value="'+esc(it?it.speed:'')+'" placeholder="180"></div>':'')+
+  (isCars?'<div class="full"><label class="flab">Класс транспорта</label><div id="fClsBox"></div></div>':'')+
+  '<div class="full"><label class="flab">Фотография</label><div class="aph" id="fAph"></div>'+
+  '<div class="hint">Фото сохраняется в полном размере. Нажмите на область, чтобы выбрать файл с компьютера.</div></div>'+
+ '</div></div>'+
+ '<div class="m-foot"><button class="btn ghost" onclick="closeM()">Отмена</button>'+
+ '<button class="btn" onclick="saveForm()">'+(it?'Сохранить изменения':'Добавить')+'</button></div>'+
+ '</div></div>';
+
+ syncFormDepOptions(selDep);
+ renderAph();
+
+ var a=$('#fAph');
+ if(a){
+  a.addEventListener('click',function(e){
+   if(e.target.closest('.vtool')){return}
+   pickPhoto(function(data){ editPhoto=data; renderAph() });
+  });
+ }
+ setTimeout(function(){ var n=$('#fName'); if(n){n.focus()} },60);
+}
+function renderClsPicker(selK){
+ var box=$('#fClsBox');
+ if(!box){return}
+ var depK=$('#fDep')?$('#fDep').value:'';
+ var classes=classesOfDep(depK);
+ if(!classes.length){
+  box.innerHTML='<div class="hint" style="margin-top:0">В этом разделе нет классов — карточка будет отображаться в общем списке раздела.</div>';
+  formCls='';
+  return;
+ }
+ var found=false;
+ for(var i=0;i<classes.length;i++){ if(classes[i].k===selK){found=true;break} }
+ if(!found){ selK=classes[0].k }
+ formCls=selK;
+ var h='<div class="clsgrid">';
+ for(var j=0;j<classes.length;j++){
+  var c=classes[j];
+  h+='<button type="button" class="clsbtn'+(c.k===selK?' on':'')+'" style="--cc:'+c.c+';--ccb:'+hex2rgba(c.c,.16)+'" onclick="renderClsPicker(\''+esc(c.k)+'\')">'+
+   '<span style="width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:'+c.c+';box-shadow:0 0 8px 1px '+hex2rgba(c.c,.45)+'"></span>'+esc(c.n)+'</button>';
+ }
+ h+='</div>';
+ box.innerHTML=h;
+}
+window.renderClsPicker=renderClsPicker;
+
+function renderAph(){
+ var a=$('#fAph');
+ if(!a){return}
+ if(editPhoto){
+  a.innerHTML='<img src="'+editPhoto+'" alt="" draggable="false">'+
+   '<button class="vtool vtool-del" style="position:absolute;top:10px;right:10px;z-index:3" title="Убрать фото" onclick="event.stopPropagation();clearPhoto()">🗑</button>';
+ }else{
+  a.innerHTML='<div class="aph-in"><div class="aph-ic">📷</div><b>Добавить фото</b><span>нажмите для выбора файла</span></div>';
+ }
+}
+function clearPhoto(){ editPhoto=''; renderAph() }
+window.clearPhoto=clearPhoto;
+
+function saveForm(){
+ var name=stripQuotaText(($('#fName')?$('#fName').value:'').trim());
+ if(!name){toast('Введите название',true);return}
+ var depK=$('#fDep')?$('#fDep').value:'';
+ if(!depK){toast('Выберите раздел',true);return}
+ var targetDep=findDep(depK);
+ var catK=targetDep?targetDep.cat:(($('#fCat')?$('#fCat').value:'')||state.cat);
+
+ var it=null;
+ if(editingId){ it=byId(editingId) }
+ var isNew=!it;
+ if(isNew){
+  it={id:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind:state.kind,cat:catK,dep:depK,cls:'',name:'',desc:'',speed:'',photo:''};
+  ITEMS.push(it);
+ }
+ it.name=name;
+ it.desc=stripQuotaText(($('#fDesc')?$('#fDesc').value:'').trim());
+ it.cat=catK;
+ it.dep=depK;
+ it.cls=(it.kind==='cars')?(formCls||''):'';
+ it.speed=($('#fSpeed')?$('#fSpeed').value:'').trim();
+ it.photo=editPhoto;
+ ITEMS.sort(compareAlphabetical);
+ closeM();
+ commit();
+ render();
+ toast(isNew?'Запись добавлена':'Изменения сохранены (раздел: '+(targetDep?targetDep.n:depK)+')');
+}
+window.saveForm=saveForm;
+
+function delItem(id){
+ if(!adminMode){return}
+ var it=byId(id);
+ if(!it){return}
+ if(!window.confirm('Удалить «'+(it.name||'без названия')+'»?')){return}
+ markDeletedId(id);
+ for(var i=0;i<ITEMS.length;i++){
+  if(ITEMS[i].id===id){ ITEMS.splice(i,1); break }
+ }
+ commit();
+ render();
+ toast('Запись удалена навсегда');
+}
+window.delItem=delItem;
+
+/* ===================== ФОТО В ОРИГИНАЛЬНОМ ПОЛНОМ РАЗМЕРЕ ===================== */
+function pickPhoto(cb){
+ photoCb=cb;
+ var f=$('#fileInp');
+ if(!f){return}
+ f.value='';
+ f.click();
+}
+function pickPhotoFor(id){
+ if(!adminMode){return}
+ pickPhoto(function(data){
+  var it=byId(id);
+  if(!it){return}
+  it.photo=data;
+  commit();
+  render();
+  toast('Фото обновлено');
+ });
+}
+window.pickPhotoFor=pickPhotoFor;
+
+function compressImage(file,cb){
+ var reader=new FileReader();
+ reader.onload=function(ev){
+  /* Сохраняем оригинальное изображение в полном размере, как оно было загружено */
+  if(cb){cb(ev.target.result)}
+ };
+ reader.onerror=function(){
+  toast('Не удалось прочитать файл изображения',true);
+ };
+ reader.readAsDataURL(file);
+}
+
+/* ===================== ЛАЙТБОКС (100% ОРИГИНАЛЬНЫЙ РАЗМЕР + ПЕРЕКЛЮЧАТЕЛЬ) ===================== */
+function openLb(id){
+ var it=byId(id);
+ if(!it||!it.photo){return}
+ var d=dep(it.dep);
+ var lb=$('#lb'),img=$('#lbImg'),cap=$('#lbCap'),btn=$('#lbScaleBtn');
+ if(!lb||!img){return}
+ lb.classList.remove('fit-screen');
+ if(btn){btn.textContent='📐 По размеру экрана'}
+ if(cap){
+  cap.innerHTML='<span class="lbdot" style="background:'+d.c+';box-shadow:0 0 8px 1px '+hex2rgba(d.c,.5)+'"></span>'+esc(stripQuotaText(it.name||'—'))+
+   (it.desc?'<span>'+esc(stripQuotaText(it.desc))+'</span>':'');
+ }
+ img.onload=function(){
+  if(cap){
+   cap.innerHTML='<span class="lbdot" style="background:'+d.c+';box-shadow:0 0 8px 1px '+hex2rgba(d.c,.5)+'"></span>'+esc(stripQuotaText(it.name||'—'))+
+    ' <i style="font-style:normal;color:#93c5fd;font-size:11px;margin-left:6px">('+img.naturalWidth+'×'+img.naturalHeight+' px · 100%)</i>'+
+    (it.desc?'<span>'+esc(stripQuotaText(it.desc))+'</span>':'');
+  }
+ };
+ img.src=it.photo;
+ lb.classList.add('show');
+}
+window.openLb=openLb;
+
+window.toggleLbScale=function(){
+ var lb=$('#lb'),btn=$('#lbScaleBtn');
+ if(!lb)return;
+ var isFit=lb.classList.toggle('fit-screen');
+ if(btn){btn.textContent=isFit?'🔍 100% полный размер':'📐 По размеру экрана'}
+};
+
+function closeLb(){
+ var lb=$('#lb');
+ if(!lb||!lb.classList.contains('show')){return}
+ lb.classList.remove('show');
+ var img=$('#lbImg');
+ if(img){ img.src='' }
+}
+window.closeLb=closeLb;
+
+/* ===================== ЗАПУСК ===================== */
+(function(){
+ syncGlobalOwnerAuth();
+ renderTop();
+ var qi=$('#q');
+ if(qi){ qi.addEventListener('input',function(){ state.q=this.value; renderGrid() }) }
+ var fi=$('#fileInp');
+ if(fi){
+  fi.addEventListener('change',function(){
+   var f=this.files&&this.files[0];
+   this.value='';
+   if(!f||!photoCb){return}
+   var cb=photoCb;
+   photoCb=null;
+   compressImage(f,cb);
+  });
+ }
+ document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){ closeLb(); closeC(); closeM() }
+ });
+ initApp();
+})();
 </script>
 </body>
 </html>
