@@ -236,10 +236,13 @@ body{
 }
 .ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.35}
 .ic-text{font-size:13px;color:var(--mut);line-height:1.58;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.ic-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.07);font-size:11.5px;color:#6e7b91}
+.ic-foot{display:flex;align-items:center;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.07);font-size:12px}
 .ic-tools{display:flex;gap:6px}
 
-/* МОДАЛЬНЫЕ ОКНА И ПОЛНОЭКРАННЫЕ ПРИЛОЖЕНИЯ (АВТОПАРК, ПОГОНЫ, РАДИАЛЬНОЕ МЕНЮ) */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px}
+.media-grid img,.media-grid video{width:100%;border-radius:12px;border:1px solid var(--line);max-height:260px;object-fit:cover;background:#0e131b}
+
+/* МОДАЛЬНЫЕ ОКНА И ПОЛНОЭКРАННЫЕ ПРИЛОЖЕНИЯ */
 .back{
   position:fixed;
   inset:0;
@@ -335,7 +338,7 @@ body{
 /* ===================== АВТООПРЕДЕЛЕНИЕ РЕПОЗИТОРИЯ ===================== */
 var REPO = (function() {
   var h = location.hostname, p = location.pathname;
-  if (!/\.github\.io$/.test(h)) return null;
+  if (!/\.github\.io$/.test(h)) return 'noxyholmes/mta-province-ideas';
   var owner = h.replace(/\.github\.io$/, '');
   var seg = p.split('/').filter(Boolean);
   return owner + '/' + (seg.length ? seg[0] : (owner + '.github.io'));
@@ -365,12 +368,23 @@ function secInfo(k) {
 
 /* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ ПРИЛОЖЕНИЯ ===================== */
 var APPS_MAP = {
-  'garage':     { url: 'apps/garage.html',     title: '🚔 Обновлённый автопарк и форма фракций' },
-  'epaulettes': { url: 'apps/epaulettes.html', title: '🎖️ Интерактивный стенд динамических погон' },
-  'mvd-radial': { url: 'apps/mvd-radial.html', title: '🛡️ Фракционное радиальное меню МВД' }
+  'garage':         { url: 'apps/garage.html',         title: '🚔 Обновлённый автопарк и форма фракций' },
+  'epaulettes':     { url: 'apps/epaulettes.html',     title: '🎖️ Интерактивный стенд динамических погон' },
+  'mvd-radial':     { url: 'apps/mvd-radial.html',     title: '🛡️ Фракционное радиальное меню МВД' },
+  'evidence':       { url: 'apps/evidence.html',       title: '📦 Камера хранения вещдоков и улик' },
+  'tablet':         { url: 'apps/tablet.html',         title: '📱 Служебный планшет фракции' },
+  'wanted':         { url: 'apps/wanted.html',         title: '🚨 База розыска и ориентировок' },
+  'fines':          { url: 'apps/fines.html',          title: '🧾 Система штрафов и протоколов' }
 };
 
-/* ===================== БАЗОВЫЕ ПРЕДЛОЖЕНИЯ (SEED) ===================== */
+function resolveAppUrl(rawApp) {
+  if (!rawApp) return '';
+  if (APPS_MAP[rawApp]) return APPS_MAP[rawApp].url;
+  if (/\.html/i.test(rawApp)) return rawApp;
+  return 'apps/' + rawApp + '.html';
+}
+
+/* ===================== БАЗОВЫЕ ПРЕДЛОЖЕНИЯ ===================== */
 function seed() {
   return [
     {
@@ -379,7 +393,6 @@ function seed() {
       title: 'Обновлённый автопарк и форма фракций',
       text: 'В данном интерактивном каталоге представлен широкий список транспортных средств и форменной одежды для государственных фракций (УМВД, ОГИБДД, ЦГБ/ОКБ, ВС РФ, РЖД), однако это не означает, что необходимо добавлять абсолютно все модели сразу — из предложенного перечня можно выбрать наиболее подходящие автомобили и комплекты формы для каждого подразделения.\n\nТранспорт и скины для мероприятий (МП-панель):\nЗачастую для проведения различных глобальных и локальных мероприятий не хватает специализированных машин госструктур (ФСБ, СК, Прокуратура, МЧС, ФСО) и соответствующих скинов, чтобы РП-ситуация выглядела атмосферной и интересной. Чтобы разнообразить их, из предложенных в каталоге вариантов можно выбрать подходящие машины и виды формы каждой структуры и добавить их в МП-панель.',
       appUrl: 'garage',
-      author: 'Евгений Холмс',
       date: '2026-10-18'
     },
     {
@@ -388,7 +401,6 @@ function seed() {
       title: 'Интерактивный стенд динамических погон (Полиция и Армия)',
       text: 'Наглядная система погон для подразделений Полиции (УМВД, ОГИБДД, ОМОН / Спецназ / СОБР, Юстиция) в повседневном и парадном исполнении, а также для Вооружённых Сил РФ (Сухопутные войска, ВКС и ВДВ, ВМФ, Росгвардия) от рядового до генерала и Маршала РФ.',
       appUrl: 'epaulettes',
-      author: 'Евгений Холмс',
       date: '2026-10-18'
     },
     {
@@ -397,15 +409,20 @@ function seed() {
       title: 'Фракционное радиальное меню сотрудников МВД (УМВД / ГИБДД)',
       text: 'Комплексная система быстрого взаимодействия для сотрудников МВД через радиальное меню:\n1. Предъявление служебного удостоверения МВД РФ в развёрнутом виде.\n2. Наручники и пристёгивание задержанного к окружению.\n3. Обыск гражданина и досмотр багажника автомобиля (при открытом багажнике) с изъятием нелегальных предметов и сдачей вещдоков дежурному.\n4. Посадка и высадка до 2 задержанных в патрульный автомобиль отдельными кнопками.\n5. Прибор замера светопропускаемости стёкол («Тоник») и снятие тонировки с лобового и передних боковых стёкол.\n6. Служебный мегафон с быстрыми командами в чат и система преследования игроков в радиусе 100 метров.\n7. Эвакуация авто на штрафстоянку: при начале эвакуации возле машины даётся 5 минут на погрузку. После установки авто на эвакуатор таймер 5 минут пропадает, и даже если владелец выйдет из игры — его авто останется и не пропадёт. После доставки ТС на метку штрафстоянки владельцу приходит уведомление о необходимости оплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку перед тем, как забрать ТС.',
       appUrl: 'mvd-radial',
-      author: 'Евгений Холмс',
       date: '2026-10-18'
     }
   ];
 }
 
-/* ===================== ФИЛЬТРАЦИЯ ПУСТЫХ КАРТОЧЕК И СОСТОЯНИЕ ===================== */
-var LOCAL_IDEAS_K = 'mvd_ideas_clean_v2';
+/* ===================== СОСТОЯНИЕ И ВОССТАНОВЛЕНИЕ ИДЕЙ ===================== */
+var LOCAL_IDEAS_K = 'mvd_ideas_clean_v3';
 var MAIN_KEY_K    = 'idea_admin_key';
+var DELETED_IDEAS_K = 'mvd_deleted_ideas_v1';
+var DELETED_IDEA_IDS = {};
+try {
+  DELETED_IDEA_IDS = JSON.parse(localStorage.getItem(DELETED_IDEAS_K) || '{}') || {};
+} catch (e) { DELETED_IDEA_IDS = {}; }
+
 window.adminMode  = false;
 var ADMIN_KEY     = '';
 var CUR_SEC       = 'all';
@@ -420,68 +437,108 @@ function toast(msg, warn) {
   setTimeout(function() { t.remove(); }, 3600);
 }
 
-/* Строгий фильтр: оставляет только настоящие предложения с заголовком и отсекает карточки машин из автопарка */
+function toArr(x) {
+  if (!x) return null;
+  if (Array.isArray(x)) return x;
+  if (typeof x === 'object') {
+    var ks = Object.keys(x).sort(function(a, b) { return a - b; });
+    var res = [];
+    for (var i = 0; i < ks.length; i++) res.push(x[ks[i]]);
+    return res;
+  }
+  return null;
+}
+
+/* Отличает настоящую карточку предложения от карточек машин автопарка и пустых шаблонов */
 function isRealIdeaItem(it) {
   if (!it || typeof it !== 'object') return false;
   if (it.kind === 'cars' || it.kind === 'form' || it.dep || typeof it.speed !== 'undefined') return false;
-  var title = String(it.title || '').replace(/\s+/g, ' ').trim();
-  var text  = String(it.text || it.desc || '').replace(/\s+/g, ' ').trim();
+  if (it.id && DELETED_IDEA_IDS[it.id]) return false;
+  var title = String(it.title || it.name || '').replace(/\s+/g, ' ').trim();
+  var text  = String(it.text || it.desc || it.body || '').replace(/\s+/g, ' ').trim();
   if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
   var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
                  (Array.isArray(it.videos) && it.videos.length > 0) ||
-                 !!it.appUrl || !!it.iframe;
+                 !!it.appUrl || !!it.app || !!it.iframe;
   if (!text && !hasMedia) return false;
   return true;
+}
+
+function normalizeIdeaItem(it) {
+  var copy = Object.assign({}, it);
+  copy.title = String(copy.title || copy.name || '').trim();
+  copy.text  = String(copy.text || copy.desc || copy.body || '').trim();
+  copy.fac   = copy.fac || copy.cat || copy.section || 'general';
+  if (copy.app && !copy.appUrl) copy.appUrl = copy.app;
+  if (!copy.id) copy.id = 'idea_' + copy.title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '_');
+  delete copy.author;
+  return copy;
 }
 
 function mergeAndCleanIdeas(lists) {
   var map = {};
   var out = [];
-  /* Сначала базовые карточки с приложениями */
-  seed().forEach(function(s) {
-    map[s.id] = s;
-    out.push(s);
-  });
+
   (lists || []).forEach(function(arr) {
-    if (!Array.isArray(arr)) return;
-    arr.forEach(function(it) {
-      if (!isRealIdeaItem(it)) return;
-      var id = it.id || ('id_' + it.title);
-      it.id = id;
-      if (!it.fac) it.fac = 'general';
-      /* Обновляем s2 и s_radial актуальными текстами */
-      if (id === 's2' || id === 's_radial' || id === 's_epaulettes') {
-        var base = map[id];
-        if (base) {
-          it.appUrl = base.appUrl;
-          it.text   = base.text;
-          it.title  = base.title;
-        }
-      }
-      if (map[id]) {
-        var idx = out.indexOf(map[id]);
-        if (idx >= 0) out[idx] = it;
-        map[id] = it;
-      } else {
-        map[id] = it;
+    var a = toArr(arr);
+    if (!a || !a.length) return;
+    a.forEach(function(rawIt) {
+      if (!isRealIdeaItem(rawIt)) return;
+      var it = normalizeIdeaItem(rawIt);
+      var key = it.id || it.title;
+      if (!map[key]) {
+        map[key] = it;
         out.push(it);
+      } else {
+        /* Если в найденной карточке больше текста или медиа — дополняем */
+        var existing = map[key];
+        if ((it.text || '').length > (existing.text || '').length) existing.text = it.text;
+        if (it.appUrl && !existing.appUrl) existing.appUrl = it.appUrl;
+        if (it.images && it.images.length && (!existing.images || !existing.images.length)) existing.images = it.images;
+        if (it.videos && it.videos.length && (!existing.videos || !existing.videos.length)) existing.videos = it.videos;
       }
     });
   });
+
+  /* Гарантируем, что базовые интерактивные модули присутствуют с обновлённым описанием */
+  seed().forEach(function(s) {
+    if (DELETED_IDEA_IDS[s.id]) return;
+    var found = null;
+    for (var i = 0; i < out.length; i++) {
+      if (out[i].id === s.id || out[i].appUrl === s.appUrl || out[i].title === s.title) {
+        found = out[i];
+        break;
+      }
+    }
+    if (found) {
+      if (s.id === 's2' || s.id === 's_radial') {
+        found.text = s.text;
+        found.title = s.title;
+        found.appUrl = s.appUrl;
+      }
+    } else {
+      out.push(s);
+    }
+  });
+
   return out;
 }
 
-function loadLocalIdeas() {
+/* Сканирует ВСЕ ключи localStorage в браузере, чтобы вытащить все ранее созданные вами предложения */
+function loadLocalIdeasFromAllBrowserKeys() {
   var collected = [];
-  var keysToTry = [LOCAL_IDEAS_K, 'idea_local', 'idea_cache', 'mvd_ideas_local', 'mvd_ideas_cache', 'items'];
-  keysToTry.forEach(function(k) {
-    try {
-      var raw = JSON.parse(localStorage.getItem(k) || 'null');
-      if (!raw) return;
-      var arr = Array.isArray(raw) ? raw : (Array.isArray(raw.items) ? raw.items : null);
-      if (arr) collected.push(arr);
-    } catch (e) {}
-  });
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k || k.indexOf('garage') >= 0) continue;
+      try {
+        var raw = JSON.parse(localStorage.getItem(k) || 'null');
+        if (!raw) continue;
+        var arr = toArr(raw.items || raw);
+        if (arr && arr.length) collected.push(arr);
+      } catch (e) {}
+    }
+  } catch (e) {}
   return mergeAndCleanIdeas(collected);
 }
 
@@ -492,52 +549,110 @@ function saveLocalIdeas() {
   } catch (e) {}
 }
 
-/* ===================== СОХРАНЕНИЕ ПРЕДЛОЖЕНИЙ НА GITHUB ===================== */
+/* ===================== АВТОВОССТАНОВЛЕНИЕ ПРОПАВШИХ ИДЕЙ ИЗ ИСТОРИИ КОММИТОВ GITHUB ===================== */
 function b64e(s) { return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s) { return decodeURIComponent(escape(atob(s))); }
 
-function pushIdeasToGitHub() {
-  if (!REPO || !window.adminMode || !ADMIN_KEY) return;
-  var snap = JSON.stringify({ rev: Date.now(), items: window.ITEMS.filter(isRealIdeaItem) });
-  var headers = {
-    Authorization: 'token ' + ADMIN_KEY,
-    Accept: 'application/vnd.github+json',
-    'Content-Type': 'application/json'
-  };
-  fetch('https://api.github.com/repos/' + REPO + '/contents/' + IDEAS_DATA_FILE + '?_t=' + Date.now(), { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = {
-        message: 'update ideas',
-        content: b64e(snap),
-        branch: BRANCH
-      };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch('https://api.github.com/repos/' + REPO + '/contents/' + IDEAS_DATA_FILE, {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(body)
-      });
-    }).catch(function() {});
+/* Проверяет, содержит ли JSON настоящие предложения (а не карточки автопарка) */
+function extractIdeasFromJson(j) {
+  if (!j) return [];
+  var arr = toArr(j.items || j);
+  if (!arr || !arr.length) return [];
+  var validIdeas = arr.filter(isRealIdeaItem);
+  return validIdeas;
 }
 
-function pullIdeasFromGitHub() {
-  if (!REPO) return;
-  var urls = [
+function recoverIdeasFromGitHubHistory() {
+  if (!REPO) return Promise.resolve([]);
+  var headers = { Accept: 'application/vnd.github+json' };
+  var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
+  if (tok) headers.Authorization = 'token ' + tok;
+
+  /* 1. Проверяем текущие файлы ideas_data.json и data.json */
+  var directUrls = [
     'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/' + IDEAS_DATA_FILE + '?v=' + Date.now(),
     'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/data.json?v=' + Date.now()
   ];
-  Promise.all(urls.map(function(u) {
+
+  return Promise.all(directUrls.map(function(u) {
     return fetch(u, { cache: 'no-store' }).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; });
-  })).then(function(res) {
-    var lists = [window.ITEMS];
-    res.forEach(function(j) {
-      if (j && Array.isArray(j.items)) lists.push(j.items);
-      else if (Array.isArray(j)) lists.push(j);
+  })).then(function(directRes) {
+    var lists = [];
+    directRes.forEach(function(j) {
+      var found = extractIdeasFromJson(j);
+      if (found.length) lists.push(found);
     });
-    window.ITEMS = mergeAndCleanIdeas(lists);
-    saveLocalIdeas();
-    render();
+
+    /* 2. Запрашиваем историю коммитов файла data.json на GitHub, чтобы найти коммит ДО перезаписи автопарком! */
+    return fetch('https://api.github.com/repos/' + REPO + '/commits?path=data.json&per_page=25&_t=' + Date.now(), { headers: headers })
+      .then(function(r) { return r.ok ? r.json() : []; })
+      .then(function(commits) {
+        if (!Array.isArray(commits) || !commits.length) return lists;
+        /* Ищем коммиты, которые НЕ были сделаны автопарком ("garage sync"), либо проверяем последние 10 коммитов */
+        var candidateShas = [];
+        commits.forEach(function(c) {
+          if (!c || !c.sha) return;
+          var msg = (c.commit && c.commit.message) || '';
+          if (msg.indexOf('garage sync') < 0) {
+            candidateShas.push(c.sha);
+          }
+        });
+        /* На всякий случай добавляем и остальные коммиты, если сообщение было другим */
+        commits.slice(0, 12).forEach(function(c) {
+          if (c && c.sha && candidateShas.indexOf(c.sha) < 0) candidateShas.push(c.sha);
+        });
+
+        /* Последовательно проверяем коммиты, пока не найдём полный список ваших предложений */
+        var idx = 0;
+        function checkNextCommit() {
+          if (idx >= candidateShas.length) return Promise.resolve(lists);
+          var sha = candidateShas[idx++];
+          var rawCommitUrl = 'https://raw.githubusercontent.com/' + REPO + '/' + sha + '/data.json';
+          return fetch(rawCommitUrl).then(function(r) { return r.ok ? r.json() : null; }).then(function(j) {
+            var extracted = extractIdeasFromJson(j);
+            if (extracted.length > 0) {
+              lists.push(extracted);
+              /* Если нашли коммит с полным списком идей (>= 5 карточек) — отлично, берём его! */
+              if (extracted.length >= 5) return lists;
+            }
+            return checkNextCommit();
+          }).catch(function() {
+            return checkNextCommit();
+          });
+        }
+        return checkNextCommit();
+      }).catch(function() { return lists; });
+  });
+}
+
+function pushIdeasToGitHub() {
+  var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
+  if (!REPO || !tok) return;
+  var cleanList = window.ITEMS.filter(isRealIdeaItem);
+  var snap = JSON.stringify({ rev: Date.now(), items: cleanList });
+  var headers = {
+    Authorization: 'token ' + tok,
+    Accept: 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+
+  /* Сохраняем и в ideas_data.json, и восстанавливаем чистый data.json для предложений */
+  [IDEAS_DATA_FILE, 'data.json'].forEach(function(fileName) {
+    fetch('https://api.github.com/repos/' + REPO + '/contents/' + fileName + '?_t=' + Date.now(), { headers: headers })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(existing) {
+        var body = {
+          message: 'restore & update ideas (' + cleanList.length + ')',
+          content: b64e(snap),
+          branch: BRANCH
+        };
+        if (existing && existing.sha) body.sha = existing.sha;
+        return fetch('https://api.github.com/repos/' + REPO + '/contents/' + fileName, {
+          method: 'PUT',
+          headers: headers,
+          body: JSON.stringify(body)
+        });
+      }).catch(function() {});
   });
 }
 
@@ -583,7 +698,7 @@ window.logoutAdmin = function() {
   toast('Вы вышли из режима владельца');
 };
 
-/* ===================== РЕНДЕР СТРАНИЦЫ ===================== */
+/* ===================== РЕНДЕР СТРАНИЦЫ (БЕЗ НАДПИСИ "АВТОР") ===================== */
 function countBySec(secK) {
   var n = 0;
   for (var i = 0; i < window.ITEMS.length; i++) {
@@ -669,7 +784,6 @@ function renderItems() {
       '<div class="ic-title">' + escapeHtml(it.title) + '</div>' +
       '<div class="ic-text">' + escapeHtml(it.text || '') + '</div>' +
       '<div class="ic-foot">' +
-        '<span>Автор: ' + escapeHtml(it.author || 'Система') + '</span>' +
         '<span style="color:#60a5fa;font-weight:700">' + (it.appUrl ? 'Открыть интерактивное приложение →' : 'Подробнее →') + '</span>' +
       '</div>' +
     '</div>';
@@ -697,13 +811,13 @@ window.openIdeaCard = function(id) {
 
   var m = document.getElementById('mroot');
   if (it.appUrl) {
-    var appCfg = APPS_MAP[it.appUrl] || { url: it.appUrl, title: it.title };
-    var iframeSrc = appCfg.url + (appCfg.url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
+    var fullUrl = resolveAppUrl(it.appUrl);
+    var iframeSrc = fullUrl + (fullUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
     m.innerHTML =
       '<div class="back" onclick="if(event.target===this)closeModal()">' +
         '<div class="modal app-modal">' +
           '<div class="m-head">' +
-            '<div class="mh-title"><span>🚔</span><span>' + escapeHtml(it.title) + '</span></div>' +
+            '<div class="mh-title"><span>⚡</span><span>' + escapeHtml(it.title) + '</span></div>' +
             '<button class="m-close" onclick="closeModal()">✕</button>' +
           '</div>' +
           '<div class="m-body iframe-wrap">' +
@@ -714,16 +828,29 @@ window.openIdeaCard = function(id) {
     return;
   }
 
+  var mediaHtml = '';
+  if ((it.images && it.images.length) || (it.videos && it.videos.length)) {
+    mediaHtml = '<div class="media-grid">';
+    (it.images || []).forEach(function(src) {
+      mediaHtml += '<img src="' + escapeHtml(src) + '" alt="">';
+    });
+    (it.videos || []).forEach(function(src) {
+      mediaHtml += '<video src="' + escapeHtml(src) + '" controls></video>';
+    });
+    mediaHtml += '</div>';
+  }
+
   var sec = secInfo(it.fac);
   m.innerHTML =
     '<div class="back" onclick="if(event.target===this)closeModal()">' +
-      '<div class="modal" style="max-width:780px">' +
+      '<div class="modal" style="max-width:820px">' +
         '<div class="m-head">' +
           '<div class="mh-title"><span>' + sec.ic + '</span><span>' + escapeHtml(it.title) + '</span></div>' +
           '<button class="m-close" onclick="closeModal()">✕</button>' +
         '</div>' +
         '<div class="m-body">' +
           '<div style="font-size:14px;line-height:1.68;white-space:pre-line;color:#dbe4f3">' + escapeHtml(it.text || '') + '</div>' +
+          mediaHtml +
         '</div>' +
         '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>' +
       '</div>' +
@@ -760,12 +887,7 @@ window.openIdeaForm = function(editId) {
           '<label class="flab">Описание предложения</label>' +
           '<textarea class="inp" id="fIdeaText" rows="7" style="width:100%" placeholder="Подробное описание идеи…">' + escapeHtml(it ? it.text : '') + '</textarea>' +
           '<label class="flab">Встроенный модуль (необязательно)</label>' +
-          '<select class="sel" id="fIdeaApp" style="width:100%">' +
-            '<option value="">— Обычное текстовое предложение —</option>' +
-            '<option value="garage"' + (it && it.appUrl === 'garage' ? ' selected' : '') + '>🚔 Автопарк и форма (apps/garage.html)</option>' +
-            '<option value="epaulettes"' + (it && it.appUrl === 'epaulettes' ? ' selected' : '') + '>🎖️ Стенд погон (apps/epaulettes.html)</option>' +
-            '<option value="mvd-radial"' + (it && it.appUrl === 'mvd-radial' ? ' selected' : '') + '>🛡️ Радиальное меню МВД (apps/mvd-radial.html)</option>' +
-          '</select>' +
+          '<input class="inp" id="fIdeaApp" style="width:100%" value="' + escapeHtml(it && it.appUrl ? it.appUrl : '') + '" placeholder="Например: garage, epaulettes, mvd-radial или оставьте пустым">' +
         '</div>' +
         '<div class="m-foot">' +
           '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
@@ -791,7 +913,6 @@ window.saveIdeaForm = function(editId) {
   if (!it) {
     it = {
       id: 'idea_' + Date.now().toString(36),
-      author: 'Евгений Холмс',
       date: new Date().toISOString().slice(0, 10)
     };
     window.ITEMS.unshift(it);
@@ -800,6 +921,7 @@ window.saveIdeaForm = function(editId) {
   it.title = title;
   it.text = text;
   if (app) it.appUrl = app; else delete it.appUrl;
+  delete it.author;
 
   closeModal();
   saveLocalIdeas();
@@ -811,6 +933,8 @@ window.saveIdeaForm = function(editId) {
 window.deleteIdea = function(id) {
   if (!window.adminMode) return;
   if (!confirm('Удалить это предложение?')) return;
+  DELETED_IDEA_IDS[id] = 1;
+  try { localStorage.setItem(DELETED_IDEAS_K, JSON.stringify(DELETED_IDEA_IDS)); } catch (e) {}
   window.ITEMS = window.ITEMS.filter(function(x) { return x.id !== id; });
   saveLocalIdeas();
   pushIdeasToGitHub();
@@ -831,10 +955,22 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeModal();
 });
 
-/* Запуск */
-window.ITEMS = loadLocalIdeas();
+/* ===================== ЗАПУСК И АВТОВОССТАНОВЛЕНИЕ ИДЕЙ ===================== */
+window.ITEMS = loadLocalIdeasFromAllBrowserKeys();
 render();
-pullIdeasFromGitHub();
+
+recoverIdeasFromGitHubHistory().then(function(recoveredLists) {
+  if (recoveredLists && recoveredLists.length) {
+    var beforeCount = window.ITEMS.length;
+    window.ITEMS = mergeAndCleanIdeas([window.ITEMS].concat(recoveredLists));
+    saveLocalIdeas();
+    render();
+    if (window.ITEMS.length > beforeCount) {
+      toast('✓ Восстановлено предложений: ' + window.ITEMS.length);
+      pushIdeasToGitHub();
+    }
+  }
+});
 </script>
 </body>
 </html>
