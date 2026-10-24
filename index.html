@@ -301,6 +301,8 @@ body{
   #side{position:static}
 }
 </style>
+<!-- Подключаем js/config.js если он есть в репозитории -->
+<script src="js/config.js"></script>
 </head>
 <body>
 
@@ -330,7 +332,12 @@ body{
 <div id="troot"></div>
 
 <script>
-/* ===================== АВТООПРЕДЕЛЕНИЕ РЕПОЗИТОРИЯ ===================== */
+/* =========================================================================
+   АВТОМАТИЧЕСКОЕ ВОССТАНОВЛЕНИЕ ОРИГИНАЛЬНОГО INDEX.HTML ИЗ ИСТОРИИ GITHUB
+   Если оригинальный index.html в репозитории содержал встроенный функциональный
+   телефон и другие модули до случайной замены, мы автоматически проверяем
+   предыдущий коммит index.html и восстанавливаем все модули и карточки!
+   ========================================================================= */
 var REPO = (function() {
   var h = location.hostname, p = location.pathname;
   if (!/\.github\.io$/.test(h)) return 'noxyholmes/mta-province-ideas';
@@ -341,7 +348,6 @@ var REPO = (function() {
 var BRANCH = 'main';
 var IDEAS_DATA_FILE = 'ideas_data.json';
 
-/* ===================== ФРАКЦИИ И РАЗДЕЛЫ ЛЕВОГО МЕНЮ ===================== */
 var SECTIONS = [
   { k: 'all',     grp: 'main', ic: '📋', n: 'Все предложения' },
   { k: 'general', grp: 'main', ic: '💡', n: 'Общие' },
@@ -361,107 +367,235 @@ function secInfo(k) {
   return SECTIONS[1];
 }
 
-/* ===================== АВТОМАТИЧЕСКАЯ КАРТА ВСЕХ HTML-ПРИЛОЖЕНИЙ РЕПОЗИТОРИЯ =====================
-   Сканирует реальный список файлов в репозитории, чтобы при открытии любого приложения
-   (телефон, автопарк, погоны, радиальное меню и др.) никогда не возникала ошибка 404! */
-var REPO_HTML_FILES = [];
+/* Все файлы приложений в репозитории */
+var REPO_ALL_FILES = [];
 var APPS_MAP = {
   'garage':     'apps/garage.html',
   'epaulettes': 'apps/epaulettes.html',
-  'mvd-radial': 'apps/mvd-radial.html'
+  'mvd-radial': 'apps/mvd-radial.html',
+  'radial':     'apps/mvd-radial.html',
+  'phone':      'apps/phone.html'
 };
 
-function scanRepoHtmlFiles() {
-  if (!REPO) return;
-  fetch('https://api.github.com/repos/' + REPO + '/git/trees/' + BRANCH + '?recursive=1')
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(j) {
-      if (!j || !Array.isArray(j.tree)) return;
-      REPO_HTML_FILES = [];
-      j.tree.forEach(function(node) {
-        if (node && node.path && /\.html$/i.test(node.path) && node.path !== 'index.html') {
-          REPO_HTML_FILES.push(node.path);
-          var base = node.path.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
-          APPS_MAP[base] = node.path;
-        }
-      });
-    }).catch(function() {});
-}
-scanRepoHtmlFiles();
+/* Сохраняем seed из js/config.js, если он загрузился из внешнего файла */
+var EXTERNAL_SEED_FN = (typeof window.seed === 'function') ? window.seed : null;
 
-/* Поиск реального существующего URL приложения (с проверкой через fetch HEAD перед открытием iframe) */
-function findWorkingAppUrl(it) {
-  var raw = String((it && (it.appUrl || it.app || it.iframe)) || '').trim();
-  if (!raw) return Promise.resolve(null);
-  if (/^https?:\/\//i.test(raw)) return Promise.resolve(raw);
-
-  var cleanKey = raw.replace(/^apps\//i, '').replace(/\.html.*$/i, '').toLowerCase();
-  var candidates = [];
-
-  if (APPS_MAP[cleanKey]) candidates.push(APPS_MAP[cleanKey]);
-  if (/\.html/i.test(raw)) {
-    candidates.push(raw);
-    if (raw.indexOf('apps/') !== 0) candidates.push('apps/' + raw);
-  } else {
-    candidates.push('apps/' + cleanKey + '.html');
-    candidates.push(cleanKey + '.html');
-    candidates.push('apps/' + cleanKey + '/index.html');
+function fallbackSeed() {
+  if (EXTERNAL_SEED_FN) {
+    try {
+      var ext = EXTERNAL_SEED_FN();
+      if (Array.isArray(ext) && ext.length) return ext;
+    } catch (e) {}
   }
-
-  /* Также ищем по частичному совпадению среди всех найденных .html файлов в репозитории */
-  REPO_HTML_FILES.forEach(function(p) {
-    if (p.toLowerCase().indexOf(cleanKey) >= 0 && candidates.indexOf(p) < 0) {
-      candidates.push(p);
-    }
-  });
-
-  var idx = 0;
-  function tryCandidate() {
-    if (idx >= candidates.length) return Promise.resolve(null);
-    var url = candidates[idx++];
-    return fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + '_check=' + Date.now(), { method: 'HEAD', cache: 'no-store' })
-      .then(function(r) {
-        if (r.ok) return url;
-        return tryCandidate();
-      }).catch(function() {
-        return tryCandidate();
-      });
-  }
-  return tryCandidate();
-}
-
-/* ===================== БАЗОВЫЕ ПРЕДЛОЖЕНИЯ ===================== */
-function seed() {
   return [
     {
       id: 's2',
       fac: 'general',
       title: 'Обновлённый автопарк и форма фракций',
       text: 'В данном интерактивном каталоге представлен широкий список транспортных средств и форменной одежды для государственных фракций (УМВД, ОГИБДД, ЦГБ/ОКБ, ВС РФ, РЖД), однако это не означает, что необходимо добавлять абсолютно все модели сразу — из предложенного перечня можно выбрать наиболее подходящие автомобили и комплекты формы для каждого подразделения.\n\nТранспорт и скины для мероприятий (МП-панель):\nЗачастую для проведения различных глобальных и локальных мероприятий не хватает специализированных машин госструктур (ФСБ, СК, Прокуратура, МЧС, ФСО) и соответствующих скинов, чтобы РП-ситуация выглядела атмосферной и интересной. Чтобы разнообразить их, из предложенных в каталоге вариантов можно выбрать подходящие машины и виды формы каждой структуры и добавить их в МП-панель.',
-      appUrl: 'garage',
-      date: '2026-10-18'
+      appUrl: 'apps/garage.html'
     },
     {
       id: 's_epaulettes',
       fac: 'general',
       title: 'Интерактивный стенд динамических погон (Полиция и Армия)',
       text: 'Наглядная система погон для подразделений Полиции (УМВД, ОГИБДД, ОМОН / Спецназ / СОБР, Юстиция) в повседневном и парадном исполнении, а также для Вооружённых Сил РФ (Сухопутные войска, ВКС и ВДВ, ВМФ, Росгвардия) от рядового до генерала и Маршала РФ.',
-      appUrl: 'epaulettes',
-      date: '2026-10-18'
+      appUrl: 'apps/epaulettes.html'
     },
     {
       id: 's_radial',
       fac: 'mvd',
       title: 'Фракционное радиальное меню сотрудников МВД (УМВД / ГИБДД)',
       text: 'Комплексная система быстрого взаимодействия для сотрудников МВД через радиальное меню:\n1. Предъявление служебного удостоверения МВД РФ в развёрнутом виде.\n2. Наручники и пристёгивание задержанного к окружению.\n3. Обыск гражданина и досмотр багажника автомобиля (при открытом багажнике) с изъятием нелегальных предметов и сдачей вещдоков дежурному.\n4. Посадка и высадка до 2 задержанных в патрульный автомобиль отдельными кнопками.\n5. Прибор замера светопропускаемости стёкол («Тоник») и снятие тонировки с лобового и передних боковых стёкол.\n6. Служебный мегафон с быстрыми командами в чат и система преследования игроков в радиусе 100 метров.\n7. Эвакуация авто на штрафстоянку: при начале эвакуации возле машины даётся 5 минут на погрузку. После установки авто на эвакуатор таймер 5 минут пропадает, и даже если владелец выйдет из игры — его авто останется и не пропадёт. После доставки ТС на метку штрафстоянки владельцу приходит уведомление о необходимости оплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку перед тем, как забрать ТС.',
-      appUrl: 'mvd-radial',
-      date: '2026-10-18'
+      appUrl: 'apps/mvd-radial.html'
     }
   ];
 }
 
+/* Автоматическое определение интерактивного модуля по заголовку или полю appUrl */
+function autoBindAppUrl(it) {
+  if (!it || typeof it !== 'object') return;
+  var t = String(it.title || '').toLowerCase();
+  var cur = String(it.appUrl || it.app || it.iframe || '').trim();
+
+  /* Прямая привязка по ключевым словам заголовка */
+  if (!cur) {
+    if (t.indexOf('автопарк') >= 0 && t.indexOf('форм') >= 0) cur = 'apps/garage.html';
+    else if (t.indexOf('погон') >= 0) cur = 'apps/epaulettes.html';
+    else if (t.indexOf('радиальн') >= 0) cur = 'apps/mvd-radial.html';
+    else if (t.indexOf('телефон') >= 0) cur = 'phone';
+  }
+
+  if (!cur) return;
+
+  /* Приводим короткое имя к реальному пути из списка файлов репозитория */
+  var clean = cur.replace(/^apps\//i, '').replace(/\.html.*$/i, '').toLowerCase();
+  if (APPS_MAP[clean]) {
+    it.appUrl = APPS_MAP[clean];
+    return;
+  }
+  for (var i = 0; i < REPO_ALL_FILES.length; i++) {
+    var path = REPO_ALL_FILES[i];
+    var fileBase = path.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
+    if (fileBase === clean || fileBase.indexOf(clean) >= 0 || clean.indexOf(fileBase) >= 0) {
+      it.appUrl = path;
+      return;
+    }
+  }
+  if (!/\.html/i.test(cur) && !/^https?:/i.test(cur)) {
+    it.appUrl = 'apps/' + clean + '.html';
+  } else {
+    it.appUrl = cur;
+  }
+}
+
+/* Сканирование дерева репозитория + проверка истории index.html и js/config.js */
+function scanRepoTreeAndHistory() {
+  if (!REPO) return Promise.resolve();
+  var headers = { Accept: 'application/vnd.github+json' };
+  var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
+  if (tok) headers.Authorization = 'token ' + tok;
+
+  return fetch('https://api.github.com/repos/' + REPO + '/git/trees/' + BRANCH + '?recursive=1&_t=' + Date.now(), { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(j) {
+      if (!j || !Array.isArray(j.tree)) return;
+      REPO_ALL_FILES = [];
+      j.tree.forEach(function(node) {
+        if (node && node.path && /\.html$/i.test(node.path) && node.path !== 'index.html') {
+          REPO_ALL_FILES.push(node.path);
+          var base = node.path.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
+          APPS_MAP[base] = node.path;
+        }
+      });
+      window.ITEMS.forEach(autoBindAppUrl);
+      render();
+    }).catch(function() {});
+}
+
+/* Поиск оригинального index.html в истории коммитов GitHub (до того, как он был заменён)
+   и извлечение из него всех встроенных предложений / приложений */
+var ORIGINAL_INDEX_SHA = null;
+
+function checkOriginalIndexInGitHistory() {
+  if (!REPO) return;
+  var headers = { Accept: 'application/vnd.github+json' };
+  var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
+  if (tok) headers.Authorization = 'token ' + tok;
+
+  fetch('https://api.github.com/repos/' + REPO + '/commits?path=index.html&per_page=15&_t=' + Date.now(), { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(commits) {
+      if (!Array.isArray(commits) || commits.length < 2) return;
+      /* Ищем коммит старше сегодняшних правок или проверяем предыдущие версии index.html */
+      var idx = 1;
+      function tryNextIndexCommit() {
+        if (idx >= commits.length) return;
+        var sha = commits[idx++].sha;
+        fetch('https://raw.githubusercontent.com/' + REPO + '/' + sha + '/index.html')
+          .then(function(r) { return r.ok ? r.text() : ''; })
+          .then(function(htmlTxt) {
+            /* Проверяем, что это полный оригинальный index.html (а не короткий кусок кода) */
+            if (htmlTxt && htmlTxt.length > 3500 && htmlTxt.indexOf('cleanEmptyIdeasAndHighlight') < 0 && htmlTxt.indexOf('recoverIdeasFromGitHubHistory') < 0) {
+              ORIGINAL_INDEX_SHA = sha;
+              renderTopBar();
+              /* Если в том коммите был seed() прямо внутри index.html — извлекаем из него карточки */
+              extractSeedFromOldHtml(htmlTxt);
+            } else {
+              tryNextIndexCommit();
+            }
+          }).catch(function() { tryNextIndexCommit(); });
+      }
+      tryNextIndexCommit();
+    }).catch(function() {});
+}
+
+function extractSeedFromOldHtml(htmlTxt) {
+  try {
+    var m = htmlTxt.match(/function\s+seed\s*\(\s*\)\s*\{[\s\S]*?return\s*(\[[\s\S]*?\])\s*;\s*\}/);
+    if (m && m[1]) {
+      var fn = new Function('return ' + m[1]);
+      var oldSeedArr = fn();
+      if (Array.isArray(oldSeedArr) && oldSeedArr.length) {
+        window.ITEMS = mergeAndCleanIdeas([oldSeedArr, window.ITEMS]);
+        window.ITEMS.forEach(autoBindAppUrl);
+        saveLocalIdeas();
+        render();
+      }
+    }
+  } catch (e) {}
+}
+
+/* Кнопка для владельца: в 1 клик откатить index.html и data.json к последнему рабочему коммиту из истории GitHub + применить зебру и очистку автора */
+window.restoreOriginalSiteFromGit = function() {
+  if (!ORIGINAL_INDEX_SHA) {
+    toast('Оригинальная версия уже активна', false);
+    return;
+  }
+  fetch('https://raw.githubusercontent.com/' + REPO + '/' + ORIGINAL_INDEX_SHA + '/index.html')
+    .then(function(r) { return r.ok ? r.text() : Promise.reject('err'); })
+    .then(function(origHtml) {
+      /* Инжектируем в ваш оригинальный index.html:
+         1. Чередование цветов карточек (зебру)
+         2. Скрытие строки "Автор: Евгений Холмс"
+         3. Очистку пустых карточек из автопарка */
+      var patchBlock = '\n<style>\n' +
+        '.card:nth-child(odd),.icard:nth-child(odd),#items>*:nth-child(odd){background:linear-gradient(145deg,#151c27,#111720)!important;border-color:#243044!important;border-left:4px solid #385d8a!important}\n' +
+        '.card:nth-child(even),.icard:nth-child(even),#items>*:nth-child(even){background:linear-gradient(145deg,#1f293b,#182130)!important;border-color:#354764!important;border-left:4px solid #4da3ff!important}\n' +
+        '</style>\n' +
+        '<script>\n' +
+        'setInterval(function(){\n' +
+        '  if(window.ITEMS&&Array.isArray(window.ITEMS)){\n' +
+        '    var b=window.ITEMS.length;\n' +
+        '    window.ITEMS=window.ITEMS.filter(function(x){return x&&x.title&&x.kind!=="cars"&&x.kind!=="form"&&!x.dep});\n' +
+        '    if(window.ITEMS.length!==b&&typeof window.render==="function")window.render();\n' +
+        '  }\n' +
+        '  document.querySelectorAll("*").forEach(function(el){\n' +
+        '    if(el.children.length===0&&/Автор:\\s*Евгений Холмс/i.test(el.textContent||""))el.style.display="none";\n' +
+        '  });\n' +
+        '},400);\n' +
+        '<\/script>\n';
+
+      var finalHtml = origHtml.replace('</body>', patchBlock + '</body>');
+
+      /* Если владелец авторизован — сразу сохраняем восстановленный оригинальный index.html в GitHub */
+      var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
+      if (tok && REPO) {
+        var headers = {
+          Authorization: 'token ' + tok,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        };
+        fetch('https://api.github.com/repos/' + REPO + '/contents/index.html?_t=' + Date.now(), { headers: headers })
+          .then(function(r) { return r.json(); })
+          .then(function(curFile) {
+            return fetch('https://api.github.com/repos/' + REPO + '/contents/index.html', {
+              method: 'PUT',
+              headers: headers,
+              body: JSON.stringify({
+                message: 'restore original functional index.html with zebra & clean filter',
+                content: b64e(finalHtml),
+                sha: curFile.sha,
+                branch: BRANCH
+              })
+            });
+          }).then(function() {
+            toast('✓ Оригинальный сайт со всеми модулями восстановлен в GitHub! Перезагрузка...');
+            setTimeout(function() { location.reload(); }, 1200);
+          }).catch(function() {});
+      }
+
+      /* И мгновенно отображаем его прямо сейчас на экране */
+      document.open();
+      document.write(finalHtml);
+      document.close();
+    }).catch(function() {
+      toast('Не удалось загрузить коммит из истории', true);
+    });
+};
+
 /* ===================== СОСТОЯНИЕ И ВОССТАНОВЛЕНИЕ ИДЕЙ ===================== */
-var LOCAL_IDEAS_K = 'mvd_ideas_clean_v4';
+var LOCAL_IDEAS_K = 'mvd_ideas_clean_v5';
 var MAIN_KEY_K    = 'idea_admin_key';
 var DELETED_IDEAS_K = 'mvd_deleted_ideas_v1';
 var DELETED_IDEA_IDS = {};
@@ -479,7 +613,8 @@ function toast(msg, warn) {
   var t = document.createElement('div');
   t.className = 'toast' + (warn ? ' warn' : '');
   t.textContent = msg;
-  document.getElementById('troot').appendChild(t);
+  var r = document.getElementById('troot');
+  if (r) r.appendChild(t);
   setTimeout(function() { t.remove(); }, 3600);
 }
 
@@ -517,6 +652,7 @@ function normalizeIdeaItem(it) {
   if (copy.app && !copy.appUrl) copy.appUrl = copy.app;
   if (!copy.id) copy.id = 'idea_' + copy.title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '_');
   delete copy.author;
+  autoBindAppUrl(copy);
   return copy;
 }
 
@@ -540,27 +676,26 @@ function mergeAndCleanIdeas(lists) {
         if (it.appUrl && !existing.appUrl) existing.appUrl = it.appUrl;
         if (it.images && it.images.length && (!existing.images || !existing.images.length)) existing.images = it.images;
         if (it.videos && it.videos.length && (!existing.videos || !existing.videos.length)) existing.videos = it.videos;
+        autoBindAppUrl(existing);
       }
     });
   });
 
-  seed().forEach(function(s) {
+  fallbackSeed().forEach(function(s) {
     if (DELETED_IDEA_IDS[s.id]) return;
     var found = null;
     for (var i = 0; i < out.length; i++) {
-      if (out[i].id === s.id || out[i].appUrl === s.appUrl || out[i].title === s.title) {
+      if (out[i].id === s.id || out[i].title === s.title) {
         found = out[i];
         break;
       }
     }
     if (found) {
-      if (s.id === 's2' || s.id === 's_radial') {
-        found.text = s.text;
-        found.title = s.title;
-        found.appUrl = s.appUrl;
-      }
+      if (s.appUrl && !found.appUrl) found.appUrl = s.appUrl;
+      autoBindAppUrl(found);
     } else {
-      out.push(s);
+      var normS = normalizeIdeaItem(s);
+      out.push(normS);
     }
   });
 
@@ -569,6 +704,9 @@ function mergeAndCleanIdeas(lists) {
 
 function loadLocalIdeasFromAllBrowserKeys() {
   var collected = [];
+  if (EXTERNAL_SEED_FN) {
+    try { collected.push(EXTERNAL_SEED_FN()); } catch (e) {}
+  }
   try {
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
@@ -621,7 +759,7 @@ function recoverIdeasFromGitHubHistory() {
       if (found.length) lists.push(found);
     });
 
-    return fetch('https://api.github.com/repos/' + REPO + '/commits?path=data.json&per_page=25&_t=' + Date.now(), { headers: headers })
+    return fetch('https://api.github.com/repos/' + REPO + '/commits?path=data.json&per_page=30&_t=' + Date.now(), { headers: headers })
       .then(function(r) { return r.ok ? r.json() : []; })
       .then(function(commits) {
         if (!Array.isArray(commits) || !commits.length) return lists;
@@ -631,7 +769,7 @@ function recoverIdeasFromGitHubHistory() {
           var msg = (c.commit && c.commit.message) || '';
           if (msg.indexOf('garage sync') < 0) candidateShas.push(c.sha);
         });
-        commits.slice(0, 12).forEach(function(c) {
+        commits.slice(0, 15).forEach(function(c) {
           if (c && c.sha && candidateShas.indexOf(c.sha) < 0) candidateShas.push(c.sha);
         });
 
@@ -644,7 +782,7 @@ function recoverIdeasFromGitHubHistory() {
             var extracted = extractIdeasFromJson(j);
             if (extracted.length > 0) {
               lists.push(extracted);
-              if (extracted.length >= 5) return lists;
+              if (extracted.length >= 8) return lists;
             }
             return checkNextCommit();
           }).catch(function() {
@@ -741,12 +879,15 @@ function countBySec(secK) {
 
 function renderTopBar() {
   var tr = document.getElementById('topRight');
+  var restoreBtn = ORIGINAL_INDEX_SHA
+    ? '<button class="btn slim" style="background:linear-gradient(145deg,#10b981,#059669);border-color:#34d399" onclick="restoreOriginalSiteFromGit()" title="Вернуть ваш оригинальный index.html со встроенным телефоном и всеми модулями из истории коммитов GitHub">⏪ Вернуть оригинальный сайт из истории Git</button>'
+    : '';
   var ghStatus = '<span class="pill"><span class="gdot"></span>GitHub</span>';
   var ownerControls = window.adminMode
     ? '<span class="pill" style="color:#fcd34d;border-color:rgba(247,201,72,.4)">✏️ Владелец</span>' +
       '<button class="btn ghost slim" onclick="logoutAdmin()">Выйти</button>'
     : '<button class="btn ghost slim" onclick="openAdminLogin()">🔒 Вход владельца</button>';
-  tr.innerHTML = ghStatus + ownerControls;
+  tr.innerHTML = restoreBtn + ghStatus + ownerControls;
 }
 
 function renderSidebar() {
@@ -795,6 +936,7 @@ function renderItems() {
   }
 
   box.innerHTML = list.map(function(it) {
+    autoBindAppUrl(it);
     var sec = secInfo(it.fac);
     var appBadge = it.appUrl ? '<span class="ic-app-badge">⚡ Интерактивный модуль</span>' : '';
     var admBtns = window.adminMode
@@ -831,9 +973,34 @@ function render() {
 }
 window.render = render;
 
-/* ===================== ОТКРЫТИЕ ПРЕДЛОЖЕНИЯ БЕЗ ОШИБКИ 404 ===================== */
-function renderTextAndMediaModal(it) {
+/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНЫХ ПРИЛОЖЕНИЙ ===================== */
+window.openIdeaCard = function(id) {
+  var it = null;
+  for (var i = 0; i < window.ITEMS.length; i++) {
+    if (window.ITEMS[i].id === id) { it = window.ITEMS[i]; break; }
+  }
+  if (!it) return;
+  autoBindAppUrl(it);
+
   var m = document.getElementById('mroot');
+  if (it.appUrl) {
+    var targetUrl = it.appUrl;
+    var iframeSrc = targetUrl + (targetUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
+    m.innerHTML =
+      '<div class="back" onclick="if(event.target===this)closeModal()">' +
+        '<div class="modal app-modal">' +
+          '<div class="m-head">' +
+            '<div class="mh-title"><span>⚡</span><span>' + escapeHtml(it.title) + '</span></div>' +
+            '<button class="m-close" onclick="closeModal()">✕</button>' +
+          '</div>' +
+          '<div class="m-body iframe-wrap">' +
+            '<iframe class="app-iframe" src="' + iframeSrc + '" allowfullscreen></iframe>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    return;
+  }
+
   var mediaHtml = '';
   if ((it.images && it.images.length) || (it.videos && it.videos.length)) {
     mediaHtml = '<div class="media-grid">';
@@ -861,41 +1028,6 @@ function renderTextAndMediaModal(it) {
         '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>' +
       '</div>' +
     '</div>';
-}
-
-window.openIdeaCard = function(id) {
-  var it = null;
-  for (var i = 0; i < window.ITEMS.length; i++) {
-    if (window.ITEMS[i].id === id) { it = window.ITEMS[i]; break; }
-  }
-  if (!it) return;
-
-  if (it.appUrl) {
-    findWorkingAppUrl(it).then(function(validUrl) {
-      if (validUrl) {
-        var m = document.getElementById('mroot');
-        var iframeSrc = validUrl + (validUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
-        m.innerHTML =
-          '<div class="back" onclick="if(event.target===this)closeModal()">' +
-            '<div class="modal app-modal">' +
-              '<div class="m-head">' +
-                '<div class="mh-title"><span>⚡</span><span>' + escapeHtml(it.title) + '</span></div>' +
-                '<button class="m-close" onclick="closeModal()">✕</button>' +
-              '</div>' +
-              '<div class="m-body iframe-wrap">' +
-                '<iframe class="app-iframe" src="' + iframeSrc + '" allowfullscreen></iframe>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-      } else {
-        /* Если отдельного .html файла для этого предложения нет — открываем подробное описание и медиа без ошибки 404 */
-        renderTextAndMediaModal(it);
-      }
-    });
-    return;
-  }
-
-  renderTextAndMediaModal(it);
 };
 
 /* ===================== ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРЕДЛОЖЕНИЯ ===================== */
@@ -912,6 +1044,12 @@ window.openIdeaForm = function(editId) {
     return '<option value="' + s.k + '"' + (s.k === curFac ? ' selected' : '') + '>' + s.ic + ' ' + s.n + '</option>';
   }).join('');
 
+  var appOpts = '<option value="">— Обычное текстовое предложение —</option>';
+  REPO_ALL_FILES.forEach(function(path) {
+    var sel = (it && it.appUrl === path) ? ' selected' : '';
+    appOpts += '<option value="' + escapeHtml(path) + '"' + sel + '>⚡ ' + escapeHtml(path) + '</option>';
+  });
+
   var m = document.getElementById('mroot');
   m.innerHTML =
     '<div class="back" onclick="if(event.target===this)closeModal()">' +
@@ -927,8 +1065,8 @@ window.openIdeaForm = function(editId) {
           '<input class="inp" id="fIdeaTitle" style="width:100%" value="' + escapeHtml(it ? it.title : '') + '" placeholder="Введите заголовок предложения…">' +
           '<label class="flab">Описание предложения</label>' +
           '<textarea class="inp" id="fIdeaText" rows="7" style="width:100%" placeholder="Подробное описание идеи…">' + escapeHtml(it ? it.text : '') + '</textarea>' +
-          '<label class="flab">Встроенный модуль (необязательно)</label>' +
-          '<input class="inp" id="fIdeaApp" style="width:100%" value="' + escapeHtml(it && it.appUrl ? it.appUrl : '') + '" placeholder="Например: garage, epaulettes, mvd-radial или оставьте пустым">' +
+          '<label class="flab">Интерактивное приложение из папки apps/</label>' +
+          '<select class="sel" id="fIdeaApp" style="width:100%">' + appOpts + '</select>' +
         '</div>' +
         '<div class="m-foot">' +
           '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
@@ -999,16 +1137,16 @@ document.addEventListener('keydown', function(e) {
 /* ===================== ЗАПУСК ===================== */
 window.ITEMS = loadLocalIdeasFromAllBrowserKeys();
 render();
+scanRepoTreeAndHistory();
+checkOriginalIndexInGitHistory();
 
 recoverIdeasFromGitHubHistory().then(function(recoveredLists) {
   if (recoveredLists && recoveredLists.length) {
-    var beforeCount = window.ITEMS.length;
     window.ITEMS = mergeAndCleanIdeas([window.ITEMS].concat(recoveredLists));
+    window.ITEMS.forEach(autoBindAppUrl);
     saveLocalIdeas();
     render();
-    if (window.ITEMS.length > beforeCount) {
-      pushIdeasToGitHub();
-    }
+    pushIdeasToGitHub();
   }
 });
 </script>
