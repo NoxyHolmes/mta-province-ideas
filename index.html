@@ -4,58 +4,312 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Предложения · Фракции · Работы и прочее</title>
-<link rel="stylesheet" href="css/style.css">
 <style>
-/* Чередование цветов карточек предложений (зебра), чтобы ячейки не сливались */
-#items > .card:nth-child(odd),
-#list > .card:nth-child(odd),
-.cards > .card:nth-child(odd),
-.card:nth-of-type(odd),
-.icard:nth-of-type(odd) {
-  background: linear-gradient(145deg, #161d28, #121721) !important;
-  border: 1px solid #242f40 !important;
-  border-left: 3px solid #365985 !important;
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0b0e14;
+  --bg2:#111620;
+  --card:#161d29;
+  --card-even:#1e2738;
+  --line:#252f42;
+  --line-even:#344560;
+  --txt:#ecf0f8;
+  --mut:#8b96ab;
+  --acc:#4da3ff;
+  --green:#2fd97a;
+  --yellow:#f7c948;
+  --red:#ff5c5c;
+}
+html{color-scheme:dark}
+body{
+  background:
+    radial-gradient(1200px 600px at 12% -10%,rgba(45,100,180,.18),transparent 60%),
+    radial-gradient(1000px 550px at 105% 110%,rgba(120,80,220,.12),transparent 55%),
+    #0b0e14;
+  color:var(--txt);
+  font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:14px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#283244;border-radius:8px;border:2px solid #0e131b}
+::-webkit-scrollbar-thumb:hover{background:#38465e}
+
+/* ШАПКА САЙТА */
+#top{
+  position:sticky;
+  top:0;
+  z-index:200;
+  height:56px;
+  background:rgba(13,17,24,.88);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  padding:0 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:13px;letter-spacing:.7px;text-transform:uppercase;color:#dbe7ff}
+.logo{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#4da3ff,#6d5dfc);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  box-shadow:0 4px 14px rgba(77,163,255,.35);
+}
+#topRight{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 12px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#141a24;
+  color:var(--mut);
+  font-size:12px;
+  font-weight:700;
+}
+.pill .gdot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.pill.warn .gdot{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+.btn{
+  background:linear-gradient(145deg,#3684e6,#2563eb);
+  border:1px solid #3d75c4;
+  color:#fff;
+  padding:8px 15px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:12.5px;
+  cursor:pointer;
+  font-family:inherit;
+  transition:all .18s;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn.ghost{background:#151c27;border:1px solid var(--line);color:var(--txt);box-shadow:none}
+.btn.ghost:hover{border-color:#3a4a63}
+.btn.warn{background:linear-gradient(145deg,#b93838,#8c2626);border-color:#c24646}
+.btn.slim{padding:6px 12px;font-size:11.5px}
+
+/* ОСНОВНАЯ СЕТКА (ЛЕВОЕ МЕНЮ + КОНТЕНТ) */
+#wrap{
+  max-width:1460px;
+  width:100%;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:250px 1fr;
+  gap:24px;
+  padding:22px;
+  flex:1;
+}
+#side{
+  position:sticky;
+  top:76px;
+  align-self:start;
+  background:rgba(18,23,32,.75);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px 10px;
+}
+.s-grp{
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  color:#647187;
+  padding:8px 12px 6px;
+}
+.s-grp:not(:first-child){margin-top:10px;border-top:1px solid rgba(255,255,255,.05);padding-top:14px}
+.s-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:11px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--mut);
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  font-family:inherit;
+  text-align:left;
+  transition:all .16s;
+  margin-bottom:3px;
+}
+.s-btn:hover{color:var(--txt);background:rgba(255,255,255,.03)}
+.s-btn.on{
+  color:#fff;
+  background:linear-gradient(90deg,rgba(77,163,255,.22),rgba(77,163,255,.05));
+  border-color:rgba(77,163,255,.4);
+}
+.s-cnt{
+  margin-left:auto;
+  background:#1f293a;
+  border:1px solid #2e3d56;
+  color:#a8c1e8;
+  font-size:11px;
+  font-weight:800;
+  padding:1px 8px;
+  border-radius:10px;
 }
 
-#items > .card:nth-child(even),
-#list > .card:nth-child(even),
-.cards > .card:nth-child(even),
-.card:nth-of-type(even),
-.icard:nth-of-type(even) {
-  background: linear-gradient(145deg, #1f293a, #182130) !important;
-  border: 1px solid #33445e !important;
-  border-left: 3px solid #4da3ff !important;
-  box-shadow: inset 0 1px 0 rgba(77, 163, 255, 0.09), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+/* КОНТЕНТ И КАРТОЧКИ ПРЕДЛОЖЕНИЙ С ЧЕРЕДОВАНИЕМ ЦВЕТОВ (ЗЕБРА) */
+.ph{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.ph h1{font-size:22px;font-weight:800}
+.ph-ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.inp,.sel{
+  background:#131923;
+  border:1px solid var(--line);
+  color:var(--txt);
+  padding:10px 14px;
+  border-radius:11px;
+  font-size:13.5px;
+  font-family:inherit;
+  outline:none;
+  transition:border-color .18s;
+}
+.inp:focus,.sel:focus{border-color:var(--acc)}
+
+#items{display:flex;flex-direction:column;gap:14px}
+
+/* ЧЕРЕДОВАНИЕ ЦВЕТОВ ЯЧЕЕК ПРЕДЛОЖЕНИЙ (НЕЧЁТНЫЕ И ЧЁТНЫЕ) */
+.icard{
+  border-radius:16px;
+  padding:18px 20px;
+  transition:all .2s;
+  cursor:pointer;
+  position:relative;
+}
+#items > .icard:nth-child(odd){
+  background:linear-gradient(145deg,#151c27,#111720);
+  border:1px solid #243044;
+  border-left:4px solid #385d8a;
+}
+#items > .icard:nth-child(even){
+  background:linear-gradient(145deg,#1f293b,#182130);
+  border:1px solid #354764;
+  border-left:4px solid #4da3ff;
+  box-shadow:inset 0 1px 0 rgba(77,163,255,.1),0 8px 24px rgba(0,0,0,.32);
+}
+#items > .icard:hover{
+  border-color:#58aaff;
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(0,0,0,.45);
 }
 
-#items > .card:hover,
-.card:hover,
-.icard:hover {
-  border-color: #56a8ff !important;
-  transform: translateY(-2px);
+.ic-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.ic-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  background:rgba(77,163,255,.14);
+  border:1px solid rgba(77,163,255,.35);
+  color:#93c5fd;
+}
+.ic-app-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  background:rgba(47,217,122,.14);
+  border:1px solid rgba(47,217,122,.35);
+  color:#6ee7b7;
+}
+.ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.35}
+.ic-text{font-size:13px;color:var(--mut);line-height:1.58;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.ic-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.07);font-size:11.5px;color:#6e7b91}
+.ic-tools{display:flex;gap:6px}
+
+/* МОДАЛЬНЫЕ ОКНА И ПОЛНОЭКРАННЫЕ ПРИЛОЖЕНИЯ (АВТОПАРК, ПОГОНЫ, РАДИАЛЬНОЕ МЕНЮ) */
+.back{
+  position:fixed;
+  inset:0;
+  background:rgba(4,7,12,.82);
+  backdrop-filter:blur(8px);
+  z-index:500;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  overflow-y:auto;
+  padding:24px 16px;
+}
+.modal{
+  width:100%;
+  max-width:1180px;
+  background:#141a24;
+  border:1px solid #2b3648;
+  border-radius:18px;
+  box-shadow:0 30px 90px rgba(0,0,0,.75);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.modal.app-modal{max-width:1420px;height:calc(100vh - 48px)}
+.m-head{
+  padding:16px 20px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:linear-gradient(180deg,rgba(77,163,255,.08),transparent);
+}
+.mh-title{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:9px}
+.m-close{
+  background:#231b24;
+  border:1px solid #6e2c35;
+  color:#fda4af;
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:800;
+}
+.m-close:hover{background:#9f1239;color:#fff}
+.m-body{padding:20px;overflow-y:auto;flex:1}
+.m-body.iframe-wrap{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.app-iframe{width:100%;height:100%;border:0;flex:1;background:#0e1116}
+.m-foot{padding:14px 20px;border-top:1px solid var(--line);background:#10151e;display:flex;justify-content:flex-end;gap:10px}
+.flab{display:block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin:12px 0 6px}
+.flab:first-child{margin-top:0}
+
+#troot{position:fixed;right:18px;bottom:18px;z-index:800;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1b2432;border:1px solid #32445e;border-left:3px solid var(--acc);padding:12px 16px;border-radius:12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.toast.warn{border-left-color:var(--red)}
+.empty{padding:36px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:14px}
+
+@media(max-width:860px){
+  #wrap{grid-template-columns:1fr;padding:14px}
+  #side{position:static}
 }
 </style>
 </head>
 <body>
-<div id="errbox"></div>
-<script>
-window.addEventListener('error',function(ev){
- if(!(ev instanceof ErrorEvent)){return}
- if(!ev.message){return}
- var b=document.getElementById('errbox');
- if(b){
-  b.style.display='block';
-  b.textContent='Ошибка: '+ev.message+(ev.filename?'\n'+ev.filename+':'+(ev.lineno||0):'');
- }
-},true);
-</script>
 
 <header id="top">
   <div class="brand">
     <div class="logo">💡</div>
-    <div>
-      <div class="b-title">ПРЕДЛОЖЕНИЯ · ФРАКЦИИ · РАБОТЫ И ПРОЧЕЕ</div>
-    </div>
+    <div>ПРЕДЛОЖЕНИЯ · ФРАКЦИИ · РАБОТЫ И ПРОЧЕЕ</div>
   </div>
   <div id="topRight"></div>
 </header>
@@ -63,77 +317,524 @@ window.addEventListener('error',function(ev){
 <div id="wrap">
   <aside id="side"></aside>
   <main id="content">
-    <div id="main"></div>
+    <div class="ph">
+      <h1 id="pageTitle">Все предложения</h1>
+      <div id="pageActions"></div>
+    </div>
+    <div class="ph-ctl">
+      <input class="inp" id="searchInp" style="flex:1;min-width:240px" placeholder="🔍 Поиск по заголовку или описанию предложения…">
+    </div>
+    <div id="items"></div>
   </main>
 </div>
 
-<input type="file" id="imgInp" accept="image/*" multiple style="display:none">
-<input type="file" id="vidInp" accept="video/*" multiple style="display:none">
-<div id="lb"><img id="lbImg" alt=""></div>
 <div id="mroot"></div>
-<div id="croot"></div>
 <div id="troot"></div>
 
-<script src="js/config.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/state.js"></script>
-<script src="js/github.js"></script>
-<script src="js/render.js"></script>
-<script src="js/modals.js"></script>
-<script src="js/main.js"></script>
-
-<!-- АВТООЧИСТКА ПУСТЫХ ПРЕДЛОЖЕНИЙ БЕЗ ЗАГОЛОВКА И ВОССТАНОВЛЕНИЕ СПИСКА ИДЕЙ -->
 <script>
-(function() {
-  function isRealIdeaItem(it) {
-    if (!it || typeof it !== 'object') return false;
-    /* Отсекаем случайно попавшие записи из автопарка/формы */
-    if (it.kind === 'cars' || it.kind === 'form' || it.dep || typeof it.speed !== 'undefined') return false;
-    var title = String(it.title || '').replace(/\s+/g, ' ').trim();
-    var text  = String(it.text || it.desc || '').replace(/\s+/g, ' ').trim();
-    if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
-    var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
-                   (Array.isArray(it.videos) && it.videos.length > 0) ||
-                   !!it.appUrl || !!it.iframe;
-    if (!text && !hasMedia) return false;
-    return true;
-  }
-
-  function cleanAndRestoreIdeas() {
-    if (!window.ITEMS || !Array.isArray(window.ITEMS)) return;
-
-    var prevLen = window.ITEMS.length;
-    var valid = window.ITEMS.filter(isRealIdeaItem);
-
-    /* Если из-за прошлой перезаписи data.json список идей оказался пуст или повреждён —
-       восстанавливаем стандартные идеи из seed() и дополняем вашими настоящими идеями */
-    if (typeof window.seed === 'function') {
-      var baseSeeds = window.seed() || [];
-      var existingIds = {};
-      valid.forEach(function(x) { if (x && x.id) existingIds[x.id] = true; });
-      baseSeeds.forEach(function(s) {
-        if (s && s.id && !existingIds[s.id] && isRealIdeaItem(s)) {
-          valid.push(s);
-          existingIds[s.id] = true;
-        }
-      });
-    }
-
-    if (valid.length !== prevLen) {
-      window.ITEMS = valid;
-      try {
-        if (typeof window.cacheItems === 'function') window.cacheItems();
-        if (typeof window.saveLocal === 'function') window.saveLocal(window.ITEMS);
-        if (typeof window.render === 'function') window.render();
-        if (window.adminMode && typeof window.commit === 'function') window.commit();
-      } catch (e) {}
-    }
-  }
-
-  window.addEventListener('DOMContentLoaded', cleanAndRestoreIdeas);
-  window.addEventListener('load', cleanAndRestoreIdeas);
-  setInterval(cleanAndRestoreIdeas, 500);
+/* ===================== АВТООПРЕДЕЛЕНИЕ РЕПОЗИТОРИЯ ===================== */
+var REPO = (function() {
+  var h = location.hostname, p = location.pathname;
+  if (!/\.github\.io$/.test(h)) return null;
+  var owner = h.replace(/\.github\.io$/, '');
+  var seg = p.split('/').filter(Boolean);
+  return owner + '/' + (seg.length ? seg[0] : (owner + '.github.io'));
 })();
+var BRANCH = 'main';
+var IDEAS_DATA_FILE = 'ideas_data.json';
+
+/* ===================== ФРАКЦИИ И РАЗДЕЛЫ ЛЕВОГО МЕНЮ ===================== */
+var SECTIONS = [
+  { k: 'all',     grp: 'main', ic: '📋', n: 'Все предложения' },
+  { k: 'general', grp: 'main', ic: '💡', n: 'Общие' },
+  { k: 'mvd',     grp: 'main', ic: '🚓', n: 'МВД' },
+  { k: 'mo',      grp: 'main', ic: '🎖️', n: 'Минобороны' },
+  { k: 'mz',      grp: 'main', ic: '🚑', n: 'Минздрав' },
+  { k: 'mt',      grp: 'main', ic: '🚆', n: 'Минтранс' },
+  { k: 'opg',     grp: 'main', ic: '🔫', n: 'ОПГ' },
+  { k: 'other',   grp: 'main', ic: '📦', n: 'Прочее' },
+  { k: 'jobs',    grp: 'sub',  ic: '💼', n: 'Работы и прочее' }
+];
+
+function secInfo(k) {
+  for (var i = 0; i < SECTIONS.length; i++) {
+    if (SECTIONS[i].k === k) return SECTIONS[i];
+  }
+  return SECTIONS[1];
+}
+
+/* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ ПРИЛОЖЕНИЯ ===================== */
+var APPS_MAP = {
+  'garage':     { url: 'apps/garage.html',     title: '🚔 Обновлённый автопарк и форма фракций' },
+  'epaulettes': { url: 'apps/epaulettes.html', title: '🎖️ Интерактивный стенд динамических погон' },
+  'mvd-radial': { url: 'apps/mvd-radial.html', title: '🛡️ Фракционное радиальное меню МВД' }
+};
+
+/* ===================== БАЗОВЫЕ ПРЕДЛОЖЕНИЯ (SEED) ===================== */
+function seed() {
+  return [
+    {
+      id: 's2',
+      fac: 'general',
+      title: 'Обновлённый автопарк и форма фракций',
+      text: 'В данном интерактивном каталоге представлен широкий список транспортных средств и форменной одежды для государственных фракций (УМВД, ОГИБДД, ЦГБ/ОКБ, ВС РФ, РЖД), однако это не означает, что необходимо добавлять абсолютно все модели сразу — из предложенного перечня можно выбрать наиболее подходящие автомобили и комплекты формы для каждого подразделения.\n\nТранспорт и скины для мероприятий (МП-панель):\nЗачастую для проведения различных глобальных и локальных мероприятий не хватает специализированных машин госструктур (ФСБ, СК, Прокуратура, МЧС, ФСО) и соответствующих скинов, чтобы РП-ситуация выглядела атмосферной и интересной. Чтобы разнообразить их, из предложенных в каталоге вариантов можно выбрать подходящие машины и виды формы каждой структуры и добавить их в МП-панель.',
+      appUrl: 'garage',
+      author: 'Евгений Холмс',
+      date: '2026-10-18'
+    },
+    {
+      id: 's_epaulettes',
+      fac: 'general',
+      title: 'Интерактивный стенд динамических погон (Полиция и Армия)',
+      text: 'Наглядная система погон для подразделений Полиции (УМВД, ОГИБДД, ОМОН / Спецназ / СОБР, Юстиция) в повседневном и парадном исполнении, а также для Вооружённых Сил РФ (Сухопутные войска, ВКС и ВДВ, ВМФ, Росгвардия) от рядового до генерала и Маршала РФ.',
+      appUrl: 'epaulettes',
+      author: 'Евгений Холмс',
+      date: '2026-10-18'
+    },
+    {
+      id: 's_radial',
+      fac: 'mvd',
+      title: 'Фракционное радиальное меню сотрудников МВД (УМВД / ГИБДД)',
+      text: 'Комплексная система быстрого взаимодействия для сотрудников МВД через радиальное меню:\n1. Предъявление служебного удостоверения МВД РФ в развёрнутом виде.\n2. Наручники и пристёгивание задержанного к окружению.\n3. Обыск гражданина и досмотр багажника автомобиля (при открытом багажнике) с изъятием нелегальных предметов и сдачей вещдоков дежурному.\n4. Посадка и высадка до 2 задержанных в патрульный автомобиль отдельными кнопками.\n5. Прибор замера светопропускаемости стёкол («Тоник») и снятие тонировки с лобового и передних боковых стёкол.\n6. Служебный мегафон с быстрыми командами в чат и система преследования игроков в радиусе 100 метров.\n7. Эвакуация авто на штрафстоянку: при начале эвакуации возле машины даётся 5 минут на погрузку. После установки авто на эвакуатор таймер 5 минут пропадает, и даже если владелец выйдет из игры — его авто останется и не пропадёт. После доставки ТС на метку штрафстоянки владельцу приходит уведомление о необходимости оплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку перед тем, как забрать ТС.',
+      appUrl: 'mvd-radial',
+      author: 'Евгений Холмс',
+      date: '2026-10-18'
+    }
+  ];
+}
+
+/* ===================== ФИЛЬТРАЦИЯ ПУСТЫХ КАРТОЧЕК И СОСТОЯНИЕ ===================== */
+var LOCAL_IDEAS_K = 'mvd_ideas_clean_v2';
+var MAIN_KEY_K    = 'idea_admin_key';
+window.adminMode  = false;
+var ADMIN_KEY     = '';
+var CUR_SEC       = 'all';
+var SEARCH_Q      = '';
+window.ITEMS      = [];
+
+function toast(msg, warn) {
+  var t = document.createElement('div');
+  t.className = 'toast' + (warn ? ' warn' : '');
+  t.textContent = msg;
+  document.getElementById('troot').appendChild(t);
+  setTimeout(function() { t.remove(); }, 3600);
+}
+
+/* Строгий фильтр: оставляет только настоящие предложения с заголовком и отсекает карточки машин из автопарка */
+function isRealIdeaItem(it) {
+  if (!it || typeof it !== 'object') return false;
+  if (it.kind === 'cars' || it.kind === 'form' || it.dep || typeof it.speed !== 'undefined') return false;
+  var title = String(it.title || '').replace(/\s+/g, ' ').trim();
+  var text  = String(it.text || it.desc || '').replace(/\s+/g, ' ').trim();
+  if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
+  var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
+                 (Array.isArray(it.videos) && it.videos.length > 0) ||
+                 !!it.appUrl || !!it.iframe;
+  if (!text && !hasMedia) return false;
+  return true;
+}
+
+function mergeAndCleanIdeas(lists) {
+  var map = {};
+  var out = [];
+  /* Сначала базовые карточки с приложениями */
+  seed().forEach(function(s) {
+    map[s.id] = s;
+    out.push(s);
+  });
+  (lists || []).forEach(function(arr) {
+    if (!Array.isArray(arr)) return;
+    arr.forEach(function(it) {
+      if (!isRealIdeaItem(it)) return;
+      var id = it.id || ('id_' + it.title);
+      it.id = id;
+      if (!it.fac) it.fac = 'general';
+      /* Обновляем s2 и s_radial актуальными текстами */
+      if (id === 's2' || id === 's_radial' || id === 's_epaulettes') {
+        var base = map[id];
+        if (base) {
+          it.appUrl = base.appUrl;
+          it.text   = base.text;
+          it.title  = base.title;
+        }
+      }
+      if (map[id]) {
+        var idx = out.indexOf(map[id]);
+        if (idx >= 0) out[idx] = it;
+        map[id] = it;
+      } else {
+        map[id] = it;
+        out.push(it);
+      }
+    });
+  });
+  return out;
+}
+
+function loadLocalIdeas() {
+  var collected = [];
+  var keysToTry = [LOCAL_IDEAS_K, 'idea_local', 'idea_cache', 'mvd_ideas_local', 'mvd_ideas_cache', 'items'];
+  keysToTry.forEach(function(k) {
+    try {
+      var raw = JSON.parse(localStorage.getItem(k) || 'null');
+      if (!raw) return;
+      var arr = Array.isArray(raw) ? raw : (Array.isArray(raw.items) ? raw.items : null);
+      if (arr) collected.push(arr);
+    } catch (e) {}
+  });
+  return mergeAndCleanIdeas(collected);
+}
+
+function saveLocalIdeas() {
+  window.ITEMS = window.ITEMS.filter(isRealIdeaItem);
+  try {
+    localStorage.setItem(LOCAL_IDEAS_K, JSON.stringify({ items: window.ITEMS, savedAt: Date.now() }));
+  } catch (e) {}
+}
+
+/* ===================== СОХРАНЕНИЕ ПРЕДЛОЖЕНИЙ НА GITHUB ===================== */
+function b64e(s) { return btoa(unescape(encodeURIComponent(s))); }
+function b64d(s) { return decodeURIComponent(escape(atob(s))); }
+
+function pushIdeasToGitHub() {
+  if (!REPO || !window.adminMode || !ADMIN_KEY) return;
+  var snap = JSON.stringify({ rev: Date.now(), items: window.ITEMS.filter(isRealIdeaItem) });
+  var headers = {
+    Authorization: 'token ' + ADMIN_KEY,
+    Accept: 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+  fetch('https://api.github.com/repos/' + REPO + '/contents/' + IDEAS_DATA_FILE + '?_t=' + Date.now(), { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = {
+        message: 'update ideas',
+        content: b64e(snap),
+        branch: BRANCH
+      };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch('https://api.github.com/repos/' + REPO + '/contents/' + IDEAS_DATA_FILE, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(body)
+      });
+    }).catch(function() {});
+}
+
+function pullIdeasFromGitHub() {
+  if (!REPO) return;
+  var urls = [
+    'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/' + IDEAS_DATA_FILE + '?v=' + Date.now(),
+    'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/data.json?v=' + Date.now()
+  ];
+  Promise.all(urls.map(function(u) {
+    return fetch(u, { cache: 'no-store' }).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; });
+  })).then(function(res) {
+    var lists = [window.ITEMS];
+    res.forEach(function(j) {
+      if (j && Array.isArray(j.items)) lists.push(j.items);
+      else if (Array.isArray(j)) lists.push(j);
+    });
+    window.ITEMS = mergeAndCleanIdeas(lists);
+    saveLocalIdeas();
+    render();
+  });
+}
+
+/* ===================== ВХОД / ВЫХОД ВЛАДЕЛЬЦА ===================== */
+window.openAdminLogin = function() {
+  var savedTok = '';
+  try { savedTok = localStorage.getItem(MAIN_KEY_K) || ''; } catch (e) {}
+  var m = document.getElementById('mroot');
+  m.innerHTML =
+    '<div class="back" onclick="if(event.target===this)closeModal()">' +
+      '<div class="modal" style="max-width:460px">' +
+        '<div class="m-head"><div class="mh-title">🔑 Вход владельца</div><button class="m-close" onclick="closeModal()">✕</button></div>' +
+        '<div class="m-body">' +
+          '<label class="flab">GitHub Personal Access Token (ghp_...)</label>' +
+          '<input type="password" class="inp" id="admTokInp" style="width:100%" value="' + savedTok.replace(/"/g, '&quot;') + '" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">' +
+          '<div style="font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5">После входа станут доступны кнопки добавления/редактирования предложений, а также управление автопарком и формой.</div>' +
+        '</div>' +
+        '<div class="m-foot">' +
+          '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+          '<button class="btn" onclick="confirmAdminLogin()">Войти</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+};
+
+window.confirmAdminLogin = function() {
+  var v = (document.getElementById('admTokInp').value || '').trim();
+  if (!v) { toast('Введите токен владельца', true); return; }
+  ADMIN_KEY = v;
+  window.adminMode = true;
+  document.body.classList.add('adm');
+  try { localStorage.setItem(MAIN_KEY_K, v); } catch (e) {}
+  closeModal();
+  render();
+  toast('Режим владельца включён');
+};
+
+window.logoutAdmin = function() {
+  window.adminMode = false;
+  ADMIN_KEY = '';
+  document.body.classList.remove('adm');
+  render();
+  toast('Вы вышли из режима владельца');
+};
+
+/* ===================== РЕНДЕР СТРАНИЦЫ ===================== */
+function countBySec(secK) {
+  var n = 0;
+  for (var i = 0; i < window.ITEMS.length; i++) {
+    var it = window.ITEMS[i];
+    if (!isRealIdeaItem(it)) continue;
+    if (secK === 'all' || it.fac === secK) n++;
+  }
+  return n;
+}
+
+function renderTopBar() {
+  var tr = document.getElementById('topRight');
+  var ghStatus = '<span class="pill"><span class="gdot"></span>GitHub</span>';
+  var ownerControls = window.adminMode
+    ? '<span class="pill" style="color:#fcd34d;border-color:rgba(247,201,72,.4)">✏️ Владелец</span>' +
+      '<button class="btn ghost slim" onclick="logoutAdmin()">Выйти</button>'
+    : '<button class="btn ghost slim" onclick="openAdminLogin()">🔒 Вход владельца</button>';
+  tr.innerHTML = ghStatus + ownerControls;
+}
+
+function renderSidebar() {
+  var side = document.getElementById('side');
+  var h = '<div class="s-grp">Фракции</div>';
+  SECTIONS.forEach(function(s) {
+    if (s.grp === 'sub') {
+      h += '<div class="s-grp">Прочие предложения</div>';
+    }
+    h += '<button class="s-btn' + (CUR_SEC === s.k ? ' on' : '') + '" onclick="selectSection(\'' + s.k + '\')">' +
+      '<span>' + s.ic + '</span>' +
+      '<span>' + s.n + '</span>' +
+      '<span class="s-cnt">' + countBySec(s.k) + '</span>' +
+    '</button>';
+  });
+  side.innerHTML = h;
+}
+
+window.selectSection = function(k) {
+  CUR_SEC = k;
+  render();
+};
+
+function renderItems() {
+  var curSecObj = secInfo(CUR_SEC);
+  document.getElementById('pageTitle').textContent = curSecObj.ic + ' ' + curSecObj.n;
+  document.getElementById('pageActions').innerHTML = window.adminMode
+    ? '<button class="btn" onclick="openIdeaForm(null)">＋ Добавить предложение</button>'
+    : '';
+
+  var q = (SEARCH_Q || '').toLowerCase();
+  var list = window.ITEMS.filter(function(it) {
+    if (!isRealIdeaItem(it)) return false;
+    if (CUR_SEC !== 'all' && it.fac !== CUR_SEC) return false;
+    if (q) {
+      var hay = ((it.title || '') + ' ' + (it.text || '')).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  });
+
+  var box = document.getElementById('items');
+  if (!list.length) {
+    box.innerHTML = '<div class="empty">В этом разделе пока нет предложений</div>';
+    return;
+  }
+
+  box.innerHTML = list.map(function(it) {
+    var sec = secInfo(it.fac);
+    var appBadge = it.appUrl ? '<span class="ic-app-badge">⚡ Интерактивный модуль</span>' : '';
+    var admBtns = window.adminMode
+      ? '<div class="ic-tools" onclick="event.stopPropagation()">' +
+          '<button class="btn ghost slim" onclick="openIdeaForm(\'' + it.id + '\')">✏️</button>' +
+          '<button class="btn warn slim" onclick="deleteIdea(\'' + it.id + '\')">🗑</button>' +
+        '</div>'
+      : '';
+    return '<div class="icard" onclick="openIdeaCard(\'' + it.id + '\')">' +
+      '<div class="ic-top">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+          '<span class="ic-badge">' + sec.ic + ' ' + sec.n + '</span>' +
+          appBadge +
+        '</div>' +
+        admBtns +
+      '</div>' +
+      '<div class="ic-title">' + escapeHtml(it.title) + '</div>' +
+      '<div class="ic-text">' + escapeHtml(it.text || '') + '</div>' +
+      '<div class="ic-foot">' +
+        '<span>Автор: ' + escapeHtml(it.author || 'Система') + '</span>' +
+        '<span style="color:#60a5fa;font-weight:700">' + (it.appUrl ? 'Открыть интерактивное приложение →' : 'Подробнее →') + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function render() {
+  renderTopBar();
+  renderSidebar();
+  renderItems();
+}
+window.render = render;
+
+/* ===================== ОТКРЫТИЕ ПРЕДЛОЖЕНИЯ И ВСТРОЕННЫХ ПРИЛОЖЕНИЙ ===================== */
+window.openIdeaCard = function(id) {
+  var it = null;
+  for (var i = 0; i < window.ITEMS.length; i++) {
+    if (window.ITEMS[i].id === id) { it = window.ITEMS[i]; break; }
+  }
+  if (!it) return;
+
+  var m = document.getElementById('mroot');
+  if (it.appUrl) {
+    var appCfg = APPS_MAP[it.appUrl] || { url: it.appUrl, title: it.title };
+    var iframeSrc = appCfg.url + (appCfg.url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
+    m.innerHTML =
+      '<div class="back" onclick="if(event.target===this)closeModal()">' +
+        '<div class="modal app-modal">' +
+          '<div class="m-head">' +
+            '<div class="mh-title"><span>🚔</span><span>' + escapeHtml(it.title) + '</span></div>' +
+            '<button class="m-close" onclick="closeModal()">✕</button>' +
+          '</div>' +
+          '<div class="m-body iframe-wrap">' +
+            '<iframe class="app-iframe" src="' + iframeSrc + '" allowfullscreen></iframe>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    return;
+  }
+
+  var sec = secInfo(it.fac);
+  m.innerHTML =
+    '<div class="back" onclick="if(event.target===this)closeModal()">' +
+      '<div class="modal" style="max-width:780px">' +
+        '<div class="m-head">' +
+          '<div class="mh-title"><span>' + sec.ic + '</span><span>' + escapeHtml(it.title) + '</span></div>' +
+          '<button class="m-close" onclick="closeModal()">✕</button>' +
+        '</div>' +
+        '<div class="m-body">' +
+          '<div style="font-size:14px;line-height:1.68;white-space:pre-line;color:#dbe4f3">' + escapeHtml(it.text || '') + '</div>' +
+        '</div>' +
+        '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>' +
+      '</div>' +
+    '</div>';
+};
+
+/* ===================== ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРЕДЛОЖЕНИЯ ===================== */
+window.openIdeaForm = function(editId) {
+  if (!window.adminMode) return;
+  var it = null;
+  if (editId) {
+    for (var i = 0; i < window.ITEMS.length; i++) {
+      if (window.ITEMS[i].id === editId) { it = window.ITEMS[i]; break; }
+    }
+  }
+  var curFac = it ? it.fac : (CUR_SEC !== 'all' ? CUR_SEC : 'general');
+  var secOpts = SECTIONS.filter(function(s) { return s.k !== 'all'; }).map(function(s) {
+    return '<option value="' + s.k + '"' + (s.k === curFac ? ' selected' : '') + '>' + s.ic + ' ' + s.n + '</option>';
+  }).join('');
+
+  var m = document.getElementById('mroot');
+  m.innerHTML =
+    '<div class="back" onclick="if(event.target===this)closeModal()">' +
+      '<div class="modal" style="max-width:680px">' +
+        '<div class="m-head">' +
+          '<div class="mh-title">' + (it ? '✏️ Редактировать предложение' : '＋ Новое предложение') + '</div>' +
+          '<button class="m-close" onclick="closeModal()">✕</button>' +
+        '</div>' +
+        '<div class="m-body">' +
+          '<label class="flab">Раздел / Фракция</label>' +
+          '<select class="sel" id="fIdeaFac" style="width:100%">' + secOpts + '</select>' +
+          '<label class="flab">Заголовок предложения</label>' +
+          '<input class="inp" id="fIdeaTitle" style="width:100%" value="' + escapeHtml(it ? it.title : '') + '" placeholder="Введите заголовок предложения…">' +
+          '<label class="flab">Описание предложения</label>' +
+          '<textarea class="inp" id="fIdeaText" rows="7" style="width:100%" placeholder="Подробное описание идеи…">' + escapeHtml(it ? it.text : '') + '</textarea>' +
+          '<label class="flab">Встроенный модуль (необязательно)</label>' +
+          '<select class="sel" id="fIdeaApp" style="width:100%">' +
+            '<option value="">— Обычное текстовое предложение —</option>' +
+            '<option value="garage"' + (it && it.appUrl === 'garage' ? ' selected' : '') + '>🚔 Автопарк и форма (apps/garage.html)</option>' +
+            '<option value="epaulettes"' + (it && it.appUrl === 'epaulettes' ? ' selected' : '') + '>🎖️ Стенд погон (apps/epaulettes.html)</option>' +
+            '<option value="mvd-radial"' + (it && it.appUrl === 'mvd-radial' ? ' selected' : '') + '>🛡️ Радиальное меню МВД (apps/mvd-radial.html)</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="m-foot">' +
+          '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+          '<button class="btn" onclick="saveIdeaForm(\'' + (it ? it.id : '') + '\')">Сохранить</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+};
+
+window.saveIdeaForm = function(editId) {
+  var fac   = document.getElementById('fIdeaFac').value || 'general';
+  var title = (document.getElementById('fIdeaTitle').value || '').trim();
+  var text  = (document.getElementById('fIdeaText').value || '').trim();
+  var app   = (document.getElementById('fIdeaApp').value || '').trim();
+  if (!title) { toast('Введите заголовок предложения', true); return; }
+
+  var it = null;
+  if (editId) {
+    for (var i = 0; i < window.ITEMS.length; i++) {
+      if (window.ITEMS[i].id === editId) { it = window.ITEMS[i]; break; }
+    }
+  }
+  if (!it) {
+    it = {
+      id: 'idea_' + Date.now().toString(36),
+      author: 'Евгений Холмс',
+      date: new Date().toISOString().slice(0, 10)
+    };
+    window.ITEMS.unshift(it);
+  }
+  it.fac = fac;
+  it.title = title;
+  it.text = text;
+  if (app) it.appUrl = app; else delete it.appUrl;
+
+  closeModal();
+  saveLocalIdeas();
+  pushIdeasToGitHub();
+  render();
+  toast('Предложение сохранено');
+};
+
+window.deleteIdea = function(id) {
+  if (!window.adminMode) return;
+  if (!confirm('Удалить это предложение?')) return;
+  window.ITEMS = window.ITEMS.filter(function(x) { return x.id !== id; });
+  saveLocalIdeas();
+  pushIdeasToGitHub();
+  render();
+  toast('Предложение удалено');
+};
+
+window.closeModal = function() {
+  document.getElementById('mroot').innerHTML = '';
+};
+
+document.getElementById('searchInp').addEventListener('input', function() {
+  SEARCH_Q = this.value;
+  renderItems();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* Запуск */
+window.ITEMS = loadLocalIdeas();
+render();
+pullIdeasFromGitHub();
 </script>
 </body>
 </html>
