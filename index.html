@@ -1,24 +1,26 @@
-<!-- ЧЕРЕДОВАНИЕ ЦВЕТОВ ЯЧЕЕК И АВТООЧИСТКА ПУСТЫХ ПРЕДЛОЖЕНИЙ -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Предложения · Фракции · Работы и прочее</title>
+<link rel="stylesheet" href="css/style.css">
 <style>
-/* Чередование цветов карточек предложений (нечётные / чётные), чтобы список не сливался */
-#items > *:nth-child(odd),
-.cards > *:nth-child(odd),
-.ideas-grid > *:nth-child(odd),
-.list > *:nth-child(odd),
+/* Чередование цветов карточек предложений (зебра), чтобы ячейки не сливались */
+#items > .card:nth-child(odd),
+#list > .card:nth-child(odd),
+.cards > .card:nth-child(odd),
 .card:nth-of-type(odd),
-.idea-card:nth-of-type(odd),
 .icard:nth-of-type(odd) {
   background: linear-gradient(145deg, #161d28, #121721) !important;
   border: 1px solid #242f40 !important;
   border-left: 3px solid #365985 !important;
 }
 
-#items > *:nth-child(even),
-.cards > *:nth-child(even),
-.ideas-grid > *:nth-child(even),
-.list > *:nth-child(even),
+#items > .card:nth-child(even),
+#list > .card:nth-child(even),
+.cards > .card:nth-child(even),
 .card:nth-of-type(even),
-.idea-card:nth-of-type(even),
 .icard:nth-of-type(even) {
   background: linear-gradient(145deg, #1f293a, #182130) !important;
   border: 1px solid #33445e !important;
@@ -26,27 +28,70 @@
   box-shadow: inset 0 1px 0 rgba(77, 163, 255, 0.09), 0 8px 24px rgba(0, 0, 0, 0.35) !important;
 }
 
-#items > *:hover,
+#items > .card:hover,
 .card:hover,
-.idea-card:hover,
 .icard:hover {
   border-color: #56a8ff !important;
   transform: translateY(-2px);
 }
 </style>
+</head>
+<body>
+<div id="errbox"></div>
+<script>
+window.addEventListener('error',function(ev){
+ if(!(ev instanceof ErrorEvent)){return}
+ if(!ev.message){return}
+ var b=document.getElementById('errbox');
+ if(b){
+  b.style.display='block';
+  b.textContent='Ошибка: '+ev.message+(ev.filename?'\n'+ev.filename+':'+(ev.lineno||0):'');
+ }
+},true);
+</script>
 
+<header id="top">
+  <div class="brand">
+    <div class="logo">💡</div>
+    <div>
+      <div class="b-title">ПРЕДЛОЖЕНИЯ · ФРАКЦИИ · РАБОТЫ И ПРОЧЕЕ</div>
+    </div>
+  </div>
+  <div id="topRight"></div>
+</header>
+
+<div id="wrap">
+  <aside id="side"></aside>
+  <main id="content">
+    <div id="main"></div>
+  </main>
+</div>
+
+<input type="file" id="imgInp" accept="image/*" multiple style="display:none">
+<input type="file" id="vidInp" accept="video/*" multiple style="display:none">
+<div id="lb"><img id="lbImg" alt=""></div>
+<div id="mroot"></div>
+<div id="croot"></div>
+<div id="troot"></div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/state.js"></script>
+<script src="js/github.js"></script>
+<script src="js/render.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/main.js"></script>
+
+<!-- АВТООЧИСТКА ПУСТЫХ ПРЕДЛОЖЕНИЙ БЕЗ ЗАГОЛОВКА И ВОССТАНОВЛЕНИЕ СПИСКА ИДЕЙ -->
 <script>
 (function() {
-  /* Проверка, является ли запись настоящим предложением с заголовком */
   function isRealIdeaItem(it) {
     if (!it || typeof it !== 'object') return false;
-    /* Отсекаем любые записи из автопарка и формы */
+    /* Отсекаем случайно попавшие записи из автопарка/формы */
     if (it.kind === 'cars' || it.kind === 'form' || it.dep || typeof it.speed !== 'undefined') return false;
     var title = String(it.title || '').replace(/\s+/g, ' ').trim();
     var text  = String(it.text || it.desc || '').replace(/\s+/g, ' ').trim();
-    /* Отсекаем пустые карточки без заголовка */
     if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
-    /* Отсекаем карточки, в которых вообще ничего нет */
     var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
                    (Array.isArray(it.videos) && it.videos.length > 0) ||
                    !!it.appUrl || !!it.iframe;
@@ -54,54 +99,41 @@
     return true;
   }
 
-  function cleanEmptyIdeasAndHighlight() {
-    /* 1. Очистка массива данных ITEMS и сохранение чистого списка */
-    if (window.ITEMS && Array.isArray(window.ITEMS)) {
-      var prevLen = window.ITEMS.length;
-      var filtered = window.ITEMS.filter(isRealIdeaItem);
-      if (filtered.length !== prevLen) {
-        window.ITEMS = filtered;
-        try {
-          if (typeof window.cacheItems === 'function') window.cacheItems();
-          if (typeof window.saveLocal === 'function') window.saveLocal(window.ITEMS);
-          if (typeof window.render === 'function') window.render();
-          if (window.adminMode && typeof window.commit === 'function') window.commit();
-        } catch (e) {}
-      }
+  function cleanAndRestoreIdeas() {
+    if (!window.ITEMS || !Array.isArray(window.ITEMS)) return;
+
+    var prevLen = window.ITEMS.length;
+    var valid = window.ITEMS.filter(isRealIdeaItem);
+
+    /* Если из-за прошлой перезаписи data.json список идей оказался пуст или повреждён —
+       восстанавливаем стандартные идеи из seed() и дополняем вашими настоящими идеями */
+    if (typeof window.seed === 'function') {
+      var baseSeeds = window.seed() || [];
+      var existingIds = {};
+      valid.forEach(function(x) { if (x && x.id) existingIds[x.id] = true; });
+      baseSeeds.forEach(function(s) {
+        if (s && s.id && !existingIds[s.id] && isRealIdeaItem(s)) {
+          valid.push(s);
+          existingIds[s.id] = true;
+        }
+      });
     }
 
-    /* 2. Дополнительно убираем из DOM любые пустые карточки и раскрашиваем видимые ячейки чередованием */
-    var container = document.getElementById('items') ||
-                    document.getElementById('list') ||
-                    document.getElementById('cards') ||
-                    document.querySelector('.ideas-list, .cards, .items');
-    if (!container) return;
-
-    var children = Array.prototype.slice.call(container.children);
-    var visibleIdx = 0;
-    children.forEach(function(el) {
-      if (el.classList && el.classList.contains('empty')) return;
-      var hEl = el.querySelector('h2, h3, .c-title, .it-title, .card-title, .title, b');
-      var titleTxt = hEl ? String(hEl.textContent || '').trim() : String(el.textContent || '').trim();
-      if (!titleTxt || titleTxt === 'Без названия' || titleTxt === '—') {
-        el.remove();
-        return;
-      }
-      if (visibleIdx % 2 === 0) {
-        el.style.background = 'linear-gradient(145deg, #161d28, #121721)';
-        el.style.borderColor = '#253142';
-        el.style.borderLeft = '3px solid #385a87';
-      } else {
-        el.style.background = 'linear-gradient(145deg, #202a3b, #182130)';
-        el.style.borderColor = '#344663';
-        el.style.borderLeft = '3px solid #4da3ff';
-      }
-      visibleIdx++;
-    });
+    if (valid.length !== prevLen) {
+      window.ITEMS = valid;
+      try {
+        if (typeof window.cacheItems === 'function') window.cacheItems();
+        if (typeof window.saveLocal === 'function') window.saveLocal(window.ITEMS);
+        if (typeof window.render === 'function') window.render();
+        if (window.adminMode && typeof window.commit === 'function') window.commit();
+      } catch (e) {}
+    }
   }
 
-  window.addEventListener('DOMContentLoaded', cleanEmptyIdeasAndHighlight);
-  window.addEventListener('load', cleanEmptyIdeasAndHighlight);
-  setInterval(cleanEmptyIdeasAndHighlight, 400);
+  window.addEventListener('DOMContentLoaded', cleanAndRestoreIdeas);
+  window.addEventListener('load', cleanAndRestoreIdeas);
+  setInterval(cleanAndRestoreIdeas, 500);
 })();
 </script>
+</body>
+</html>
