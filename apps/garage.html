@@ -315,7 +315,7 @@ window.addEventListener('error',function(ev){
 </main>
 
 <input type="file" id="fileInp" accept="image/*" style="display:none">
-<div id="lb" onclick="if(event.target===this)closeLb()">
+<div id="lb" onclick="closeLb()">
   <div class="lb-bar">
     <div class="lb-cap" id="lbCap"></div>
     <div class="lb-ctl">
@@ -323,7 +323,7 @@ window.addEventListener('error',function(ev){
       <button class="btn warn slim" onclick="event.stopPropagation();closeLb()">✕ Закрыть (ESC)</button>
     </div>
   </div>
-  <img id="lbImg" alt="" draggable="false" onclick="event.stopPropagation()">
+  <img id="lbImg" alt="" draggable="false" style="cursor:zoom-out" title="Нажмите на фото ещё раз, чтобы закрыть" onclick="event.stopPropagation();closeLb()">
 </div>
 <div id="mroot"></div>
 <div id="croot"></div>
