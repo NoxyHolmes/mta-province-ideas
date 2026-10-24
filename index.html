@@ -216,6 +216,21 @@ body{
   border:1px solid rgba(77,163,255,.35);
   color:#93c5fd;
 }
+/* Выпадающий список быстрой смены категории прямо на карточке (для владельца) */
+.ic-cat-sel{
+  background:rgba(77,163,255,.14);
+  border:1px solid rgba(77,163,255,.45);
+  color:#93c5fd;
+  padding:3px 9px;
+  border-radius:8px;
+  font-size:11.5px;
+  font-weight:800;
+  font-family:inherit;
+  cursor:pointer;
+  outline:none;
+}
+.ic-cat-sel option{background:#131923;color:#fff}
+
 .ic-app-badge{
   display:inline-flex;
   align-items:center;
@@ -240,9 +255,20 @@ body{
   border:1px solid rgba(247,201,72,.35);
   color:#fcd34d;
 }
-.ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.35}
+.ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:10px;line-height:1.35}
 
-/* Скрытое/раскрываемое описание по кнопке "Открыть / Скрыть" */
+/* Панель кнопок сразу под заголовком предложения (кнопка Открыть / Скрыть не прыгает!) */
+.ic-actions-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  padding-top:10px;
+  border-top:1px dashed rgba(255,255,255,.08);
+}
+
+/* Скрытое/раскрываемое описание под кнопкой */
 .ic-desc-box{
   display:none;
   margin-top:12px;
@@ -266,7 +292,7 @@ body{
 .rank-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
 .rank-table tr:hover td{background:rgba(77,163,255,.08)}
 
-/* ГАЛЕРЕЯ ДО 10 ФОТО/ВИДЕО ПОД ОПИСАНИЕМ (С КНОПКОЙ УДАЛЕНИЯ И ПОЛНЫМ ЭКРАНОМ) */
+/* ГАЛЕРЕЯ ДО 10 ФОТО/ВИДЕО ПОД ОПИСАНИЕМ */
 .media-sec{
   margin-top:16px;
   padding-top:14px;
@@ -367,7 +393,7 @@ body{
   background:rgba(77,163,255,.08);
 }
 
-/* ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО И ВИДЕО (ЛАЙТБОКС) */
+/* ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО И ВИДЕО */
 #mediaLb{
   position:fixed;
   inset:0;
@@ -430,16 +456,6 @@ body{
   background:#000;
 }
 
-.ic-foot{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:12px;
-  padding-top:11px;
-  border-top:1px dashed rgba(255,255,255,.08);
-}
 .ic-tools{display:flex;gap:6px}
 
 .back{
@@ -531,10 +547,8 @@ body{
   </main>
 </div>
 
-<!-- Скрытый input для загрузки фото/видео (до 10 шт. на предложение) -->
 <input type="file" id="ideaMediaInp" accept="image/*,video/*" multiple style="display:none">
 
-<!-- Полноэкранный просмотр фото и видео -->
 <div id="mediaLb" onclick="if(event.target===this)closeMediaLb()">
   <div class="mlb-top">
     <div class="mlb-cap" id="mlbCap">Просмотр медиафайла</div>
@@ -578,18 +592,43 @@ function secInfo(k) {
   return SECTIONS[1];
 }
 
-/* ===================== КАРТА ИНТЕРАКТИВНЫХ МОДУЛЕЙ ===================== */
-var REPO_ALL_FILES = [];
-var APPS_MAP = {
-  'garage':         'apps/garage.html',
-  'epaulettes':     'apps/epaulettes.html',
-  'mvd-radial':     'apps/mvd-radial.html',
-  'radial':         'apps/mvd-radial.html',
-  'phone':          'apps/phone.html',
-  'faction-app':    'apps/faction-app.html',
-  'tablet':         'apps/tablet.html'
-};
+/* ===================== ПРЕДЗАГРУЗКА ЧИСТОГО GARAGE.HTML (ЧТОБЫ НИКОГДА НЕ ПОКАЗЫВАЛОСЬ РАДИАЛЬНОЕ МЕНЮ ПРИ ОТКРЫТИИ АВТОПАРКА) ===================== */
+var CLEAN_GARAGE_HTML_CACHE = null;
+var GARAGE_FILE_IS_CORRUPTED = false;
 
+function preloadCleanGarageHtml() {
+  if (!REPO) return;
+  fetch('apps/garage.html?check=' + Date.now(), { cache: 'no-store' })
+    .then(function(r) { return r.ok ? r.text() : ''; })
+    .then(function(txt) {
+      /* Если в apps/garage.html случайно сохранён код радиального меню (radialWrap) вместо автопарка (vgrid) */
+      if (txt && txt.indexOf('radialWrap') >= 0 && txt.indexOf('vgrid') < 0) {
+        GARAGE_FILE_IS_CORRUPTED = true;
+        return fetch('https://api.github.com/repos/' + REPO + '/commits?path=apps/garage.html&per_page=20&_t=' + Date.now())
+          .then(function(r) { return r.ok ? r.json() : []; })
+          .then(function(commits) {
+            var idx = 0;
+            function findCleanCommit() {
+              if (idx >= commits.length) return;
+              var sha = commits[idx++].sha;
+              fetch('https://raw.githubusercontent.com/' + REPO + '/' + sha + '/apps/garage.html')
+                .then(function(r) { return r.ok ? r.text() : ''; })
+                .then(function(oldHtml) {
+                  if (oldHtml && oldHtml.indexOf('vgrid') >= 0 && oldHtml.indexOf('radialWrap') < 0) {
+                    CLEAN_GARAGE_HTML_CACHE = oldHtml;
+                  } else {
+                    findCleanCommit();
+                  }
+                }).catch(findCleanCommit);
+            }
+            findCleanCommit();
+          });
+      }
+    }).catch(function() {});
+}
+preloadCleanGarageHtml();
+
+var REPO_ALL_FILES = [];
 var EXTERNAL_SEED_FN = (typeof window.seed === 'function') ? window.seed : null;
 
 var RANKS_REFORM_TABLE_HTML =
@@ -665,7 +704,7 @@ function baseSeedIdeas() {
       id: 's_lockpick_cuffs',
       fac: 'opg',
       title: 'Взлом наручников с помощью отвёртки или отмычки (для гражданских и ОПГ)',
-      text: 'Механика освобождения закованного в наручники игрока для гражданских лиц и участников ОПГ:\n\n• Через радиальное меню при нажатии на взаимодействие с человеком, на котором надеты наручники, появляется кнопка «Освободить задержанного».\n• Если у игрока в инвентаре есть отвёртка (или отмычка), запускается анимация взлома замка наручников.\n• С шансом 50% задержанный игрок будет успешно освобождён из наручников или попытка окажется неудачной, однако отвёртка сломается в любом из исходов.',
+      text: 'Механика освобождения закованного в наручники игрока для гражданских лиц и участников ОПГ:\n\n• Через радиальное меню при нажатии на взаимодействие с человеком, на котором надеты наручники, появляется кнопка «Освободить задержанного».\n• Если у игрока в инвентаре есть отвёртка (или отмычка), запускается интерактивная мини-игра и анимация взлома замка наручников.\n• С шансом 50% задержанный игрок будет успешно освобождён из наручников или попытка окажется неудачной, однако отвёртка сломается в любом из исходов.',
       appUrl: 'apps/mvd-radial.html'
     },
     {
@@ -681,26 +720,40 @@ function baseSeedIdeas() {
       title: 'Улучшение телефона',
       text: 'Обновлённый интерфейс игрового смартфона с быстрым вызовом экстренных служб (102 / 103 / 112) с передачей геопозиции, банковскими переводами, списком личного транспорта (с отображением статуса штрафстоянки и оплатой 10 000 ₽ за эвакуацию), мессенджером и фракционным приложением.',
       appUrl: 'builtin:phone'
+    },
+    {
+      id: 's_bank_system',
+      fac: 'other',
+      title: 'Обновлённая банковская система и банковское приложение',
+      text: 'Комплексная переработка банковского интерфейса и мобильного банкинга: управление счетами и вкладами, мгновенные переводы по номеру телефона и банковскому счёту, оплата штрафов ГИБДД и штрафстоянки (10 000 ₽), аналитика доходов и расходов.',
+      appUrl: 'builtin:bank'
+    },
+    {
+      id: 's_char_stats',
+      fac: 'other',
+      title: 'Расширенная статистика персонажа: счётчик чистого онлайна и учёт доходов/расходов',
+      text: 'Детальная панель статистики игрока: раздельный учёт чистого активного онлайна и времени в AFK за день, неделю и месяц, прогресс фракционной смены, а также подробная финансовая статистика всех доходов (зарплата, премии, работы) и расходов (штрафы, имущество, транспорт).',
+      appUrl: 'builtin:stats'
     }
   ];
 
   return core.concat(list);
 }
 
-/* ЖЁСТКАЯ ПРИВЯЗКА ПУТЕЙ ПРИЛОЖЕНИЙ (Автопарк ВСЕГДА открывает apps/garage.html!) */
+/* ===================== ТОЧНАЯ ПРИВЯЗКА КАЖДОГО ПРЕДЛОЖЕНИЯ К СВОЕМУ МОДУЛЮ БЕЗ ПУТАНИЦЫ ===================== */
 function autoBindAppUrl(it) {
   if (!it || typeof it !== 'object') return;
   var t = String(it.title || '').toLowerCase();
   var id = String(it.id || '').toLowerCase();
   var cur = String(it.appUrl || it.app || it.iframe || '').trim();
 
-  /* 1. АВТОПАРК И ФОРМА — принудительно перезаписываем любой старый appUrl на apps/garage.html */
+  /* 1. АВТОПАРК И ФОРМА — строго apps/garage.html */
   if (id === 's2' || t.indexOf('автопарк') >= 0 || t.indexOf('форма фракц') >= 0) {
     it.appUrl = 'apps/garage.html';
     return;
   }
 
-  /* 2. РЕФОРМА РАНГОВ / ПОГОНЫ */
+  /* 2. РЕФОРМА РАНГОВ И ПОГОНЫ — строго apps/epaulettes.html */
   if (t.indexOf('погон') >= 0 || t.indexOf('реформа системы рангов') >= 0 || t.indexOf('иерарх') >= 0) {
     it.appUrl = 'apps/epaulettes.html';
     if (!it.tableHtml && t.indexOf('ранг') >= 0) {
@@ -709,49 +762,52 @@ function autoBindAppUrl(it) {
     return;
   }
 
-  /* 3. РАДИАЛЬНОЕ МЕНЮ / НАРУЧНИКИ / ВЗЛОМ НАРУЧНИКОВ */
+  /* 3. РАДИАЛЬНОЕ МЕНЮ / НАРУЧНИКИ / ВЗЛОМ НАРУЧНИКОВ — единый apps/mvd-radial.html для общей синхронизации! */
   if (t.indexOf('радиальн') >= 0 || t.indexOf('наручник') >= 0 || id === 's_radial' || id === 's_cuffs_rework' || id === 's_lockpick_cuffs') {
     it.appUrl = 'apps/mvd-radial.html';
     return;
   }
 
-  /* 4. ФУНКЦИОНАЛЬНОЕ ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ */
-  if (t.indexOf('фракционное приложение') >= 0 || t.indexOf('планшет') >= 0) {
-    for (var i = 0; i < REPO_ALL_FILES.length; i++) {
-      if (/faction|tablet|app/i.test(REPO_ALL_FILES[i]) && !/garage|radial|epaulettes/i.test(REPO_ALL_FILES[i])) {
-        it.appUrl = REPO_ALL_FILES[i];
-        return;
-      }
-    }
-    it.appUrl = 'builtin:faction-app';
+  /* 4. ФУНКЦИОНАЛЬНОЕ ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ — строго фракционное приложение (НЕ банк!) */
+  if (t.indexOf('фракционное приложение') >= 0 || id === 's_faction_app') {
+    var facFile = REPO_ALL_FILES.find(function(f) { return /^apps\/(faction|mvd-app|fraction)/i.test(f); });
+    it.appUrl = facFile || 'builtin:faction-app';
     return;
   }
 
-  /* 5. УЛУЧШЕНИЕ ТЕЛЕФОНА */
-  if (t.indexOf('телефон') >= 0 || cur === 'phone' || cur === 'apps/phone.html') {
-    for (var j = 0; j < REPO_ALL_FILES.length; j++) {
-      if (/phone|smartphone|mobile/i.test(REPO_ALL_FILES[j])) {
-        it.appUrl = REPO_ALL_FILES[j];
-        return;
-      }
-    }
-    it.appUrl = 'builtin:phone';
+  /* 5. БАНКОВСКАЯ СИСТЕМА И БАНКОВСКОЕ ПРИЛОЖЕНИЕ */
+  if (t.indexOf('банк') >= 0 || id === 's_bank_system' || /bank/i.test(cur)) {
+    var bankFile = REPO_ALL_FILES.find(function(f) { return /^apps\/.*bank.*\.html$/i.test(f); });
+    it.appUrl = bankFile || 'builtin:bank';
     return;
   }
 
-  if (!cur || cur.indexOf('builtin:') === 0) return;
-
-  var clean = cur.replace(/^apps\//i, '').replace(/\.html.*$/i, '').toLowerCase();
-  if (APPS_MAP[clean]) {
-    it.appUrl = APPS_MAP[clean];
+  /* 6. РАСШИРЕННАЯ СТАТИСТИКА ПЕРСОНАЖА: СЧЁТЧИК ЧИСТОГО ОНЛАЙНА И УЧЁТ ДОХОДОВ/РАСХОДОВ */
+  if (t.indexOf('статистик') >= 0 || t.indexOf('чистого онлайна') >= 0 || t.indexOf('доходов/расходов') >= 0 || id === 's_char_stats' || /stat/i.test(cur)) {
+    var statFile = REPO_ALL_FILES.find(function(f) { return /^apps\/.*stat.*\.html$/i.test(f); });
+    it.appUrl = statFile || 'builtin:stats';
     return;
   }
-  for (var k = 0; k < REPO_ALL_FILES.length; k++) {
-    var path = REPO_ALL_FILES[k];
-    var fileBase = path.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
-    if (fileBase === clean) {
-      it.appUrl = path;
-      return;
+
+  /* 7. УЛУЧШЕНИЕ ТЕЛЕФОНА */
+  if (t.indexOf('телефон') >= 0 || id === 's_phone_upgrade' || /phone/i.test(cur)) {
+    var phoneFile = REPO_ALL_FILES.find(function(f) { return /^apps\/.*phone.*\.html$/i.test(f); });
+    it.appUrl = phoneFile || 'builtin:phone';
+    return;
+  }
+
+  /* Если указан другой .html файл — проверяем, существует ли он реально в списке REPO_ALL_FILES */
+  if (cur && cur.indexOf('builtin:') !== 0) {
+    var clean = cur.replace(/^apps\//i, '').replace(/\.html.*$/i, '').toLowerCase();
+    var exactMatch = REPO_ALL_FILES.find(function(f) {
+      var base = f.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
+      return base === clean;
+    });
+    if (exactMatch) {
+      it.appUrl = exactMatch;
+    } else if (cur !== 'apps/garage.html' && cur !== 'apps/mvd-radial.html' && cur !== 'apps/epaulettes.html') {
+      /* Если файла не существует в репозитории — убираем битую ссылку, чтобы не было ошибки 404 */
+      delete it.appUrl;
     }
   }
 }
@@ -766,8 +822,6 @@ function scanRepoTree() {
       j.tree.forEach(function(node) {
         if (node && node.path && /\.html$/i.test(node.path) && node.path !== 'index.html') {
           REPO_ALL_FILES.push(node.path);
-          var base = node.path.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
-          APPS_MAP[base] = node.path;
         }
       });
       window.ITEMS.forEach(autoBindAppUrl);
@@ -822,8 +876,8 @@ function loadIdeasFromIdb() {
   }).catch(function() { return null; });
 }
 
-/* ===================== СОСТОЯНИЕ, ОБЪЕДИНЕНИЕ ДУБЛИКАТОВ И ОЧИСТКА ===================== */
-var LOCAL_IDEAS_K = 'mvd_ideas_clean_v7';
+/* ===================== СОСТОЯНИЕ И ОЧИСТКА ===================== */
+var LOCAL_IDEAS_K = 'mvd_ideas_clean_v8';
 var MAIN_KEY_K    = 'idea_admin_key';
 var DELETED_IDEAS_K = 'mvd_deleted_ideas_v1';
 var DELETED_IDEA_IDS = {};
@@ -869,13 +923,11 @@ function isRealIdeaItem(it) {
   if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
   var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
                  (Array.isArray(it.videos) && it.videos.length > 0) ||
-                 (Array.isArray(it.media) && it.media.length > 0) ||
                  !!it.appUrl || !!it.app || !!it.iframe || !!it.tableHtml;
   if (!text && !hasMedia) return false;
   return true;
 }
 
-/* Приводит массив фото и видео карточки к единому списку (до 10 элементов) */
 function ensureMediaList(it) {
   if (!it) return [];
   if (!Array.isArray(it.images)) it.images = [];
@@ -918,7 +970,6 @@ function normalizeIdeaItem(it) {
 
   if (/^фракционное радиальное меню/i.test(copy.title)) {
     copy.id     = 's_radial';
-    copy.fac    = 'mvd';
     copy.title  = 'Фракционное радиальное меню';
     copy.appUrl = 'apps/mvd-radial.html';
   }
@@ -932,7 +983,7 @@ function normalizeIdeaItem(it) {
     copy.id = 's_lockpick_cuffs';
     if (copy.text.indexOf('50%') < 0) {
       copy.text = (copy.text ? copy.text + '\n\n' : '') +
-        'Механика взлома через радиальное меню:\nЧерез радиальное меню, если нажать на взаимодействие с человеком, на котором надеты наручники, появится кнопка «Освободить задержанного». Если в инвентаре есть отвёртка, последует анимация взлома, и с шансом 50% игрок будет освобождён или нет, но отвёртка сломается в любом из исходов.';
+        'Механика взлома через радиальное меню:\nЧерез радиальное меню, если нажать на взаимодействие с человеком, на котором надеты наручники, появится кнопка «Освободить задержанного». Если в инвентаре есть отвёртка, последует интерактивная мини-игра и анимация взлома, и с шансом 50% игрок будет освобождён или нет, но отвёртка сломается в любом из исходов.';
     }
     copy.appUrl = 'apps/mvd-radial.html';
   }
@@ -953,30 +1004,35 @@ function mergeAndCleanIdeas(lists) {
   var byKey = {};
   var out = [];
 
-  baseSeedIdeas().concat.apply(baseSeedIdeas(), lists || []).forEach(function(rawIt) {
-    if (!isRealIdeaItem(rawIt)) return;
-    var it = normalizeIdeaItem(rawIt);
-    var normTitleKey = it.title.toLowerCase().replace(/\s+/g, ' ');
-    var key = (it.id === 's_radial' || it.id === 's2' || it.id === 's_ranks_reform' || it.id === 's_lockpick_cuffs')
-      ? it.id
-      : normTitleKey;
+  /* Пользовательские списки идут ПЕРВЫМИ, чтобы изменённая владельцем категория (fac) сохранялась! */
+  var allSources = (lists || []).concat([baseSeedIdeas()]);
+  allSources.forEach(function(arr) {
+    var a = toArr(arr);
+    if (!a || !a.length) return;
+    a.forEach(function(rawIt) {
+      if (!isRealIdeaItem(rawIt)) return;
+      var it = normalizeIdeaItem(rawIt);
+      var normTitleKey = it.title.toLowerCase().replace(/\s+/g, ' ');
+      var key = (it.id === 's_radial' || it.id === 's2' || it.id === 's_ranks_reform' || it.id === 's_lockpick_cuffs')
+        ? it.id
+        : normTitleKey;
 
-    if (!byKey[key]) {
-      byKey[key] = it;
-      out.push(it);
-    } else {
-      var ex = byKey[key];
-      if ((it.text || '').length > (ex.text || '').length && it.id !== 's2') {
-        ex.text = it.text;
+      if (!byKey[key]) {
+        byKey[key] = it;
+        out.push(it);
+      } else {
+        var ex = byKey[key];
+        if ((it.text || '').length > (ex.text || '').length && it.id !== 's2') {
+          ex.text = it.text;
+        }
+        if (it.tableHtml && !ex.tableHtml) ex.tableHtml = it.tableHtml;
+        if (!ex._mediaModifiedByOwner) {
+          if (it.images && it.images.length && (!ex.images || !ex.images.length)) ex.images = it.images.slice();
+          if (it.videos && it.videos.length && (!ex.videos || !ex.videos.length)) ex.videos = it.videos.slice();
+        }
+        autoBindAppUrl(ex);
       }
-      if (it.tableHtml && !ex.tableHtml) ex.tableHtml = it.tableHtml;
-      /* Переносим сохранённые фото/видео, если они еще не были удалены владельцем */
-      if (!ex._mediaModifiedByOwner) {
-        if (it.images && it.images.length && (!ex.images || !ex.images.length)) ex.images = it.images.slice();
-        if (it.videos && it.videos.length && (!ex.videos || !ex.videos.length)) ex.videos = it.videos.slice();
-      }
-      autoBindAppUrl(ex);
-    }
+    });
   });
 
   return out;
@@ -988,17 +1044,16 @@ function loadLocalIdeasFromAllBrowserKeys() {
     var primary = JSON.parse(localStorage.getItem(LOCAL_IDEAS_K) || 'null');
     if (primary && Array.isArray(primary.items)) {
       collected.push(primary.items);
-    } else {
-      for (var i = 0; i < localStorage.length; i++) {
-        var k = localStorage.key(i);
-        if (!k || k.indexOf('garage') >= 0 || k.indexOf('megaphone') >= 0) continue;
-        try {
-          var raw = JSON.parse(localStorage.getItem(k) || 'null');
-          if (!raw) continue;
-          var arr = toArr(raw.items || raw);
-          if (arr && arr.length) collected.push(arr);
-        } catch (e) {}
-      }
+    }
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k || k === LOCAL_IDEAS_K || k.indexOf('garage') >= 0 || k.indexOf('megaphone') >= 0) continue;
+      try {
+        var raw = JSON.parse(localStorage.getItem(k) || 'null');
+        if (!raw) continue;
+        var arr = toArr(raw.items || raw);
+        if (arr && arr.length) collected.push(arr);
+      } catch (e) {}
     }
   } catch (e) {}
   return mergeAndCleanIdeas(collected);
@@ -1086,7 +1141,6 @@ function pushIdeasToGitHub() {
     'Content-Type': 'application/json'
   };
 
-  /* Используем Git Blob API, чтобы без ошибок сохранять карточки с загруженными фото и видео */
   var dataSha = null;
   fetch('https://api.github.com/repos/' + REPO + '/git/blobs', {
     method: 'POST',
@@ -1120,7 +1174,7 @@ function pushIdeasToGitHub() {
           return fetch('https://api.github.com/repos/' + REPO + '/git/commits', {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify({ message: 'update ideas & media', tree: nt.sha, parents: [base.headSha] })
+            body: JSON.stringify({ message: 'update ideas & categories', tree: nt.sha, parents: [base.headSha] })
           });
         });
     })
@@ -1133,6 +1187,20 @@ function pushIdeasToGitHub() {
       });
     }).catch(function() {});
 }
+
+/* ===================== БЫСТРАЯ СМЕНА КАТЕГОРИИ ПРЕДЛОЖЕНИЯ В 1 КЛИК ===================== */
+window.quickChangeIdeaCategory = function(ev, ideaId, newFac) {
+  if (ev) ev.stopPropagation();
+  if (!window.adminMode) return;
+  var it = findIdeaById(ideaId);
+  if (!it || !newFac) return;
+  it.fac = newFac;
+  saveLocalIdeas();
+  pushIdeasToGitHub();
+  render();
+  var sObj = secInfo(newFac);
+  toast('✓ Перенесено в категорию «' + sObj.ic + ' ' + sObj.n + '»');
+};
 
 /* ===================== ЗАГРУЗКА, УДАЛЕНИЕ И ПОЛНОЭКРАННЫЙ ПРОСМОТР ДО 10 ФОТО/ВИДЕО ===================== */
 var mediaUploadIdeaId = null;
@@ -1230,7 +1298,6 @@ document.getElementById('ideaMediaInp').addEventListener('change', function() {
   });
 });
 
-/* Удаление любого фото или видео владельцем */
 window.deleteIdeaMedia = function(ev, ideaId, mediaIndex) {
   if (ev) ev.stopPropagation();
   if (!window.adminMode) return;
@@ -1247,7 +1314,6 @@ window.deleteIdeaMedia = function(ev, ideaId, mediaIndex) {
   toast('Медиафайл удалён');
 };
 
-/* Полноэкранный просмотр фото или видео */
 window.openMediaLb = function(ev, ideaId, mediaIndex) {
   if (ev) ev.stopPropagation();
   var it = findIdeaById(ideaId);
@@ -1288,7 +1354,7 @@ window.openAdminLogin = function() {
         '<div class="m-body">' +
           '<label class="flab">GitHub Personal Access Token (ghp_...)</label>' +
           '<input type="password" class="inp" id="admTokInp" style="width:100%" value="' + savedTok.replace(/"/g, '&quot;') + '" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">' +
-          '<div style="font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5">После входа станут доступны кнопки загрузки/удаления до 10 фото и видео под каждым предложением, а также управление автопарком и мегафоном.</div>' +
+          '<div style="font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5">После входа станут доступны быстрая смена категорий предложений, загрузка/удаление до 10 фото и видео, а также управление автопарком и мегафоном.</div>' +
         '</div>' +
         '<div class="m-foot">' +
           '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
@@ -1360,6 +1426,7 @@ window.selectSection = function(k) {
   render();
 };
 
+/* Кнопка "Открыть / Скрыть" стоит сразу под заголовком предложения — одна тут же заменяет другую на том же месте! */
 window.toggleIdeaDesc = function(ev, id) {
   if (ev) ev.stopPropagation();
   OPEN_DESC_MAP[id] = !OPEN_DESC_MAP[id];
@@ -1440,6 +1507,18 @@ function renderItems() {
     var mediaCount = ensureMediaList(it).length;
     var appBadge = it.appUrl ? '<span class="ic-app-badge">⚡ Интерактивный модуль</span>' : '';
     var mediaBadge = mediaCount > 0 ? '<span class="ic-media-badge">📷 Медиа: ' + mediaCount + '/10</span>' : '';
+
+    /* Для владельца: быстрый переключатель категории прямо на карточке предложения! */
+    var catControlHtml = '';
+    if (window.adminMode) {
+      var catOptions = SECTIONS.filter(function(s) { return s.k !== 'all'; }).map(function(s) {
+        return '<option value="' + s.k + '"' + (s.k === it.fac ? ' selected' : '') + '>' + s.ic + ' ' + s.n + '</option>';
+      }).join('');
+      catControlHtml = '<select class="ic-cat-sel" title="Быстро сменить раздел предложения" onclick="event.stopPropagation()" onchange="quickChangeIdeaCategory(event,\'' + it.id + '\',this.value)">' + catOptions + '</select>';
+    } else {
+      catControlHtml = '<span class="ic-badge">' + sec.ic + ' ' + sec.n + '</span>';
+    }
+
     var admBtns = window.adminMode
       ? '<div class="ic-tools" onclick="event.stopPropagation()">' +
           '<button class="btn ghost slim" onclick="triggerIdeaMediaUpload(event,\'' + it.id + '\')" title="Загрузить фото или видео">📷 Фото/Видео (' + mediaCount + '/10)</button>' +
@@ -1455,23 +1534,24 @@ function renderItems() {
     return '<div class="icard">' +
       '<div class="ic-top">' +
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
-          '<span class="ic-badge">' + sec.ic + ' ' + sec.n + '</span>' +
+          catControlHtml +
           appBadge +
           mediaBadge +
         '</div>' +
         admBtns +
       '</div>' +
       '<div class="ic-title">' + escapeHtml(it.title) + '</div>' +
-      '<div class="ic-desc-box' + (isDescOpen ? ' open' : '') + '" id="desc_' + it.id + '">' +
-        '<div class="ic-desc-text">' + escapeHtml(it.text || '') + '</div>' +
-        (it.tableHtml || '') +
-        renderMediaGalleryForIdea(it) +
-      '</div>' +
-      '<div class="ic-foot">' +
+      /* Кнопка Открыть / Скрыть стоит сразу под заголовком предложения и тут же заменяет саму себя */
+      '<div class="ic-actions-bar">' +
         '<button class="btn ghost slim" id="descBtn_' + it.id + '" onclick="toggleIdeaDesc(event,\'' + it.id + '\')">' +
           (isDescOpen ? '🔼 Скрыть' : '📖 Открыть') +
         '</button>' +
         openModuleBtn +
+      '</div>' +
+      '<div class="ic-desc-box' + (isDescOpen ? ' open' : '') + '" id="desc_' + it.id + '">' +
+        '<div class="ic-desc-text">' + escapeHtml(it.text || '') + '</div>' +
+        (it.tableHtml || '') +
+        renderMediaGalleryForIdea(it) +
       '</div>' +
     '</div>';
   }).join('');
@@ -1488,8 +1568,9 @@ function render() {
 }
 window.render = render;
 
-/* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ МОДУЛИ ===================== */
+/* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ МОДУЛИ (ТЕЛЕФОН, ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ, БАНК, СТАТИСТИКА) ===================== */
 function getBuiltinAppHtml(type) {
+  /* 1. УЛУЧШЕНИЕ ТЕЛЕФОНА */
   if (type === 'builtin:phone') {
     return '<div style="padding:24px;display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:center;background:#0d1118;min-height:100%">' +
       '<div style="width:340px;height:660px;background:linear-gradient(160deg,#161f30,#0d121c);border:4px solid #2e3d56;border-radius:38px;padding:18px;display:flex;flex-direction:column;box-shadow:0 25px 70px rgba(0,0,0,.8)">' +
@@ -1515,19 +1596,96 @@ function getBuiltinAppHtml(type) {
     '</div>';
   }
 
+  /* 2. БАНКОВСКАЯ СИСТЕМА И БАНКОВСКОЕ ПРИЛОЖЕНИЕ */
+  if (type === 'builtin:bank') {
+    return '<div style="padding:24px;background:#0c111a;min-height:100%">' +
+      '<div style="max-width:1040px;margin:0 auto;display:grid;grid-template-columns:340px 1fr;gap:20px">' +
+        '<div style="background:linear-gradient(150deg,#1b2842,#111827);border:1px solid #2e4369;border-radius:18px;padding:20px">' +
+          '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#93c5fd">💳 Провинция Банк · Карта МИР</div>' +
+          '<div style="font-size:26px;font-weight:900;color:#fff;margin:10px 0 4px" id="bankBalTxt">2 480 500 ₽</div>' +
+          '<div style="font-size:12px;color:#6ee7b7;font-weight:700">Счёт № 40817810500000148291</div>' +
+          '<div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)">' +
+            '<div style="font-size:12px;font-weight:800;color:#fcd34d;margin-bottom:8px">⚡ Быстрые операции</div>' +
+            '<button class="btn" style="width:100%;justify-content:center;margin-bottom:8px" onclick="document.getElementById(\'bankBalTxt\').textContent=\'2 470 500 ₽\';toast(\'✓ Оплачено 10 000 ₽ за штрафстоянку и эвакуатор\')">🪝 Оплатить штрафстоянку (10 000 ₽)</button>' +
+            '<button class="btn ghost" style="width:100%;justify-content:center" onclick="toast(\'✓ Перевод выполнен успешно\')">💸 Перевод по номеру телефона / счёту</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="background:#141c2b;border:1px solid #26354d;border-radius:18px;padding:20px">' +
+          '<div style="font-size:16px;font-weight:900;color:#fff;margin-bottom:12px">📊 История банковских операций и вкладов</div>' +
+          '<div class="rank-table-wrap">' +
+            '<table class="rank-table">' +
+              '<thead><tr><th>Дата / Время</th><th>Операция</th><th>Категория</th><th>Сумма</th></tr></thead>' +
+              '<tbody>' +
+                '<tr><td>Сегодня, 18:00</td><td>Зачисление денежного довольствия (УМВД)</td><td>Зарплата фракции</td><td style="color:#34d399;font-weight:800">+85 000 ₽</td></tr>' +
+                '<tr><td>Сегодня, 16:40</td><td>Премия за задержание и патрулирование</td><td>Премия МВД</td><td style="color:#34d399;font-weight:800">+25 000 ₽</td></tr>' +
+                '<tr><td>Вчера, 21:15</td><td>Оплата услуг эвакуатора и штрафстоянки ГИБДД</td><td>Госпошлины / Штрафы</td><td style="color:#f87171;font-weight:800">-10 000 ₽</td></tr>' +
+                '<tr><td>Вчера, 19:05</td><td>Пополнение банковского вклада «Провинция Плюс» (8% годовых)</td><td>Вклады</td><td style="color:#93c5fd;font-weight:800">500 000 ₽</td></tr>' +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* 3. РАСШИРЕННАЯ СТАТИСТИКА ПЕРСОНАЖА: СЧЁТЧИК ЧИСТОГО ОНЛАЙНА И УЧЁТ ДОХОДОВ/РАСХОДОВ */
+  if (type === 'builtin:stats') {
+    return '<div style="padding:24px;background:#0c111a;min-height:100%">' +
+      '<div style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px">' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px">' +
+          '<div style="background:#151e2e;border:1px solid #2b3d5c;border-left:4px solid #34d399;border-radius:14px;padding:16px">' +
+            '<div style="font-size:11px;font-weight:800;color:#8b96ab;text-transform:uppercase">⏱ Чистый онлайн за сегодня</div>' +
+            '<div style="font-size:24px;font-weight:900;color:#34d399;margin-top:6px">04 ч 38 мин</div>' +
+            '<div style="font-size:11.5px;color:#93c5fd;margin-top:4px">Время в AFK: 00 ч 19 мин (не учитывается в норму)</div>' +
+          '</div>' +
+          '<div style="background:#151e2e;border:1px solid #2b3d5c;border-left:4px solid #4da3ff;border-radius:14px;padding:16px">' +
+            '<div style="font-size:11px;font-weight:800;color:#8b96ab;text-transform:uppercase">📅 Чистый онлайн за неделю / месяц</div>' +
+            '<div style="font-size:24px;font-weight:900;color:#fff;margin-top:6px">28 ч 15 м / 114 ч</div>' +
+            '<div style="font-size:11.5px;color:#6ee7b7;margin-top:4px">Норма фракции выполнена на 100%</div>' +
+          '</div>' +
+          '<div style="background:#151e2e;border:1px solid #2b3d5c;border-left:4px solid #2fd97a;border-radius:14px;padding:16px">' +
+            '<div style="font-size:11px;font-weight:800;color:#8b96ab;text-transform:uppercase">📈 Доходы за месяц</div>' +
+            '<div style="font-size:24px;font-weight:900;color:#2fd97a;margin-top:6px">+3 420 000 ₽</div>' +
+            '<div style="font-size:11.5px;color:#8b96ab;margin-top:4px">Фракция: 2.6 млн ₽ · Работы и премии: 820 тыс. ₽</div>' +
+          '</div>' +
+          '<div style="background:#151e2e;border:1px solid #2b3d5c;border-left:4px solid #ff5c5c;border-radius:14px;padding:16px">' +
+            '<div style="font-size:11px;font-weight:800;color:#8b96ab;text-transform:uppercase">📉 Расходы за месяц</div>' +
+            '<div style="font-size:24px;font-weight:900;color:#ff5c5c;margin-top:6px">-940 000 ₽</div>' +
+            '<div style="font-size:11.5px;color:#fcd34d;margin-top:4px">Чистая прибыль: +2 480 000 ₽</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="background:#141c2b;border:1px solid #26354d;border-radius:16px;padding:20px">' +
+          '<div style="font-size:16px;font-weight:900;color:#fff;margin-bottom:10px">📋 Детализация онлайна, доходов и расходов персонажа</div>' +
+          '<div class="rank-table-wrap">' +
+            '<table class="rank-table">' +
+              '<thead><tr><th>Период</th><th>Чистый онлайн</th><th>Время на смене фракции</th><th>Доходы</th><th>Расходы</th><th>Итоговый баланс</th></tr></thead>' +
+              '<tbody>' +
+                '<tr><td><b>Сегодня</b></td><td>04 ч 38 мин</td><td>04 ч 10 мин (УМВД)</td><td style="color:#34d399;font-weight:800">+185 000 ₽</td><td style="color:#f87171;font-weight:800">-14 500 ₽</td><td style="color:#6ee7b7;font-weight:800">+170 500 ₽</td></tr>' +
+                '<tr><td><b>Вчера</b></td><td>05 ч 12 мин</td><td>04 ч 45 мин (УМВД)</td><td style="color:#34d399;font-weight:800">+210 000 ₽</td><td style="color:#f87171;font-weight:800">-32 000 ₽</td><td style="color:#6ee7b7;font-weight:800">+178 000 ₽</td></tr>' +
+                '<tr><td><b>За 7 дней</b></td><td>28 ч 15 мин</td><td>24 ч 30 мин (УМВД)</td><td style="color:#34d399;font-weight:800">+1 120 000 ₽</td><td style="color:#f87171;font-weight:800">-240 000 ₽</td><td style="color:#6ee7b7;font-weight:800">+880 000 ₽</td></tr>' +
+                '<tr><td><b>За 30 дней</b></td><td>114 ч 40 мин</td><td>98 ч 15 мин (УМВД)</td><td style="color:#34d399;font-weight:800">+3 420 000 ₽</td><td style="color:#f87171;font-weight:800">-940 000 ₽</td><td style="color:#6ee7b7;font-weight:800">+2 480 000 ₽</td></tr>' +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* 4. ФУНКЦИОНАЛЬНОЕ ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ */
   return '<div style="padding:24px;background:#0e131d;min-height:100%">' +
-    '<div style="max-width:960px;margin:0 auto;background:#151d2a;border:1px solid #2b3952;border-radius:16px;padding:20px">' +
+    '<div style="max-width:980px;margin:0 auto;background:#151d2a;border:1px solid #2b3952;border-radius:16px;padding:20px">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #253247;padding-bottom:14px;margin-bottom:16px">' +
-        '<div><div style="font-size:18px;font-weight:900;color:#fff">🛡️ Функциональное фракционное приложение · УМВД / ГИБДД</div><div style="font-size:12px;color:#8b96ab;margin-top:3px">Панель управления личным составом, патрулями и дежурной частью</div></div>' +
+        '<div><div style="font-size:18px;font-weight:900;color:#fff">🛡️ Функциональное фракционное приложение · УМВД / ГИБДД</div><div style="font-size:12px;color:#8b96ab;margin-top:3px">Управление личным составом, подразделениями, выговорами и дежурной частью</div></div>' +
         '<span class="pill"><span class="gdot"></span>На смене: 12 чел.</span>' +
       '</div>' +
       '<div class="rank-table-wrap">' +
         '<table class="rank-table">' +
-          '<thead><tr><th>Сотрудник</th><th>Звание и должность</th><th>Подразделение</th><th>Статус / Патруль</th><th>Выговоры</th></tr></thead>' +
+          '<thead><tr><th>Сотрудник</th><th>Звание и должность</th><th>Подразделение</th><th>Чистый онлайн</th><th>Статус / Патруль</th><th>Выговоры</th></tr></thead>' +
           '<tbody>' +
-            '<tr><td><b>Евгений Холмс</b></td><td>Капитан полиции · Оперуполномоченный</td><td>ОУР УМВД</td><td><span style="color:#34d399;font-weight:800">● В патруле (Экипаж П-14)</span></td><td>0 / 3</td></tr>' +
-            '<tr><td><b>Алексей Соколов</b></td><td>Майор полиции · Начальник ОБ ДПС</td><td>ОГИБДД</td><td><span style="color:#34d399;font-weight:800">● Дежурная часть</span></td><td>0 / 3</td></tr>' +
-            '<tr><td><b>Дмитрий Громов</b></td><td>Старший лейтенант · Инспектор ДПС</td><td>ОГИБДД</td><td><span style="color:#fbbf24;font-weight:800">● Оформление эвакуации ТС</span></td><td>1 / 3</td></tr>' +
+            '<tr><td><b>Евгений Холмс</b></td><td>Капитан полиции · Оперуполномоченный</td><td>ОУР УМВД</td><td>04 ч 38 мин</td><td><span style="color:#34d399;font-weight:800">● В патруле (Экипаж П-14)</span></td><td>0 / 3</td></tr>' +
+            '<tr><td><b>Алексей Соколов</b></td><td>Майор полиции · Начальник ОБ ДПС</td><td>ОГИБДД</td><td>03 ч 50 мин</td><td><span style="color:#34d399;font-weight:800">● Дежурная часть</span></td><td>0 / 3</td></tr>' +
+            '<tr><td><b>Дмитрий Громов</b></td><td>Старший лейтенант · Инспектор ДПС</td><td>ОГИБДД</td><td>02 ч 25 мин</td><td><span style="color:#fbbf24;font-weight:800">● Эвакуация ТС на штрафстоянку</span></td><td>1 / 3</td></tr>' +
           '</tbody>' +
         '</table>' +
       '</div>' +
@@ -1535,7 +1693,7 @@ function getBuiltinAppHtml(type) {
   '</div>';
 }
 
-/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНОГО ПРИЛОЖЕНИЯ (С ПРОВЕРКОЙ АВТОПАРКА) ===================== */
+/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНОГО ПРИЛОЖЕНИЯ БЕЗ ПУТАНИЦЫ ===================== */
 window.openIdeaCard = function(id) {
   var it = findIdeaById(id);
   if (!it) return;
@@ -1558,7 +1716,29 @@ window.openIdeaCard = function(id) {
     }
 
     var targetUrl = it.appUrl;
-    var iframeSrc = targetUrl + (targetUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
+
+    /* Если открывается автопарк (apps/garage.html), и мы знаем, что в файле на GitHub случайно был сохранён
+       код радиального меню — открываем СРАЗУ чистый автопарк из CLEAN_GARAGE_HTML_CACHE (за 0.00 сек без показа радиального меню!) */
+    if (targetUrl.indexOf('garage.html') >= 0 && GARAGE_FILE_IS_CORRUPTED && CLEAN_GARAGE_HTML_CACHE) {
+      m.innerHTML =
+        '<div class="back" onclick="if(event.target===this)closeModal()">' +
+          '<div class="modal app-modal">' +
+            '<div class="m-head">' +
+              '<div class="mh-title"><span>🚔</span><span>' + escapeHtml(it.title) + '</span></div>' +
+              '<button class="m-close" onclick="closeModal()">✕</button>' +
+            '</div>' +
+            '<div class="m-body iframe-wrap">' +
+              '<iframe class="app-iframe" id="activeAppIframe" allowfullscreen></iframe>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      var ifr = document.getElementById('activeAppIframe');
+      if (ifr) ifr.srcdoc = CLEAN_GARAGE_HTML_CACHE;
+      return;
+    }
+
+    /* Для всех остальных модулей (включая единый apps/mvd-radial.html) открываем единый URL без случайного кэш-ключа,
+       чтобы все радиальные меню разделяли единый контекст и общий мегафон! */
     m.innerHTML =
       '<div class="back" onclick="if(event.target===this)closeModal()">' +
         '<div class="modal app-modal">' +
@@ -1567,52 +1747,15 @@ window.openIdeaCard = function(id) {
             '<button class="m-close" onclick="closeModal()">✕</button>' +
           '</div>' +
           '<div class="m-body iframe-wrap">' +
-            '<iframe class="app-iframe" id="activeAppIframe" src="' + iframeSrc + '" allowfullscreen></iframe>' +
+            '<iframe class="app-iframe" id="activeAppIframe" src="' + targetUrl + '" allowfullscreen></iframe>' +
           '</div>' +
         '</div>' +
       '</div>';
-
-    /* Если открывается автопарк (apps/garage.html), проверяем, не был ли внутрь файла apps/garage.html
-       случайно вставлен код радиального меню (radialWrap). Если да — автоматически восстанавливаем настоящий garage.html из истории коммитов! */
-    if (targetUrl.indexOf('garage.html') >= 0 && REPO) {
-      fetch(targetUrl + '?check=' + Date.now(), { cache: 'no-store' })
-        .then(function(r) { return r.ok ? r.text() : ''; })
-        .then(function(txt) {
-          if (txt && txt.indexOf('radialWrap') >= 0 && txt.indexOf('vgrid') < 0) {
-            recoverGarageHtmlFromHistory();
-          }
-        }).catch(function() {});
-    }
     return;
   }
 
   toggleIdeaDesc(null, it.id);
 };
-
-/* Автовосстановление apps/garage.html из истории Git, если в него по ошибке был вставлен код радиального меню */
-function recoverGarageHtmlFromHistory() {
-  if (!REPO) return;
-  fetch('https://api.github.com/repos/' + REPO + '/commits?path=apps/garage.html&per_page=15&_t=' + Date.now())
-    .then(function(r) { return r.ok ? r.json() : []; })
-    .then(function(commits) {
-      var idx = 0;
-      function tryNext() {
-        if (idx >= commits.length) return;
-        var sha = commits[idx++].sha;
-        fetch('https://raw.githubusercontent.com/' + REPO + '/' + sha + '/apps/garage.html')
-          .then(function(r) { return r.ok ? r.text() : ''; })
-          .then(function(html) {
-            if (html && html.indexOf('vgrid') >= 0 && html.indexOf('radialWrap') < 0) {
-              var ifr = document.getElementById('activeAppIframe');
-              if (ifr) ifr.srcdoc = html;
-            } else {
-              tryNext();
-            }
-          }).catch(tryNext);
-      }
-      tryNext();
-    }).catch(function() {});
-}
 
 /* ===================== ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРЕДЛОЖЕНИЯ ===================== */
 window.openIdeaForm = function(editId) {
@@ -1628,8 +1771,10 @@ window.openIdeaForm = function(editId) {
     { v: 'apps/garage.html',     n: '🚔 Автопарк и форма (apps/garage.html)' },
     { v: 'apps/mvd-radial.html', n: '🛡️ Фракционное радиальное меню (apps/mvd-radial.html)' },
     { v: 'apps/epaulettes.html', n: '🎖️ Стенд погон (apps/epaulettes.html)' },
+    { v: 'builtin:faction-app',  n: '🛡️ Функциональное фракционное приложение' },
     { v: 'builtin:phone',        n: '📱 Интерактивный смартфон' },
-    { v: 'builtin:faction-app',  n: '🛡️ Функциональное фракционное приложение' }
+    { v: 'builtin:bank',         n: '💳 Банковская система и приложение' },
+    { v: 'builtin:stats',        n: '📊 Статистика персонажа (чистый онлайн и доходы/расходы)' }
   ];
   REPO_ALL_FILES.forEach(function(p) {
     if (!appList.some(function(x) { return x.v === p; })) {
@@ -1651,7 +1796,7 @@ window.openIdeaForm = function(editId) {
           '<button class="m-close" onclick="closeModal()">✕</button>' +
         '</div>' +
         '<div class="m-body">' +
-          '<label class="flab">Раздел / Фракция</label>' +
+          '<label class="flab">Раздел / Категория предложения</label>' +
           '<select class="sel" id="fIdeaFac" style="width:100%">' + secOpts + '</select>' +
           '<label class="flab">Заголовок предложения</label>' +
           '<input class="inp" id="fIdeaTitle" style="width:100%" value="' + escapeHtml(it ? it.title : '') + '" placeholder="Введите заголовок предложения…">' +
