@@ -228,6 +228,18 @@ body{
   border:1px solid rgba(47,217,122,.35);
   color:#6ee7b7;
 }
+.ic-media-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  background:rgba(247,201,72,.12);
+  border:1px solid rgba(247,201,72,.35);
+  color:#fcd34d;
+}
 .ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.35}
 
 /* Скрытое/раскрываемое описание по кнопке "Открыть / Скрыть" */
@@ -241,18 +253,182 @@ body{
   font-size:13.5px;
   color:#dbe4f3;
   line-height:1.65;
-  white-space:pre-line;
 }
 .ic-desc-box.open{display:block;animation:fadeIn .18s}
+.ic-desc-text{white-space:pre-line}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}}
 
-/* Таблицы внутри описания (для Глобальной реформы рангов и иерархии) */
+/* Таблицы внутри описания */
 .rank-table-wrap{overflow-x:auto;margin-top:12px;white-space:normal}
 .rank-table{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid #2b384e;border-radius:10px;overflow:hidden}
 .rank-table th{background:#1d2738;color:#93c5fd;font-weight:800;text-align:left;padding:10px 12px;border-bottom:1px solid #2e3d56;text-transform:uppercase;font-size:11px;letter-spacing:.6px}
 .rank-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:#e2e8f0;vertical-align:top}
 .rank-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
 .rank-table tr:hover td{background:rgba(77,163,255,.08)}
+
+/* ГАЛЕРЕЯ ДО 10 ФОТО/ВИДЕО ПОД ОПИСАНИЕМ (С КНОПКОЙ УДАЛЕНИЯ И ПОЛНЫМ ЭКРАНОМ) */
+.media-sec{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px dashed rgba(255,255,255,.1);
+}
+.media-sec-hdr{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.media-sec-title{
+  font-size:11.5px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:#93c5fd;
+}
+.media-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:12px;
+}
+.media-item{
+  position:relative;
+  aspect-ratio:16/10;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid #2b384e;
+  background:#0d121a;
+  cursor:zoom-in;
+  transition:transform .18s,border-color .18s;
+}
+.media-item:hover{
+  transform:translateY(-2px);
+  border-color:#4da3ff;
+}
+.media-item img,.media-item video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.media-play-badge{
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  background:rgba(10,14,20,.85);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;
+  padding:3px 8px;
+  border-radius:7px;
+  font-size:10.5px;
+  font-weight:800;
+  pointer-events:none;
+}
+.media-del-btn{
+  position:absolute;
+  top:7px;
+  right:7px;
+  z-index:5;
+  background:rgba(185,28,28,.92);
+  border:1px solid #f87171;
+  color:#fff;
+  padding:4px 8px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.6);
+  transition:.15s;
+}
+.media-del-btn:hover{
+  background:#dc2626;
+  transform:scale(1.06);
+}
+.media-add-slot{
+  aspect-ratio:16/10;
+  border-radius:12px;
+  border:1.5px dashed #364966;
+  background:rgba(20,28,42,.55);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  color:#8b96ab;
+  cursor:pointer;
+  transition:.18s;
+  text-align:center;
+  padding:10px;
+}
+.media-add-slot:hover{
+  border-color:#4da3ff;
+  color:#fff;
+  background:rgba(77,163,255,.08);
+}
+
+/* ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО И ВИДЕО (ЛАЙТБОКС) */
+#mediaLb{
+  position:fixed;
+  inset:0;
+  z-index:950;
+  background:rgba(4,7,12,.92);
+  backdrop-filter:blur(10px);
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+#mediaLb.show{display:flex;animation:fadeIn .2s}
+.mlb-top{
+  position:fixed;
+  top:18px;
+  left:24px;
+  right:24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:960;
+  pointer-events:none;
+}
+.mlb-cap{
+  pointer-events:auto;
+  background:rgba(15,20,29,.88);
+  border:1px solid #2e3d56;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:800;
+  font-size:13px;
+}
+.mlb-close{
+  pointer-events:auto;
+  background:linear-gradient(145deg,#dc2626,#991b1b);
+  border:1px solid #fca5a5;
+  color:#fff;
+  padding:9px 18px;
+  border-radius:11px;
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,.6);
+}
+.mlb-content{
+  max-width:95vw;
+  max-height:86vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.mlb-content img,.mlb-content video{
+  max-width:95vw;
+  max-height:85vh;
+  border-radius:14px;
+  border:1px solid #33445e;
+  box-shadow:0 30px 90px rgba(0,0,0,.85);
+  background:#000;
+}
 
 .ic-foot{
   display:flex;
@@ -265,9 +441,6 @@ body{
   border-top:1px dashed rgba(255,255,255,.08);
 }
 .ic-tools{display:flex;gap:6px}
-
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px;white-space:normal}
-.media-grid img,.media-grid video{width:100%;border-radius:12px;border:1px solid var(--line);max-height:260px;object-fit:cover;background:#0e131b}
 
 .back{
   position:fixed;
@@ -358,6 +531,18 @@ body{
   </main>
 </div>
 
+<!-- Скрытый input для загрузки фото/видео (до 10 шт. на предложение) -->
+<input type="file" id="ideaMediaInp" accept="image/*,video/*" multiple style="display:none">
+
+<!-- Полноэкранный просмотр фото и видео -->
+<div id="mediaLb" onclick="if(event.target===this)closeMediaLb()">
+  <div class="mlb-top">
+    <div class="mlb-cap" id="mlbCap">Просмотр медиафайла</div>
+    <button class="mlb-close" onclick="closeMediaLb()">✕ Закрыть (ESC)</button>
+  </div>
+  <div class="mlb-content" id="mlbBox"></div>
+</div>
+
 <div id="mroot"></div>
 <div id="troot"></div>
 
@@ -407,7 +592,6 @@ var APPS_MAP = {
 
 var EXTERNAL_SEED_FN = (typeof window.seed === 'function') ? window.seed : null;
 
-/* Таблица для предложения «Глобальная реформа системы рангов и должностной иерархии фракций» */
 var RANKS_REFORM_TABLE_HTML =
   '<div class="rank-table-wrap">' +
     '<table class="rank-table">' +
@@ -438,7 +622,6 @@ var RANKS_REFORM_TABLE_HTML =
     '</table>' +
   '</div>';
 
-/* Базовые предложения (включая объединённое «Фракционное радиальное меню», таблицу рангов, взлом наручников с отвёрткой 50% и все модули) */
 function baseSeedIdeas() {
   var list = [];
   if (EXTERNAL_SEED_FN) {
@@ -504,21 +687,21 @@ function baseSeedIdeas() {
   return core.concat(list);
 }
 
-/* Строгое и безошибочное сопоставление предложения с его интерактивным модулем */
+/* ЖЁСТКАЯ ПРИВЯЗКА ПУТЕЙ ПРИЛОЖЕНИЙ (Автопарк ВСЕГДА открывает apps/garage.html!) */
 function autoBindAppUrl(it) {
   if (!it || typeof it !== 'object') return;
   var t = String(it.title || '').toLowerCase();
   var id = String(it.id || '').toLowerCase();
   var cur = String(it.appUrl || it.app || it.iframe || '').trim();
 
-  /* 1. АВТОПАРК И ФОРМА — всегда строго apps/garage.html! */
-  if (id === 's2' || t.indexOf('автопарк') >= 0 || (t.indexOf('форма фракц') >= 0)) {
+  /* 1. АВТОПАРК И ФОРМА — принудительно перезаписываем любой старый appUrl на apps/garage.html */
+  if (id === 's2' || t.indexOf('автопарк') >= 0 || t.indexOf('форма фракц') >= 0) {
     it.appUrl = 'apps/garage.html';
     return;
   }
 
-  /* 2. РЕФОРМА РАНГОВ / ПОГОНЫ — apps/epaulettes.html (+ сохранение таблицы рангов!) */
-  if (t.indexOf('погон') >= 0 || (t.indexOf('реформа системы рангов') >= 0) || (t.indexOf('иерарх') >= 0)) {
+  /* 2. РЕФОРМА РАНГОВ / ПОГОНЫ */
+  if (t.indexOf('погон') >= 0 || t.indexOf('реформа системы рангов') >= 0 || t.indexOf('иерарх') >= 0) {
     it.appUrl = 'apps/epaulettes.html';
     if (!it.tableHtml && t.indexOf('ранг') >= 0) {
       it.tableHtml = RANKS_REFORM_TABLE_HTML;
@@ -526,7 +709,7 @@ function autoBindAppUrl(it) {
     return;
   }
 
-  /* 3. РАДИАЛЬНОЕ МЕНЮ / НАРУЧНИКИ / ВЗЛОМ НАРУЧНИКОВ ОТВЁРТКОЙ — apps/mvd-radial.html */
+  /* 3. РАДИАЛЬНОЕ МЕНЮ / НАРУЧНИКИ / ВЗЛОМ НАРУЧНИКОВ */
   if (t.indexOf('радиальн') >= 0 || t.indexOf('наручник') >= 0 || id === 's_radial' || id === 's_cuffs_rework' || id === 's_lockpick_cuffs') {
     it.appUrl = 'apps/mvd-radial.html';
     return;
@@ -534,7 +717,6 @@ function autoBindAppUrl(it) {
 
   /* 4. ФУНКЦИОНАЛЬНОЕ ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ */
   if (t.indexOf('фракционное приложение') >= 0 || t.indexOf('планшет') >= 0) {
-    /* Если в репозитории есть отдельный файл — используем его, иначе встроенный интерактивный модуль */
     for (var i = 0; i < REPO_ALL_FILES.length; i++) {
       if (/faction|tablet|app/i.test(REPO_ALL_FILES[i]) && !/garage|radial|epaulettes/i.test(REPO_ALL_FILES[i])) {
         it.appUrl = REPO_ALL_FILES[i];
@@ -557,8 +739,7 @@ function autoBindAppUrl(it) {
     return;
   }
 
-  if (!cur) return;
-  if (cur.indexOf('builtin:') === 0) return;
+  if (!cur || cur.indexOf('builtin:') === 0) return;
 
   var clean = cur.replace(/^apps\//i, '').replace(/\.html.*$/i, '').toLowerCase();
   if (APPS_MAP[clean]) {
@@ -575,7 +756,6 @@ function autoBindAppUrl(it) {
   }
 }
 
-/* Сканирование реального дерева файлов репозитория */
 function scanRepoTree() {
   if (!REPO) return Promise.resolve();
   return fetch('https://api.github.com/repos/' + REPO + '/git/trees/' + BRANCH + '?recursive=1&_t=' + Date.now())
@@ -595,8 +775,55 @@ function scanRepoTree() {
     }).catch(function() {});
 }
 
+/* ===================== INDEXEDDB ДЛЯ ХРАНЕНИЯ ИДЕЙ И ДО 10 ФОТО/ВИДЕО ===================== */
+var IDEAS_IDB_NAME = 'mta_ideas_media_db_v1';
+var IDEAS_IDB_STORE = 'ideas_store';
+
+function openIdeasIdb() {
+  return new Promise(function(resolve, reject) {
+    if (!window.indexedDB) { reject(new Error('no idb')); return; }
+    var req = window.indexedDB.open(IDEAS_IDB_NAME, 1);
+    req.onupgradeneeded = function(ev) {
+      var db = ev.target.result;
+      if (!db.objectStoreNames.contains(IDEAS_IDB_STORE)) {
+        db.createObjectStore(IDEAS_IDB_STORE);
+      }
+    };
+    req.onsuccess = function(ev) { resolve(ev.target.result); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+
+function saveIdeasToIdb() {
+  return openIdeasIdb().then(function(db) {
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(IDEAS_IDB_STORE, 'readwrite');
+        var st = tx.objectStore(IDEAS_IDB_STORE);
+        st.put({ items: window.ITEMS, savedAt: Date.now() }, 'current_ideas');
+        tx.oncomplete = function() { resolve(true); };
+        tx.onerror = function() { resolve(false); };
+      } catch (e) { resolve(false); }
+    });
+  }).catch(function() { return false; });
+}
+
+function loadIdeasFromIdb() {
+  return openIdeasIdb().then(function(db) {
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(IDEAS_IDB_STORE, 'readonly');
+        var st = tx.objectStore(IDEAS_IDB_STORE);
+        var r = st.get('current_ideas');
+        r.onsuccess = function() { resolve(r.result || null); };
+        r.onerror = function() { resolve(null); };
+      } catch (e) { resolve(null); }
+    });
+  }).catch(function() { return null; });
+}
+
 /* ===================== СОСТОЯНИЕ, ОБЪЕДИНЕНИЕ ДУБЛИКАТОВ И ОЧИСТКА ===================== */
-var LOCAL_IDEAS_K = 'mvd_ideas_clean_v6';
+var LOCAL_IDEAS_K = 'mvd_ideas_clean_v7';
 var MAIN_KEY_K    = 'idea_admin_key';
 var DELETED_IDEAS_K = 'mvd_deleted_ideas_v1';
 var DELETED_IDEA_IDS = {};
@@ -642,9 +869,42 @@ function isRealIdeaItem(it) {
   if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
   var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
                  (Array.isArray(it.videos) && it.videos.length > 0) ||
+                 (Array.isArray(it.media) && it.media.length > 0) ||
                  !!it.appUrl || !!it.app || !!it.iframe || !!it.tableHtml;
   if (!text && !hasMedia) return false;
   return true;
+}
+
+/* Приводит массив фото и видео карточки к единому списку (до 10 элементов) */
+function ensureMediaList(it) {
+  if (!it) return [];
+  if (!Array.isArray(it.images)) it.images = [];
+  if (!Array.isArray(it.videos)) it.videos = [];
+  if (it.photo && typeof it.photo === 'string' && it.images.indexOf(it.photo) < 0) {
+    it.images.push(it.photo);
+    delete it.photo;
+  }
+  var combined = [];
+  it.images.forEach(function(src) {
+    if (src && typeof src === 'string') combined.push({ type: 'image', src: src });
+  });
+  it.videos.forEach(function(src) {
+    if (src && typeof src === 'string') combined.push({ type: 'video', src: src });
+  });
+  return combined.slice(0, 10);
+}
+
+function syncMediaListBack(it, mediaArr) {
+  it.images = [];
+  it.videos = [];
+  (mediaArr || []).slice(0, 10).forEach(function(m) {
+    if (!m || !m.src) return;
+    if (m.type === 'video' || /^data:video\/|\.mp4|\.webm|\.mov/i.test(m.src)) {
+      it.videos.push(m.src);
+    } else {
+      it.images.push(m.src);
+    }
+  });
 }
 
 function normalizeIdeaItem(it) {
@@ -653,16 +913,21 @@ function normalizeIdeaItem(it) {
   copy.text  = String(copy.text || copy.desc || copy.body || '').trim();
   copy.fac   = copy.fac || copy.cat || copy.section || 'general';
   if (copy.app && !copy.appUrl) copy.appUrl = copy.app;
+  if (!Array.isArray(copy.images)) copy.images = [];
+  if (!Array.isArray(copy.videos)) copy.videos = [];
 
-  /* Объединяем "Фракционное радиальное меню сотрудников МВД (УМВД / ГИБДД)" и "Фракционное радиальное меню" в ОДНО предложение! */
   if (/^фракционное радиальное меню/i.test(copy.title)) {
-    copy.id    = 's_radial';
-    copy.fac   = 'mvd';
-    copy.title = 'Фракционное радиальное меню';
+    copy.id     = 's_radial';
+    copy.fac    = 'mvd';
+    copy.title  = 'Фракционное радиальное меню';
     copy.appUrl = 'apps/mvd-radial.html';
   }
 
-  /* Обновляем описание для "Взлом наручников с помощью отвёртки или отмычки" */
+  if (/обновл[её]нный автопарк/i.test(copy.title) || copy.id === 's2') {
+    copy.id     = 's2';
+    copy.appUrl = 'apps/garage.html';
+  }
+
   if (/взлом наручников/i.test(copy.title)) {
     copy.id = 's_lockpick_cuffs';
     if (copy.text.indexOf('50%') < 0) {
@@ -672,11 +937,10 @@ function normalizeIdeaItem(it) {
     copy.appUrl = 'apps/mvd-radial.html';
   }
 
-  /* Восстанавливаем таблицу в "Глобальная реформа системы рангов и должностной иерархии фракций" */
   if (/реформа системы рангов/i.test(copy.title) || /должностной иерархии/i.test(copy.title)) {
-    copy.id = 's_ranks_reform';
+    copy.id        = 's_ranks_reform';
     copy.tableHtml = RANKS_REFORM_TABLE_HTML;
-    copy.appUrl = 'apps/epaulettes.html';
+    copy.appUrl    = 'apps/epaulettes.html';
   }
 
   if (!copy.id) copy.id = 'idea_' + copy.title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '_');
@@ -689,12 +953,10 @@ function mergeAndCleanIdeas(lists) {
   var byKey = {};
   var out = [];
 
-  /* Сначала загружаем эталонные карточки из baseSeedIdeas() */
   baseSeedIdeas().concat.apply(baseSeedIdeas(), lists || []).forEach(function(rawIt) {
     if (!isRealIdeaItem(rawIt)) return;
     var it = normalizeIdeaItem(rawIt);
     var normTitleKey = it.title.toLowerCase().replace(/\s+/g, ' ');
-    /* Для радиального меню и реформы рангов склеиваем по единому ключу */
     var key = (it.id === 's_radial' || it.id === 's2' || it.id === 's_ranks_reform' || it.id === 's_lockpick_cuffs')
       ? it.id
       : normTitleKey;
@@ -708,9 +970,11 @@ function mergeAndCleanIdeas(lists) {
         ex.text = it.text;
       }
       if (it.tableHtml && !ex.tableHtml) ex.tableHtml = it.tableHtml;
-      if (it.appUrl && !ex.appUrl) ex.appUrl = it.appUrl;
-      if (it.images && it.images.length && (!ex.images || !ex.images.length)) ex.images = it.images;
-      if (it.videos && it.videos.length && (!ex.videos || !ex.videos.length)) ex.videos = it.videos;
+      /* Переносим сохранённые фото/видео, если они еще не были удалены владельцем */
+      if (!ex._mediaModifiedByOwner) {
+        if (it.images && it.images.length && (!ex.images || !ex.images.length)) ex.images = it.images.slice();
+        if (it.videos && it.videos.length && (!ex.videos || !ex.videos.length)) ex.videos = it.videos.slice();
+      }
       autoBindAppUrl(ex);
     }
   });
@@ -721,15 +985,20 @@ function mergeAndCleanIdeas(lists) {
 function loadLocalIdeasFromAllBrowserKeys() {
   var collected = [];
   try {
-    for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i);
-      if (!k || k.indexOf('garage') >= 0 || k.indexOf('megaphone') >= 0) continue;
-      try {
-        var raw = JSON.parse(localStorage.getItem(k) || 'null');
-        if (!raw) continue;
-        var arr = toArr(raw.items || raw);
-        if (arr && arr.length) collected.push(arr);
-      } catch (e) {}
+    var primary = JSON.parse(localStorage.getItem(LOCAL_IDEAS_K) || 'null');
+    if (primary && Array.isArray(primary.items)) {
+      collected.push(primary.items);
+    } else {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (!k || k.indexOf('garage') >= 0 || k.indexOf('megaphone') >= 0) continue;
+        try {
+          var raw = JSON.parse(localStorage.getItem(k) || 'null');
+          if (!raw) continue;
+          var arr = toArr(raw.items || raw);
+          if (arr && arr.length) collected.push(arr);
+        } catch (e) {}
+      }
     }
   } catch (e) {}
   return mergeAndCleanIdeas(collected);
@@ -737,6 +1006,8 @@ function loadLocalIdeasFromAllBrowserKeys() {
 
 function saveLocalIdeas() {
   window.ITEMS = window.ITEMS.filter(isRealIdeaItem);
+  window.ITEMS.forEach(autoBindAppUrl);
+  saveIdeasToIdb();
   try {
     localStorage.setItem(LOCAL_IDEAS_K, JSON.stringify({ items: window.ITEMS, savedAt: Date.now() }));
   } catch (e) {}
@@ -771,6 +1042,7 @@ function recoverIdeasFromGitHubHistory() {
       var found = extractIdeasFromJson(j);
       if (found.length) lists.push(found);
     });
+    if (lists.length && lists[0].length >= 5) return lists;
 
     return fetch('https://api.github.com/repos/' + REPO + '/commits?path=data.json&per_page=30&_t=' + Date.now(), { headers: headers })
       .then(function(r) { return r.ok ? r.json() : []; })
@@ -782,10 +1054,6 @@ function recoverIdeasFromGitHubHistory() {
           var msg = (c.commit && c.commit.message) || '';
           if (msg.indexOf('garage sync') < 0) candidateShas.push(c.sha);
         });
-        commits.slice(0, 15).forEach(function(c) {
-          if (c && c.sha && candidateShas.indexOf(c.sha) < 0) candidateShas.push(c.sha);
-        });
-
         var idx = 0;
         function checkNextCommit() {
           if (idx >= candidateShas.length) return Promise.resolve(lists);
@@ -818,24 +1086,195 @@ function pushIdeasToGitHub() {
     'Content-Type': 'application/json'
   };
 
-  [IDEAS_DATA_FILE, 'data.json'].forEach(function(fileName) {
-    fetch('https://api.github.com/repos/' + REPO + '/contents/' + fileName + '?_t=' + Date.now(), { headers: headers })
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .then(function(existing) {
-        var body = {
-          message: 'update ideas (' + cleanList.length + ')',
-          content: b64e(snap),
-          branch: BRANCH
-        };
-        if (existing && existing.sha) body.sha = existing.sha;
-        return fetch('https://api.github.com/repos/' + REPO + '/contents/' + fileName, {
-          method: 'PUT',
-          headers: headers,
-          body: JSON.stringify(body)
+  /* Используем Git Blob API, чтобы без ошибок сохранять карточки с загруженными фото и видео */
+  var dataSha = null;
+  fetch('https://api.github.com/repos/' + REPO + '/git/blobs', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({ content: b64e(snap), encoding: 'base64' })
+  }).then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(blobObj) {
+      dataSha = blobObj.sha;
+      return fetch('https://api.github.com/repos/' + REPO + '/git/refs/heads/' + BRANCH + '?_t=' + Date.now(), { headers: headers, cache: 'no-store' });
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(refObj) {
+      var headSha = refObj.object.sha;
+      return fetch('https://api.github.com/repos/' + REPO + '/git/commits/' + headSha + '?_t=' + Date.now(), { headers: headers, cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(cm) { return { headSha: headSha, treeSha: cm.tree.sha }; });
+    })
+    .then(function(base) {
+      return fetch('https://api.github.com/repos/' + REPO + '/git/trees', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          base_tree: base.treeSha,
+          tree: [
+            { path: IDEAS_DATA_FILE, mode: '100644', type: 'blob', sha: dataSha },
+            { path: 'data.json',     mode: '100644', type: 'blob', sha: dataSha }
+          ]
+        })
+      }).then(function(r) { return r.json(); })
+        .then(function(nt) {
+          return fetch('https://api.github.com/repos/' + REPO + '/git/commits', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ message: 'update ideas & media', tree: nt.sha, parents: [base.headSha] })
+          });
         });
-      }).catch(function() {});
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(nc) {
+      return fetch('https://api.github.com/repos/' + REPO + '/git/refs/heads/' + BRANCH, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify({ sha: nc.sha, force: true })
+      });
+    }).catch(function() {});
+}
+
+/* ===================== ЗАГРУЗКА, УДАЛЕНИЕ И ПОЛНОЭКРАННЫЙ ПРОСМОТР ДО 10 ФОТО/ВИДЕО ===================== */
+var mediaUploadIdeaId = null;
+
+function findIdeaById(id) {
+  for (var i = 0; i < window.ITEMS.length; i++) {
+    if (window.ITEMS[i].id === id) return window.ITEMS[i];
+  }
+  return null;
+}
+
+window.triggerIdeaMediaUpload = function(ev, ideaId) {
+  if (ev) ev.stopPropagation();
+  if (!window.adminMode) return;
+  var it = findIdeaById(ideaId);
+  if (!it) return;
+  var curMedia = ensureMediaList(it);
+  if (curMedia.length >= 10) {
+    toast('Максимум 10 фото/видео в одном предложении', true);
+    return;
+  }
+  mediaUploadIdeaId = ideaId;
+  var inp = document.getElementById('ideaMediaInp');
+  inp.value = '';
+  inp.click();
+};
+
+function compressPhotoFile(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var img = new Image();
+      img.onload = function() {
+        var MAX = 1280;
+        var w = img.naturalWidth || img.width;
+        var h = img.naturalHeight || img.height;
+        var k = Math.min(1, MAX / Math.max(w, h));
+        var cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(w * k));
+        cv.height = Math.max(1, Math.round(h * k));
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        try {
+          resolve({ type: 'image', src: cv.toDataURL('image/jpeg', 0.84) });
+        } catch (e) {
+          resolve({ type: 'image', src: ev.target.result });
+        }
+      };
+      img.onerror = function() { resolve(null); };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
   });
 }
+
+function readVideoFile(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      resolve({ type: 'video', src: ev.target.result });
+    };
+    reader.onerror = function() { resolve(null); };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('ideaMediaInp').addEventListener('change', function() {
+  var files = Array.prototype.slice.call(this.files || []);
+  this.value = '';
+  if (!files.length || !mediaUploadIdeaId) return;
+  var it = findIdeaById(mediaUploadIdeaId);
+  mediaUploadIdeaId = null;
+  if (!it) return;
+
+  var curMedia = ensureMediaList(it);
+  var slotsLeft = 10 - curMedia.length;
+  if (slotsLeft <= 0) {
+    toast('Достигнут лимит 10 фото/видео', true);
+    return;
+  }
+  var toProcess = files.slice(0, slotsLeft);
+  Promise.all(toProcess.map(function(f) {
+    if (f.type && f.type.indexOf('video/') === 0) return readVideoFile(f);
+    return compressPhotoFile(f);
+  })).then(function(added) {
+    added.forEach(function(m) {
+      if (m && m.src && curMedia.length < 10) curMedia.push(m);
+    });
+    it._mediaModifiedByOwner = true;
+    syncMediaListBack(it, curMedia);
+    OPEN_DESC_MAP[it.id] = true;
+    saveLocalIdeas();
+    pushIdeasToGitHub();
+    render();
+    toast('✓ Загружено медиафайлов: ' + added.filter(Boolean).length);
+  });
+});
+
+/* Удаление любого фото или видео владельцем */
+window.deleteIdeaMedia = function(ev, ideaId, mediaIndex) {
+  if (ev) ev.stopPropagation();
+  if (!window.adminMode) return;
+  var it = findIdeaById(ideaId);
+  if (!it) return;
+  if (!confirm('Удалить этот медиафайл из предложения?')) return;
+  var curMedia = ensureMediaList(it);
+  curMedia.splice(mediaIndex, 1);
+  it._mediaModifiedByOwner = true;
+  syncMediaListBack(it, curMedia);
+  saveLocalIdeas();
+  pushIdeasToGitHub();
+  render();
+  toast('Медиафайл удалён');
+};
+
+/* Полноэкранный просмотр фото или видео */
+window.openMediaLb = function(ev, ideaId, mediaIndex) {
+  if (ev) ev.stopPropagation();
+  var it = findIdeaById(ideaId);
+  if (!it) return;
+  var curMedia = ensureMediaList(it);
+  var m = curMedia[mediaIndex];
+  if (!m || !m.src) return;
+
+  var lb = document.getElementById('mediaLb');
+  var box = document.getElementById('mlbBox');
+  var cap = document.getElementById('mlbCap');
+  cap.textContent = it.title + ' · Файл ' + (mediaIndex + 1) + ' из ' + curMedia.length;
+
+  if (m.type === 'video' || /^data:video\/|\.mp4|\.webm|\.mov/i.test(m.src)) {
+    box.innerHTML = '<video src="' + escapeHtml(m.src) + '" controls autoplay></video>';
+  } else {
+    box.innerHTML = '<img src="' + escapeHtml(m.src) + '" alt="" onclick="closeMediaLb()">';
+  }
+  lb.classList.add('show');
+};
+
+window.closeMediaLb = function() {
+  var lb = document.getElementById('mediaLb');
+  var box = document.getElementById('mlbBox');
+  if (lb) lb.classList.remove('show');
+  if (box) box.innerHTML = '';
+};
 
 /* ===================== ВХОД / ВЫХОД ВЛАДЕЛЬЦА ===================== */
 window.openAdminLogin = function() {
@@ -849,7 +1288,7 @@ window.openAdminLogin = function() {
         '<div class="m-body">' +
           '<label class="flab">GitHub Personal Access Token (ghp_...)</label>' +
           '<input type="password" class="inp" id="admTokInp" style="width:100%" value="' + savedTok.replace(/"/g, '&quot;') + '" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">' +
-          '<div style="font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5">После входа станут доступны кнопки добавления/редактирования предложений, управление автопарком, формой и мегафоном.</div>' +
+          '<div style="font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5">После входа станут доступны кнопки загрузки/удаления до 10 фото и видео под каждым предложением, а также управление автопарком и мегафоном.</div>' +
         '</div>' +
         '<div class="m-foot">' +
           '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
@@ -879,7 +1318,7 @@ window.logoutAdmin = function() {
   toast('Вы вышли из режима владельца');
 };
 
-/* ===================== РЕНДЕР СТРАНИЦЫ И ОТКРЫТИЕ/СКРЫТИЕ ОПИСАНИЙ ===================== */
+/* ===================== РЕНДЕР СТРАНИЦЫ ===================== */
 function countBySec(secK) {
   var n = 0;
   for (var i = 0; i < window.ITEMS.length; i++) {
@@ -921,19 +1360,54 @@ window.selectSection = function(k) {
   render();
 };
 
-/* Переключение кнопки "Открыть / Скрыть" описание на карточке */
 window.toggleIdeaDesc = function(ev, id) {
   if (ev) ev.stopPropagation();
   OPEN_DESC_MAP[id] = !OPEN_DESC_MAP[id];
   var box = document.getElementById('desc_' + id);
   var btn = document.getElementById('descBtn_' + id);
-  if (box) {
-    box.classList.toggle('open', !!OPEN_DESC_MAP[id]);
-  }
-  if (btn) {
-    btn.innerHTML = OPEN_DESC_MAP[id] ? '🔼 Скрыть' : '📖 Открыть';
-  }
+  if (box) box.classList.toggle('open', !!OPEN_DESC_MAP[id]);
+  if (btn) btn.innerHTML = OPEN_DESC_MAP[id] ? '🔼 Скрыть' : '📖 Открыть';
 };
+
+function renderMediaGalleryForIdea(it) {
+  var mediaList = ensureMediaList(it);
+  if (!mediaList.length && !window.adminMode) return '';
+
+  var itemsHtml = mediaList.map(function(m, idx) {
+    var isVid = (m.type === 'video' || /^data:video\/|\.mp4|\.webm|\.mov/i.test(m.src));
+    var delBtn = window.adminMode
+      ? '<button class="media-del-btn" onclick="deleteIdeaMedia(event,\'' + it.id + '\',' + idx + ')" title="Удалить фото/видео">🗑 Удалить</button>'
+      : '';
+    var inner = isVid
+      ? '<video src="' + escapeHtml(m.src) + '" muted preload="metadata"></video><span class="media-play-badge">▶ Видео</span>'
+      : '<img src="' + escapeHtml(m.src) + '" alt="">';
+
+    return '<div class="media-item" onclick="openMediaLb(event,\'' + it.id + '\',' + idx + ')" title="Нажмите, чтобы открыть во весь экран">' +
+      delBtn +
+      inner +
+    '</div>';
+  }).join('');
+
+  var addSlotHtml = '';
+  if (window.adminMode && mediaList.length < 10) {
+    addSlotHtml =
+      '<div class="media-add-slot" onclick="triggerIdeaMediaUpload(event,\'' + it.id + '\')">' +
+        '<div style="font-size:22px">📷</div>' +
+        '<b style="font-size:12px;color:#dbe7ff">＋ Загрузить фото / видео</b>' +
+        '<span style="font-size:10.5px">Свободно слотов: ' + (10 - mediaList.length) + ' из 10</span>' +
+      '</div>';
+  }
+
+  return '<div class="media-sec">' +
+    '<div class="media-sec-hdr">' +
+      '<span class="media-sec-title">📷 Прикреплённые фото и видео (' + mediaList.length + ' / 10) — нажмите для полного экрана</span>' +
+      (window.adminMode && mediaList.length < 10
+        ? '<button class="btn ghost slim" onclick="triggerIdeaMediaUpload(event,\'' + it.id + '\')">＋ Добавить фото/видео</button>'
+        : '') +
+    '</div>' +
+    '<div class="media-grid">' + itemsHtml + addSlotHtml + '</div>' +
+  '</div>';
+}
 
 function renderItems() {
   var curSecObj = secInfo(CUR_SEC);
@@ -963,27 +1437,17 @@ function renderItems() {
     autoBindAppUrl(it);
     var sec = secInfo(it.fac);
     var isDescOpen = !!OPEN_DESC_MAP[it.id];
+    var mediaCount = ensureMediaList(it).length;
     var appBadge = it.appUrl ? '<span class="ic-app-badge">⚡ Интерактивный модуль</span>' : '';
+    var mediaBadge = mediaCount > 0 ? '<span class="ic-media-badge">📷 Медиа: ' + mediaCount + '/10</span>' : '';
     var admBtns = window.adminMode
       ? '<div class="ic-tools" onclick="event.stopPropagation()">' +
+          '<button class="btn ghost slim" onclick="triggerIdeaMediaUpload(event,\'' + it.id + '\')" title="Загрузить фото или видео">📷 Фото/Видео (' + mediaCount + '/10)</button>' +
           '<button class="btn ghost slim" onclick="openIdeaForm(\'' + it.id + '\')">✏️</button>' +
           '<button class="btn warn slim" onclick="deleteIdea(\'' + it.id + '\')">🗑</button>' +
         '</div>'
       : '';
 
-    var mediaHtml = '';
-    if ((it.images && it.images.length) || (it.videos && it.videos.length)) {
-      mediaHtml = '<div class="media-grid">';
-      (it.images || []).forEach(function(src) {
-        mediaHtml += '<img src="' + escapeHtml(src) + '" alt="">';
-      });
-      (it.videos || []).forEach(function(src) {
-        mediaHtml += '<video src="' + escapeHtml(src) + '" controls></video>';
-      });
-      mediaHtml += '</div>';
-    }
-
-    /* Кнопка открытия интерактивного модуля называется так же, как само предложение! */
     var openModuleBtn = it.appUrl
       ? '<button class="btn slim" onclick="event.stopPropagation();openIdeaCard(\'' + it.id + '\')">⚡ ' + escapeHtml(it.title) + ' →</button>'
       : '';
@@ -993,14 +1457,15 @@ function renderItems() {
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
           '<span class="ic-badge">' + sec.ic + ' ' + sec.n + '</span>' +
           appBadge +
+          mediaBadge +
         '</div>' +
         admBtns +
       '</div>' +
       '<div class="ic-title">' + escapeHtml(it.title) + '</div>' +
       '<div class="ic-desc-box' + (isDescOpen ? ' open' : '') + '" id="desc_' + it.id + '">' +
-        escapeHtml(it.text || '') +
+        '<div class="ic-desc-text">' + escapeHtml(it.text || '') + '</div>' +
         (it.tableHtml || '') +
-        mediaHtml +
+        renderMediaGalleryForIdea(it) +
       '</div>' +
       '<div class="ic-foot">' +
         '<button class="btn ghost slim" id="descBtn_' + it.id + '" onclick="toggleIdeaDesc(event,\'' + it.id + '\')">' +
@@ -1023,7 +1488,7 @@ function render() {
 }
 window.render = render;
 
-/* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ МОДУЛИ (ТЕЛЕФОН И ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ) ===================== */
+/* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ МОДУЛИ ===================== */
 function getBuiltinAppHtml(type) {
   if (type === 'builtin:phone') {
     return '<div style="padding:24px;display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:center;background:#0d1118;min-height:100%">' +
@@ -1070,12 +1535,9 @@ function getBuiltinAppHtml(type) {
   '</div>';
 }
 
-/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНОГО ПРИЛОЖЕНИЯ ===================== */
+/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНОГО ПРИЛОЖЕНИЯ (С ПРОВЕРКОЙ АВТОПАРКА) ===================== */
 window.openIdeaCard = function(id) {
-  var it = null;
-  for (var i = 0; i < window.ITEMS.length; i++) {
-    if (window.ITEMS[i].id === id) { it = window.ITEMS[i]; break; }
-  }
+  var it = findIdeaById(id);
   if (!it) return;
   autoBindAppUrl(it);
 
@@ -1105,26 +1567,57 @@ window.openIdeaCard = function(id) {
             '<button class="m-close" onclick="closeModal()">✕</button>' +
           '</div>' +
           '<div class="m-body iframe-wrap">' +
-            '<iframe class="app-iframe" src="' + iframeSrc + '" allowfullscreen></iframe>' +
+            '<iframe class="app-iframe" id="activeAppIframe" src="' + iframeSrc + '" allowfullscreen></iframe>' +
           '</div>' +
         '</div>' +
       '</div>';
+
+    /* Если открывается автопарк (apps/garage.html), проверяем, не был ли внутрь файла apps/garage.html
+       случайно вставлен код радиального меню (radialWrap). Если да — автоматически восстанавливаем настоящий garage.html из истории коммитов! */
+    if (targetUrl.indexOf('garage.html') >= 0 && REPO) {
+      fetch(targetUrl + '?check=' + Date.now(), { cache: 'no-store' })
+        .then(function(r) { return r.ok ? r.text() : ''; })
+        .then(function(txt) {
+          if (txt && txt.indexOf('radialWrap') >= 0 && txt.indexOf('vgrid') < 0) {
+            recoverGarageHtmlFromHistory();
+          }
+        }).catch(function() {});
+    }
     return;
   }
 
-  /* Если модуля нет — просто разворачиваем описание карточки */
   toggleIdeaDesc(null, it.id);
 };
+
+/* Автовосстановление apps/garage.html из истории Git, если в него по ошибке был вставлен код радиального меню */
+function recoverGarageHtmlFromHistory() {
+  if (!REPO) return;
+  fetch('https://api.github.com/repos/' + REPO + '/commits?path=apps/garage.html&per_page=15&_t=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(commits) {
+      var idx = 0;
+      function tryNext() {
+        if (idx >= commits.length) return;
+        var sha = commits[idx++].sha;
+        fetch('https://raw.githubusercontent.com/' + REPO + '/' + sha + '/apps/garage.html')
+          .then(function(r) { return r.ok ? r.text() : ''; })
+          .then(function(html) {
+            if (html && html.indexOf('vgrid') >= 0 && html.indexOf('radialWrap') < 0) {
+              var ifr = document.getElementById('activeAppIframe');
+              if (ifr) ifr.srcdoc = html;
+            } else {
+              tryNext();
+            }
+          }).catch(tryNext);
+      }
+      tryNext();
+    }).catch(function() {});
+}
 
 /* ===================== ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРЕДЛОЖЕНИЯ ===================== */
 window.openIdeaForm = function(editId) {
   if (!window.adminMode) return;
-  var it = null;
-  if (editId) {
-    for (var i = 0; i < window.ITEMS.length; i++) {
-      if (window.ITEMS[i].id === editId) { it = window.ITEMS[i]; break; }
-    }
-  }
+  var it = editId ? findIdeaById(editId) : null;
   var curFac = it ? it.fac : (CUR_SEC !== 'all' ? CUR_SEC : 'general');
   var secOpts = SECTIONS.filter(function(s) { return s.k !== 'all'; }).map(function(s) {
     return '<option value="' + s.k + '"' + (s.k === curFac ? ' selected' : '') + '>' + s.ic + ' ' + s.n + '</option>';
@@ -1182,16 +1675,13 @@ window.saveIdeaForm = function(editId) {
   var app   = (document.getElementById('fIdeaApp').value || '').trim();
   if (!title) { toast('Введите заголовок предложения', true); return; }
 
-  var it = null;
-  if (editId) {
-    for (var i = 0; i < window.ITEMS.length; i++) {
-      if (window.ITEMS[i].id === editId) { it = window.ITEMS[i]; break; }
-    }
-  }
+  var it = editId ? findIdeaById(editId) : null;
   if (!it) {
     it = {
       id: 'idea_' + Date.now().toString(36),
-      date: new Date().toISOString().slice(0, 10)
+      date: new Date().toISOString().slice(0, 10),
+      images: [],
+      videos: []
     };
     window.ITEMS.unshift(it);
   }
@@ -1230,7 +1720,13 @@ document.getElementById('searchInp').addEventListener('input', function() {
 });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') {
+    if (document.getElementById('mediaLb').classList.contains('show')) {
+      closeMediaLb();
+      return;
+    }
+    closeModal();
+  }
 });
 
 /* ===================== ЗАПУСК ===================== */
@@ -1238,13 +1734,18 @@ window.ITEMS = loadLocalIdeasFromAllBrowserKeys();
 render();
 scanRepoTree();
 
-recoverIdeasFromGitHubHistory().then(function(recoveredLists) {
+loadIdeasFromIdb().then(function(idbData) {
+  if (idbData && Array.isArray(idbData.items) && idbData.items.length) {
+    window.ITEMS = mergeAndCleanIdeas([idbData.items, window.ITEMS]);
+    render();
+  }
+  return recoverIdeasFromGitHubHistory();
+}).then(function(recoveredLists) {
   if (recoveredLists && recoveredLists.length) {
-    window.ITEMS = mergeAndCleanIdeas(recoveredLists.concat([window.ITEMS]));
+    window.ITEMS = mergeAndCleanIdeas([window.ITEMS].concat(recoveredLists));
     window.ITEMS.forEach(autoBindAppUrl);
     saveLocalIdeas();
     render();
-    pushIdeasToGitHub();
   }
 });
 </script>
