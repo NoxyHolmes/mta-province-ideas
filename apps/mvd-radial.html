@@ -47,13 +47,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   position:fixed;
   top:14px;
   left:18px;
-  width:650px;
+  width:680px;
   max-width:calc(100vw - 36px);
   z-index:500;
   pointer-events:none;
 }
 .chat-box{
-  background:rgba(10,12,16,.84);
+  background:rgba(10,12,16,.86);
   backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,.08);
   border-left:3px solid var(--acc);
@@ -61,8 +61,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:9px 13px;
   box-shadow:0 12px 32px rgba(0,0,0,.55);
   pointer-events:auto;
-  max-height:190px;
+  max-height:205px;
   overflow-y:auto;
+  min-height:42px;
 }
 .chat-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:800;margin-bottom:5px}
 .chat-line{font-size:12px;line-height:1.48;margin-bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
@@ -70,7 +71,27 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 .chat-line.mega-yellow{color:#fde047;font-weight:800}
 .chat-line.mega-red{color:#ff5c5c;font-weight:900}
 .chat-line.mega-cyan{color:#38bdf8;font-weight:900}
+.chat-line.sys-info{color:#6ee7b7;font-weight:800}
+.chat-line.sys-warn{color:#fbbf24;font-weight:800}
 .chat-line.err{color:#f87171;font-weight:700}
+
+#towHudBadge{
+  position:fixed;
+  top:58px;
+  right:18px;
+  z-index:510;
+  background:rgba(18,24,34,.94);
+  border:1px solid rgba(245,158,11,.45);
+  border-left:4px solid #f59e0b;
+  border-radius:12px;
+  padding:10px 14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.6);
+  display:none;
+  min-width:250px;
+}
+.th-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;color:#fcd34d}
+.th-sub{font-size:11.5px;color:#e2e8f0;margin-top:3px;font-weight:600}
+.th-timer{font-size:14px;font-weight:900;color:#34d399;margin-top:4px}
 
 #demoTopCtl{
   position:fixed;
@@ -91,8 +112,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   font-size:12px;
   cursor:pointer;
   transition:.18s;
+  font-family:inherit;
 }
 .d-btn:hover{border-color:var(--acc)}
+.d-btn.warn:hover{border-color:var(--red);color:#fca5a5}
 
 #trunkKeyHint{
   position:fixed;
@@ -174,6 +197,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   fill:rgba(217,119,6,.92);
   stroke:#fef08a;
 }
+.r-sub-sector.lockpick-sec{
+  fill:rgba(76,29,149,.95);
+  stroke:rgba(192,132,252,.7);
+}
+.r-sub-sector.lockpick-sec:hover{
+  fill:rgba(124,58,237,.95);
+  stroke:#f3e8ff;
+}
+.r-sub-sector.unseat-sec{
+  fill:rgba(18,58,48,.96);
+  stroke:rgba(52,211,153,.65);
+}
+.r-sub-sector.unseat-sec:hover{
+  fill:rgba(5,150,105,.92);
+  stroke:#a7f3d0;
+}
+.r-sub-sector.tow-sec{
+  fill:rgba(58,36,14,.96);
+  stroke:rgba(251,191,36,.6);
+}
+.r-sub-sector.tow-sec:hover{
+  fill:rgba(217,119,6,.92);
+  stroke:#fde68a;
+}
 .r-sub-sector.stop-sec{
   fill:rgba(127,29,29,.95);
   stroke:#f87171;
@@ -205,8 +252,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 
 .r-labels{position:absolute;inset:0;pointer-events:none;z-index:4}
 .r-lbl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;width:82px}
-.r-lbl .ic{font-size:16px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))}
-.r-lbl .nm{font-size:9.5px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.12}
+.r-lbl .ic{font-size:15px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))}
+.r-lbl .nm{font-size:9px;font-weight:800;color:#e2e8f0;text-shadow:0 2px 4px rgba(0,0,0,.95);line-height:1.1}
 
 .act-modal-back{
   position:fixed;
@@ -220,18 +267,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   padding:16px;
 }
 .act-modal{
-  width:560px;
+  width:650px;
   max-width:96vw;
   background:#161b24;
   border:1px solid rgba(255,255,255,.14);
   border-radius:16px;
   padding:18px 20px;
   box-shadow:0 25px 70px rgba(0,0,0,.75);
-  max-height:85vh;
+  max-height:86vh;
   overflow-y:auto;
 }
-.act-m-title{font-weight:900;font-size:16px;color:#fff;margin-bottom:12px}
-.act-m-sub{font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.45}
+.act-m-title{font-weight:900;font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .act-opt{
   display:flex;
   align-items:center;
@@ -246,8 +292,107 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
   transition:.15s;
 }
 .act-opt:hover{border-color:#60a5fa;background:#263145}
+.act-opt.disabled{opacity:.45;cursor:not-allowed}
 .act-opt b{font-size:13px;color:#fff;display:block}
 .act-opt span{font-size:11.5px;color:#94a3b8;line-height:1.45;display:block;margin-top:3px}
+.tow-info-card{
+  background:rgba(245,158,11,.08);
+  border:1px solid rgba(245,158,11,.32);
+  border-radius:12px;
+  padding:12px 14px;
+  font-size:12px;
+  color:#e2e8f0;
+  line-height:1.55;
+  margin-bottom:14px;
+}
+.tow-info-card b{color:#fcd34d}
+
+/* МИНИ-ИГРА ВЗЛОМА НАРУЧНИКОВ ОТВЁРТКОЙ */
+.lockpick-box{
+  background:#111621;
+  border:1px solid #2b384e;
+  border-radius:14px;
+  padding:18px;
+  text-align:center;
+  margin-bottom:14px;
+}
+.lp-Cylinder{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  background:radial-gradient(circle,#263246,#111722);
+  border:4px solid #475569;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:38px;
+  box-shadow:inset 0 4px 14px rgba(0,0,0,.85);
+  position:relative;
+}
+.lp-track{
+  position:relative;
+  height:28px;
+  background:#192130;
+  border:1px solid #334155;
+  border-radius:14px;
+  overflow:hidden;
+  margin:14px 0;
+}
+.lp-zone{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:35%;
+  width:30%;
+  background:rgba(16,185,129,.28);
+  border-left:2px solid #10b981;
+  border-right:2px solid #10b981;
+}
+.lp-cursor{
+  position:absolute;
+  top:2px;
+  bottom:2px;
+  width:10px;
+  border-radius:5px;
+  background:#fbbf24;
+  box-shadow:0 0 12px #fbbf24;
+  left:0%;
+}
+
+.mega-owner-box{
+  background:rgba(37,99,235,.08);
+  border:1px dashed rgba(96,165,250,.4);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+.mega-owner-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#93c5fd;margin-bottom:8px}
+.mega-owner-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mega-inp,.mega-sel{
+  background:#111620;
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+  padding:8px 11px;
+  border-radius:9px;
+  font-size:12.5px;
+  font-family:inherit;
+  outline:none;
+}
+.mega-inp:focus,.mega-sel:focus{border-color:#60a5fa}
+.mega-badge-audio{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:10.5px;
+  font-weight:800;
+  color:#34d399;
+  background:rgba(16,185,129,.14);
+  border:1px solid rgba(16,185,129,.35);
+  padding:2px 7px;
+  border-radius:6px;
+  margin-left:6px;
+}
 
 /* ================= СЛУЖЕБНОЕ УДОСТОВЕРЕНИЕ МВД РФ ================= */
 #idCardModal{
@@ -527,21 +672,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 </head>
 <body>
 
+<!-- ЧИСТЫЙ ЧАТ БЕЗ ЛЮБЫХ ПОДСКАЗОК -->
 <div id="rpChat">
   <div class="chat-box" id="chatBox">
     <div class="chat-hdr">
       <span>💬 Игровой чат</span>
       <span style="color:#6ee7b7">● MTA:Province</span>
     </div>
-    <div id="chatMessages">
-      <div class="chat-line me">* Нажмите на сектор «Фракционное», чтобы открыть полукруг служебных действий.</div>
-    </div>
+    <div id="chatMessages"></div>
   </div>
+</div>
+
+<!-- Виджет статуса эвакуации ТС -->
+<div id="towHudBadge">
+  <div class="th-title" id="towHudTitle">🪝 Эвакуация автомобиля</div>
+  <div class="th-sub" id="towHudSub">Toyota Camry XV70 (А777АА 77)</div>
+  <div class="th-timer" id="towHudTimer">Осталось: 05:00</div>
 </div>
 
 <div id="demoTopCtl">
   <button class="d-btn" onclick="resetDemo()">🔄 Сброс</button>
 </div>
+
+<input type="file" id="megaOwnerAudioInp" accept="audio/*" style="display:none">
 
 <div id="gameScene">
   <div class="road-bg"></div>
@@ -551,14 +704,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
     <div class="r-labels" id="radialLabels"></div>
     <div class="radial-center" id="radialCenter" onclick="toggleFacArc(false)">
       <div class="rc-title" id="rcTitle">Взаимодействие</div>
-      <div class="rc-sub" id="rcSub">Нажмите «Фракционное»</div>
+      <div class="rc-sub" id="rcSub"></div>
     </div>
   </div>
 
   <div id="trunkKeyHint">
-    <span onclick="tryOpenTrunkSearch()" style="cursor:pointer">Возле авто · Нажмите <kbd>E</kbd> для осмотра багажника</span>
+    <span onclick="tryOpenTrunkSearch()" style="cursor:pointer">Возле авто · <kbd>E</kbd> Багажник</span>
     <span class="trunk-toggle" id="btnTrunkLock" onclick="toggleTrunkLock()">🔓 Багажник: Открыт</span>
     <span class="trunk-toggle" id="btnTintMeter" onclick="toggleTintMeter()">📟 Замерщик тонировки: В руках</span>
+    <span class="trunk-toggle" id="btnScrewdriver" onclick="toggleScrewdriver()">🪛 Отвёртка: Есть в инвентаре</span>
   </div>
 </div>
 
@@ -729,6 +883,40 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0d0e11;color:var(--
 <div id="itemPopover"></div>
 
 <script>
+/* ===================== ПРОВЕРКА РЕЖИМА ВЛАДЕЛЬЦА И РЕПОЗИТОРИЯ ===================== */
+var REPO = (function() {
+  var h = location.hostname, p = location.pathname;
+  if (!/\.github\.io$/.test(h)) return 'noxyholmes/mta-province-ideas';
+  var owner = h.replace(/\.github\.io$/, '');
+  var seg = p.split('/').filter(Boolean);
+  return owner + '/' + (seg.length ? seg[0] : (owner + '.github.io'));
+})();
+var BRANCH = 'main';
+var MEGA_GH_FILE = 'megaphone_data.json';
+var MAIN_KEY_K = 'idea_admin_key';
+
+function isOwnerActive() {
+  try {
+    if (window.parent && window.parent !== window) {
+      if (typeof window.parent.adminMode === 'boolean') return !!window.parent.adminMode;
+      var pDoc = window.parent.document;
+      if (pDoc && pDoc.body && pDoc.body.classList.contains('adm')) return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function getOwnerToken() {
+  try {
+    if (window.parent && window.parent !== window && window.parent.localStorage) {
+      var t = window.parent.localStorage.getItem(MAIN_KEY_K);
+      if (t) return t.trim();
+    }
+    return (localStorage.getItem(MAIN_KEY_K) || '').trim();
+  } catch (e) { return ''; }
+}
+
+/* ===================== ИКОНКИ И БАЗОВЫЕ ДАННЫЕ ===================== */
 var SVG_ICONS = {
   pistol1: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#d1d5db" opacity=".25"/><g transform="rotate(-22 32 32)"><path d="M12 22h36l2 3v5H28l-3 16h-9l3-16-5-2z" fill="#374151"/><path d="M14 23h32v3H14z" fill="#6b7280"/><rect x="17" y="30" width="6" height="12" rx="1" fill="#4b3621"/></g></svg>',
   ammo2: '<svg viewBox="0 0 64 64"><g transform="translate(15,10)"><path d="M4 16 C4 6, 12 6, 12 16 Z" fill="#b45309"/><rect x="3" y="16" width="10" height="26" rx="1" fill="#d97706"/><rect x="2" y="42" width="12" height="3" fill="#92400e"/></g><g transform="translate(33,10)"><path d="M4 16 C4 6, 12 6, 12 16 Z" fill="#b45309"/><rect x="3" y="16" width="10" height="26" rx="1" fill="#f59e0b"/><rect x="2" y="42" width="12" height="3" fill="#92400e"/></g></svg>',
@@ -752,6 +940,7 @@ var OFFICER_NAME = 'Евгений Холмс';
 var SUSPECT_NAME = 'Sergey_Vorovskoy';
 var TRUNK_OPEN = true;
 var HAS_TINT_METER = true;
+var HAS_SCREWDRIVER = true;
 var SEARCH_MODE = 'player';
 var FAC_ARC_OPEN = false;
 var CUFFED = false;
@@ -759,18 +948,208 @@ var ATTACHED_ENV = false;
 var IN_CAR_SUSPECTS = [];
 var ACTIVE_PURSUIT = null;
 
+var TOW_STATE = {
+  stage: 'idle',
+  carName: 'Toyota Camry XV70',
+  plate: 'А777АА 77',
+  owner: 'Sergey_Vorovskoy',
+  secondsLeft: 300,
+  timerId: null
+};
+
 var CUFFED_CANDIDATES = [
   { name: 'Sergey_Vorovskoy', id: 142, status: 'В наручниках' },
   { name: 'Maksim_Saraev',    id: 289, status: 'В наручниках' }
 ];
 
-var MEGAPHONE_PHRASES = [
-  { txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!', cls: 'mega-yellow', col: '#fde047' },
-  { txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!', cls: 'mega-yellow', col: '#fde047' },
-  { txt: 'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!', cls: 'mega-cyan', col: '#38bdf8' },
-  { txt: 'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!', cls: 'mega-red', col: '#ff5c5c' },
-  { txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!', cls: 'mega-cyan', col: '#38bdf8' }
+var DEFAULT_MEGAPHONE_PHRASES = [
+  { id: 'm1', txt: 'Впереди идущий автомобиль, прижимаемся к обочине и глушим двигатель!', cls: 'mega-yellow', col: '#fde047', audio: '' },
+  { id: 'm2', txt: 'Водитель, немедленно остановите транспортное средство и оставайтесь на своих местах!', cls: 'mega-yellow', col: '#fde047', audio: '' },
+  { id: 'm3', txt: 'Уступите дорогу патрульному автомобилю с включёнными спецсигналами!', cls: 'mega-cyan', col: '#38bdf8', audio: '' },
+  { id: 'm4', txt: 'В случае неподчинения законному требованию полиции мы откроем огонь по колёсам!', cls: 'mega-red', col: '#ff5c5c', audio: '' },
+  { id: 'm5', txt: 'Граждане, соблюдайте спокойствие и освободите проезжую часть!', cls: 'mega-cyan', col: '#38bdf8', audio: '' }
 ];
+
+var MEGAPHONE_PHRASES = [];
+
+/* ===================== МГНОВЕННАЯ СИНХРОНИЗАЦИЯ МЕЖДУ ВСЕМИ ПРЕДЛОЖЕНИЯМИ РАДИАЛЬНОГО МЕНЮ ===================== */
+var MEGA_IDB_NAME = 'mvd_megaphone_db_v2';
+var MEGA_IDB_STORE = 'phrases_store';
+var MEGA_CUSTOMIZED_KEY = 'mvd_mega_customized_v2';
+var MEGA_REV_KEY = 'mvd_mega_rev_v2';
+var MEGA_TEXT_LS_KEY = 'mvd_mega_phrases_meta_v2';
+var localMegaRev = parseInt(localStorage.getItem(MEGA_REV_KEY) || '0', 10) || 0;
+
+var radialSyncChannel = null;
+try {
+  if (typeof BroadcastChannel !== 'undefined') {
+    radialSyncChannel = new BroadcastChannel('mvd_radial_sync_channel');
+    radialSyncChannel.onmessage = function(ev) {
+      if (ev.data && Array.isArray(ev.data.phrases)) {
+        MEGAPHONE_PHRASES = ev.data.phrases;
+        localMegaRev = ev.data.rev || localMegaRev;
+      }
+    };
+  }
+} catch (e) {}
+
+window.addEventListener('storage', function(ev) {
+  if (ev.key === MEGA_REV_KEY || ev.key === MEGA_TEXT_LS_KEY) {
+    loadMegaFromIdb().then(function(st) {
+      if (st && Array.isArray(st.phrases)) {
+        MEGAPHONE_PHRASES = st.phrases;
+      }
+    });
+  }
+});
+
+function openMegaIdb() {
+  return new Promise(function(resolve, reject) {
+    if (!window.indexedDB) { reject(new Error('no idb')); return; }
+    var req = window.indexedDB.open(MEGA_IDB_NAME, 1);
+    req.onupgradeneeded = function(ev) {
+      var db = ev.target.result;
+      if (!db.objectStoreNames.contains(MEGA_IDB_STORE)) {
+        db.createObjectStore(MEGA_IDB_STORE);
+      }
+    };
+    req.onsuccess = function(ev) { resolve(ev.target.result); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+
+function loadMegaFromIdb() {
+  return openMegaIdb().then(function(db) {
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(MEGA_IDB_STORE, 'readonly');
+        var st = tx.objectStore(MEGA_IDB_STORE);
+        var r = st.get('mega_state');
+        r.onsuccess = function() { resolve(r.result || null); };
+        r.onerror = function() { resolve(null); };
+      } catch (e) { resolve(null); }
+    });
+  }).catch(function() { return null; });
+}
+
+function saveMegaToIdb() {
+  localMegaRev++;
+  try {
+    localStorage.setItem(MEGA_CUSTOMIZED_KEY, '1');
+    localStorage.setItem(MEGA_REV_KEY, String(localMegaRev));
+    localStorage.setItem(MEGA_TEXT_LS_KEY, JSON.stringify(MEGAPHONE_PHRASES.map(function(p) {
+      return { id: p.id, txt: p.txt, cls: p.cls, col: p.col, audio: p.audio || '' };
+    })));
+  } catch (e) {}
+
+  if (radialSyncChannel) {
+    try { radialSyncChannel.postMessage({ rev: localMegaRev, phrases: MEGAPHONE_PHRASES }); } catch (e) {}
+  }
+
+  return openMegaIdb().then(function(db) {
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(MEGA_IDB_STORE, 'readwrite');
+        var st = tx.objectStore(MEGA_IDB_STORE);
+        st.put({ rev: localMegaRev, customized: true, phrases: MEGAPHONE_PHRASES }, 'mega_state');
+        tx.oncomplete = function() { resolve(true); };
+        tx.onerror = function() { resolve(false); };
+      } catch (e) { resolve(false); }
+    });
+  }).catch(function() { return false; });
+}
+
+function b64e(s) { return btoa(unescape(encodeURIComponent(s))); }
+function b64d(s) { return decodeURIComponent(escape(atob(s))); }
+
+function syncMegaphoneToGitHub() {
+  saveMegaToIdb();
+  var tok = getOwnerToken();
+  if (!REPO || !isOwnerActive() || !tok) return;
+  var payload = JSON.stringify({
+    rev: localMegaRev,
+    customized: true,
+    updated: Date.now(),
+    phrases: MEGAPHONE_PHRASES
+  });
+  var headers = {
+    Authorization: 'token ' + tok,
+    Accept: 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+  var dataSha = null;
+  fetch('https://api.github.com/repos/' + REPO + '/git/blobs', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({ content: b64e(payload), encoding: 'base64' })
+  }).then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(blobObj) {
+      dataSha = blobObj.sha;
+      return fetch('https://api.github.com/repos/' + REPO + '/git/refs/heads/' + BRANCH + '?_t=' + Date.now(), { headers: headers, cache: 'no-store' });
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(refObj) {
+      var headSha = refObj.object.sha;
+      return fetch('https://api.github.com/repos/' + REPO + '/git/commits/' + headSha + '?_t=' + Date.now(), { headers: headers, cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(cm) { return { headSha: headSha, treeSha: cm.tree.sha }; });
+    })
+    .then(function(base) {
+      return fetch('https://api.github.com/repos/' + REPO + '/git/trees', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          base_tree: base.treeSha,
+          tree: [{ path: MEGA_GH_FILE, mode: '100644', type: 'blob', sha: dataSha }]
+        })
+      }).then(function(r) { return r.json(); })
+        .then(function(nt) {
+          return fetch('https://api.github.com/repos/' + REPO + '/git/commits', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ message: 'megaphone sync rev ' + localMegaRev, tree: nt.sha, parents: [base.headSha] })
+          });
+        });
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(nc) {
+      return fetch('https://api.github.com/repos/' + REPO + '/git/refs/heads/' + BRANCH, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify({ sha: nc.sha, force: true })
+      });
+    }).catch(function() {});
+}
+
+function initMegaphoneStorage() {
+  var isLocalCustomized = !!localStorage.getItem(MEGA_CUSTOMIZED_KEY);
+  try {
+    var syncMeta = JSON.parse(localStorage.getItem(MEGA_TEXT_LS_KEY) || 'null');
+    if (Array.isArray(syncMeta)) MEGAPHONE_PHRASES = syncMeta;
+  } catch (e) {}
+
+  loadMegaFromIdb().then(function(savedState) {
+    if (savedState && Array.isArray(savedState.phrases)) {
+      MEGAPHONE_PHRASES = savedState.phrases;
+      localMegaRev = Math.max(localMegaRev, savedState.rev || 0);
+    } else if (!isLocalCustomized && !MEGAPHONE_PHRASES.length) {
+      MEGAPHONE_PHRASES = JSON.parse(JSON.stringify(DEFAULT_MEGAPHONE_PHRASES));
+    }
+
+    if (!REPO) return;
+    fetch('https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/' + MEGA_GH_FILE + '?v=' + Date.now(), { cache: 'no-store' })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(j) {
+        if (!j || !Array.isArray(j.phrases)) return;
+        var remoteRev = typeof j.rev === 'number' ? j.rev : 0;
+        if (!isLocalCustomized || remoteRev > localMegaRev) {
+          MEGAPHONE_PHRASES = j.phrases;
+          localMegaRev = remoteRev;
+          saveMegaToIdb();
+        }
+      }).catch(function() {});
+  });
+}
 
 var NEARBY_PLAYERS = [
   { uid: '#У173ТТ4', id: 36, inCar: true,  make: 'BMW M5 F90',        plate: 'Х555АВ 116', role: 'Водитель',  dist: 18 },
@@ -844,32 +1223,62 @@ function renderRadialMenu() {
         name: ATTACHED_ENV ? 'Отцепить от окружения' : 'Прицепить к окружению',
         isAttach: true
       });
+      subList.push({
+        id: 'lockpick_cuffs',
+        ic: '🪛',
+        name: 'Освободить задержанного',
+        isLockpick: true
+      });
     }
     subList.push(
       { id: 'frisk_player', ic: '🔍', name: 'Обыск' },
-      { id: 'frisk_trunk',  ic: '🚘', name: 'Обыск багажника' },
-      { id: 'car_detainee', ic: '🚔', name: IN_CAR_SUSPECTS.length ? 'Вытащить задержанного' : 'Посадить задержанного' },
+      { id: 'frisk_trunk',  ic: '🚘', name: 'Обыск багажника' }
+    );
+
+    if (IN_CAR_SUSPECTS.length < CUFFED_CANDIDATES.length) {
+      subList.push({
+        id: 'seat_detainee',
+        ic: '🚔',
+        name: 'Посадить задержанного (' + IN_CAR_SUSPECTS.length + '/2)'
+      });
+    }
+    if (IN_CAR_SUSPECTS.length > 0) {
+      subList.push({
+        id: 'unseat_detainee',
+        ic: '🚪',
+        name: 'Высадить задержанного (' + IN_CAR_SUSPECTS.length + ')',
+        isUnseat: true
+      });
+    }
+
+    subList.push(
       { id: 'measure_tint', ic: '📟', name: 'Замер тонировки' },
       { id: 'remove_tint',  ic: '🪟', name: 'Снять тонировку' },
+      { id: 'tow_car',      ic: '🪝', name: 'Эвакуация авто', isTow: true },
       { id: 'megaphone',    ic: '📢', name: 'Мегафон' },
       { id: 'pursuit',      ic: ACTIVE_PURSUIT ? '🛑' : '🎯', name: ACTIVE_PURSUIT ? 'Прекратить' : 'Преследование', isStop: !!ACTIVE_PURSUIT }
     );
 
-    var arcStart = -132, arcSpan = 264;
+    var arcStart = -142, arcSpan = 284;
     var subStep = arcSpan / subList.length;
 
     subList.forEach(function(sub, s) {
-      var sa1 = arcStart + s * subStep + 1.0;
-      var sa2 = arcStart + (s + 1) * subStep - 1.0;
+      var sa1 = arcStart + s * subStep + 0.8;
+      var sa2 = arcStart + (s + 1) * subStep - 0.8;
       var sp = document.createElementNS(ns, 'path');
-      sp.setAttribute('d', sectorPath(cx, cy, 180, 272, sa1, sa2));
-      var cls = 'r-sub-sector' + (sub.isAttach ? ' attach-sec' : '') + (sub.isStop ? ' stop-sec' : '');
+      sp.setAttribute('d', sectorPath(cx, cy, 180, 274, sa1, sa2));
+      var cls = 'r-sub-sector' +
+        (sub.isAttach ? ' attach-sec' : '') +
+        (sub.isLockpick ? ' lockpick-sec' : '') +
+        (sub.isUnseat ? ' unseat-sec' : '') +
+        (sub.isTow ? ' tow-sec' : '') +
+        (sub.isStop ? ' stop-sec' : '');
       sp.setAttribute('class', cls);
       sp.addEventListener('click', function() { doFacAction(sub.id); });
       svg.appendChild(sp);
 
       var smid = (sa1 + sa2) / 2;
-      var spos = polarToCartesian(cx, cy, 226, smid);
+      var spos = polarToCartesian(cx, cy, 227, smid);
       var sdiv = document.createElement('div');
       sdiv.className = 'r-lbl';
       sdiv.style.left = spos.x + 'px';
@@ -880,7 +1289,7 @@ function renderRadialMenu() {
   }
 
   document.getElementById('rcTitle').textContent = FAC_ARC_OPEN ? 'Фракционное' : 'Взаимодействие';
-  document.getElementById('rcSub').textContent = FAC_ARC_OPEN ? (ACTIVE_PURSUIT ? ('Погоня: ' + ACTIVE_PURSUIT.uid + ' [' + ACTIVE_PURSUIT.id + ']') : 'Выберите действие сверху') : 'Нажмите «Фракционное»';
+  document.getElementById('rcSub').textContent = ACTIVE_PURSUIT ? ('Погоня: ' + ACTIVE_PURSUIT.uid + ' [' + ACTIVE_PURSUIT.id + ']') : '';
 }
 
 function toggleFacArc(force) {
@@ -903,6 +1312,11 @@ window.doFacAction = function(act) {
     CUFFED = !CUFFED;
     if (!CUFFED) ATTACHED_ENV = false;
     renderRadialMenu();
+    if (CUFFED) {
+      addChat('me', '* ' + OFFICER_NAME + ' снял наручники с пояса и застегнул их на запястьях ' + SUSPECT_NAME);
+    } else {
+      addChat('me', '* ' + OFFICER_NAME + ' вставил ключ в замок наручников, снял их с ' + SUSPECT_NAME + ' и убрал на пояс');
+    }
     return;
   }
   if (act === 'attach_env') {
@@ -915,6 +1329,10 @@ window.doFacAction = function(act) {
     }
     return;
   }
+  if (act === 'lockpick_cuffs') {
+    openLockpickMinigameModal();
+    return;
+  }
   if (act === 'frisk_player') {
     addChat('me', '[Обыск] * ' + OFFICER_NAME + ' надел тактические перчатки и начал обыск гражданина ' + SUSPECT_NAME);
     openSearchMode('player');
@@ -924,8 +1342,12 @@ window.doFacAction = function(act) {
     tryOpenTrunkSearch();
     return;
   }
-  if (act === 'car_detainee') {
-    openCarDetaineeModal();
+  if (act === 'seat_detainee') {
+    openSeatDetaineeModal();
+    return;
+  }
+  if (act === 'unseat_detainee') {
+    openUnseatDetaineeModal();
     return;
   }
   if (act === 'measure_tint') {
@@ -934,6 +1356,10 @@ window.doFacAction = function(act) {
   }
   if (act === 'remove_tint') {
     openTintModal();
+    return;
+  }
+  if (act === 'tow_car') {
+    openTowModal();
     return;
   }
   if (act === 'megaphone') {
@@ -949,51 +1375,295 @@ window.doFacAction = function(act) {
   }
 };
 
-function openCarDetaineeModal() {
+/* ============ МИНИ-ИГРА ВЗЛОМА НАРУЧНИКОВ С ПОМОЩЬЮ ОТВЁРТКИ ИЛИ ОТМЫЧКИ (ШАНС 50%) ============ */
+var lockpickAnimId = null;
+var lockpickCursorPos = 0;
+var lockpickDir = 1;
+
+window.toggleScrewdriver = function() {
+  HAS_SCREWDRIVER = !HAS_SCREWDRIVER;
+  var b = document.getElementById('btnScrewdriver');
+  b.textContent = HAS_SCREWDRIVER ? '🪛 Отвёртка: Есть в инвентаре' : '🪛 Отвёртка: Сломана / Нет';
+  b.className = 'trunk-toggle' + (HAS_SCREWDRIVER ? '' : ' closed');
+};
+
+function stopLockpickLoop() {
+  if (lockpickAnimId) {
+    cancelAnimationFrame(lockpickAnimId);
+    lockpickAnimId = null;
+  }
+}
+
+function openLockpickMinigameModal() {
+  if (!CUFFED) return;
+  if (!HAS_SCREWDRIVER) {
+    addChat('err', '[Система] Для взлома наручников необходима отвёртка или отмычка в инвентаре!');
+    return;
+  }
+  var back = document.getElementById('actModalBack');
+  var box  = document.getElementById('actModalBox');
+
+  box.innerHTML =
+    '<div class="act-m-title"><span>🪛 Взлом наручников отвёрткой · Мини-игра</span></div>' +
+    '<div class="lockpick-box">' +
+      '<div class="lp-Cylinder" id="lpCyl">⛓️</div>' +
+      '<div style="font-size:13px;font-weight:800;color:#fff">Поймайте бегунок в зелёной зоне штифта замка (Шанс взлома: 50%)</div>' +
+      '<div style="font-size:11.5px;color:#94a3b8;margin-top:4px">Отвёртка сломается в любом из исходов после попытки проворота</div>' +
+      '<div class="lp-track">' +
+        '<div class="lp-zone"></div>' +
+        '<div class="lp-cursor" id="lpCursor"></div>' +
+      '</div>' +
+      '<button class="d-btn" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);border-color:#c084fc;padding:11px 24px;font-size:13px" onclick="attemptLockpickStrike()">🪛 Провернуть отвёртку в замке</button>' +
+    '</div>' +
+    '<div style="text-align:right"><button class="d-btn" onclick="stopLockpickLoop();closeActModal()">Отмена</button></div>';
+
+  back.style.display = 'flex';
+  lockpickCursorPos = 5;
+  lockpickDir = 1;
+
+  function stepCursor() {
+    var curEl = document.getElementById('lpCursor');
+    if (!curEl || document.getElementById('actModalBack').style.display !== 'flex') {
+      stopLockpickLoop();
+      return;
+    }
+    lockpickCursorPos += lockpickDir * 2.1;
+    if (lockpickCursorPos >= 96) { lockpickCursorPos = 96; lockpickDir = -1; }
+    if (lockpickCursorPos <= 2)  { lockpickCursorPos = 2;  lockpickDir = 1; }
+    curEl.style.left = lockpickCursorPos + '%';
+    lockpickAnimId = requestAnimationFrame(stepCursor);
+  }
+  stopLockpickLoop();
+  lockpickAnimId = requestAnimationFrame(stepCursor);
+}
+
+window.attemptLockpickStrike = function() {
+  stopLockpickLoop();
+  var inGreenZone = (lockpickCursorPos >= 33 && lockpickCursorPos <= 66);
+  /* Даже при попадании в зону действует 50% шанс успешного проворота пружины */
+  var rngSuccess = Math.random() < 0.5;
+  var finalSuccess = inGreenZone && rngSuccess;
+
+  /* Отвёртка ломается в любом из исходов */
+  HAS_SCREWDRIVER = false;
+  var b = document.getElementById('btnScrewdriver');
+  if (b) {
+    b.textContent = '🪛 Отвёртка: Сломана / Нет';
+    b.className = 'trunk-toggle closed';
+  }
+
+  closeActModal();
+  addChat('me', '* Гражданин вставил отвёртку в замочную скважину наручников ' + SUSPECT_NAME + ' и резко провернул её...');
+
+  setTimeout(function() {
+    if (finalSuccess) {
+      CUFFED = false;
+      ATTACHED_ENV = false;
+      renderRadialMenu();
+      addChat('sys-info', '[Взлом наручников · Успех 50%] Штифт замка щёлкнул! ' + SUSPECT_NAME + ' освобождён из наручников, но отвёртка сломалась.');
+    } else {
+      addChat('err', '[Взлом наручников · Неудача 50%] Отвёртка сломалась внутри механизма замка — освободить задержанного не удалось!');
+    }
+  }, 450);
+};
+
+/* ============ ПОСАДКА И ВЫСАДКА ДО 2 ЗАДЕРЖАННЫХ ОТДЕЛЬНЫМИ КНОПКАМИ ============ */
+function isSuspectInCar(id) {
+  for (var i = 0; i < IN_CAR_SUSPECTS.length; i++) {
+    if (IN_CAR_SUSPECTS[i].id === id) return true;
+  }
+  return false;
+}
+
+function openSeatDetaineeModal() {
   var back = document.getElementById('actModalBack');
   var box = document.getElementById('actModalBox');
-  if (!IN_CAR_SUSPECTS.length) {
-    box.innerHTML =
-      '<div class="act-m-title">🚔 Посадить задержанного в автомобиль</div>' +
-      '<div class="act-m-sub">Выберите задержанного игрока (отображаются только игроки, находящиеся рядом в наручниках):</div>' +
-      CUFFED_CANDIDATES.map(function(c, idx) {
-        return '<div class="act-opt" onclick="putDetaineeInCar(' + idx + ')">' +
-          '<div><b>' + c.name + ' [' + c.id + ']</b><span>Статус: ⛓️ ' + c.status + '</span></div>' +
-          '<span style="color:#60a5fa;font-weight:800;font-size:12px">Посадить →</span>' +
-        '</div>';
-      }).join('') +
-      '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
-  } else {
-    box.innerHTML =
-      '<div class="act-m-title">🚔 Вытащить задержанного из автомобиля</div>' +
-      '<div class="act-m-sub">Выберите задержанного, находящегося в салоне патрульного автомобиля:</div>' +
-      IN_CAR_SUSPECTS.map(function(c, idx) {
-        return '<div class="act-opt" onclick="takeDetaineeFromCar(' + idx + ')">' +
-          '<div><b>' + c.name + ' [' + c.id + ']</b><span>В салоне авто · Пристёгнут ремнём</span></div>' +
-          '<span style="color:#f59e0b;font-weight:800;font-size:12px">Вытащить →</span>' +
-        '</div>';
-      }).join('') +
-      '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
-  }
+  var available = CUFFED_CANDIDATES.filter(function(c) { return !isSuspectInCar(c.id); });
+
+  box.innerHTML =
+    '<div class="act-m-title">🚔 Посадить задержанного в автомобиль (' + IN_CAR_SUSPECTS.length + '/2)</div>' +
+    available.map(function(c) {
+      return '<div class="act-opt" onclick="putDetaineeInCarById(' + c.id + ')">' +
+        '<div><b>' + c.name + ' [' + c.id + ']</b><span>Статус: ⛓️ ' + c.status + ' · На улице</span></div>' +
+        '<span style="color:#60a5fa;font-weight:800;font-size:12px">Посадить →</span>' +
+      '</div>';
+    }).join('') +
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
   back.style.display = 'flex';
 }
 
-window.putDetaineeInCar = function(idx) {
-  var c = CUFFED_CANDIDATES[idx];
-  if (!c) return;
+function openUnseatDetaineeModal() {
+  var back = document.getElementById('actModalBack');
+  var box = document.getElementById('actModalBox');
+
+  box.innerHTML =
+    '<div class="act-m-title">🚪 Высадить задержанного из автомобиля (' + IN_CAR_SUSPECTS.length + ' в салоне)</div>' +
+    IN_CAR_SUSPECTS.map(function(c) {
+      return '<div class="act-opt" onclick="takeDetaineeFromCarById(' + c.id + ')">' +
+        '<div><b>' + c.name + ' [' + c.id + ']</b><span>В салоне авто · Пристёгнут ремнём безопасности</span></div>' +
+        '<span style="color:#34d399;font-weight:800;font-size:12px">Высадить →</span>' +
+      '</div>';
+    }).join('') +
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Отмена</button></div>';
+  back.style.display = 'flex';
+}
+
+window.putDetaineeInCarById = function(suspectId) {
+  var c = null;
+  for (var i = 0; i < CUFFED_CANDIDATES.length; i++) {
+    if (CUFFED_CANDIDATES[i].id === suspectId) { c = CUFFED_CANDIDATES[i]; break; }
+  }
+  if (!c || isSuspectInCar(c.id)) return;
   IN_CAR_SUSPECTS.push(c);
   closeActModal();
   renderRadialMenu();
-  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, посадил ' + c.name + ' в салон, пристегнул ремнём безопасности и закрыл дверь');
+  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, посадил ' + c.name + ' в салон (' + IN_CAR_SUSPECTS.length + '/2), пристегнул ремнём безопасности и закрыл дверь');
 };
 
-window.takeDetaineeFromCar = function(idx) {
-  var c = IN_CAR_SUSPECTS[idx];
+window.takeDetaineeFromCarById = function(suspectId) {
+  var c = null;
+  for (var i = 0; i < IN_CAR_SUSPECTS.length; i++) {
+    if (IN_CAR_SUSPECTS[i].id === suspectId) {
+      c = IN_CAR_SUSPECTS[i];
+      IN_CAR_SUSPECTS.splice(i, 1);
+      break;
+    }
+  }
   if (!c) return;
-  IN_CAR_SUSPECTS.splice(idx, 1);
   closeActModal();
   renderRadialMenu();
-  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, отстегнул ремень безопасности, вытащил ' + c.name + ' из салона и закрыл дверь');
+  addChat('me', '* ' + OFFICER_NAME + ' открыл дверь служебного автомобиля, отстегнул ремень безопасности, высадил ' + c.name + ' из салона и закрыл дверь');
+};
+
+/* ============ СИСТЕМА ЭВАКУАЦИИ АВТОМОБИЛЯ НА ШТРАФСТОЯНКУ (ГИБДД) ============ */
+function formatTimeMMSS(sec) {
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function updateTowHud() {
+  var badge = document.getElementById('towHudBadge');
+  var title = document.getElementById('towHudTitle');
+  var sub   = document.getElementById('towHudSub');
+  var timer = document.getElementById('towHudTimer');
+
+  if (TOW_STATE.stage === 'idle') {
+    badge.style.display = 'none';
+    return;
+  }
+  badge.style.display = 'block';
+  sub.textContent = TOW_STATE.carName + ' (' + TOW_STATE.plate + ') · Владелец: ' + TOW_STATE.owner;
+
+  if (TOW_STATE.stage === 'timer') {
+    title.textContent = '⏳ Таймер эвакуации ТС';
+    timer.style.color = '#fbbf24';
+    timer.textContent = 'До пропажи авто: ' + formatTimeMMSS(TOW_STATE.secondsLeft);
+  } else if (TOW_STATE.stage === 'loaded') {
+    title.textContent = '🪝 Авто на эвакуаторе (Защита активна)';
+    timer.style.color = '#34d399';
+    timer.textContent = '✓ Таймер снят · Не пропадёт при выходе игрока';
+  }
+}
+
+function stopTowInterval() {
+  if (TOW_STATE.timerId) {
+    clearInterval(TOW_STATE.timerId);
+    TOW_STATE.timerId = null;
+  }
+}
+
+function openTowModal() {
+  var back = document.getElementById('actModalBack');
+  var box  = document.getElementById('actModalBox');
+
+  var st = TOW_STATE.stage;
+  box.innerHTML =
+    '<div class="act-m-title">🪝 Эвакуация транспортного средства (Штрафстоянка ГИБДД)</div>' +
+    '<div class="tow-info-card">' +
+      '<b>Механика эвакуации:</b><br>' +
+      '1. При клике на эвакуацию возле машины даётся <b>5 минут на эвакуацию авто</b> до того, как оно пропадёт.<br>' +
+      '2. После погрузки авто на эвакуатор <b>время на эвакуацию пропадает</b>, и <b>даже если игрок выйдет из игры — его авто останется и не пропадёт</b>.<br>' +
+      '3. При сдаче авто в метку штрафстоянки владельцу приходит уведомление об эвакуации ТС и оплате <b>10 000 ₽</b> за услуги эвакуатора и штрафстоянку.' +
+    '</div>' +
+
+    '<div class="act-opt" onclick="startTowProcess()">' +
+      '<div>' +
+        '<b>1. Начать эвакуацию авто (Таймер 5 минут)</b>' +
+        '<span>Транспорт рядом: ' + TOW_STATE.carName + ' [' + TOW_STATE.plate + '] · Владелец: ' + TOW_STATE.owner + '</span>' +
+      '</div>' +
+      '<span style="color:#fbbf24;font-weight:800;font-size:12px">Начать →</span>' +
+    '</div>' +
+
+    '<div class="act-opt' + (st === 'idle' ? ' disabled' : '') + '" onclick="loadCarOntoTowTruck()">' +
+      '<div>' +
+        '<b>2. Поставить авто на эвакуатор (Отключить таймер + Защита от выхода)</b>' +
+        '<span>Время пропадает · Авто не исчезнет при выходе владельца</span>' +
+      '</div>' +
+      '<span style="color:#60a5fa;font-weight:800;font-size:12px">Погрузить →</span>' +
+    '</div>' +
+
+    '<div class="act-opt' + (st !== 'loaded' ? ' disabled' : '') + '" onclick="deliverCarToImpoundLot()">' +
+      '<div>' +
+        '<b>3. Доставить на штрафстоянку и сдать в метку (10 000 ₽)</b>' +
+        '<span>Уведомление владельцу об эвакуации и оплате 10 000 ₽</span>' +
+      '</div>' +
+      '<span style="color:#34d399;font-weight:800;font-size:12px">Сдать в метку →</span>' +
+    '</div>' +
+
+    '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
+
+  back.style.display = 'flex';
+}
+
+window.startTowProcess = function() {
+  stopTowInterval();
+  TOW_STATE.stage = 'timer';
+  TOW_STATE.secondsLeft = 300;
+  closeActModal();
+  updateTowHud();
+
+  addChat('me', '* ' + OFFICER_NAME + ' сфотографировал нарушение правил парковки автомобиля ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') и начал процедуру эвакуации');
+  addChat('sys-warn', '[Эвакуация] У вас есть 5 минут на эвакуацию автомобиля ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + '), до того как он пропадёт!');
+
+  TOW_STATE.timerId = setInterval(function() {
+    if (TOW_STATE.stage !== 'timer') {
+      stopTowInterval();
+      return;
+    }
+    TOW_STATE.secondsLeft--;
+    if (TOW_STATE.secondsLeft <= 0) {
+      stopTowInterval();
+      TOW_STATE.stage = 'idle';
+      updateTowHud();
+      addChat('err', '[Эвакуация] Время (5 минут) истекло — автомобиль не был погружен на эвакуатор.');
+      return;
+    }
+    updateTowHud();
+  }, 1000);
+};
+
+window.loadCarOntoTowTruck = function() {
+  if (TOW_STATE.stage === 'idle') return;
+  stopTowInterval();
+  TOW_STATE.stage = 'loaded';
+  closeActModal();
+  updateTowHud();
+
+  addChat('me', '* ' + OFFICER_NAME + ' закрепил буксировочный трос и погрузил автомобиль ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') на платформу эвакуатора');
+  addChat('sys-info', '[Эвакуация] Автомобиль поставлен на эвакуатор! Таймер 5 минут отключён: даже если владелец (' + TOW_STATE.owner + ') выйдет из игры, его авто останется и не пропадёт.');
+};
+
+window.deliverCarToImpoundLot = function() {
+  if (TOW_STATE.stage !== 'loaded') return;
+  stopTowInterval();
+  TOW_STATE.stage = 'idle';
+  closeActModal();
+  updateTowHud();
+
+  addChat('me', '* ' + OFFICER_NAME + ' доставил автомобиль ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') на штрафстоянку ГИБДД и оформил протокол задержания ТС');
+  addChat('sys-info', '[Штрафстоянка] Вы успешно сдали ' + TOW_STATE.carName + ' (' + TOW_STATE.plate + ') на метку штрафстоянки.');
+  addChat('sys-warn', '[Уведомление владельцу ' + TOW_STATE.owner + '] Ваше транспортное средство (' + TOW_STATE.carName + ', ' + TOW_STATE.plate + ') было эвакуировано на штрафстоянку! Вам необходимо заплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку, прежде чем вы сможете забрать своё ТС.');
 };
 
 window.toggleTintMeter = function() {
@@ -1017,7 +1687,6 @@ function openMeasureTintModal() {
   ];
   box.innerHTML =
     '<div class="act-m-title">📟 Замер светопропускаемости стёкол</div>' +
-    '<div class="act-m-sub">Выберите стекло автомобиля для замера прибором «Тоник»:</div>' +
     glasses.map(function(g) {
       return '<div class="act-opt" onclick="doMeasureGlass(\'' + g.name + '\',\'' + g.res + '\')">' +
         '<div><b>' + g.name + '</b><span>Прибор замера тонировки активен</span></div>' +
@@ -1043,7 +1712,6 @@ function openTintModal() {
   ];
   box.innerHTML =
     '<div class="act-m-title">🪟 Снятие тонировки (ГИБДД)</div>' +
-    '<div class="act-m-sub">Снятию подлежит только тонировка лобового стекла и передних боковых стёкол:</div>' +
     glasses.map(function(g) {
       return '<div class="act-opt" onclick="removeTintGlass(\'' + g.name + '\')">' +
         '<div><b>' + g.name + '</b><span>' + g.sub + '</span></div>' +
@@ -1060,29 +1728,249 @@ window.removeTintGlass = function(actionName) {
   addChat('me', '* ' + OFFICER_NAME + ' поддел край плёнки и снял тонировку ' + glassPart);
 };
 
-/* ============ МЕГАФОН (ТОЛЬКО ЧАТ, БЕЗ ОЗВУЧКИ И БЕЗ ОПИСАНИЯ) ============ */
+/* =========================================================================
+   МЕГАФОН:
+   - Встроенный щелчок нажатия и отпускания рации
+   - Мгновенная синхронизация между всеми предложениями
+   ========================================================================= */
+var radioCtx = null;
+var currentMegaAudio = null;
+var uploadAudioTargetIdx = null;
+
+function getRadioAudioCtx() {
+  if (!radioCtx) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) radioCtx = new AC();
+  }
+  if (radioCtx && radioCtx.state === 'suspended') {
+    radioCtx.resume();
+  }
+  return radioCtx;
+}
+
+function playRadioTangentaClick(isPress) {
+  try {
+    var ctx = getRadioAudioCtx();
+    if (!ctx) return;
+    var sr = ctx.sampleRate;
+    var dur = isPress ? 0.065 : 0.11;
+    var buf = ctx.createBuffer(1, Math.floor(sr * dur), sr);
+    var d = buf.getChannelData(0);
+
+    var p1 = 0;
+    var p2 = Math.floor(sr * 0.015);
+    for (var i = 0; i < d.length; i++) {
+      var v = 0;
+      if (i >= p1 && i < p1 + sr * 0.006) {
+        var t1 = (i - p1) / (sr * 0.006);
+        v += ((Math.random() * 2 - 1) * 0.7 + Math.sin(t1 * Math.PI * 5) * 0.5) * Math.exp(-t1 * 6);
+      }
+      if (i >= p2 && i < p2 + sr * 0.008) {
+        var t2 = (i - p2) / (sr * 0.008);
+        v += ((Math.random() * 2 - 1) * 0.8 + Math.sin(t2 * Math.PI * 4) * 0.4) * Math.exp(-t2 * 7);
+      }
+      if (!isPress && i > p2) {
+        var env = Math.exp(-(i - p2) / (sr * 0.025));
+        v += (Math.random() * 2 - 1) * env * 0.35;
+      }
+      d[i] = v;
+    }
+
+    var src = ctx.createBufferSource();
+    src.buffer = buf;
+
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = isPress ? 1050 : 920;
+    filter.Q.value = 1.3;
+
+    var gain = ctx.createGain();
+    gain.gain.value = 1.15;
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    src.start();
+  } catch (e) {}
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function openMegaphoneModal() {
   var back = document.getElementById('actModalBack');
-  var box = document.getElementById('actModalBox');
-  box.innerHTML =
-    '<div class="act-m-title">📢 Мегафон</div>' +
-    MEGAPHONE_PHRASES.map(function(phr, idx) {
-      return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
-        '<div><b>Фраза №' + (idx + 1) + '</b><span style="color:' + phr.col + '">«' + phr.txt + '»</span></div>' +
-        '<span style="color:' + phr.col + ';font-weight:800;font-size:12px">Сказать →</span>' +
+  var box  = document.getElementById('actModalBox');
+  var ownerMode = isOwnerActive();
+
+  var ownerPanelHtml = '';
+  if (ownerMode) {
+    ownerPanelHtml =
+      '<div class="mega-owner-box">' +
+        '<div class="mega-owner-title">👑 Панель владельца · Добавить новый текст мегафона</div>' +
+        '<div class="mega-owner-row">' +
+          '<input type="text" class="mega-inp" id="newMegaTxtInp" style="flex:1;min-width:220px" placeholder="Введите новый текст мегафона…">' +
+          '<select class="mega-sel" id="newMegaColSel">' +
+            '<option value="mega-yellow|#fde047">🟡 Жёлтый</option>' +
+            '<option value="mega-cyan|#38bdf8">🔵 Голубой</option>' +
+            '<option value="mega-red|#ff5c5c">🔴 Красный</option>' +
+          '</select>' +
+          '<button class="d-btn" style="background:#2563eb;border-color:#60a5fa" onclick="ownerAddMegaphonePhrase()">＋ Добавить</button>' +
+        '</div>' +
       '</div>';
-    }).join('') +
+  }
+
+  var listHtml = MEGAPHONE_PHRASES.length
+    ? MEGAPHONE_PHRASES.map(function(phr, idx) {
+        var hasAudio = !!(phr.audio && phr.audio.length > 50);
+        var audioBadge = hasAudio ? '<span class="mega-badge-audio">🔊 Запись загружена</span>' : '';
+        var ownerTools = '';
+        if (ownerMode) {
+          ownerTools =
+            '<div style="display:flex;align-items:center;gap:5px;flex-shrink:0" onclick="event.stopPropagation()">' +
+              '<button class="d-btn" style="padding:6px 10px;font-size:11px;border-color:' + (hasAudio ? '#10b981' : 'rgba(255,255,255,.2)') + '" onclick="ownerTriggerUploadAudio(' + idx + ')" title="Загрузить аудиозапись (MP3/WAV/OGG) для этой фразы">' +
+                (hasAudio ? '📂 Заменить запись' : '📂 Загрузить запись') +
+              '</button>' +
+              (hasAudio ? '<button class="d-btn warn" style="padding:6px 8px;font-size:11px" onclick="ownerRemovePhraseAudio(' + idx + ')" title="Удалить аудиозапись">🔇</button>' : '') +
+              '<button class="d-btn" style="padding:6px 8px;font-size:11px" onclick="ownerEditMegaphonePhrase(' + idx + ')" title="Редактировать текст фразы">✏️</button>' +
+              '<button class="d-btn warn" style="padding:6px 8px;font-size:11px" onclick="ownerDeleteMegaphonePhrase(' + idx + ')" title="Удалить фразу">🗑</button>' +
+            '</div>';
+        } else {
+          ownerTools = '<span style="color:' + phr.col + ';font-weight:800;font-size:12px;flex-shrink:0">Сказать →</span>';
+        }
+
+        return '<div class="act-opt" onclick="useMegaphonePhrase(' + idx + ')">' +
+          '<div style="flex:1;min-width:0">' +
+            '<b>Фраза №' + (idx + 1) + audioBadge + '</b>' +
+            '<span style="color:' + phr.col + '">«' + escHtml(phr.txt) + '»</span>' +
+          '</div>' +
+          ownerTools +
+        '</div>';
+      }).join('')
+    : '<div style="padding:20px;text-align:center;color:var(--mut);border:1px dashed rgba(255,255,255,.12);border-radius:12px;margin-bottom:10px">Список фраз мегафона пуст</div>';
+
+  box.innerHTML =
+    '<div class="act-m-title"><span>📢 Мегафон</span></div>' +
+    ownerPanelHtml +
+    listHtml +
     '<div style="text-align:right;margin-top:10px"><button class="d-btn" onclick="closeActModal()">Закрыть</button></div>';
   back.style.display = 'flex';
 }
+
+window.ownerAddMegaphonePhrase = function() {
+  if (!isOwnerActive()) return;
+  var inp = document.getElementById('newMegaTxtInp');
+  var sel = document.getElementById('newMegaColSel');
+  var txt = inp ? inp.value.trim() : '';
+  if (!txt) return;
+  var parts = (sel ? sel.value : 'mega-yellow|#fde047').split('|');
+  MEGAPHONE_PHRASES.push({
+    id: 'm_' + Date.now().toString(36),
+    txt: txt,
+    cls: parts[0] || 'mega-yellow',
+    col: parts[1] || '#fde047',
+    audio: ''
+  });
+  syncMegaphoneToGitHub();
+  openMegaphoneModal();
+};
+
+window.ownerEditMegaphonePhrase = function(idx) {
+  if (!isOwnerActive()) return;
+  var phr = MEGAPHONE_PHRASES[idx];
+  if (!phr) return;
+  var updated = prompt('Изменить текст мегафона:', phr.txt);
+  if (updated === null) return;
+  updated = updated.trim();
+  if (!updated) return;
+  phr.txt = updated;
+  syncMegaphoneToGitHub();
+  openMegaphoneModal();
+};
+
+window.ownerDeleteMegaphonePhrase = function(idx) {
+  if (!isOwnerActive()) return;
+  var phr = MEGAPHONE_PHRASES[idx];
+  if (!phr) return;
+  if (!confirm('Удалить фразу «' + phr.txt + '»?')) return;
+  MEGAPHONE_PHRASES.splice(idx, 1);
+  syncMegaphoneToGitHub();
+  openMegaphoneModal();
+};
+
+window.ownerTriggerUploadAudio = function(idx) {
+  if (!isOwnerActive()) return;
+  uploadAudioTargetIdx = idx;
+  var fi = document.getElementById('megaOwnerAudioInp');
+  fi.value = '';
+  fi.click();
+};
+
+window.ownerRemovePhraseAudio = function(idx) {
+  if (!isOwnerActive()) return;
+  if (!MEGAPHONE_PHRASES[idx]) return;
+  MEGAPHONE_PHRASES[idx].audio = '';
+  syncMegaphoneToGitHub();
+  openMegaphoneModal();
+};
+
+document.getElementById('megaOwnerAudioInp').addEventListener('change', function() {
+  var file = this.files && this.files[0];
+  if (!file || uploadAudioTargetIdx === null) return;
+  var targetIdx = uploadAudioTargetIdx;
+  uploadAudioTargetIdx = null;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    if (MEGAPHONE_PHRASES[targetIdx]) {
+      MEGAPHONE_PHRASES[targetIdx].audio = ev.target.result;
+      syncMegaphoneToGitHub();
+      openMegaphoneModal();
+    }
+  };
+  reader.readAsDataURL(file);
+});
 
 window.useMegaphonePhrase = function(idx) {
   var phr = MEGAPHONE_PHRASES[idx];
   if (!phr) return;
   closeActModal();
-  addChat('me', '* ' + OFFICER_NAME + ' зажал кнопку мегафона и сказал в него:');
+
+  if (currentMegaAudio) {
+    try { currentMegaAudio.pause(); currentMegaAudio.currentTime = 0; } catch (e) {}
+    currentMegaAudio = null;
+  }
+
+  addChat('me', '* ' + OFFICER_NAME + ' зажал кнопку рации мегафона и сказал в него:');
   addChat(phr.cls, '[Мегафон] ' + OFFICER_NAME + ': ' + phr.txt);
-  addChat('me', '* ' + OFFICER_NAME + ' отпустил кнопку мегафона');
+  playRadioTangentaClick(true);
+
+  var finished = false;
+  function finishReleaseRadio() {
+    if (finished) return;
+    finished = true;
+    currentMegaAudio = null;
+    playRadioTangentaClick(false);
+    addChat('me', '* ' + OFFICER_NAME + ' отжал кнопку рации');
+  }
+
+  if (phr.audio && phr.audio.length > 50) {
+    setTimeout(function() {
+      var audio = new Audio(phr.audio);
+      currentMegaAudio = audio;
+      audio.volume = 1.0;
+      audio.onended = function() {
+        finishReleaseRadio();
+      };
+      audio.onerror = function() {
+        finishReleaseRadio();
+      };
+      audio.play().catch(function() {
+        finishReleaseRadio();
+      });
+    }, 110);
+  } else {
+    setTimeout(finishReleaseRadio, 850);
+  }
 };
 
 function openPursuitModal() {
@@ -1090,7 +1978,6 @@ function openPursuitModal() {
   var box = document.getElementById('actModalBox');
   box.innerHTML =
     '<div class="act-m-title">🎯 Преследование (Игроки в радиусе 100 метров)</div>' +
-    '<div class="act-m-sub">Нажмите на игрока, чтобы начать преследование:</div>' +
     NEARBY_PLAYERS.map(function(p, idx) {
       var details = [];
       details.push('1. Игрок: <b style="color:#fff;display:inline">' + p.uid + ' [' + p.id + ']</b>');
@@ -1133,6 +2020,7 @@ window.stopActivePursuit = function() {
 };
 
 window.closeActModal = function() {
+  stopLockpickLoop();
   document.getElementById('actModalBack').style.display = 'none';
 };
 
@@ -1206,7 +2094,17 @@ function resetDemo() {
   BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
   TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
   SEIZED_BUFFER = [];
+  IN_CAR_SUSPECTS = [];
   ACTIVE_PURSUIT = null;
+  HAS_SCREWDRIVER = true;
+  var sb = document.getElementById('btnScrewdriver');
+  if (sb) {
+    sb.textContent = '🪛 Отвёртка: Есть в инвентаре';
+    sb.className = 'trunk-toggle';
+  }
+  stopTowInterval();
+  TOW_STATE.stage = 'idle';
+  updateTowHud();
   closePopover();
   renderRadialMenu();
   renderInventoryGrids();
@@ -1373,12 +2271,18 @@ document.addEventListener('keydown', function(ev) {
     switchScene('radial');
     return;
   }
+  if (ev.code === 'Space' && lockpickAnimId) {
+    ev.preventDefault();
+    attemptLockpickStrike();
+    return;
+  }
   if ((ev.key === 'e' || ev.key === 'E' || ev.key === 'у' || ev.key === 'У') && document.getElementById('invOverlay').style.display !== 'flex') {
     tryOpenTrunkSearch();
   }
 });
 
 initEquipmentIcons();
+initMegaphoneStorage();
 MAIN_ITEMS = cloneArr(INITIAL_MAIN_ITEMS);
 BP_ITEMS = cloneArr(INITIAL_BP_ITEMS);
 TRUNK_ITEMS = cloneArr(INITIAL_TRUNK_ITEMS);
