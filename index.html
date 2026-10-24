@@ -185,7 +185,6 @@ body{
   border-radius:16px;
   padding:18px 20px;
   transition:all .2s;
-  cursor:pointer;
   position:relative;
 }
 #items > .icard:nth-child(odd){
@@ -201,7 +200,6 @@ body{
 }
 #items > .icard:hover{
   border-color:#58aaff;
-  transform:translateY(-2px);
   box-shadow:0 12px 30px rgba(0,0,0,.45);
 }
 
@@ -230,12 +228,45 @@ body{
   border:1px solid rgba(47,217,122,.35);
   color:#6ee7b7;
 }
-.ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.35}
-.ic-text{font-size:13px;color:var(--mut);line-height:1.58;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.ic-foot{display:flex;align-items:center;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.07);font-size:12px}
+.ic-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.35}
+
+/* Скрытое/раскрываемое описание по кнопке "Открыть / Скрыть" */
+.ic-desc-box{
+  display:none;
+  margin-top:12px;
+  padding:14px 16px;
+  border-radius:12px;
+  background:rgba(11,14,20,.65);
+  border:1px solid rgba(255,255,255,.07);
+  font-size:13.5px;
+  color:#dbe4f3;
+  line-height:1.65;
+  white-space:pre-line;
+}
+.ic-desc-box.open{display:block;animation:fadeIn .18s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}}
+
+/* Таблицы внутри описания (для Глобальной реформы рангов и иерархии) */
+.rank-table-wrap{overflow-x:auto;margin-top:12px;white-space:normal}
+.rank-table{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid #2b384e;border-radius:10px;overflow:hidden}
+.rank-table th{background:#1d2738;color:#93c5fd;font-weight:800;text-align:left;padding:10px 12px;border-bottom:1px solid #2e3d56;text-transform:uppercase;font-size:11px;letter-spacing:.6px}
+.rank-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:#e2e8f0;vertical-align:top}
+.rank-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.rank-table tr:hover td{background:rgba(77,163,255,.08)}
+
+.ic-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:12px;
+  padding-top:11px;
+  border-top:1px dashed rgba(255,255,255,.08);
+}
 .ic-tools{display:flex;gap:6px}
 
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px;white-space:normal}
 .media-grid img,.media-grid video{width:100%;border-radius:12px;border:1px solid var(--line);max-height:260px;object-fit:cover;background:#0e131b}
 
 .back{
@@ -301,7 +332,6 @@ body{
   #side{position:static}
 }
 </style>
-<!-- Подключаем js/config.js если он есть в репозитории -->
 <script src="js/config.js"></script>
 </head>
 <body>
@@ -332,12 +362,7 @@ body{
 <div id="troot"></div>
 
 <script>
-/* =========================================================================
-   АВТОМАТИЧЕСКОЕ ВОССТАНОВЛЕНИЕ ОРИГИНАЛЬНОГО INDEX.HTML ИЗ ИСТОРИИ GITHUB
-   Если оригинальный index.html в репозитории содержал встроенный функциональный
-   телефон и другие модули до случайной замены, мы автоматически проверяем
-   предыдущий коммит index.html и восстанавливаем все модули и карточки!
-   ========================================================================= */
+/* ===================== АВТООПРЕДЕЛЕНИЕ РЕПОЗИТОРИЯ ===================== */
 var REPO = (function() {
   var h = location.hostname, p = location.pathname;
   if (!/\.github\.io$/.test(h)) return 'noxyholmes/mta-province-ideas';
@@ -348,6 +373,7 @@ var REPO = (function() {
 var BRANCH = 'main';
 var IDEAS_DATA_FILE = 'ideas_data.json';
 
+/* ===================== ФРАКЦИИ И РАЗДЕЛЫ ЛЕВОГО МЕНЮ ===================== */
 var SECTIONS = [
   { k: 'all',     grp: 'main', ic: '📋', n: 'Все предложения' },
   { k: 'general', grp: 'main', ic: '💡', n: 'Общие' },
@@ -367,27 +393,62 @@ function secInfo(k) {
   return SECTIONS[1];
 }
 
-/* Все файлы приложений в репозитории */
+/* ===================== КАРТА ИНТЕРАКТИВНЫХ МОДУЛЕЙ ===================== */
 var REPO_ALL_FILES = [];
 var APPS_MAP = {
-  'garage':     'apps/garage.html',
-  'epaulettes': 'apps/epaulettes.html',
-  'mvd-radial': 'apps/mvd-radial.html',
-  'radial':     'apps/mvd-radial.html',
-  'phone':      'apps/phone.html'
+  'garage':         'apps/garage.html',
+  'epaulettes':     'apps/epaulettes.html',
+  'mvd-radial':     'apps/mvd-radial.html',
+  'radial':         'apps/mvd-radial.html',
+  'phone':          'apps/phone.html',
+  'faction-app':    'apps/faction-app.html',
+  'tablet':         'apps/tablet.html'
 };
 
-/* Сохраняем seed из js/config.js, если он загрузился из внешнего файла */
 var EXTERNAL_SEED_FN = (typeof window.seed === 'function') ? window.seed : null;
 
-function fallbackSeed() {
+/* Таблица для предложения «Глобальная реформа системы рангов и должностной иерархии фракций» */
+var RANKS_REFORM_TABLE_HTML =
+  '<div class="rank-table-wrap">' +
+    '<table class="rank-table">' +
+      '<thead>' +
+        '<tr>' +
+          '<th>Ранг</th>' +
+          '<th>МВД (УМВД / ГИБДД)</th>' +
+          '<th>Минобороны (ВС РФ)</th>' +
+          '<th>Минздрав (ЦГБ / ОКБ)</th>' +
+          '<th>Минтранс (РЖД)</th>' +
+          '<th>Типовая должность</th>' +
+        '</tr>' +
+      '</thead>' +
+      '<tbody>' +
+        '<tr><td><b>1</b></td><td>Рядовой полиции</td><td>Рядовой</td><td>Интерн</td><td>Помощник машиниста (стажёр)</td><td>Курсант / Стажёр учебной роты</td></tr>' +
+        '<tr><td><b>2</b></td><td>Младший сержант</td><td>Ефрейтор</td><td>Фельдшер</td><td>Помощник машиниста</td><td>Младший специалист / Патрульный</td></tr>' +
+        '<tr><td><b>3</b></td><td>Сержант</td><td>Младший сержант</td><td>Участковый врач</td><td>Машинист 3 класса</td><td>Инспектор ППС / ДПС / Специалист</td></tr>' +
+        '<tr><td><b>4</b></td><td>Старший сержант</td><td>Сержант</td><td>Врач-терапевт</td><td>Машинист 2 класса</td><td>Старший инспектор / Командир отделения</td></tr>' +
+        '<tr><td><b>5</b></td><td>Старшина / Прапорщик</td><td>Старший сержант / Старшина</td><td>Врач-хирург</td><td>Машинист 1 класса</td><td>Старшина подразделения / Инструктор</td></tr>' +
+        '<tr><td><b>6</b></td><td>Младший лейтенант</td><td>Прапорщик / Мл. лейтенант</td><td>Врач-реаниматолог</td><td>Машинист-инструктор</td><td>Оперуполномоченный / Дознаватель</td></tr>' +
+        '<tr><td><b>7</b></td><td>Лейтенант</td><td>Лейтенант</td><td>Старший специалист</td><td>Дежурный по станции (ДСП)</td><td>Инспектор ОУР / Следователь / Командир взвода</td></tr>' +
+        '<tr><td><b>8</b></td><td>Старший лейтенант</td><td>Старший лейтенант</td><td>Заведующий отделением</td><td>Поездной диспетчер (ДНЦ)</td><td>Старший оперуполномоченный / Зам. ком. роты</td></tr>' +
+        '<tr><td><b>9</b></td><td>Капитан</td><td>Капитан</td><td>Зам. главного врача по МЧ</td><td>Ревизор по безопасности движения</td><td>Командир роты / Начальник смены</td></tr>' +
+        '<tr><td><b>10</b></td><td>Майор</td><td>Майор</td><td>Зам. главного врача по КЭР</td><td>Начальник депо / Станции</td><td>Начальник отдела (ОУР / ОБ ДПС / УЦ)</td></tr>' +
+        '<tr><td><b>11</b></td><td>Подполковник</td><td>Подполковник</td><td>Первый зам. главврача</td><td>Зам. начальника железной дороги</td><td>Заместитель начальника УМВД / ГИБДД / Части</td></tr>' +
+        '<tr><td><b>12</b></td><td>Полковник / Генерал-майор</td><td>Полковник / Генерал-майор</td><td>Главный врач ЦГБ / ОКБ</td><td>Начальник железной дороги</td><td>Начальник управления (Лидер фракции)</td></tr>' +
+      '</tbody>' +
+    '</table>' +
+  '</div>';
+
+/* Базовые предложения (включая объединённое «Фракционное радиальное меню», таблицу рангов, взлом наручников с отвёрткой 50% и все модули) */
+function baseSeedIdeas() {
+  var list = [];
   if (EXTERNAL_SEED_FN) {
     try {
       var ext = EXTERNAL_SEED_FN();
-      if (Array.isArray(ext) && ext.length) return ext;
+      if (Array.isArray(ext)) list = list.concat(ext);
     } catch (e) {}
   }
-  return [
+
+  var core = [
     {
       id: 's2',
       fac: 'general',
@@ -396,67 +457,128 @@ function fallbackSeed() {
       appUrl: 'apps/garage.html'
     },
     {
-      id: 's_epaulettes',
+      id: 's_ranks_reform',
       fac: 'general',
-      title: 'Интерактивный стенд динамических погон (Полиция и Армия)',
-      text: 'Наглядная система погон для подразделений Полиции (УМВД, ОГИБДД, ОМОН / Спецназ / СОБР, Юстиция) в повседневном и парадном исполнении, а также для Вооружённых Сил РФ (Сухопутные войска, ВКС и ВДВ, ВМФ, Росгвардия) от рядового до генерала и Маршала РФ.',
+      title: 'Глобальная реформа системы рангов и должностной иерархии фракций',
+      text: 'Разделение понятий «Специальное / Воинское звание» (Ранг) и «Штатная должность» внутри государственных фракций (МВД, Минобороны, Минздрав, Минтранс), а также введение интерактивного стенда динамических погон для всех подразделений Полиции и Вооружённых Сил РФ.\n\nСводная таблица рангов, званий и должностной иерархии по фракциям:',
+      tableHtml: RANKS_REFORM_TABLE_HTML,
       appUrl: 'apps/epaulettes.html'
     },
     {
       id: 's_radial',
       fac: 'mvd',
-      title: 'Фракционное радиальное меню сотрудников МВД (УМВД / ГИБДД)',
-      text: 'Комплексная система быстрого взаимодействия для сотрудников МВД через радиальное меню:\n1. Предъявление служебного удостоверения МВД РФ в развёрнутом виде.\n2. Наручники и пристёгивание задержанного к окружению.\n3. Обыск гражданина и досмотр багажника автомобиля (при открытом багажнике) с изъятием нелегальных предметов и сдачей вещдоков дежурному.\n4. Посадка и высадка до 2 задержанных в патрульный автомобиль отдельными кнопками.\n5. Прибор замера светопропускаемости стёкол («Тоник») и снятие тонировки с лобового и передних боковых стёкол.\n6. Служебный мегафон с быстрыми командами в чат и система преследования игроков в радиусе 100 метров.\n7. Эвакуация авто на штрафстоянку: при начале эвакуации возле машины даётся 5 минут на погрузку. После установки авто на эвакуатор таймер 5 минут пропадает, и даже если владелец выйдет из игры — его авто останется и не пропадёт. После доставки ТС на метку штрафстоянки владельцу приходит уведомление о необходимости оплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку перед тем, как забрать ТС.',
+      title: 'Фракционное радиальное меню',
+      text: 'Единое функциональное радиальное меню быстрого взаимодействия для сотрудников МВД (УМВД / ГИБДД):\n\n1. Предъявление служебного удостоверения МВД РФ в развёрнутом виде.\n2. Наручники и пристёгивание задержанного к окружению (к столбу, забору, капоту или объекту).\n3. Обыск гражданина и досмотр багажника автомобиля (при открытом багажнике) с изъятием нелегальных предметов и сдачей вещдоков дежурному в камеру хранения улик.\n4. Посадка и высадка до 2 задержанных в патрульный автомобиль отдельными кнопками.\n5. Прибор замера светопропускаемости стёкол («Тоник») и снятие тонировки с лобового и передних боковых стёкол.\n6. Служебный мегафон с быстрыми командами в чат, щелчками рации и поддержкой кастомных голосовых записей, а также система преследования игроков в радиусе 100 метров.\n7. Эвакуация авто на штрафстоянку: при клике на эвакуацию возле машины даётся 5 минут на погрузку авто до того, как оно пропадёт. После установки авто на эвакуатор таймер 5 минут пропадает, и даже если игрок выйдет из игры — его авто останется и не пропадёт. После доставки ТС на штрафстоянку и сдачи в метку владельцу приходит уведомление о необходимости заплатить 10 000 ₽ за услуги эвакуатора и штрафстоянку прежде, чем он сможет забрать ТС.',
       appUrl: 'apps/mvd-radial.html'
+    },
+    {
+      id: 's_cuffs_rework',
+      fac: 'mvd',
+      title: 'Комплексная переработка системы наручников и фиксация к окружению',
+      text: 'Обновлённая механика использования наручников через фракционное радиальное меню:\n• Надевание и снятие наручников с автоматическими РП-отыгровками.\n• Пристёгивание задержанного в наручниках одним браслетом к объектам окружения (ограждению, столбу, автомобилю), чтобы он не мог убежать во время оформления протокола или перестрелки.\n• Конвоирование и посадка до 2 задержанных в служебный транспорт с отдельной кнопкой высадки.',
+      appUrl: 'apps/mvd-radial.html'
+    },
+    {
+      id: 's_lockpick_cuffs',
+      fac: 'opg',
+      title: 'Взлом наручников с помощью отвёртки или отмычки (для гражданских и ОПГ)',
+      text: 'Механика освобождения закованного в наручники игрока для гражданских лиц и участников ОПГ:\n\n• Через радиальное меню при нажатии на взаимодействие с человеком, на котором надеты наручники, появляется кнопка «Освободить задержанного».\n• Если у игрока в инвентаре есть отвёртка (или отмычка), запускается анимация взлома замка наручников.\n• С шансом 50% задержанный игрок будет успешно освобождён из наручников или попытка окажется неудачной, однако отвёртка сломается в любом из исходов.',
+      appUrl: 'apps/mvd-radial.html'
+    },
+    {
+      id: 's_faction_app',
+      fac: 'general',
+      title: 'Функциональное фракционное приложение',
+      text: 'Единое служебное приложение в смартфоне/планшете сотрудника государственной фракции: список сотрудников на смене, управление выговорами и подразделениями, бортовой журнал дежурной части, база вызовов и оперативных ориентировок.',
+      appUrl: 'builtin:faction-app'
+    },
+    {
+      id: 's_phone_upgrade',
+      fac: 'general',
+      title: 'Улучшение телефона',
+      text: 'Обновлённый интерфейс игрового смартфона с быстрым вызовом экстренных служб (102 / 103 / 112) с передачей геопозиции, банковскими переводами, списком личного транспорта (с отображением статуса штрафстоянки и оплатой 10 000 ₽ за эвакуацию), мессенджером и фракционным приложением.',
+      appUrl: 'builtin:phone'
     }
   ];
+
+  return core.concat(list);
 }
 
-/* Автоматическое определение интерактивного модуля по заголовку или полю appUrl */
+/* Строгое и безошибочное сопоставление предложения с его интерактивным модулем */
 function autoBindAppUrl(it) {
   if (!it || typeof it !== 'object') return;
   var t = String(it.title || '').toLowerCase();
+  var id = String(it.id || '').toLowerCase();
   var cur = String(it.appUrl || it.app || it.iframe || '').trim();
 
-  /* Прямая привязка по ключевым словам заголовка */
-  if (!cur) {
-    if (t.indexOf('автопарк') >= 0 && t.indexOf('форм') >= 0) cur = 'apps/garage.html';
-    else if (t.indexOf('погон') >= 0) cur = 'apps/epaulettes.html';
-    else if (t.indexOf('радиальн') >= 0) cur = 'apps/mvd-radial.html';
-    else if (t.indexOf('телефон') >= 0) cur = 'phone';
+  /* 1. АВТОПАРК И ФОРМА — всегда строго apps/garage.html! */
+  if (id === 's2' || t.indexOf('автопарк') >= 0 || (t.indexOf('форма фракц') >= 0)) {
+    it.appUrl = 'apps/garage.html';
+    return;
+  }
+
+  /* 2. РЕФОРМА РАНГОВ / ПОГОНЫ — apps/epaulettes.html (+ сохранение таблицы рангов!) */
+  if (t.indexOf('погон') >= 0 || (t.indexOf('реформа системы рангов') >= 0) || (t.indexOf('иерарх') >= 0)) {
+    it.appUrl = 'apps/epaulettes.html';
+    if (!it.tableHtml && t.indexOf('ранг') >= 0) {
+      it.tableHtml = RANKS_REFORM_TABLE_HTML;
+    }
+    return;
+  }
+
+  /* 3. РАДИАЛЬНОЕ МЕНЮ / НАРУЧНИКИ / ВЗЛОМ НАРУЧНИКОВ ОТВЁРТКОЙ — apps/mvd-radial.html */
+  if (t.indexOf('радиальн') >= 0 || t.indexOf('наручник') >= 0 || id === 's_radial' || id === 's_cuffs_rework' || id === 's_lockpick_cuffs') {
+    it.appUrl = 'apps/mvd-radial.html';
+    return;
+  }
+
+  /* 4. ФУНКЦИОНАЛЬНОЕ ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ */
+  if (t.indexOf('фракционное приложение') >= 0 || t.indexOf('планшет') >= 0) {
+    /* Если в репозитории есть отдельный файл — используем его, иначе встроенный интерактивный модуль */
+    for (var i = 0; i < REPO_ALL_FILES.length; i++) {
+      if (/faction|tablet|app/i.test(REPO_ALL_FILES[i]) && !/garage|radial|epaulettes/i.test(REPO_ALL_FILES[i])) {
+        it.appUrl = REPO_ALL_FILES[i];
+        return;
+      }
+    }
+    it.appUrl = 'builtin:faction-app';
+    return;
+  }
+
+  /* 5. УЛУЧШЕНИЕ ТЕЛЕФОНА */
+  if (t.indexOf('телефон') >= 0 || cur === 'phone' || cur === 'apps/phone.html') {
+    for (var j = 0; j < REPO_ALL_FILES.length; j++) {
+      if (/phone|smartphone|mobile/i.test(REPO_ALL_FILES[j])) {
+        it.appUrl = REPO_ALL_FILES[j];
+        return;
+      }
+    }
+    it.appUrl = 'builtin:phone';
+    return;
   }
 
   if (!cur) return;
+  if (cur.indexOf('builtin:') === 0) return;
 
-  /* Приводим короткое имя к реальному пути из списка файлов репозитория */
   var clean = cur.replace(/^apps\//i, '').replace(/\.html.*$/i, '').toLowerCase();
   if (APPS_MAP[clean]) {
     it.appUrl = APPS_MAP[clean];
     return;
   }
-  for (var i = 0; i < REPO_ALL_FILES.length; i++) {
-    var path = REPO_ALL_FILES[i];
+  for (var k = 0; k < REPO_ALL_FILES.length; k++) {
+    var path = REPO_ALL_FILES[k];
     var fileBase = path.replace(/^.*\//, '').replace(/\.html$/i, '').toLowerCase();
-    if (fileBase === clean || fileBase.indexOf(clean) >= 0 || clean.indexOf(fileBase) >= 0) {
+    if (fileBase === clean) {
       it.appUrl = path;
       return;
     }
   }
-  if (!/\.html/i.test(cur) && !/^https?:/i.test(cur)) {
-    it.appUrl = 'apps/' + clean + '.html';
-  } else {
-    it.appUrl = cur;
-  }
 }
 
-/* Сканирование дерева репозитория + проверка истории index.html и js/config.js */
-function scanRepoTreeAndHistory() {
+/* Сканирование реального дерева файлов репозитория */
+function scanRepoTree() {
   if (!REPO) return Promise.resolve();
-  var headers = { Accept: 'application/vnd.github+json' };
-  var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
-  if (tok) headers.Authorization = 'token ' + tok;
-
-  return fetch('https://api.github.com/repos/' + REPO + '/git/trees/' + BRANCH + '?recursive=1&_t=' + Date.now(), { headers: headers })
+  return fetch('https://api.github.com/repos/' + REPO + '/git/trees/' + BRANCH + '?recursive=1&_t=' + Date.now())
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(j) {
       if (!j || !Array.isArray(j.tree)) return;
@@ -473,132 +595,13 @@ function scanRepoTreeAndHistory() {
     }).catch(function() {});
 }
 
-/* Поиск оригинального index.html в истории коммитов GitHub (до того, как он был заменён)
-   и извлечение из него всех встроенных предложений / приложений */
-var ORIGINAL_INDEX_SHA = null;
-
-function checkOriginalIndexInGitHistory() {
-  if (!REPO) return;
-  var headers = { Accept: 'application/vnd.github+json' };
-  var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
-  if (tok) headers.Authorization = 'token ' + tok;
-
-  fetch('https://api.github.com/repos/' + REPO + '/commits?path=index.html&per_page=15&_t=' + Date.now(), { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : []; })
-    .then(function(commits) {
-      if (!Array.isArray(commits) || commits.length < 2) return;
-      /* Ищем коммит старше сегодняшних правок или проверяем предыдущие версии index.html */
-      var idx = 1;
-      function tryNextIndexCommit() {
-        if (idx >= commits.length) return;
-        var sha = commits[idx++].sha;
-        fetch('https://raw.githubusercontent.com/' + REPO + '/' + sha + '/index.html')
-          .then(function(r) { return r.ok ? r.text() : ''; })
-          .then(function(htmlTxt) {
-            /* Проверяем, что это полный оригинальный index.html (а не короткий кусок кода) */
-            if (htmlTxt && htmlTxt.length > 3500 && htmlTxt.indexOf('cleanEmptyIdeasAndHighlight') < 0 && htmlTxt.indexOf('recoverIdeasFromGitHubHistory') < 0) {
-              ORIGINAL_INDEX_SHA = sha;
-              renderTopBar();
-              /* Если в том коммите был seed() прямо внутри index.html — извлекаем из него карточки */
-              extractSeedFromOldHtml(htmlTxt);
-            } else {
-              tryNextIndexCommit();
-            }
-          }).catch(function() { tryNextIndexCommit(); });
-      }
-      tryNextIndexCommit();
-    }).catch(function() {});
-}
-
-function extractSeedFromOldHtml(htmlTxt) {
-  try {
-    var m = htmlTxt.match(/function\s+seed\s*\(\s*\)\s*\{[\s\S]*?return\s*(\[[\s\S]*?\])\s*;\s*\}/);
-    if (m && m[1]) {
-      var fn = new Function('return ' + m[1]);
-      var oldSeedArr = fn();
-      if (Array.isArray(oldSeedArr) && oldSeedArr.length) {
-        window.ITEMS = mergeAndCleanIdeas([oldSeedArr, window.ITEMS]);
-        window.ITEMS.forEach(autoBindAppUrl);
-        saveLocalIdeas();
-        render();
-      }
-    }
-  } catch (e) {}
-}
-
-/* Кнопка для владельца: в 1 клик откатить index.html и data.json к последнему рабочему коммиту из истории GitHub + применить зебру и очистку автора */
-window.restoreOriginalSiteFromGit = function() {
-  if (!ORIGINAL_INDEX_SHA) {
-    toast('Оригинальная версия уже активна', false);
-    return;
-  }
-  fetch('https://raw.githubusercontent.com/' + REPO + '/' + ORIGINAL_INDEX_SHA + '/index.html')
-    .then(function(r) { return r.ok ? r.text() : Promise.reject('err'); })
-    .then(function(origHtml) {
-      /* Инжектируем в ваш оригинальный index.html:
-         1. Чередование цветов карточек (зебру)
-         2. Скрытие строки "Автор: Евгений Холмс"
-         3. Очистку пустых карточек из автопарка */
-      var patchBlock = '\n<style>\n' +
-        '.card:nth-child(odd),.icard:nth-child(odd),#items>*:nth-child(odd){background:linear-gradient(145deg,#151c27,#111720)!important;border-color:#243044!important;border-left:4px solid #385d8a!important}\n' +
-        '.card:nth-child(even),.icard:nth-child(even),#items>*:nth-child(even){background:linear-gradient(145deg,#1f293b,#182130)!important;border-color:#354764!important;border-left:4px solid #4da3ff!important}\n' +
-        '</style>\n' +
-        '<script>\n' +
-        'setInterval(function(){\n' +
-        '  if(window.ITEMS&&Array.isArray(window.ITEMS)){\n' +
-        '    var b=window.ITEMS.length;\n' +
-        '    window.ITEMS=window.ITEMS.filter(function(x){return x&&x.title&&x.kind!=="cars"&&x.kind!=="form"&&!x.dep});\n' +
-        '    if(window.ITEMS.length!==b&&typeof window.render==="function")window.render();\n' +
-        '  }\n' +
-        '  document.querySelectorAll("*").forEach(function(el){\n' +
-        '    if(el.children.length===0&&/Автор:\\s*Евгений Холмс/i.test(el.textContent||""))el.style.display="none";\n' +
-        '  });\n' +
-        '},400);\n' +
-        '<\/script>\n';
-
-      var finalHtml = origHtml.replace('</body>', patchBlock + '</body>');
-
-      /* Если владелец авторизован — сразу сохраняем восстановленный оригинальный index.html в GitHub */
-      var tok = ADMIN_KEY || localStorage.getItem(MAIN_KEY_K) || '';
-      if (tok && REPO) {
-        var headers = {
-          Authorization: 'token ' + tok,
-          Accept: 'application/vnd.github+json',
-          'Content-Type': 'application/json'
-        };
-        fetch('https://api.github.com/repos/' + REPO + '/contents/index.html?_t=' + Date.now(), { headers: headers })
-          .then(function(r) { return r.json(); })
-          .then(function(curFile) {
-            return fetch('https://api.github.com/repos/' + REPO + '/contents/index.html', {
-              method: 'PUT',
-              headers: headers,
-              body: JSON.stringify({
-                message: 'restore original functional index.html with zebra & clean filter',
-                content: b64e(finalHtml),
-                sha: curFile.sha,
-                branch: BRANCH
-              })
-            });
-          }).then(function() {
-            toast('✓ Оригинальный сайт со всеми модулями восстановлен в GitHub! Перезагрузка...');
-            setTimeout(function() { location.reload(); }, 1200);
-          }).catch(function() {});
-      }
-
-      /* И мгновенно отображаем его прямо сейчас на экране */
-      document.open();
-      document.write(finalHtml);
-      document.close();
-    }).catch(function() {
-      toast('Не удалось загрузить коммит из истории', true);
-    });
-};
-
-/* ===================== СОСТОЯНИЕ И ВОССТАНОВЛЕНИЕ ИДЕЙ ===================== */
-var LOCAL_IDEAS_K = 'mvd_ideas_clean_v5';
+/* ===================== СОСТОЯНИЕ, ОБЪЕДИНЕНИЕ ДУБЛИКАТОВ И ОЧИСТКА ===================== */
+var LOCAL_IDEAS_K = 'mvd_ideas_clean_v6';
 var MAIN_KEY_K    = 'idea_admin_key';
 var DELETED_IDEAS_K = 'mvd_deleted_ideas_v1';
 var DELETED_IDEA_IDS = {};
+var OPEN_DESC_MAP = {};
+
 try {
   DELETED_IDEA_IDS = JSON.parse(localStorage.getItem(DELETED_IDEAS_K) || '{}') || {};
 } catch (e) { DELETED_IDEA_IDS = {}; }
@@ -639,7 +642,7 @@ function isRealIdeaItem(it) {
   if (!title || title === 'Без названия' || title === '—' || title === 'null' || title === 'undefined') return false;
   var hasMedia = (Array.isArray(it.images) && it.images.length > 0) ||
                  (Array.isArray(it.videos) && it.videos.length > 0) ||
-                 !!it.appUrl || !!it.app || !!it.iframe;
+                 !!it.appUrl || !!it.app || !!it.iframe || !!it.tableHtml;
   if (!text && !hasMedia) return false;
   return true;
 }
@@ -650,6 +653,32 @@ function normalizeIdeaItem(it) {
   copy.text  = String(copy.text || copy.desc || copy.body || '').trim();
   copy.fac   = copy.fac || copy.cat || copy.section || 'general';
   if (copy.app && !copy.appUrl) copy.appUrl = copy.app;
+
+  /* Объединяем "Фракционное радиальное меню сотрудников МВД (УМВД / ГИБДД)" и "Фракционное радиальное меню" в ОДНО предложение! */
+  if (/^фракционное радиальное меню/i.test(copy.title)) {
+    copy.id    = 's_radial';
+    copy.fac   = 'mvd';
+    copy.title = 'Фракционное радиальное меню';
+    copy.appUrl = 'apps/mvd-radial.html';
+  }
+
+  /* Обновляем описание для "Взлом наручников с помощью отвёртки или отмычки" */
+  if (/взлом наручников/i.test(copy.title)) {
+    copy.id = 's_lockpick_cuffs';
+    if (copy.text.indexOf('50%') < 0) {
+      copy.text = (copy.text ? copy.text + '\n\n' : '') +
+        'Механика взлома через радиальное меню:\nЧерез радиальное меню, если нажать на взаимодействие с человеком, на котором надеты наручники, появится кнопка «Освободить задержанного». Если в инвентаре есть отвёртка, последует анимация взлома, и с шансом 50% игрок будет освобождён или нет, но отвёртка сломается в любом из исходов.';
+    }
+    copy.appUrl = 'apps/mvd-radial.html';
+  }
+
+  /* Восстанавливаем таблицу в "Глобальная реформа системы рангов и должностной иерархии фракций" */
+  if (/реформа системы рангов/i.test(copy.title) || /должностной иерархии/i.test(copy.title)) {
+    copy.id = 's_ranks_reform';
+    copy.tableHtml = RANKS_REFORM_TABLE_HTML;
+    copy.appUrl = 'apps/epaulettes.html';
+  }
+
   if (!copy.id) copy.id = 'idea_' + copy.title.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '_');
   delete copy.author;
   autoBindAppUrl(copy);
@@ -657,45 +686,32 @@ function normalizeIdeaItem(it) {
 }
 
 function mergeAndCleanIdeas(lists) {
-  var map = {};
+  var byKey = {};
   var out = [];
 
-  (lists || []).forEach(function(arr) {
-    var a = toArr(arr);
-    if (!a || !a.length) return;
-    a.forEach(function(rawIt) {
-      if (!isRealIdeaItem(rawIt)) return;
-      var it = normalizeIdeaItem(rawIt);
-      var key = it.id || it.title;
-      if (!map[key]) {
-        map[key] = it;
-        out.push(it);
-      } else {
-        var existing = map[key];
-        if ((it.text || '').length > (existing.text || '').length) existing.text = it.text;
-        if (it.appUrl && !existing.appUrl) existing.appUrl = it.appUrl;
-        if (it.images && it.images.length && (!existing.images || !existing.images.length)) existing.images = it.images;
-        if (it.videos && it.videos.length && (!existing.videos || !existing.videos.length)) existing.videos = it.videos;
-        autoBindAppUrl(existing);
-      }
-    });
-  });
+  /* Сначала загружаем эталонные карточки из baseSeedIdeas() */
+  baseSeedIdeas().concat.apply(baseSeedIdeas(), lists || []).forEach(function(rawIt) {
+    if (!isRealIdeaItem(rawIt)) return;
+    var it = normalizeIdeaItem(rawIt);
+    var normTitleKey = it.title.toLowerCase().replace(/\s+/g, ' ');
+    /* Для радиального меню и реформы рангов склеиваем по единому ключу */
+    var key = (it.id === 's_radial' || it.id === 's2' || it.id === 's_ranks_reform' || it.id === 's_lockpick_cuffs')
+      ? it.id
+      : normTitleKey;
 
-  fallbackSeed().forEach(function(s) {
-    if (DELETED_IDEA_IDS[s.id]) return;
-    var found = null;
-    for (var i = 0; i < out.length; i++) {
-      if (out[i].id === s.id || out[i].title === s.title) {
-        found = out[i];
-        break;
-      }
-    }
-    if (found) {
-      if (s.appUrl && !found.appUrl) found.appUrl = s.appUrl;
-      autoBindAppUrl(found);
+    if (!byKey[key]) {
+      byKey[key] = it;
+      out.push(it);
     } else {
-      var normS = normalizeIdeaItem(s);
-      out.push(normS);
+      var ex = byKey[key];
+      if ((it.text || '').length > (ex.text || '').length && it.id !== 's2') {
+        ex.text = it.text;
+      }
+      if (it.tableHtml && !ex.tableHtml) ex.tableHtml = it.tableHtml;
+      if (it.appUrl && !ex.appUrl) ex.appUrl = it.appUrl;
+      if (it.images && it.images.length && (!ex.images || !ex.images.length)) ex.images = it.images;
+      if (it.videos && it.videos.length && (!ex.videos || !ex.videos.length)) ex.videos = it.videos;
+      autoBindAppUrl(ex);
     }
   });
 
@@ -704,13 +720,10 @@ function mergeAndCleanIdeas(lists) {
 
 function loadLocalIdeasFromAllBrowserKeys() {
   var collected = [];
-  if (EXTERNAL_SEED_FN) {
-    try { collected.push(EXTERNAL_SEED_FN()); } catch (e) {}
-  }
   try {
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
-      if (!k || k.indexOf('garage') >= 0) continue;
+      if (!k || k.indexOf('garage') >= 0 || k.indexOf('megaphone') >= 0) continue;
       try {
         var raw = JSON.parse(localStorage.getItem(k) || 'null');
         if (!raw) continue;
@@ -866,7 +879,7 @@ window.logoutAdmin = function() {
   toast('Вы вышли из режима владельца');
 };
 
-/* ===================== РЕНДЕР СТРАНИЦЫ ===================== */
+/* ===================== РЕНДЕР СТРАНИЦЫ И ОТКРЫТИЕ/СКРЫТИЕ ОПИСАНИЙ ===================== */
 function countBySec(secK) {
   var n = 0;
   for (var i = 0; i < window.ITEMS.length; i++) {
@@ -879,15 +892,12 @@ function countBySec(secK) {
 
 function renderTopBar() {
   var tr = document.getElementById('topRight');
-  var restoreBtn = ORIGINAL_INDEX_SHA
-    ? '<button class="btn slim" style="background:linear-gradient(145deg,#10b981,#059669);border-color:#34d399" onclick="restoreOriginalSiteFromGit()" title="Вернуть ваш оригинальный index.html со встроенным телефоном и всеми модулями из истории коммитов GitHub">⏪ Вернуть оригинальный сайт из истории Git</button>'
-    : '';
   var ghStatus = '<span class="pill"><span class="gdot"></span>GitHub</span>';
   var ownerControls = window.adminMode
     ? '<span class="pill" style="color:#fcd34d;border-color:rgba(247,201,72,.4)">✏️ Владелец</span>' +
       '<button class="btn ghost slim" onclick="logoutAdmin()">Выйти</button>'
     : '<button class="btn ghost slim" onclick="openAdminLogin()">🔒 Вход владельца</button>';
-  tr.innerHTML = restoreBtn + ghStatus + ownerControls;
+  tr.innerHTML = ghStatus + ownerControls;
 }
 
 function renderSidebar() {
@@ -909,6 +919,20 @@ function renderSidebar() {
 window.selectSection = function(k) {
   CUR_SEC = k;
   render();
+};
+
+/* Переключение кнопки "Открыть / Скрыть" описание на карточке */
+window.toggleIdeaDesc = function(ev, id) {
+  if (ev) ev.stopPropagation();
+  OPEN_DESC_MAP[id] = !OPEN_DESC_MAP[id];
+  var box = document.getElementById('desc_' + id);
+  var btn = document.getElementById('descBtn_' + id);
+  if (box) {
+    box.classList.toggle('open', !!OPEN_DESC_MAP[id]);
+  }
+  if (btn) {
+    btn.innerHTML = OPEN_DESC_MAP[id] ? '🔼 Скрыть' : '📖 Открыть';
+  }
 };
 
 function renderItems() {
@@ -938,6 +962,7 @@ function renderItems() {
   box.innerHTML = list.map(function(it) {
     autoBindAppUrl(it);
     var sec = secInfo(it.fac);
+    var isDescOpen = !!OPEN_DESC_MAP[it.id];
     var appBadge = it.appUrl ? '<span class="ic-app-badge">⚡ Интерактивный модуль</span>' : '';
     var admBtns = window.adminMode
       ? '<div class="ic-tools" onclick="event.stopPropagation()">' +
@@ -945,7 +970,25 @@ function renderItems() {
           '<button class="btn warn slim" onclick="deleteIdea(\'' + it.id + '\')">🗑</button>' +
         '</div>'
       : '';
-    return '<div class="icard" onclick="openIdeaCard(\'' + it.id + '\')">' +
+
+    var mediaHtml = '';
+    if ((it.images && it.images.length) || (it.videos && it.videos.length)) {
+      mediaHtml = '<div class="media-grid">';
+      (it.images || []).forEach(function(src) {
+        mediaHtml += '<img src="' + escapeHtml(src) + '" alt="">';
+      });
+      (it.videos || []).forEach(function(src) {
+        mediaHtml += '<video src="' + escapeHtml(src) + '" controls></video>';
+      });
+      mediaHtml += '</div>';
+    }
+
+    /* Кнопка открытия интерактивного модуля называется так же, как само предложение! */
+    var openModuleBtn = it.appUrl
+      ? '<button class="btn slim" onclick="event.stopPropagation();openIdeaCard(\'' + it.id + '\')">⚡ ' + escapeHtml(it.title) + ' →</button>'
+      : '';
+
+    return '<div class="icard">' +
       '<div class="ic-top">' +
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
           '<span class="ic-badge">' + sec.ic + ' ' + sec.n + '</span>' +
@@ -954,9 +997,16 @@ function renderItems() {
         admBtns +
       '</div>' +
       '<div class="ic-title">' + escapeHtml(it.title) + '</div>' +
-      '<div class="ic-text">' + escapeHtml(it.text || '') + '</div>' +
+      '<div class="ic-desc-box' + (isDescOpen ? ' open' : '') + '" id="desc_' + it.id + '">' +
+        escapeHtml(it.text || '') +
+        (it.tableHtml || '') +
+        mediaHtml +
+      '</div>' +
       '<div class="ic-foot">' +
-        '<span style="color:#60a5fa;font-weight:700">' + (it.appUrl ? 'Открыть интерактивное приложение →' : 'Подробнее →') + '</span>' +
+        '<button class="btn ghost slim" id="descBtn_' + it.id + '" onclick="toggleIdeaDesc(event,\'' + it.id + '\')">' +
+          (isDescOpen ? '🔼 Скрыть' : '📖 Открыть') +
+        '</button>' +
+        openModuleBtn +
       '</div>' +
     '</div>';
   }).join('');
@@ -973,7 +1023,54 @@ function render() {
 }
 window.render = render;
 
-/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНЫХ ПРИЛОЖЕНИЙ ===================== */
+/* ===================== ВСТРОЕННЫЕ ИНТЕРАКТИВНЫЕ МОДУЛИ (ТЕЛЕФОН И ФРАКЦИОННОЕ ПРИЛОЖЕНИЕ) ===================== */
+function getBuiltinAppHtml(type) {
+  if (type === 'builtin:phone') {
+    return '<div style="padding:24px;display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:center;background:#0d1118;min-height:100%">' +
+      '<div style="width:340px;height:660px;background:linear-gradient(160deg,#161f30,#0d121c);border:4px solid #2e3d56;border-radius:38px;padding:18px;display:flex;flex-direction:column;box-shadow:0 25px 70px rgba(0,0,0,.8)">' +
+        '<div style="width:90px;height:6px;background:#263246;border-radius:4px;margin:0 auto 14px"></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:11px;color:#93c5fd;font-weight:800;margin-bottom:16px"><span>18:45 · Province 5G</span><span>🔋 98%</span></div>' +
+        '<div style="font-weight:900;font-size:17px;color:#fff;margin-bottom:12px">📱 Смартфон · Главный экран</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">' +
+          '<div style="background:#1c273b;border:1px solid #314466;border-radius:14px;padding:12px;cursor:pointer" onclick="document.getElementById(\'phScreen\').innerHTML=\'🚔 <b>Вызов 102 (Полиция)</b><br><br>Геопозиция игрока автоматически передана в дежурную часть УМВД/ГИБДД.\'">' +
+            '<div style="font-size:22px">🚓</div><div style="font-weight:800;font-size:12.5px;margin-top:4px;color:#fff">Полиция (102)</div><div style="font-size:10.5px;color:#93c5fd">Вызов с GPS-меткой</div>' +
+          '</div>' +
+          '<div style="background:#1c273b;border:1px solid #314466;border-radius:14px;padding:12px;cursor:pointer" onclick="document.getElementById(\'phScreen\').innerHTML=\'🪝 <b>Штрафстоянка ГИБДД</b><br><br>• Toyota Camry XV70 (А777АА 77)<br>• Статус: <span style=color:#fbbf24>На штрафстоянке</span><br>• К оплате за эвакуатор и стоянку: <b>10 000 ₽</b><br><br><button class=btn onclick=this.parentNode.innerHTML=&quot;✅ Оплачено 10 000 ₽! Вы можете забрать своё ТС со штрафстоянки.&quot;>💳 Оплатить 10 000 ₽</button>\'">' +
+            '<div style="font-size:22px">🚘</div><div style="font-weight:800;font-size:12.5px;margin-top:4px;color:#fff">Мой транспорт</div><div style="font-size:10.5px;color:#fcd34d">Штрафстоянка / GPS</div>' +
+          '</div>' +
+          '<div style="background:#1c273b;border:1px solid #314466;border-radius:14px;padding:12px;cursor:pointer" onclick="document.getElementById(\'phScreen\').innerHTML=\'💳 <b>Провинция Банк</b><br><br>Баланс счёта: <b>1 450 000 ₽</b><br>Штрафы ГИБДД: <b>0 ₽</b>\'">' +
+            '<div style="font-size:22px">💳</div><div style="font-weight:800;font-size:12.5px;margin-top:4px;color:#fff">Банк и штрафы</div><div style="font-size:10.5px;color:#6ee7b7">Оплата в 1 клик</div>' +
+          '</div>' +
+          '<div style="background:#1c273b;border:1px solid #314466;border-radius:14px;padding:12px;cursor:pointer" onclick="document.getElementById(\'phScreen\').innerHTML=\'🛡️ <b>Фракционный модуль</b><br><br>На смене: <b>14 сотрудников</b><br>Активных патрулей: <b>5 экипажей</b>\'">' +
+            '<div style="font-size:22px">🛡️</div><div style="font-weight:800;font-size:12.5px;margin-top:4px;color:#fff">Гос. служба</div><div style="font-size:10.5px;color:#c084fc">Фракция онлайн</div>' +
+          '</div>' +
+        '</div>' +
+        '<div id="phScreen" style="flex:1;background:#111722;border:1px solid #263348;border-radius:16px;padding:14px;font-size:12.5px;line-height:1.55;color:#dbe4f3">Нажмите на любую иконку приложения выше для демонстрации функций обновлённого телефона.</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  return '<div style="padding:24px;background:#0e131d;min-height:100%">' +
+    '<div style="max-width:960px;margin:0 auto;background:#151d2a;border:1px solid #2b3952;border-radius:16px;padding:20px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #253247;padding-bottom:14px;margin-bottom:16px">' +
+        '<div><div style="font-size:18px;font-weight:900;color:#fff">🛡️ Функциональное фракционное приложение · УМВД / ГИБДД</div><div style="font-size:12px;color:#8b96ab;margin-top:3px">Панель управления личным составом, патрулями и дежурной частью</div></div>' +
+        '<span class="pill"><span class="gdot"></span>На смене: 12 чел.</span>' +
+      '</div>' +
+      '<div class="rank-table-wrap">' +
+        '<table class="rank-table">' +
+          '<thead><tr><th>Сотрудник</th><th>Звание и должность</th><th>Подразделение</th><th>Статус / Патруль</th><th>Выговоры</th></tr></thead>' +
+          '<tbody>' +
+            '<tr><td><b>Евгений Холмс</b></td><td>Капитан полиции · Оперуполномоченный</td><td>ОУР УМВД</td><td><span style="color:#34d399;font-weight:800">● В патруле (Экипаж П-14)</span></td><td>0 / 3</td></tr>' +
+            '<tr><td><b>Алексей Соколов</b></td><td>Майор полиции · Начальник ОБ ДПС</td><td>ОГИБДД</td><td><span style="color:#34d399;font-weight:800">● Дежурная часть</span></td><td>0 / 3</td></tr>' +
+            '<tr><td><b>Дмитрий Громов</b></td><td>Старший лейтенант · Инспектор ДПС</td><td>ОГИБДД</td><td><span style="color:#fbbf24;font-weight:800">● Оформление эвакуации ТС</span></td><td>1 / 3</td></tr>' +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ===================== ОТКРЫТИЕ ИНТЕРАКТИВНОГО ПРИЛОЖЕНИЯ ===================== */
 window.openIdeaCard = function(id) {
   var it = null;
   for (var i = 0; i < window.ITEMS.length; i++) {
@@ -984,6 +1081,20 @@ window.openIdeaCard = function(id) {
 
   var m = document.getElementById('mroot');
   if (it.appUrl) {
+    if (it.appUrl.indexOf('builtin:') === 0) {
+      m.innerHTML =
+        '<div class="back" onclick="if(event.target===this)closeModal()">' +
+          '<div class="modal app-modal">' +
+            '<div class="m-head">' +
+              '<div class="mh-title"><span>⚡</span><span>' + escapeHtml(it.title) + '</span></div>' +
+              '<button class="m-close" onclick="closeModal()">✕</button>' +
+            '</div>' +
+            '<div class="m-body" style="padding:0">' + getBuiltinAppHtml(it.appUrl) + '</div>' +
+          '</div>' +
+        '</div>';
+      return;
+    }
+
     var targetUrl = it.appUrl;
     var iframeSrc = targetUrl + (targetUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
     m.innerHTML =
@@ -1001,33 +1112,8 @@ window.openIdeaCard = function(id) {
     return;
   }
 
-  var mediaHtml = '';
-  if ((it.images && it.images.length) || (it.videos && it.videos.length)) {
-    mediaHtml = '<div class="media-grid">';
-    (it.images || []).forEach(function(src) {
-      mediaHtml += '<img src="' + escapeHtml(src) + '" alt="">';
-    });
-    (it.videos || []).forEach(function(src) {
-      mediaHtml += '<video src="' + escapeHtml(src) + '" controls></video>';
-    });
-    mediaHtml += '</div>';
-  }
-
-  var sec = secInfo(it.fac);
-  m.innerHTML =
-    '<div class="back" onclick="if(event.target===this)closeModal()">' +
-      '<div class="modal" style="max-width:860px">' +
-        '<div class="m-head">' +
-          '<div class="mh-title"><span>' + sec.ic + '</span><span>' + escapeHtml(it.title) + '</span></div>' +
-          '<button class="m-close" onclick="closeModal()">✕</button>' +
-        '</div>' +
-        '<div class="m-body">' +
-          '<div style="font-size:14px;line-height:1.68;white-space:pre-line;color:#dbe4f3">' + escapeHtml(it.text || '') + '</div>' +
-          mediaHtml +
-        '</div>' +
-        '<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>' +
-      '</div>' +
-    '</div>';
+  /* Если модуля нет — просто разворачиваем описание карточки */
+  toggleIdeaDesc(null, it.id);
 };
 
 /* ===================== ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРЕДЛОЖЕНИЯ ===================== */
@@ -1044,11 +1130,24 @@ window.openIdeaForm = function(editId) {
     return '<option value="' + s.k + '"' + (s.k === curFac ? ' selected' : '') + '>' + s.ic + ' ' + s.n + '</option>';
   }).join('');
 
-  var appOpts = '<option value="">— Обычное текстовое предложение —</option>';
-  REPO_ALL_FILES.forEach(function(path) {
-    var sel = (it && it.appUrl === path) ? ' selected' : '';
-    appOpts += '<option value="' + escapeHtml(path) + '"' + sel + '>⚡ ' + escapeHtml(path) + '</option>';
+  var appList = [
+    { v: '',                  n: '— Без интерактивного модуля —' },
+    { v: 'apps/garage.html',     n: '🚔 Автопарк и форма (apps/garage.html)' },
+    { v: 'apps/mvd-radial.html', n: '🛡️ Фракционное радиальное меню (apps/mvd-radial.html)' },
+    { v: 'apps/epaulettes.html', n: '🎖️ Стенд погон (apps/epaulettes.html)' },
+    { v: 'builtin:phone',        n: '📱 Интерактивный смартфон' },
+    { v: 'builtin:faction-app',  n: '🛡️ Функциональное фракционное приложение' }
+  ];
+  REPO_ALL_FILES.forEach(function(p) {
+    if (!appList.some(function(x) { return x.v === p; })) {
+      appList.push({ v: p, n: '⚡ ' + p });
+    }
   });
+
+  var appOpts = appList.map(function(a) {
+    var sel = (it && (it.appUrl || '') === a.v) ? ' selected' : '';
+    return '<option value="' + escapeHtml(a.v) + '"' + sel + '>' + escapeHtml(a.n) + '</option>';
+  }).join('');
 
   var m = document.getElementById('mroot');
   m.innerHTML =
@@ -1065,7 +1164,7 @@ window.openIdeaForm = function(editId) {
           '<input class="inp" id="fIdeaTitle" style="width:100%" value="' + escapeHtml(it ? it.title : '') + '" placeholder="Введите заголовок предложения…">' +
           '<label class="flab">Описание предложения</label>' +
           '<textarea class="inp" id="fIdeaText" rows="7" style="width:100%" placeholder="Подробное описание идеи…">' + escapeHtml(it ? it.text : '') + '</textarea>' +
-          '<label class="flab">Интерактивное приложение из папки apps/</label>' +
+          '<label class="flab">Интерактивный модуль</label>' +
           '<select class="sel" id="fIdeaApp" style="width:100%">' + appOpts + '</select>' +
         '</div>' +
         '<div class="m-foot">' +
@@ -1137,12 +1236,11 @@ document.addEventListener('keydown', function(e) {
 /* ===================== ЗАПУСК ===================== */
 window.ITEMS = loadLocalIdeasFromAllBrowserKeys();
 render();
-scanRepoTreeAndHistory();
-checkOriginalIndexInGitHistory();
+scanRepoTree();
 
 recoverIdeasFromGitHubHistory().then(function(recoveredLists) {
   if (recoveredLists && recoveredLists.length) {
-    window.ITEMS = mergeAndCleanIdeas([window.ITEMS].concat(recoveredLists));
+    window.ITEMS = mergeAndCleanIdeas(recoveredLists.concat([window.ITEMS]));
     window.ITEMS.forEach(autoBindAppUrl);
     saveLocalIdeas();
     render();
