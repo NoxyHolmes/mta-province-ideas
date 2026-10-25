@@ -434,13 +434,15 @@ function markDeletedId(id){
  try{LS.set(DEL_K,JSON.stringify(DELETED_IDS))}catch(e){}
 }
 
-/* ===================== УТИЛИТЫ И СОРТИРОВКА ПО АЛФАВИТУ (РУС -> АНГЛ) ===================== */
+/* ===================== УТИЛИТЫ И ОЧИСТКА ОТ "(МП-ПАНЕЛЬ)" / "(МП)" ===================== */
 function $(s){return document.querySelector(s)}
 function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+
 function stripQuotaText(str){
  return String(str||'')
-  .replace(/\s*\([^)]*(?:осн|уник|баз)[^)]*\)/gi,'')
-  .replace(/\s*\[[^\]]*(?:осн|уник|уникал|баз)[^\]]*\]/gi,'')
+  .replace(/\s*\([^)]*(?:осн|уник|баз|мп-панель|мп\s*панель|мп)[^)]*\)/gi,'')
+  .replace(/\s*\[[^\]]*(?:осн|уник|уникал|баз|мп-панель|мп\s*панель|мп)[^\]]*\]/gi,'')
+  .replace(/\s*(?:·|-|—)?\s*(?:мп-панель|мп\s*панель)\b/gi,'')
   .replace(/\s*·?\s*\d+\s*осн\.?\s*\+\s*\d+\s*уник\.?[а-я]*/gi,'')
   .trim();
 }
@@ -509,7 +511,7 @@ function fetchT(url,opts,ms){
  });
 }
 
-/* ===================== РАЗДЕЛЫ И КЛАССЫ ===================== */
+/* ===================== РАЗДЕЛЫ И КЛАССЫ (С ФСИН И БЕЗ МП-ПАНЕЛИ) ===================== */
 function defaultClasses(){
  return [
   {k:'premium', n:'Премиум',       c:'#f7c948'},
@@ -548,10 +550,11 @@ var DEFAULT_DEPS=[
  {k:'prok', s:'Прокуратура', n:'Прокуратура',          c:'#f7c948', cat:'event'},
  {k:'mchs', s:'МЧС',         n:'МЧС',                  c:'#ff8a52', cat:'event'},
  {k:'fso',  s:'ФСО',         n:'ФСО',                  c:'#c084fc', cat:'event'},
- {k:'fsin',  s:'ФСИН',         n:'ФСИН',                  c:'#c084fc', cat:'event'}
+ {k:'fsin', s:'ФСИН',        n:'ФСИН',                 c:'#10b981', cat:'event'}
 ];
 function cloneDeps(src){
  var out=[];
+ var hasFsin=false;
  if(!src||!src.length){return out}
  for(var i=0;i<src.length;i++){
   var d=src[i];
@@ -566,6 +569,7 @@ function cloneDeps(src){
   var cleanN=stripQuotaText(d.n||d.s||'—');
   var cleanS=stripQuotaText(d.s||d.n||'—');
   if(cleanS.length>18)cleanS=cleanN.slice(0,17)+'…';
+  if(String(d.k)==='fsin'||cleanN.toUpperCase()==='ФСИН'){hasFsin=true}
   out.push({
    k:String(d.k),
    s:cleanN||cleanS||'—',
@@ -573,6 +577,17 @@ function cloneDeps(src){
    c:String(d.c||'#4da3ff'),
    cat:cat,
    classes:classes
+  });
+ }
+ /* Гарантируем, что ФСИН всегда присутствует в разделах для мероприятий */
+ if(!hasFsin){
+  out.push({
+   k:'fsin',
+   s:'ФСИН',
+   n:'ФСИН',
+   c:'#10b981',
+   cat:'event',
+   classes:[]
   });
  }
  return out;
@@ -950,6 +965,7 @@ function showLoadingSkeleton(){
 }
 
 function initApp(){
+ saveDepsSync();
  var hasLocalCustomDeps=!!LS.get(DEPS_LS_KEY);
  idbGetState().then(function(saved){
   var hasPending=!!LS.get(PENDING_K);
@@ -957,7 +973,7 @@ function initApp(){
    if(saved.deletedIds&&typeof saved.deletedIds==='object'){
     for(var k in saved.deletedIds){if(saved.deletedIds[k])DELETED_IDS[k]=1}
    }
-   if(!hasLocalCustomDeps&&saved.deps&&saved.deps.length){
+   if(saved.deps&&saved.deps.length){
     DEPS=cloneDeps(saved.deps);
     saveDepsSync();
    }
@@ -1052,7 +1068,7 @@ function renderTop(){
 }
 
 /* ===================== МЕНЕДЖЕР РАЗДЕЛОВ И КЛАССОВ ===================== */
-var DEP_PALETTE=['#4da3ff','#56ccff','#ff5c5c','#2fd97a','#ff9a3d','#818cf8','#e05c82','#f7c948','#ff8a52','#c084fc','#7dd3fc','#a78bfa','#f472b6','#34d399','#fbbf24'];
+var DEP_PALETTE=['#4da3ff','#56ccff','#ff5c5c','#2fd97a','#ff9a3d','#818cf8','#e05c82','#f7c948','#ff8a52','#c084fc','#10b981','#7dd3fc','#a78bfa','#f472b6','#34d399','#fbbf24'];
 var currentClassDepK=null;
 var depsInputDirty=false;
 
@@ -1116,7 +1132,7 @@ function renderDepsModal(){
   '<div class="mh-sub">Измените название любого раздела — оно сохраняется автоматически для Автопарка и Формы.</div>'+
   '<button class="m-close" onclick="closeC()">✕</button></div>'+
   '<div class="m-body">';
- var groups=[['main','Основные разделы (Автопарк и Форма)'],['event','Разделы для мероприятий (МП)']];
+ var groups=[['main','Основные разделы (Автопарк и Форма)'],['event','Разделы для мероприятий']];
  for(var gi=0;gi<groups.length;gi++){
   h+='<div class="deplist-head">'+groups[gi][1]+'</div>';
   var any=false;
@@ -1585,7 +1601,7 @@ function syncFormDepOptions(preferredDepK){
  }
  depSel.innerHTML=
   '<optgroup label="🏛️ Основные разделы фракций">'+mainOpts+'</optgroup>'+
-  '<optgroup label="🎪 Разделы для мероприятий (МП)">'+eventOpts+'</optgroup>';
+  '<optgroup label="🎪 Разделы для мероприятий">'+eventOpts+'</optgroup>';
 
  if(preferredDepK&&findDep(preferredDepK)){
   depSel.value=preferredDepK;
@@ -1772,16 +1788,13 @@ function compressImage(file,cb){
  reader.readAsDataURL(file);
 }
 
-/* ===================== ОТКРЫТИЕ ФОТО ТОЧНО ТАКОГО ЖЕ РАЗМЕРА, КАК В ОПИСАНИИ К ПРЕДЛОЖЕНИЮ =====================
-   Если автопарк открыт внутри главного сайта (window.parent), мы открываем фото напрямую
-   в полноэкранном лайтбоксе главного сайта (#mediaLb) поверх всех рамок, с тем же крупным размером! */
+/* ===================== ОТКРЫТИЕ ФОТО ТОЧНО ТАКОГО ЖЕ РАЗМЕРА, КАК В ОПИСАНИИ К ПРЕДЛОЖЕНИЮ ===================== */
 function openLb(id){
  var it=byId(id);
  if(!it||!it.photo){return}
  var d=dep(it.dep);
  var titleText=stripQuotaText(it.name||'—')+(it.desc?' · '+stripQuotaText(it.desc):'');
 
- /* 1. Пробуем открыть в главном окне сайта (#mediaLb), чтобы окно фото было 1-в-1 как в описании к предложению */
  try{
   if(window.parent&&window.parent!==window&&window.parent.document){
    var pDoc=window.parent.document;
@@ -1800,7 +1813,6 @@ function openLb(id){
   }
  }catch(e){}
 
- /* 2. Если открыто отдельно (не в iframe) — открываем локальный лайтбокс такого же крупного размера */
  var lb=$('#lb'),img=$('#lbImg'),cap=$('#lbCap'),btn=$('#lbScaleBtn');
  if(!lb||!img){return}
  lb.classList.remove('orig-100');
