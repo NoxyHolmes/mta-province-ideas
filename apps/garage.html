@@ -111,7 +111,6 @@ textarea.inp{resize:vertical}
 .skb{height:11px;border-radius:6px;background:#161c26;margin:10px 14px 0;position:relative;overflow:hidden}
 .skb:last-child{margin-bottom:14px}
 
-/* ЛАЙТБОКС ТОЧНО ТАКОГО ЖЕ КРУПНОГО РАЗМЕРА, КАК В ОПИСАНИИ К ПРЕДЛОЖЕНИЮ */
 #lb{
   position:fixed;
   inset:0;
@@ -334,14 +333,14 @@ window.addEventListener('error',function(ev){
 /* ===================== АВТООПРЕДЕЛЕНИЕ РЕПОЗИТОРИЯ ===================== */
 var REPO=(function(){
  var h=location.hostname,p=location.pathname;
- if(!/\.github\.io$/.test(h)){return null}
+ if(!/\.github\.io$/.test(h)){return 'noxyholmes/mta-province-ideas'}
  var owner=h.replace(/\.github\.io$/,'');
  var seg=p.split('/').filter(Boolean);
  return owner+'/'+(seg.length?seg[0]:(owner+'.github.io'));
 })();
 var BRANCH='main';
 
-/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ + СИНХРОННЫЙ КЭШ РАЗДЕЛОВ ===================== */
+/* ===================== БЕЗОПАСНОЕ ХРАНИЛИЩЕ ===================== */
 var LS=(function(){
  var mem={},ok=false;
  try{
@@ -376,7 +375,7 @@ try{
 var IDB_NAME='mta_garage_full_db_v1';
 var IDB_STORE='snapshots';
 var IDB_KEY='current_state';
-var DEPS_LS_KEY='mvd_garage_deps_v2';
+var DEPS_LS_KEY='mvd_garage_deps_v3';
 var REV_LS_KEY='mvd_garage_rev_v2';
 
 function idbOpen(){
@@ -434,17 +433,18 @@ function markDeletedId(id){
  try{LS.set(DEL_K,JSON.stringify(DELETED_IDS))}catch(e){}
 }
 
-/* ===================== УТИЛИТЫ И ОЧИСТКА ОТ "(МП-ПАНЕЛЬ)" / "(МП)" ===================== */
+/* ===================== ПОЛНАЯ ОЧИСТКА ОТ "(МП-ПАНЕЛЬ)" И "(МП)" НА КИРИЛЛИЦЕ И ЛАТИНИЦЕ ===================== */
 function $(s){return document.querySelector(s)}
 function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
 
 function stripQuotaText(str){
- return String(str||'')
-  .replace(/\s*\([^)]*(?:осн|уник|баз|мп-панель|мп\s*панель|мп)[^)]*\)/gi,'')
-  .replace(/\s*\[[^\]]*(?:осн|уник|уникал|баз|мп-панель|мп\s*панель|мп)[^\]]*\]/gi,'')
-  .replace(/\s*(?:·|-|—)?\s*(?:мп-панель|мп\s*панель)\b/gi,'')
-  .replace(/\s*·?\s*\d+\s*осн\.?\s*\+\s*\d+\s*уник\.?[а-я]*/gi,'')
-  .trim();
+ var s=String(str||'');
+ /* Удаляем любые скобки с МП-панель, МП панель, МП, осн., уник., баз. (регистронезависимо для кириллицы) */
+ s=s.replace(/\s*[\(\[\{][^)\]\}]*(?:осн|ОСН|уник|УНИК|баз|БАЗ|мп-панель|МП-ПАНЕЛЬ|МП-панель|мп\s*панель|МП\s*ПАНЕЛЬ|МП\s*панель|мп|МП)[^)\]\}]*[\)\]\}]/g,'');
+ s=s.replace(/\s*(?:·|-|—|\/)?\s*(?:МП-панель|мп-панель|МП-ПАНЕЛЬ|МП\s*панель|мп\s*панель|МП\s*ПАНЕЛЬ)/g,'');
+ s=s.replace(/\s+(?:МП|мп)$/g,'');
+ s=s.replace(/\s*·?\s*\d+\s*осн\.?\s*\+\s*\d+\s*уник\.?[а-яА-ЯёЁ]*/g,'');
+ return s.replace(/\s+/g,' ').trim();
 }
 
 function alphaGroup(name){
@@ -552,10 +552,11 @@ var DEFAULT_DEPS=[
  {k:'fso',  s:'ФСО',         n:'ФСО',                  c:'#c084fc', cat:'event'},
  {k:'fsin', s:'ФСИН',        n:'ФСИН',                 c:'#10b981', cat:'event'}
 ];
+
 function cloneDeps(src){
  var out=[];
  var hasFsin=false;
- if(!src||!src.length){return out}
+ if(!src||!src.length){return cloneDeps(DEFAULT_DEPS)}
  for(var i=0;i<src.length;i++){
   var d=src[i];
   if(!d||!d.k){continue}
@@ -568,18 +569,18 @@ function cloneDeps(src){
   }
   var cleanN=stripQuotaText(d.n||d.s||'—');
   var cleanS=stripQuotaText(d.s||d.n||'—');
-  if(cleanS.length>18)cleanS=cleanN.slice(0,17)+'…';
+  if(!cleanN)cleanN='—';
+  if(!cleanS||cleanS.length>18)cleanS=cleanN;
   if(String(d.k)==='fsin'||cleanN.toUpperCase()==='ФСИН'){hasFsin=true}
   out.push({
    k:String(d.k),
-   s:cleanN||cleanS||'—',
-   n:cleanN||cleanS||'—',
+   s:cleanN,
+   n:cleanN,
    c:String(d.c||'#4da3ff'),
    cat:cat,
    classes:classes
   });
  }
- /* Гарантируем, что ФСИН всегда присутствует в разделах для мероприятий */
  if(!hasFsin){
   out.push({
    k:'fsin',
@@ -593,18 +594,25 @@ function cloneDeps(src){
  return out;
 }
 
+/* Мигрируем старый ключ разделов и сразу очищаем от МП-панели + добавляем ФСИН */
 var DEPS=(function(){
  try{
-  var savedDeps=JSON.parse(LS.get(DEPS_LS_KEY)||'null');
-  if(Array.isArray(savedDeps)&&savedDeps.length){return cloneDeps(savedDeps)}
+  var rawNew=JSON.parse(LS.get(DEPS_LS_KEY)||'null');
+  if(Array.isArray(rawNew)&&rawNew.length){return cloneDeps(rawNew)}
+  var rawOld=JSON.parse(LS.get('mvd_garage_deps_v2')||'null');
+  if(Array.isArray(rawOld)&&rawOld.length){return cloneDeps(rawOld)}
  }catch(e){}
  return cloneDeps(DEFAULT_DEPS);
 })();
 
 function saveDepsSync(){
  DEPS=cloneDeps(DEPS);
- try{LS.set(DEPS_LS_KEY,JSON.stringify(DEPS))}catch(e){}
+ try{
+  LS.set(DEPS_LS_KEY,JSON.stringify(DEPS));
+  LS.set('mvd_garage_deps_v2',JSON.stringify(DEPS));
+ }catch(e){}
 }
+saveDepsSync();
 
 function findDep(k){
  for(var i=0;i<DEPS.length;i++){if(DEPS[i].k===k){return DEPS[i]}}
@@ -965,8 +973,8 @@ function showLoadingSkeleton(){
 }
 
 function initApp(){
+ DEPS=cloneDeps(DEPS);
  saveDepsSync();
- var hasLocalCustomDeps=!!LS.get(DEPS_LS_KEY);
  idbGetState().then(function(saved){
   var hasPending=!!LS.get(PENDING_K);
   if(saved&&saved.items&&saved.items.length){
@@ -979,6 +987,7 @@ function initApp(){
    }
    localRev=Math.max(localRev,(typeof saved.rev==='number'?saved.rev:0));
    ITEMS=sanitizeItemsList(saved.items);
+   saveToIndexedDB();
    booted=true;
    render();
   }else{
@@ -1008,6 +1017,10 @@ function initApp(){
    if(ITEMS.length>0){
     var bestRemoteRev=Math.max(r1?r1.rev:0, r2?r2.rev:0);
     if(localRev>=bestRemoteRev && ITEMS.length >= Math.max(r1?r1.items.length:0, r2?r2.items.length:0)){
+     /* Даже если не меняем карточки, убеждаемся, что очищенные DEPS с ФСИН сохранены */
+     DEPS=cloneDeps(DEPS);
+     saveToIndexedDB();
+     render();
      return;
     }
    }
@@ -1032,7 +1045,7 @@ function initApp(){
      chosen={
       rev:Math.max(r1.rev,r2.rev)+1,
       items:sanitizeItemsList(mergedArr),
-      deps:hasLocalCustomDeps?DEPS:(r1.deps||r2.deps)
+      deps:cloneDeps(r1.deps||r2.deps||DEPS)
      };
      if(adminMode&&ADMIN_KEY){dataDirty=true}
     }else{
@@ -1043,7 +1056,7 @@ function initApp(){
    }
 
    if(chosen){
-    if(chosen.deps&&chosen.deps.length&&(!hasLocalCustomDeps||chosen.rev>localRev)){
+    if(chosen.deps&&chosen.deps.length){
      DEPS=cloneDeps(chosen.deps);
      saveDepsSync();
     }
@@ -1052,7 +1065,10 @@ function initApp(){
     saveToIndexedDB();
     booted=true;
     render();
-    if(dataDirty&&adminMode&&ADMIN_KEY){doPush()}
+    if(adminMode&&ADMIN_KEY){
+     dataDirty=true;
+     doPush();
+    }
    }else if(!booted){
     booted=true;
     render();
@@ -1393,6 +1409,7 @@ function chipBtn(act,val,label,color,on,cnt){
 function renderChips(){
  var box=$('#chips');
  if(!box){return}
+ DEPS=cloneDeps(DEPS);
  var h='';
  if(isGrouped()){
   h+='<button class="chip" onclick="setDep(\'all\')">← Все разделы</button>';
